@@ -38,8 +38,6 @@ export async function generateMetadata({
   return masterPageMetadata("insights", asLocale((await params).locale));
 }
 
-const PAGE_SIZE = 24;
-
 /**
  * Column count follows the viewport rather than a fixed breakpoint ladder:
  * one card per 280px track, so a wide monitor gets more cards instead of wider
@@ -114,7 +112,7 @@ export default async function InsightsIndexPage({
   ]);
 
   const [{ rows }, counts] = await Promise.all([
-    listPublishedArticles({ limit: PAGE_SIZE }),
+    listPublishedArticles({}),
     countArticlesByCategory(),
   ]);
 

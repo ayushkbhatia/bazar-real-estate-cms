@@ -91,7 +91,6 @@ export default async function InsightsAuthorPage({
 
   const { rows } = await listPublishedArticles({
     authorId: dbStaff.id,
-    limit: 48,
   });
 
   return (

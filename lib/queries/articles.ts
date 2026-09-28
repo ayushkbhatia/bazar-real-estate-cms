@@ -95,7 +95,19 @@ async function attachLabels<T extends ArticleListRow>(
   }));
 }
 
-/** Public-facing list — published articles, newest first. */
+/**
+ * Supabase's `max_rows` (1,000) silently truncates a select, so an unlimited
+ * read walks the table a page at a time instead of asking for everything once.
+ */
+const ARTICLE_PAGE = 1000;
+
+/**
+ * Public-facing list — published articles, newest first.
+ *
+ * `limit` is for surfaces that show a fixed handful (the home teaser). Omit it
+ * and every matching article comes back: the /insights index and its
+ * category and author archives list the whole archive, however long it grows.
+ */
 export async function listPublishedArticles(opts: {
   category?: ArticleCategory;
   authorId?: string;
@@ -104,30 +116,50 @@ export async function listPublishedArticles(opts: {
 }): Promise<{ rows: ArticleListRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = createSupabasePublicClient();
-  let query = supabase
-    .from("articles")
-    .select(LIST_FIELDS, { count: "exact" })
-    .eq("status", "published")
-    .is("deleted_at", null);
-  if (opts.category) query = query.eq("category", opts.category);
-  if (opts.authorId) query = query.eq("author_id", opts.authorId);
-  query = query
-    .order("published_at", { ascending: false })
-    .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 24) - 1);
-  const { data, error, count } = await query;
-  if (error) {
-    console.error("[listPublishedArticles]", error);
-    return { rows: [], total: 0 };
+  const start = opts.offset ?? 0;
+  const pageOf = (from: number, to: number) => {
+    let query = supabase
+      .from("articles")
+      .select(LIST_FIELDS, { count: "exact" })
+      .eq("status", "published")
+      .is("deleted_at", null);
+    if (opts.category) query = query.eq("category", opts.category);
+    if (opts.authorId) query = query.eq("author_id", opts.authorId);
+    // `id` breaks ties between articles published in the same instant, so a
+    // paged read neither repeats nor skips one at a page boundary.
+    return query
+      .order("published_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to);
+  };
+
+  const data: unknown[] = [];
+  let total = 0;
+  for (let from = start; ; from += ARTICLE_PAGE) {
+    const want =
+      opts.limit === undefined
+        ? ARTICLE_PAGE
+        : Math.min(ARTICLE_PAGE, start + opts.limit - from);
+    if (want <= 0) break;
+    const { data: page, error, count } = await pageOf(from, from + want - 1);
+    if (error) {
+      console.error("[listPublishedArticles]", error);
+      return { rows: [], total: 0 };
+    }
+    total = count ?? 0;
+    data.push(...(page ?? []));
+    if ((page ?? []).length < want) break;
   }
+
   const articleLocale = await currentLocale();
   const rows = await attachLabels(
-    (data ?? []).map((r) =>
+    data.map((r) =>
       // Folded on the raw row, before reshape builds explicit literals and
       // drops the twins — the mistake made once already in the megamenu.
       reshape(localiseDeep(r, articleLocale) as unknown as RawJoin),
     ) as unknown as ArticleListRow[],
   );
-  return { rows, total: count ?? 0 };
+  return { rows, total };
 }
 
 /**

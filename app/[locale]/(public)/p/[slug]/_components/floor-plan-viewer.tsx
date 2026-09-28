@@ -57,12 +57,19 @@ export function FloorPlanViewer({
   alt,
   sizes,
   priority,
+  maxHeight,
 }: {
   src: string;
   alt: string;
   /** The real slot width, as layout arithmetic — see the note above. */
   sizes: string;
   priority?: boolean;
+  /**
+   * Tallest the frame may render, in px. The frame narrows to keep the plan's
+   * ratio rather than letterboxing, so a portrait plan comes out slim instead
+   * of running down the page. Omit to fill the slot's width.
+   */
+  maxHeight?: number;
 }) {
   // The image's own ratio, read off the element once it loads. `naturalWidth`
   // is density-corrected under a `w`-descriptor srcset and so is no use as a
@@ -82,7 +89,12 @@ export function FloorPlanViewer({
         onClick={() => setOpen(true)}
         aria-label={t("floorPlan.openFullScreen", { alt })}
         className="group relative block w-full rounded-lg overflow-hidden border border-bz-border bg-bz-surface cursor-zoom-in"
-        style={{ aspectRatio: String(ratio) }}
+        style={{
+          aspectRatio: String(ratio),
+          ...(maxHeight
+            ? { width: `min(100%, ${Math.round(maxHeight * ratio)}px)` }
+            : null),
+        }}
       >
         <Image
           src={src}
