@@ -138,6 +138,42 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
       note: "Sent when an applicant submits a Fast Pre-Approval application with their documents.",
     },
   ],
+  // The mortgage CMS's emails: sent from, or about, the team's queue.
+  mortgage_consultation_booked: [
+    {
+      label: "Mortgage requests · Book consultation",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser books a consultation on a Mortgage Consultancy request, with the calendar invite attached.",
+    },
+  ],
+  mortgage_preapproval_invite: [
+    {
+      label: "Mortgage requests · Send pre-approval link",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser sends a consultancy applicant a secure link to apply for Fast Pre-Approval.",
+    },
+  ],
+  mortgage_team_new_request: [
+    {
+      label: "Mortgage application · submitted",
+      adminPath: "/admin/mortgages",
+      note: "Sent to the request's owner and the Head of mortgages when any mortgage request arrives.",
+    },
+  ],
+  mortgage_team_at_risk: [
+    {
+      label: "Promise clock · at risk",
+      adminPath: "/admin/mortgages",
+      note: "Sent when a Fast Pre-Approval has 4 working hours or less left on its promise.",
+    },
+  ],
+  mortgage_team_breached: [
+    {
+      label: "Promise clock · missed",
+      adminPath: "/admin/mortgages",
+      note: "Sent when a Fast Pre-Approval passes its due time with no decision.",
+    },
+  ],
   valuation_request_ack: [
     { label: "Valuation tool", path: "/tools/valuation", adminPath: "/admin/valuations" },
   ],

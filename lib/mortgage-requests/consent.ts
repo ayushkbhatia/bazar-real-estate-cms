@@ -21,6 +21,12 @@ export const CONSENT_WORDINGS = {
 
 export type ConsentVersion = keyof typeof CONSENT_WORDINGS;
 
+/**
+ * Versions compliance hasn't signed off yet. C2's consent card says so ("Wording
+ * v0.1 · pending compliance") until a signed-off version is added.
+ */
+export const PENDING_COMPLIANCE: ReadonlySet<string> = new Set<ConsentVersion>(["v0.1"]);
+
 /** The version W5 and W6 show and send. */
 export const CURRENT_CONSENT_VERSION: ConsentVersion = "v0.1";
 

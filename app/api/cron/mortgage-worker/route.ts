@@ -4,6 +4,7 @@ import { recordHeartbeat, reportError } from "@/lib/observability";
 import { purgeExpiredDrafts, scanPending } from "@/lib/mortgage-requests/server/drafts";
 import { mortgageDeps } from "@/lib/mortgage-requests/server/deps";
 import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
+import { slaTick } from "@/lib/mortgage-requests/server/sla-tick";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,8 +15,13 @@ export const maxDuration = 120;
  *   · scan files whose inline scan couldn't run (scanner down, or none yet);
  *   · purge upload drafts nobody submitted within 24 hours, objects and all —
  *     Supabase Storage has no lifecycle rules to do it;
+ *   · check every running 24-hour promise and raise the at-risk and missed
+ *     alarms, once each (sla-tick.ts, 0143) — here rather than in a cron of
+ *     its own, so the alerts it queues go out below in the same run and the
+ *     module costs one invocation every five minutes, not two;
  *   · send what the notification outbox still holds: a confirmation whose
- *     send right after the submit failed or never ran (0141).
+ *     send right after the submit failed or never ran (0141), and the team's
+ *     alerts (0143).
  * Every five minutes.
  */
 export async function GET(req: NextRequest) {
@@ -30,12 +36,13 @@ export async function GET(req: NextRequest) {
     const deps = mortgageDeps();
     const scans = await scanPending(deps, { limit: 20 });
     const purged = await purgeExpiredDrafts(deps, { limit: 100 });
-    const notified = await deliverNotifications({ db: deps.db }, { limit: 20 });
+    const sla = await slaTick({ db: deps.db });
+    const notified = await deliverNotifications({ db: deps.db }, { limit: 40 });
     await recordHeartbeat("mortgage-worker", {
       ok: true,
-      detail: `scanned ${scans.clean} clean, ${scans.rejected} rejected, ${scans.waiting} waiting; purged ${purged.drafts} drafts; notified ${notified.sent} sent, ${notified.skipped} skipped, ${notified.failed} failed`,
+      detail: `scanned ${scans.clean} clean, ${scans.rejected} rejected, ${scans.waiting} waiting; purged ${purged.drafts} drafts; promises ${sla.checked} checked, ${sla.atRisk} at risk, ${sla.breached} missed; notified ${notified.sent} sent, ${notified.skipped} skipped, ${notified.failed} failed`,
     });
-    return NextResponse.json({ ok: true, scans, purged, notified });
+    return NextResponse.json({ ok: true, scans, purged, sla, notified });
   } catch (error) {
     await reportError(error, { source: "cron.mortgage-worker" });
     await recordHeartbeat("mortgage-worker", { ok: false, detail: "failed" });

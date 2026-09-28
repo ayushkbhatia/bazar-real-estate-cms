@@ -44,7 +44,7 @@ These wait on people outside the build. They block launch more than code does.
 | D14 | **New accounts.** Upstash (rate limits; also switches on the limits every existing form already has in code) and Cloudflare Turnstile (bot check). Both have free tiers, and the client takes them over at handover | Ayush + Bazar | Phase 2 · 1 Oct | Open both | SPEC §4.2, §8 | Open |
 | D15 | **Consultations.** Formats offered (phone, video, office); where video-call links come from (per-adviser link?); the "before 12:00, as Ahmed asked" slot filter; who sets advisers' working hours, and where | Head of mortgages | Phase 4 · 8 Oct | A per-adviser video link and weekly hours on a mortgage settings page | CMS-7 · IMPLEMENTATION §1.2 | Open |
 | D16 | **The team.** Are Yasmin Abdalla, Rashid Khan and Leena Varghese real staff? Who gets which mortgage role? W8 shows "Mortgage adviser" for Yasmin, while the CMS says "Head of mortgages" | Bazar | Phase 4 · 8 Oct (UAT) | Take the label from the staff record | FE-7 | Open |
-| D18 | **Assignment.** Round-robin across active advisers on submit, or advisers claim from the queue? | Head of mortgages | Phase 4 · 8 Oct | Build both behind the setting SPEC asks for; default to round-robin | SPEC §2.7, §9 #6 · CMS-10 | Open |
+| D18 | **Assignment.** Round-robin across active advisers on submit, or advisers claim from the queue? | Head of mortgages | Phase 4 · 8 Oct | Build both behind the setting SPEC asks for; default to round-robin | SPEC §2.7, §9 #6 · CMS-10 | Open — **both built 28 Sep (Phase 4)**, round-robin by default; the Head of mortgages switches at /admin/mortgages/settings |
 | D19 | **Decline.** Reasons, message template, and whether a file can be declined before it goes to banks | Head of mortgages | Phase 6 · 19 Oct | — | SPEC §9 #8 | Open |
 | D20 | **Unreachable or withdrawn requests.** What end state they get | Head of mortgages | Phase 4 · 8 Oct | — | SPEC §9 #9 | Open |
 | D21 | **Review checks** for Emirates ID, passport, trade licence and 3-month statements (only the salary certificate and 12-month statements are designed). Should the salary certificate's three recorded fields be required before Accept? | Head of mortgages | Phase 5 · 13 Oct | SPEC's proposed checks; the fields required, since C5 prices on them | SPEC §2.3, §9 #7 · CMS-3 | Open |
@@ -108,11 +108,29 @@ continue".
 | CMS-17 | Whether C4 and C5 warn that free text goes only by email outside WhatsApp's 24-hour window | 5–6 |
 | — | Mortgage settings page (flag, assignment mode, adviser hours) — not in the designs; proposed in IMPLEMENTATION §1.10 using the CMS form pattern | 4 |
 
+**Defaults built in Phase 4 (28 Sep), for design to confirm or replace.** Each
+string is in `PENDING_CMS_COPY` (`lib/mortgage-requests/cms-strings.ts`).
+
+| ID | What was built |
+|---|---|
+| CMS-1 | Admins without a mortgage role get a 404 and no nav item (D10) |
+| CMS-2 | **Claim:** a "Claim" link on unassigned files (C2's Owner card, C6's contact-log header); a second claim answers 409. **Reassign:** a small dialog listing the team, Head of mortgages only. **Edit applicant:** a dialog with name, date of birth, mobile, email and residency; employment is shown locked with the reason. **Held:** once booked, the booking card becomes a summary with "Mark consultation held"; no-show and cancel aren't built. **C1:** the Closed tab (most recently closed first, footer "Showing {shown} of {total} closed requests"), "No requests here." / "Nothing matches that search." / an error line in the table body, the table dimmed while a search loads. **Full activity log:** "View all {count}" expands in place |
+| CMS-4 | Neutral: "Their details carry over and they'll only see the {employment} document set." |
+| CMS-7 | No time-of-day filter: "Time · {adviser}'s free slots", all free slots shown |
+| CMS-8 | Home page, Property page, Services menu, "Pre-approval link from a consultation", Direct |
+| CMS-9 | Owner: anyone, me, unassigned, each team member. Sort: promise due only |
+| CMS-11 | "has {remaining} left" on every name, joined as a list; after three names, "and {n} more" |
+| CMS-12 | In review stays current while awaiting the applicant, with an "Awaiting applicant" pill in the header; Declined takes the last stage's place |
+| CMS-13 | Actions a caller can't take are hidden (Reassign, Edit) or disabled with "Only the owner or the Head of mortgages can do this." as the tooltip |
+| CMS-14 | "Someone else changed this request. Reload to see the latest, then try again." — and the page re-reads itself |
+| CMS-15 | "{overdue} overdue" in the danger colour with a full bar; met shows "Met · {elapsed}" |
+| — | The settings page (`/admin/mortgages/settings`, Head only): flag, assignment mode, the two LTV figures, public holidays; working hours shown read-only. Adviser hours are read from `mortgage_adviser_hours` if present, but have no editor yet (D15) |
+
 ## D. Go-aheads only Ayush can give
 
 | ID | What | Needed by | Status |
 |---|---|---|---|
-| G1 | Edit the protected `components/brand/cms-shell.tsx`: the "Mortgage requests" nav item, its count badge, and hiding it from staff without a mortgage role | Phase 4 · 8 Oct | Open |
+| G1 | Edit the protected `components/brand/cms-shell.tsx`: the "Mortgage requests" nav item, its count badge, and hiding it from staff without a mortgage role | Phase 4 · 8 Oct | **Granted 28 Sep (Phase 4).** The item is added from the session (`AdminSession.mortgage`), so the shell's static nav is unchanged for everyone else |
 | G2 | Reconnect the Supabase connector (`supabase-hub` rejects its token with a 401; `supabase` needs authorising). Needed to count `mortgage_inquiries` rows (D26), check the leftover `documents` bucket, and dump the production schema if a fresh local migrate fails | Phase 1 · 29 Sep | Open |
 | G3 | Edit the protected `lib/env.ts` for the new variables: Turnstile, WhatsApp, the scanner, and S3 if D4 needs it | Phase 2 · 1 Oct | **Granted 28 Sep for the whole epic** (additive entries only). Phase 2 added the Turnstile and scanner variables |
 

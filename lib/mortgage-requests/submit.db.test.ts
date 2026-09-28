@@ -172,8 +172,12 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
       user_agent: "vitest",
     });
 
-    // One confirmation, queued.
-    const { data: outbox } = await service.from("mortgage_notifications").select("kind, channel, status").eq("request_id", result.requestId);
+    // One confirmation, queued. (The team's alerts ride the same insert; cms.db.test.ts covers them.)
+    const { data: outbox } = await service
+      .from("mortgage_notifications")
+      .select("kind, channel, status")
+      .eq("request_id", result.requestId)
+      .eq("kind", "applicant_received");
     expect(outbox).toEqual([{ kind: "applicant_received", channel: "email", status: "queued" }]);
   });
 
@@ -189,7 +193,8 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     const { count } = await service
       .from("mortgage_notifications")
       .select("id", { count: "exact", head: true })
-      .eq("request_id", first.requestId);
+      .eq("request_id", first.requestId)
+      .eq("kind", "applicant_received");
     expect(count).toBe(1);
   });
 
@@ -337,13 +342,25 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
 
   // ── The outbox ──────────────────────────────────────────────
 
+  /** A consultancy request whose outbox holds only the applicant's confirmation: the team's alerts are set aside. */
   async function consultancy(): Promise<string> {
     const body = submitBodySchema().parse({ service: "consultancy", details, entryPoint: "home" });
-    return (await submitRequest(deps, { body, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null })).requestId;
+    const { requestId } = await submitRequest(deps, { body, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null });
+    await service
+      .from("mortgage_notifications")
+      .update({ status: "skipped" })
+      .eq("request_id", requestId)
+      .neq("kind", "applicant_received");
+    return requestId;
   }
 
   async function outboxRow(requestId: string) {
-    const { data } = await service.from("mortgage_notifications").select("*").eq("request_id", requestId).single();
+    const { data } = await service
+      .from("mortgage_notifications")
+      .select("*")
+      .eq("request_id", requestId)
+      .eq("kind", "applicant_received")
+      .single();
     return data as { status: string; attempts: number; next_attempt_at: string; last_error: string | null; provider_id: string | null };
   }
 

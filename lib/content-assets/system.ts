@@ -2,11 +2,11 @@
  * System emails — every email the site sends on its own, and which of them
  * the client can rewrite.
  *
- * Nineteen emails fire without an advisor writing them: acknowledgements,
+ * Twenty-four emails fire without an advisor writing them: acknowledgements,
  * confirmations, one-time codes, nurture follow-ups, and the notices the team
  * itself receives. Each has a built-in version in lib/email-templates.ts (or
  * lib/newsletter-templates.ts) and a row in `content_assets` carrying the
- * matching `system_key` (migrations 0117 and 0127; 0135 and 0142 added
+ * matching `system_key` (migrations 0117 and 0127; 0135, 0142 and 0144 added
  * more).
  *
  * THE RULE, in one line: a PUBLISHED system row replaces the built-in email;
@@ -30,6 +30,8 @@ export const SYSTEM_ASSET_KEYS = [
   "mortgage_enquiry_ack",
   "mortgage_consultancy_received",
   "mortgage_preapproval_received",
+  "mortgage_consultation_booked",
+  "mortgage_preapproval_invite",
   "valuation_request_ack",
   "valuation_code",
   "valuation_report_requested",
@@ -41,6 +43,9 @@ export const SYSTEM_ASSET_KEYS = [
   "staff_invitation",
   "staff_password_reset",
   "enquiry_escalation",
+  "mortgage_team_new_request",
+  "mortgage_team_at_risk",
+  "mortgage_team_breached",
   "permit_expiry_warning",
   "bulk_reassign_digest",
   "health_digest",
@@ -162,6 +167,47 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "site_url",
     ],
     required: ["mortgage_reference", "mortgage_due"],
+  },
+  mortgage_consultation_booked: {
+    key: "mortgage_consultation_booked",
+    slug: "system-mortgage-consultation-booked",
+    label: "Mortgage consultation booked",
+    audience: "client",
+    trigger:
+      "Sent to the applicant when an adviser books their consultation on a Mortgage Consultancy request: the day and time, the format, the adviser and how long it takes. The send path attaches the calendar invite (.ics). Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant whose consultation was booked",
+    builtIn: "lib/email-templates.ts · mortgageConsultationBookedTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "mortgage_reference",
+      "mortgage_consultation_when",
+      "mortgage_consultation_format",
+      "mortgage_consultation_duration",
+      "mortgage_adviser",
+      "site_url",
+    ],
+    required: ["mortgage_consultation_when"],
+  },
+  mortgage_preapproval_invite: {
+    key: "mortgage_preapproval_invite",
+    slug: "system-mortgage-preapproval-invite",
+    label: "Fast Pre-Approval invitation",
+    audience: "client",
+    trigger:
+      "Sent to a Mortgage Consultancy applicant when an adviser sends them a secure link to apply for Fast Pre-Approval. Their details carry over, so they only upload documents, after entering a code sent to their mobile. Wording is a provisional draft pending design (D29).",
+    recipient: "The consultancy applicant invited to apply",
+    builtIn: "lib/email-templates.ts · mortgagePreapprovalInviteTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_secure_url",
+      "mortgage_link_expires",
+      "site_url",
+    ],
+    required: ["mortgage_secure_url"],
   },
   valuation_request_ack: {
     key: "valuation_request_ack",
@@ -346,6 +392,66 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "site_url",
     ],
     required: [],
+  },
+  // The mortgage team's three alerts. Deliberately scoped to nothing about
+  // the applicant — no name, mobile, email or date of birth — because an
+  // email passes through a provider and sits in an inbox: the reference, the
+  // service, the clock and the link, and the team reads the rest in the CMS.
+  mortgage_team_new_request: {
+    key: "mortgage_team_new_request",
+    slug: "system-mortgage-team-new-request",
+    label: "New mortgage request",
+    audience: "team",
+    trigger:
+      "Sent to the request's owner and the Head of mortgages when a Fast Pre-Approval or Mortgage Consultancy request arrives, with its reference, service and a link to it. Nothing about the applicant: their details stay in the CMS. Wording is a provisional draft pending design (D29).",
+    recipient: "The request's owner and the Head of mortgages",
+    builtIn: "lib/email-templates.ts · mortgageTeamNewRequestTemplate",
+    tokens: [
+      "mortgage_reference",
+      "mortgage_service",
+      "mortgage_submitted",
+      "mortgage_owner",
+      "mortgage_request_url",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_request_url"],
+  },
+  mortgage_team_at_risk: {
+    key: "mortgage_team_at_risk",
+    slug: "system-mortgage-team-at-risk",
+    label: "Pre-approval promise at risk",
+    audience: "team",
+    trigger:
+      "Sent to the request's owner and the Head of mortgages when a Fast Pre-Approval has 4 working hours or less left on its promise of contact within 24 working hours. Wording is a provisional draft pending design (D29).",
+    recipient: "The request's owner and the Head of mortgages",
+    builtIn: "lib/email-templates.ts · mortgageTeamAtRiskTemplate",
+    tokens: [
+      "mortgage_reference",
+      "mortgage_service",
+      "mortgage_remaining",
+      "mortgage_due",
+      "mortgage_request_url",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_request_url"],
+  },
+  mortgage_team_breached: {
+    key: "mortgage_team_breached",
+    slug: "system-mortgage-team-breached",
+    label: "Pre-approval promise missed",
+    audience: "team",
+    trigger:
+      "Sent to the request's owner and the Head of mortgages when a Fast Pre-Approval passes the time its applicant was promised, with no decision sent. Wording is a provisional draft pending design (D29).",
+    recipient: "The request's owner and the Head of mortgages",
+    builtIn: "lib/email-templates.ts · mortgageTeamBreachedTemplate",
+    tokens: [
+      "mortgage_reference",
+      "mortgage_service",
+      "mortgage_due",
+      "mortgage_request_url",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_request_url"],
   },
   permit_expiry_warning: {
     key: "permit_expiry_warning",

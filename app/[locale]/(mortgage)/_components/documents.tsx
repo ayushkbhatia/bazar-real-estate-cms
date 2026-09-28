@@ -14,7 +14,7 @@ import {
   type UploadItem,
 } from "@/lib/mortgage-requests/client/upload-queue";
 import { cn } from "@/lib/utils";
-import { DOC_GLYPH, Glyph } from "./glyphs";
+import { DOC_GLYPH, Glyph } from "@/components/mortgage/glyphs";
 import { CheckMark, FlowButton, Pill, Tick } from "./primitives";
 
 /**

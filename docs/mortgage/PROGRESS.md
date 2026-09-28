@@ -419,3 +419,121 @@ defaults"):
   - staging (D8): until it exists, the e2e specs run locally only.
 - **Local stack state:** the flag is `off`. BZM-26-0583/0584 and the DB tests'
   requests remain; `npm run db:local:reset` clears them.
+
+---
+
+## Phase 4 — The team's CMS: C1, C2, C6 · 28 Sep 2026
+
+G1 granted ("G1 granted, go ahead with Phase 4"). The undesigned parts
+(CMS-2 and friends) are built on the defaults listed under "Defaults built in
+Phase 4" in DECISIONS.md, every string of them in `PENDING_CMS_COPY`.
+
+**Built**
+- **`0143_mortgage_cms.sql`:**
+  - one function per action, each called through the adviser's own session:
+    `mortgage_claim`, `mortgage_reassign` (Head only, to the team only),
+    `mortgage_edit_applicant` (never employment), `mortgage_log_contact`
+    (New → Contacted on a consultancy's first attempt),
+    `mortgage_book_consultation` (Contacted → Consultation booked; a taken
+    slot answers `slot_taken`), `mortgage_consultation_held` (→ Completed),
+    `mortgage_create_invite` (one live invite per request; only the hash is
+    stored), `mortgage_update_settings` and `mortgage_set_holiday` (Head only).
+    Each checks the role in the database (`mortgage_authorise`: an adviser
+    acts on what they own, the Head on anything, an admin without a role on
+    nothing), takes the `updated_at` check (`mortgage_lock`, 409), moves status
+    only through `mortgage_transition()`, and writes its event;
+  - the outbox learns recipients (`recipient_staff_id`) and a `dedupe` key; a
+    trigger queues "new request" for the owner and every active Head, in the
+    submit's own transaction;
+  - `mortgage_flag_sla()`: the SLA tick's one write — flags at-risk or missed
+    once per promise and queues the alerts;
+  - three bell kinds (`mortgage_request`, `mortgage_at_risk`,
+    `mortgage_breached`).
+- **`0144_mortgage_cms_emails.sql`** (a subagent): five Content Assets system
+  emails — the team's new-request, at-risk and missed alerts (reference only,
+  no applicant details), the applicant's booking confirmation (the `.ics`
+  rides along) and the pre-approval invite. Seeded as drafts.
+- **Server (`L/server/`):**
+  - `cms-auth.ts`: `requireMortgageRole()` (404 off the team, D10) and the
+    nav's role and new-request count, asked of `mortgage_role()` and never
+    throwing — a deployment ahead of its migration loses the nav item, not
+    the CMS;
+  - `cms-queries.ts`: C1's queue (every filter, counts per tab and service,
+    the at-risk list, search by name, reference or the mobile's last digits —
+    on the server, so C1 never receives a full mobile) and the file for
+    C2/C6;
+  - `settings.ts`: the settings, holidays and SLA policy, shared with the
+    submit;
+  - `sla-tick.ts`, run inside the mortgage-worker cron;
+  - `notify.ts`: team alerts (a bell row plus an email per recipient), the
+    booking confirmation with its calendar invite and the adviser as
+    reply-to, WhatsApp recorded as skipped (D1). The invite is sent by its
+    action, since the outbox can't hold a token.
+- **Domain (`L/`):** `queue.ts` (tabs, the promise-due order, search, the URL
+  state), `slots.ts` (working hours minus holidays and bookings, on the
+  settings' grid), `ics.ts`, `cms-format.ts`, `activity.ts` (events and
+  contact attempts as one timeline, worded from the deck),
+  `cms-strings.ts` (the CMS's English copy through `createTranslator`).
+- **UI (`A/`):**
+  - the nav item with its count (G1), from `AdminSession.mortgage`;
+  - C1 at `/admin/mortgages`: banner, service filter, search (debounced,
+    kept out of the URL), owner filter, tabs, the table, pagination, a 30s
+    refresh and the highlight on return;
+  - C2 and C6 at `/admin/mortgages/[reference]`: header, clock, stage rail,
+    the document set with logged file links, applicant (Edit), owner (Claim,
+    Reassign), consent, activity ("View all"), the contact log and its three
+    outcomes, the booking card with free slots, "Mark consultation held",
+    and the pre-approval link. File pages re-read on focus and every minute;
+  - the settings page, Head only.
+
+**Verified**
+- **Unit:** `L/cms.test.ts` (21): formatting, the promise-due order (paused
+  files by frozen time, breached first), search, tabs, the URL, slots, the
+  `.ics` (escaping, folding, CRLF), the copy, and the activity lines against
+  the designs' own examples.
+- **Database:** `L/cms.db.test.ts` (15) on the local stack: new-request
+  recipients; claim once; reassign Head-only and team-only; an admin refused
+  every action; owner-or-Head; New → Contacted → Booked → Completed with one
+  event per step; a double-booked and a past slot refused; 409 on a stale
+  page; one live invite; applicant edits that name fields, never values; the
+  bell and team email carry no applicant name; the booking email with its
+  `.ics` and WhatsApp skipped; and the SLA tick on a fake clock — at risk
+  once, missed once, missed-between-runs reported as missed, not callable by
+  the team. `submit.db.test.ts` now scopes its outbox checks to the
+  applicant's email. All 74 database tests pass.
+- **Found by the tests:** `mortgage_edit_applicant` built its field list with
+  `text[] || 'literal'`, which Postgres reads as two arrays. Fixed with
+  `array_append` (0143 isn't in production yet).
+- **End to end:** `e2e/mortgage-cms.spec.ts` (local only): the highlight on
+  return, "Show only these" leaving the two at-risk files, and a consultancy
+  from New to Completed. With the Phase 3 specs, all 7 pass.
+- **In the browser** (local stack, 1440): C1, C2 (Priya) and C6 (Ahmed)
+  against the PNGs; Omar taken New → Contacted → Booked → Completed; the
+  invite; the bell; an admin gets a 404 and no nav item; an adviser sees no
+  Reassign or Edit on a file they don't own and a 404 on settings; a holiday
+  added and removed, with its audit row.
+
+**Deviations from the handoffs and PLAN**
+- The SLA tick runs inside `mortgage-worker`, not its own cron (one invocation
+  every five minutes, not two; the alerts go out in the same run).
+- C1's promise-due order puts a paused 9h 13m before a running 9h 15m, as
+  SPEC §4.3 says; the PNG shows them the other way round.
+- The booking card preselects no time: the adviser picks one, and the button
+  reads "Book consultation" until they do.
+- C6's contact log shows the whole history (assignment, booking, invite), not
+  only contacts.
+- Until the viewer (Phase 5), Review, Open and each file tag open the logged
+  file route in a new tab. "Request documents" and "Accept application" are
+  disabled with a reason.
+- The audit target for settings is the nil UUID: `audit_log.target_id` is a
+  uuid. The site-settings audits' `"1"` fails the same way today, silently —
+  a follow-up task is filed.
+
+**Open**
+- **Not applied to production:** `0138`–`0144`. Apply them at the batch merge;
+  the flag stays `off`.
+- D15: no editor for advisers' own hours or video links yet.
+- D1: WhatsApp rows are recorded as skipped until the Business API lands.
+- The office's address isn't in the booking email or the `.ics` (not given).
+- Phase 5 builds the invite landing (`/mortgages/r/[token]`): until then an
+  invite link leads nowhere.

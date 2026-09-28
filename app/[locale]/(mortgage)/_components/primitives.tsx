@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 import Link from "@/components/i18n/link";
 import { cn } from "@/lib/utils";
-import { Glyph } from "./glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 
 /**
  * The flow's small parts, at the design's measurements

@@ -71,6 +71,38 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>— The Bazar mortgage team</p>",
     ].join(""),
   },
+  // The booking and the invitation (0144). Provisional too (D29). The booking
+  // says the calendar invite is attached because the send path attaches it;
+  // the invitation says how the link is guarded without naming the channel
+  // the code arrives by, which is still open (D5).
+  mortgage_consultation_booked: {
+    subject: "Your mortgage consultation is booked for {{mortgage_consultation_when}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>Your mortgage consultation with {{mortgage_adviser}} is booked.</p>",
+      "<ul>",
+      "<li><p>When: <strong>{{mortgage_consultation_when}}</strong> (UAE time)</p></li>",
+      "<li><p>How: {{mortgage_consultation_format}}</p></li>",
+      "<li><p>Duration: {{mortgage_consultation_duration}}</p></li>",
+      "<li><p>Reference: {{mortgage_reference}}</p></li>",
+      "</ul>",
+      "<p>A calendar invite is attached — open it to add the consultation to your calendar.</p>",
+      "<p>If the time no longer suits you, reply to this email and we'll find another.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  mortgage_preapproval_invite: {
+    subject: "Your secure link to apply for Fast Pre-Approval",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>{{mortgage_adviser}} has sent you a secure link to apply for Fast Pre-Approval with Bazar.</p>",
+      "<p>Your details carry over from your consultation request ({{mortgage_reference}}), so you'll only need to upload your documents.</p>",
+      '<a data-email-button="" href="{{mortgage_secure_url}}">Start your application</a>',
+      "<p>Before you upload, you'll be asked for a code we send to your mobile.</p>",
+      "<p>The link works until <strong>{{mortgage_link_expires}}</strong>. It's personal to you, so please don't forward this email.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
   valuation_request_ack: {
     subject: "Your Bazar valuation is in review",
     body: [
@@ -175,6 +207,52 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>{{property_line}}</p>",
       '<a data-email-button="" href="{{enquiry_url}}">Open enquiry</a>',
       "<p>— Bazar lead engine</p>",
+    ].join(""),
+  },
+  // The mortgage team's alerts (0144). Provisional wording (D29). No token
+  // here can carry the applicant's details — none is in these emails' scope —
+  // and the last line says where they are instead. The promise is working
+  // time (D11), so "left" is working time and the due time is the instant.
+  mortgage_team_new_request: {
+    subject: "New {{mortgage_service}} · {{mortgage_reference}}",
+    body: [
+      "<p>A new mortgage request has arrived.</p>",
+      "<ul>",
+      "<li><p>Reference: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>Service: {{mortgage_service}}</p></li>",
+      "<li><p>Received: {{mortgage_submitted}}</p></li>",
+      "<li><p>Owner: {{mortgage_owner}}</p></li>",
+      "</ul>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">Open the request</a>',
+      "<p>The applicant's details are in the CMS, not in this email.</p>",
+      "<p>— Bazar CMS</p>",
+    ].join(""),
+  },
+  mortgage_team_at_risk: {
+    subject: "At risk · {{mortgage_reference}} has {{mortgage_remaining}} left",
+    body: [
+      "<p>This request has <strong>{{mortgage_remaining}}</strong> of working time left before its promise to the applicant falls due.</p>",
+      "<ul>",
+      "<li><p>Reference: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>Service: {{mortgage_service}}</p></li>",
+      "<li><p>Due: {{mortgage_due}}</p></li>",
+      "</ul>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">Open the request</a>',
+      "<p>— Bazar CMS</p>",
+    ].join(""),
+  },
+  mortgage_team_breached: {
+    subject: "Promise missed · {{mortgage_reference}}",
+    body: [
+      "<p>This request has missed its promise to the applicant, and there is no decision yet.</p>",
+      "<ul>",
+      "<li><p>Reference: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>Service: {{mortgage_service}}</p></li>",
+      "<li><p>Was due: {{mortgage_due}}</p></li>",
+      "</ul>",
+      "<p>The applicant was told to expect contact by then. If the decision needs more time, let them know.</p>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">Open the request</a>',
+      "<p>— Bazar CMS</p>",
     ].join(""),
   },
   permit_expiry_warning: {

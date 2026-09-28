@@ -7,7 +7,7 @@ import type { SubmittedSummary } from "@/lib/mortgage-requests/client/apply-stat
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { docKey, DocumentIcon } from "../../../_components/documents";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
-import { Glyph } from "../../../_components/glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 import { FlowLinkButton, RailCard } from "../../../_components/primitives";
 import { richTags } from "../../../_components/rich";
 import { ConfirmationHeading, ProgressTrack } from "../../../_components/steps";

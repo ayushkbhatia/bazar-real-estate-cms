@@ -23,9 +23,10 @@ import { isIP } from "node:net";
 import { z } from "zod";
 import { CONSENT_WORDINGS, isConsentVersion } from "../consent";
 import { detailsSchema, ENTRY_POINTS, type Service } from "../details";
-import { clockDueFrom, slaPolicy } from "../sla";
+import { clockDueFrom } from "../sla";
 import { authoriseDraft, FILE_COLUMNS, retireFiles, type DraftDeps, type FileRow } from "./drafts";
 import { MortgageApiError } from "./errors";
+import { loadMortgageSettings } from "./settings";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -100,23 +101,6 @@ async function existing(db: SupabaseClient, key: string): Promise<RequestRow | n
   return (data as RequestRow | null) ?? null;
 }
 
-async function policyNow(db: SupabaseClient) {
-  const [settings, holidays] = await Promise.all([
-    db
-      .from("mortgage_settings")
-      .select("sla_budget_minutes, sla_risk_minutes, working_hours")
-      .eq("id", 1)
-      .single(),
-    db.from("mortgage_holidays").select("day"),
-  ]);
-  if (settings.error) throw new Error(`settings read failed: ${settings.error.message}`);
-  if (holidays.error) throw new Error(`holidays read failed: ${holidays.error.message}`);
-  return slaPolicy(
-    settings.data as { sla_budget_minutes: number; sla_risk_minutes: number; working_hours: unknown },
-    (holidays.data as { day: string }[]).map((h) => h.day),
-  );
-}
-
 /** The database's refusals, as the API's errors. */
 function fromDatabase(error: { code?: string; message: string }): MortgageApiError | null {
   if (error.code === "MR422") {
@@ -160,7 +144,7 @@ export async function submitRequest(
     consentText = CONSENT_WORDINGS[body.consent.wordingVersion];
     await authoriseDraft(deps, body.draftId, input.draftToken);
     await retireUnlisted(deps, body.draftId, body.fileIds);
-    dueAt = clockDueFrom(now, await policyNow(deps.db));
+    dueAt = clockDueFrom(now, (await loadMortgageSettings(deps.db)).policy);
   }
 
   const d = body.details;

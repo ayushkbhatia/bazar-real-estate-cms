@@ -76,6 +76,16 @@ export type TokenName =
   | "mortgage_reference"
   | "mortgage_submitted"
   | "mortgage_due"
+  | "mortgage_service"
+  | "mortgage_owner"
+  | "mortgage_remaining"
+  | "mortgage_request_url"
+  | "mortgage_consultation_when"
+  | "mortgage_consultation_format"
+  | "mortgage_consultation_duration"
+  | "mortgage_adviser"
+  | "mortgage_secure_url"
+  | "mortgage_link_expires"
   // Block tokens: a whole pre-built panel, not a word. See `kind`.
   | "valuation_range_panel"
   | "valuation_report_panel"
@@ -532,6 +542,112 @@ export const TOKENS: readonly TokenDef[] = [
     sampleAr: "الخميس، 24 سبتمبر، 14:14",
     fallbackAr: "الموعد الظاهر في صفحة التأكيد",
     fallback: "the time on your confirmation page",
+    scope: "system",
+    kind: "text",
+  },
+  // The mortgage team's alerts (0144). They carry nothing about the
+  // applicant — the reference, the service, the clock and a link to the
+  // request in the CMS, where the team reads the rest — so the only name here
+  // is a colleague's. The service's name is the one value with a language:
+  // the context writes it in the language being drawn, as `property_line`'s
+  // "For" is.
+  {
+    name: "mortgage_service",
+    label: "Service (Fast Pre-Approval or Mortgage Consultancy)",
+    sample: "Fast Pre-Approval",
+    sampleAr: "الموافقة المبدئية السريعة",
+    fallbackAr: "طلب تمويل عقاري",
+    fallback: "mortgage request",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // Null is a real value here, not a gap: a request nobody has claimed.
+    name: "mortgage_owner",
+    label: "Who owns the request (Unassigned when nobody does)",
+    sample: "Rashid Khan",
+    sampleAr: "راشد خان",
+    fallbackAr: "غير مُسند",
+    fallback: "Unassigned",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // WORKING time, as sla.ts counts it: "1h 48m" at 18:30 on a Thursday is
+    // not due by 20:18 that evening. The due time beside it is the instant.
+    name: "mortgage_remaining",
+    label: "Working time left on the promise",
+    sample: "1h 48m",
+    fallbackAr: "ساعات قليلة",
+    fallback: "only a few hours",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_request_url",
+    label: "Link to the request (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/mortgages/BZM-26-0412",
+    fallback: "https://www.bazarrealestate.ae/admin/mortgages",
+    scope: "system",
+    kind: "url",
+  },
+  // The applicant's booking and invitation (0144). Times are Asia/Dubai,
+  // printed by lib/mortgage-requests/format.ts like the confirmations'.
+  {
+    name: "mortgage_consultation_when",
+    label: "Consultation day and time (UAE time)",
+    sample: "Wed 23 Sep, 10:00",
+    sampleAr: "الأربعاء، 23 سبتمبر، 10:00",
+    fallbackAr: "الموعد الوارد في دعوة التقويم",
+    fallback: "the time in your calendar invite",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_consultation_format",
+    label: "Consultation format (phone, video or office)",
+    sample: "Phone call",
+    sampleAr: "مكالمة هاتفية",
+    fallbackAr: "حسب الاتفاق",
+    fallback: "as arranged",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_consultation_duration",
+    label: "Consultation length",
+    sample: "20 minutes",
+    sampleAr: "20 دقيقة",
+    fallbackAr: "كما في دعوة التقويم",
+    fallback: "as in your calendar invite",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_adviser",
+    label: "Mortgage adviser's name",
+    sample: "Rashid Khan",
+    sampleAr: "راشد خان",
+    fallbackAr: "فريق التمويل العقاري في بازار",
+    fallback: "Bazar's mortgage team",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_secure_url",
+    label: "Secure link to apply (Fast Pre-Approval)",
+    sample: "https://www.bazarrealestate.ae/mortgages/r/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "mortgage_link_expires",
+    label: "When the secure link expires",
+    sample: "Wed 30 Sep, 10:00",
+    sampleAr: "الأربعاء، 30 سبتمبر، 10:00",
+    fallbackAr: "تاريخ انتهاء صلاحيته",
+    fallback: "its expiry date",
     scope: "system",
     kind: "text",
   },

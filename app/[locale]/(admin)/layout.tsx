@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentStaffRow, getCurrentUser } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import { listRecentNotifications } from "@/lib/notifications";
+import { getMortgageNav } from "@/lib/mortgage-requests/server/cms-auth";
 import {
   AdminSessionProvider,
   type AdminSession,
@@ -29,6 +30,7 @@ const EMPTY_SESSION: AdminSession = {
   staff: null,
   notifications: [],
   unread: 0,
+  mortgage: null,
 };
 
 export default async function AdminLayout({
@@ -66,7 +68,7 @@ export default async function AdminLayout({
   const user = await getCurrentUser();
   if (!user) redirect("/admin/login");
 
-  const [staff, seed] = await Promise.all([
+  const [staff, seed, mortgage] = await Promise.all([
     getCurrentStaffRow(),
     // Failure here must not take down the admin area: an empty bell is a
     // cosmetic loss, a thrown layout is the whole CMS.
@@ -74,6 +76,9 @@ export default async function AdminLayout({
       console.error("[admin/layout] notifications seed failed", err);
       return { rows: [], unread: 0 };
     }),
+    // Never throws: off the mortgage team (or on any error) it is null, and
+    // the nav simply has no "Mortgage requests" item.
+    getMortgageNav(),
   ]);
 
   // Same verdict as requireRole: a 404, so an unauthorised caller can't tell
@@ -97,6 +102,7 @@ export default async function AdminLayout({
         },
         notifications: rows,
         unread,
+        mortgage,
       }}
     >
       {children}

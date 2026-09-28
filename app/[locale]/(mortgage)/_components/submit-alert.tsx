@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Glyph } from "./glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 
 /**
  * A submit that didn't go through (W3 "Errors": an inline message above the

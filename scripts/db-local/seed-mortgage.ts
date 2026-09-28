@@ -264,8 +264,9 @@ function seedFiles(documentId: string, kind: DocKind, submittedAt: Date, who: Pr
   const months = requiredStatementMonths(kind, submittedAt);
   switch (kind) {
     case "emirates_id":
-      fileRow(documentId, kind, "emirates-id-front.jpg", 1.4 * MB, null, "image/jpeg", submittedAt);
-      fileRow(documentId, kind, "emirates-id-back.jpg", 1.3 * MB, null, "image/jpeg", submittedAt);
+      // Front first, as the applicant picked them: the CMS lists a document's files in upload order.
+      fileRow(documentId, kind, "emirates-id-front.jpg", 1.4 * MB, null, "image/jpeg", new Date(submittedAt.getTime() - 60_000));
+      fileRow(documentId, kind, "emirates-id-back.jpg", 1.3 * MB, null, "image/jpeg", new Date(submittedAt.getTime() - 30_000));
       return;
     case "passport":
       fileRow(documentId, kind, who.employment === "business_owner" ? "passport-photo-page.pdf" : "passport.pdf", 2.2 * MB, 1, "application/pdf", submittedAt);

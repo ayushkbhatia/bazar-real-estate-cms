@@ -2,7 +2,7 @@
 
 import { forwardRef, useId, type ComponentProps, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Glyph } from "./glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 
 /**
  * W2's text field (00-foundations §5, TextField): 50px, 15px type, radius 10,

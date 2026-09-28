@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 
 /**
- * The flow's glyphs, drawn from the design's own paths (`MRQ_P` in
- * docs/mortgage/frontend/00-foundations/reference/mreq-shared.jsx): the five
- * document shapes have no lucide equivalent that reads the same at 20px, and
- * the rest are kept with them so every icon in the flow has one stroke.
- * Generic controls (arrows, ✕, upload) use lucide-react like the rest of the
- * site.
+ * The mortgage module's glyphs, drawn from the designs' own paths (`MRQ_P` in
+ * docs/mortgage/frontend/00-foundations/reference/mreq-shared.jsx), shared by
+ * the applicant flow and the team's CMS: the five document shapes have no
+ * lucide equivalent that reads the same at 20px, and the rest are kept with
+ * them so every icon in the module has one stroke. Generic controls (arrows,
+ * ✕, upload) use lucide-react like the rest of the site.
  */
 const PATHS = {
   idCard: (
@@ -71,6 +71,19 @@ const PATHS = {
     </>
   ),
   switch: <path d="M4 8h13l-3-3M20 16H7l3 3" />,
+  pause: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M10 9v6M14 9v6" />
+    </>
+  ),
+  video: (
+    <>
+      <rect x="3" y="6" width="13" height="12" rx="2" />
+      <path d="m16 10.5 5-3v9l-5-3" />
+    </>
+  ),
+  office: <path d="M4 21V5l8-2v18M12 7h8v14M3 21h18M7 8h2M7 12h2M7 16h2M15 11h2M15 15h2" />,
   doc: (
     <>
       <path d="M6 3h9l4 4v14H6z" />
@@ -93,6 +106,16 @@ const PATHS = {
     </>
   ),
   tick: <path d="m5 12 5 5L20 7" />,
+  /** The CMS nav item's house with a percent sign (cms reference ui.jsx `I.mortgage`). */
+  mortgage: (
+    <>
+      <path d="M3 11 12 4l9 7" />
+      <path d="M5 10v10h14V10" />
+      <path d="m9.5 17.5 5-5" />
+      <circle cx="10" cy="13" r=".9" />
+      <circle cx="14" cy="17" r=".9" />
+    </>
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type GlyphName = keyof typeof PATHS;
@@ -125,6 +148,11 @@ export function Glyph({
       {PATHS[name]}
     </svg>
   );
+}
+
+/** "Mortgage requests" in the CMS nav, shaped like the lucide icons beside it. */
+export function MortgageNavIcon({ size, strokeWidth }: { size?: number; strokeWidth?: number }) {
+  return <Glyph name="mortgage" size={size} strokeWidth={strokeWidth} />;
 }
 
 /** The document's shape on its tile (W5–W7). */

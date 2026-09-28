@@ -13,9 +13,17 @@ import {
   formatAedShort,
   formSubmissionTemplate,
   listingReferencesBlock,
+  consultationLength,
   mortgageConsultancyReceivedTemplate,
+  mortgageConsultationBookedTemplate,
+  mortgageConsultationFormatName,
   mortgageDocumentsBlock,
+  mortgagePreapprovalInviteTemplate,
   mortgagePreapprovalReceivedTemplate,
+  mortgageServiceName,
+  mortgageTeamAtRiskTemplate,
+  mortgageTeamBreachedTemplate,
+  mortgageTeamNewRequestTemplate,
   permitExpiryWarningTemplate,
   staffInvitationTemplate,
   staffPasswordResetTemplate,
@@ -38,6 +46,7 @@ import type { EmailContext } from "./email-html";
 import { getFormDef } from "@/lib/forms/registry";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 import { formatDayTime } from "@/lib/mortgage-requests/format";
+import { formatDuration } from "@/lib/mortgage-requests/sla";
 import { FORM_REPLY_SAMPLE, FORM_REPLY_SAMPLE_AR } from "./form-replies";
 import {
   readEmailBrand,
@@ -173,6 +182,66 @@ export type MortgagePreapprovalReceivedOpts = MortgageReceivedOpts & {
   documents: MortgageDocumentLine[];
 };
 
+/**
+ * What every mortgage team alert is given: the request's reference, its
+ * service and where it is in the CMS. Nothing about the applicant — the
+ * alerts carry no name, mobile, email or date of birth, and the team reads
+ * those behind the link.
+ */
+export type MortgageTeamAlertOpts = {
+  /** "BZM-26-0412". */
+  reference: string;
+  service: "consultancy" | "pre_approval";
+  /** Absolute URL of the request in the CMS. */
+  link: string;
+};
+
+type MortgageTeamNewRequestOpts = MortgageTeamAlertOpts & {
+  /** ISO instant. */
+  submittedAt: string;
+  /** The owner's name; null while nobody owns the request. */
+  ownerName: string | null;
+};
+
+type MortgageTeamAtRiskOpts = MortgageTeamAlertOpts & {
+  /** Working seconds left on the promise, from sla.ts. */
+  remainingSeconds: number;
+  /** ISO instant the promise falls due. */
+  dueAt: string;
+};
+
+type MortgageTeamBreachedOpts = MortgageTeamAlertOpts & {
+  /** ISO instant the promise fell due. */
+  dueAt: string;
+};
+
+/** A consultation booked on a Mortgage Consultancy request (C6). */
+export type MortgageConsultationBookedOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  reference: string;
+  /** ISO instant. */
+  startsAt: string;
+  /** 20 unless the settings say otherwise. */
+  durationMinutes: number;
+  format: "phone" | "video" | "office";
+  /** "Rashid Khan". */
+  adviserName: string;
+};
+
+/** The Fast Pre-Approval invitation an adviser sends a consultancy applicant. */
+export type MortgagePreapprovalInviteOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  /** The consultancy request's reference. */
+  reference: string;
+  adviserName: string;
+  /** Absolute secure link, https://…/mortgages/r/<token>. */
+  link: string;
+  /** ISO instant. */
+  expiresAt: string;
+};
+
 const site = () => emailSiteUrl();
 
 /**
@@ -190,6 +259,27 @@ function mortgageValues(o: MortgageReceivedOpts, locale: EmailLocale) {
     site_url: site(),
   };
 }
+
+/**
+ * The values every team alert shares. The team's emails send in English;
+ * `locale` is only the admin's Arabic preview, where the service's name is
+ * the one value that has a language.
+ */
+function mortgageTeamValues(o: MortgageTeamAlertOpts, locale: EmailLocale) {
+  return {
+    mortgage_reference: o.reference,
+    mortgage_service: mortgageServiceName(o.service, locale),
+    mortgage_request_url: o.link,
+    site_url: site(),
+  };
+}
+
+/** One sample request for all three team alerts: the gallery's BZM-26-0412. */
+const SAMPLE_TEAM_ALERT: MortgageTeamAlertOpts = {
+  reference: "BZM-26-0412",
+  service: "pre_approval",
+  link: `${site()}/admin/mortgages/BZM-26-0412`,
+};
 
 const SAMPLE_ENQUIRY: EnquiryOpts = {
   name: "Amira Haddad",
@@ -246,6 +336,51 @@ const BINDINGS = {
         { kind: "salary_certificate", files: 1 },
         { kind: "bank_statements_3m", files: 3 },
       ],
+    },
+  }),
+  mortgage_consultation_booked: bind<MortgageConsultationBookedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_consultation_when: formatDayTime(o.startsAt, locale),
+        mortgage_consultation_format: mortgageConsultationFormatName(o.format, locale),
+        mortgage_consultation_duration: consultationLength(o.durationMinutes, locale),
+        mortgage_adviser: o.adviserName,
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageConsultationBookedTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      // Wednesday 10:00 in Dubai.
+      startsAt: "2026-09-23T06:00:00Z",
+      durationMinutes: 20,
+      format: "phone",
+      adviserName: "Rashid Khan",
+    },
+  }),
+  mortgage_preapproval_invite: bind<MortgagePreapprovalInviteOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_secure_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgagePreapprovalInviteTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      adviserName: "Rashid Khan",
+      link: `${site()}/mortgages/r/sample-token`,
+      expiresAt: "2026-09-30T06:00:00Z",
     },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
@@ -429,6 +564,48 @@ const BINDINGS = {
       enquiryId: "sample",
       minutesElapsed: 64,
     },
+  }),
+  mortgage_team_new_request: bind<MortgageTeamNewRequestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_submitted: formatDayTime(o.submittedAt, locale),
+        // Blank is nobody, which the token says as "Unassigned".
+        mortgage_owner: o.ownerName?.trim() || null,
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamNewRequestTemplate(o, brand),
+    sample: {
+      ...SAMPLE_TEAM_ALERT,
+      // Tuesday 10:14 in Dubai: the application the confirmation's sample is.
+      submittedAt: "2026-09-22T06:14:00Z",
+      ownerName: "Rashid Khan",
+    },
+  }),
+  mortgage_team_at_risk: bind<MortgageTeamAtRiskOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_remaining: formatDuration(o.remainingSeconds),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamAtRiskTemplate(o, brand),
+    sample: {
+      ...SAMPLE_TEAM_ALERT,
+      remainingSeconds: 6480,
+      dueAt: "2026-09-24T10:14:00Z",
+    },
+  }),
+  mortgage_team_breached: bind<MortgageTeamBreachedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamBreachedTemplate(o, brand),
+    sample: { ...SAMPLE_TEAM_ALERT, dueAt: "2026-09-24T10:14:00Z" },
   }),
   permit_expiry_warning: bind<PermitOpts>({
     context: (o) => ({
@@ -625,6 +802,29 @@ export function mortgagePreapprovalReceivedEmail(
   return send("mortgage_preapproval_received", opts, locale);
 }
 
+/**
+ * The applicant's confirmation that their consultation is booked: when, how,
+ * with whom and for how long. The caller attaches the calendar invite (.ics);
+ * the email says it is attached.
+ */
+export function mortgageConsultationBookedEmail(
+  opts: MortgageConsultationBookedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_consultation_booked", opts, locale);
+}
+
+/**
+ * The secure link a consultancy applicant is sent to apply for Fast
+ * Pre-Approval, with when it expires and the code it will ask for.
+ */
+export function mortgagePreapprovalInviteEmail(
+  opts: MortgagePreapprovalInviteOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_preapproval_invite", opts, locale);
+}
+
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
   locale: EmailLocale = "en",
@@ -696,6 +896,30 @@ export function enquiryEscalationEmail(
   opts: EscalationOpts,
 ): Promise<RenderedEmail> {
   return send("enquiry_escalation", opts);
+}
+
+// The mortgage team's alerts, to the request's owner and the Head of
+// mortgages. English, like every team email: no locale is taken.
+
+/** A new Fast Pre-Approval or Mortgage Consultancy request. */
+export function mortgageTeamNewRequestEmail(
+  opts: MortgageTeamAlertOpts & { submittedAt: string; ownerName: string | null },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_new_request", opts);
+}
+
+/** A Fast Pre-Approval inside its last working hours. */
+export function mortgageTeamAtRiskEmail(
+  opts: MortgageTeamAlertOpts & { remainingSeconds: number; dueAt: string },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_at_risk", opts);
+}
+
+/** A Fast Pre-Approval past its due time with no decision. */
+export function mortgageTeamBreachedEmail(
+  opts: MortgageTeamAlertOpts & { dueAt: string },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_breached", opts);
 }
 
 export function permitExpiryWarningEmail(
@@ -786,7 +1010,7 @@ export async function previewSystemEmail(
 
 /**
  * Every system email as it sends today, from rows already read. The gallery
- * shows all nineteen at once; resolving each through the database would be
+ * shows all twenty-four at once; resolving each through the database would be
  * thirty-odd queries for one page, so it reads the rows and the design once
  * and renders here.
  */

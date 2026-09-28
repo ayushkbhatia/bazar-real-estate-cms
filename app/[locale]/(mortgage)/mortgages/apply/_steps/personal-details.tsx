@@ -25,7 +25,7 @@ import { ChoiceTile } from "../../../_components/choices";
 import { GroupError, TextField } from "../../../_components/fields";
 import { FlowActions } from "../../../_components/flow-actions";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
-import { Glyph } from "../../../_components/glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 import { Divider, RailCard } from "../../../_components/primitives";
 import { richTags } from "../../../_components/rich";
 import { FlowHeading } from "../../../_components/steps";

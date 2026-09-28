@@ -2,7 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Glyph } from "./glyphs";
+import { Glyph } from "@/components/mortgage/glyphs";
 import { Pill, RadioMark, type Tone } from "./primitives";
 
 /**

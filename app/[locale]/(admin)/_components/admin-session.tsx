@@ -15,6 +15,12 @@ export type AdminSession = {
   staff: AdminSessionStaff | null;
   notifications: BellNotification[];
   unread: number;
+  /**
+   * The caller's place on the mortgage team, or null off it. The nav shows
+   * "Mortgage requests" — with the count of new requests — only when set
+   * (docs/mortgage/cms/00-foundations §3–4).
+   */
+  mortgage: { role: "head" | "adviser"; newCount: number } | null;
 };
 
 const AdminSessionContext = createContext<AdminSession | null>(null);
