@@ -53,16 +53,18 @@ export async function FloorPlanSection({
       {/* Capped rather than filling the ~936px detail column: at full width a
           16:10 plan stood ~585px tall and a portrait one well over 1,000, the
           largest thing on the page for an image nobody reads at that size.
-          The enlarge overlay is where the dimensions get read. */}
-      <div className="max-w-[640px]">
+          The enlarge overlay is where the dimensions get read. 640px / 440px
+          was tried next and read as too small; 800px / 520px sits between the
+          two (a 16:10 plan at 800x500). */}
+      <div className="max-w-[800px]">
         {imageUrl ? (
           <FloorPlanViewer
             src={imageUrl}
             alt={t("floorPlan.alt", { reference })}
-            // The frame is at most 640px wide (the wrapper) and narrower when
+            // The frame is at most 800px wide (the wrapper) and narrower when
             // `maxHeight` bites; below md it is the page width less padding.
-            sizes="(min-width: 768px) 640px, calc(100vw - 32px)"
-            maxHeight={440}
+            sizes="(min-width: 768px) 800px, calc(100vw - 32px)"
+            maxHeight={520}
           />
         ) : (
           <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-dashed border-bz-border bg-bz-surface flex items-center justify-center">
