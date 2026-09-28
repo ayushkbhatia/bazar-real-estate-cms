@@ -50,29 +50,35 @@ export async function FloorPlanSection({
         {heading}
       </h3>
 
-      {imageUrl ? (
-        <FloorPlanViewer
-          src={imageUrl}
-          alt={t("floorPlan.alt", { reference })}
-          // The section sits in the detail grid: `px-4 md:px-12` page padding,
-          // then `lg:grid-cols-[1fr_360px]` with a `gap-12`. So above lg the
-          // slot is 100vw − 96 − 360 − 48. Measured 936px at a 1440 viewport.
-          sizes="(min-width: 1024px) calc(100vw - 504px), (min-width: 768px) calc(100vw - 96px), calc(100vw - 32px)"
-        />
-      ) : (
-        <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-dashed border-bz-border bg-bz-surface flex items-center justify-center">
-          <div className="text-center max-w-[44ch] px-6">
-            <LayoutGrid
-              size={32}
-              strokeWidth={1.4}
-              className="text-bz-muted-2 mx-auto mb-3"
-            />
-            <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-              {t("floorPlan.none")}
-            </p>
+      {/* Capped rather than filling the ~936px detail column: at full width a
+          16:10 plan stood ~585px tall and a portrait one well over 1,000, the
+          largest thing on the page for an image nobody reads at that size.
+          The enlarge overlay is where the dimensions get read. */}
+      <div className="max-w-[640px]">
+        {imageUrl ? (
+          <FloorPlanViewer
+            src={imageUrl}
+            alt={t("floorPlan.alt", { reference })}
+            // The frame is at most 640px wide (the wrapper) and narrower when
+            // `maxHeight` bites; below md it is the page width less padding.
+            sizes="(min-width: 768px) 640px, calc(100vw - 32px)"
+            maxHeight={440}
+          />
+        ) : (
+          <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-dashed border-bz-border bg-bz-surface flex items-center justify-center">
+            <div className="text-center max-w-[44ch] px-6">
+              <LayoutGrid
+                size={32}
+                strokeWidth={1.4}
+                className="text-bz-muted-2 mx-auto mb-3"
+              />
+              <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
+                {t("floorPlan.none")}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Key facts strip under the plan */}
       <div className="mt-4 grid grid-cols-3 gap-3 max-w-[480px]">

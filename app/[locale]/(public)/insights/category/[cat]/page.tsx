@@ -88,7 +88,6 @@ export default async function InsightsCategoryPage({
 
   const { rows } = await listPublishedArticles({
     category: category.slug,
-    limit: 48,
   });
 
   return (
