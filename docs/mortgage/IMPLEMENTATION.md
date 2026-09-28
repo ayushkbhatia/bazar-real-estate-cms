@@ -41,10 +41,10 @@ Open decisions are referenced as **D-n** and tracked in
    `messages/`, because the admin is English by policy (ADR-0007 §6).
 7. **There is no staging database.** Dev, CI, e2e and previews all use the one
    production Supabase project (`playwright.config.ts:31`,
-   `scripts/vercel-ignore-build.sh`). Docker and the Supabase CLI (2.115) are
-   installed, so Phases 1–2 run against a local Supabase stack. Phases 3+ need a
-   staging project for e2e, email/WhatsApp and UAT (D8). The mortgage seed must
-   never reach production.
+   `scripts/vercel-ignore-build.sh`). Phases 1–2 run against a local Supabase
+   stack in Docker (`npm run db:local:reset`, §1.14). Phases 3+ need a staging
+   project for e2e, email/WhatsApp and UAT (D8). The mortgage seed must never
+   reach production.
 8. **Several things SPEC treats as available don't exist yet:** WhatsApp sending
    (only `wa.me` links, `lib/whatsapp.ts`), SMS, a code sent to a mobile (the
    valuation OTP is email-only), malware scanning, Turnstile, a PDF viewer, and
@@ -82,13 +82,22 @@ Open decisions are referenced as **D-n** and tracked in
 
 ### 1.2 Database
 
-**Migrations (Phase 1).** Three files, because `alter type … add value` cannot
-be used in the transaction that adds it (precedent: `0119_media_folder_fonts.sql`):
+**Migrations.** Phase 1 built two:
 
-1. Enums, tables, indexes, RLS, grants, `staff.mortgage_role`.
-2. Functions and triggers: `mortgage_role()`, the transition function, submit,
-   reference allocation, the status guard and the append-only guard.
-3. New `notification_kind` values for in-app alerts.
+1. `0138_mortgage_requests.sql`: enums, tables, indexes, RLS, grants,
+   `staff.mortgage_role` and `mortgage_role()`.
+2. `0139_mortgage_functions.sql`: the transition function, request creation,
+   reference allocation, owner assignment, the event log writer, the status
+   guard and the append-only guard.
+
+The new `notification_kind` values for in-app alerts come in Phase 4, in a
+migration of their own, because `alter type … add value` can't be used in the
+transaction that adds it (precedent: `0119_media_folder_fonts.sql`).
+
+Both migrations grant the service role explicitly. Newer Supabase images no
+longer grant API roles table access by default, though production (an older
+project) still does, so the module doesn't depend on which kind of project it
+lands in.
 
 **Tables.** Everything in SPEC §3, plus what the designs need and SPEC leaves out:
 
@@ -100,8 +109,14 @@ be used in the transaction that adds it (precedent: `0119_media_folder_fonts.sql
 | `mortgage_requests.locale text default 'en'` | Same as `enquiries.locale` (0100), so Arabic emails can follow later |
 | `mortgage_settings` (single row) | Feature flag state, assignment mode (D18), link expiry days, retention months (D7), consultation length (20 min), slot grid (30 min), round-robin cursor |
 | `mortgage_adviser_hours` (`staff_id`, `weekday`, `starts`, `ends`) | C6 slots are "working hours minus bookings", and SPEC has no table for working hours |
-| `mortgage_notifications` (outbox) | "Enqueue notifications" with retries and a visible failure state, §1.8 |
-| `mortgage_reference_counters` (`yy`, `last`) | `BZM-YY-NNNN` allocation with `insert … on conflict do update … returning`, which is safe under concurrent submits |
+| `mortgage_notifications` (outbox), Phase 3 | "Enqueue notifications" with retries and a visible failure state, §1.8 |
+| `mortgage_reference_counters` (`yy`, `last_number`) | `BZM-YY-NNNN` allocation with `insert … on conflict do update … returning`, which is safe under concurrent submits |
+| `mortgage_holidays` (`day`, `name`) | Dates the clock skips (D30) |
+| `mortgage_requests.sla_remaining_seconds` | The clock runs on working hours (D11). A pause freezes the working time left, and a resume counts it forward from then. SPEC's `due = start + 24h + paused` only holds on wall-clock time |
+| `mortgage_files.kind` | Draft uploads have no document row until submit |
+| `mortgage_bank_submissions.package_token_hash` | The expiring package link (Phase 6) |
+| `mortgage_access_links.otp_sent_at` | The resend cooldown (SPEC §8) |
+| `mortgage_consultations.ends_at` | The double-booking exclusion constraint needs an immutable range |
 
 Email is stored trimmed and lower-cased as `text` with an index, instead of
 enabling `citext`. `mortgage_documents.recorded` (jsonb) also holds the
@@ -144,13 +159,15 @@ resolves correctly but reads ambiguously.
 | `documents.ts` | Document sets per path, per-kind file rules (SPEC §2.2), `requiredStatementMonths(kind, submittedAt)` | 1 |
 | `checklists.ts` | Review checks per kind, as data (SPEC §2.3) | 1 |
 | `state.ts` | The transition table and `canTransition()`, mirroring the SQL function; parity test | 1 |
-| `sla.ts` | `slaStatus(request, now)`, duration formatting ("17h 42m") | 1 |
+| `sla.ts` | The working calendar, `slaStatus(request, now, policy)`, the pause/resume/start payloads for the SQL functions, duration formatting ("17h 42m") | 1 |
+| `dubai-time.ts` | Asia/Dubai as a fixed +04:00 offset (no DST), checked against Intl | 1 |
 | `reference.ts` | Format, parse, and search normalisation (with or without "BZM-") | 1 |
 | `payments.ts` | Re-exports `monthlyPayment` from `lib/mortgage.ts:70` | 1 |
-| `coverage.ts` | Union of statement periods against the required months | 1 |
-| `slots.ts` | Adviser slots: working hours minus bookings, 20-minute meetings on a 30-minute grid | 1 |
-| `format.ts` | Asia/Dubai formatters from both foundations §9 | 1 |
-| `schemas.ts` | zod schemas shared by W2 and the submit endpoint | 1 |
+| `coverage.ts` | Union of statement periods against the required months | 5 |
+| `slots.ts` | Adviser slots: working hours minus bookings, 20-minute meetings on a 30-minute grid | 4 |
+| `format.ts` | Asia/Dubai formatters from both foundations §9 | 3 |
+| `schemas.ts` | zod schemas shared by W2 and the submit endpoint | 3 |
+| `testing/local-stack.ts` | The local stack's address and keys for the database tests, read from the CLI | 1 |
 | `cms-strings.ts` | CMS copy, verbatim from `cms/**/strings.en.json` | 4 |
 | `server/queries.ts`, `server/actions.ts` | Page loaders and the server-action wrapper (authorise → validate → RPC → outbox) | 4 |
 | `server/storage.ts`, `server/verify.ts`, `server/scan.ts` | Storage adapter; magic bytes, encrypted-PDF detection, page count, sha256; scanner adapter | 2 |
@@ -445,18 +462,31 @@ defaults. Check the live values at launch rather than trusting the seed.
 - per-kind limits, including multi-file totals
 - reference formatting
 - the AED 11,337 payment
-- coverage unions, including overlaps
-- slots, formatters, the upload queue and the zod schemas
+- every clock in C1, reproduced from the design data on wall-clock time
+- later phases add coverage unions, slots, formatters, the upload queue and the zod schemas
 
-**Database tests** run against the local Supabase stack:
+**Database tests** (`*.db.test.ts`) run against the local Supabase stack:
 
-- `supabase init` creates `supabase/config.toml`, and `supabase db reset` applies
-  every migration and the mortgage seed.
-- They cover the transition function, the status and append-only triggers,
-  reference allocation under parallel calls, and RLS (an admin without a
-  mortgage role reads nothing).
-- They get their own vitest config, gated on `SUPABASE_LOCAL=1`, so the default
-  CI job (which has no database of its own) doesn't run them.
+- `npm run db:local:reset` starts the stack (Docker; config in
+  `scripts/db-local/supabase/config.toml`, ports 55321–55329 so it doesn't
+  collide with other projects), empties the database, and applies every file
+  in `supabase/migrations` in filename order.
+  - The CLI's own migration runner is switched off because it skips lettered
+    files like `0055a_`.
+  - Production's default privileges are restored first, because newer Supabase
+    images grant API roles almost nothing.
+  - The history before `0138` doesn't replay cleanly (production was partly
+    shaped by hand). Four old files error and are listed, then tolerated. From
+    `0138` on, one error fails the reset.
+- `npm run test:db` runs them (`vitest.db.config.ts`). They skip with a warning
+  when the stack isn't up, and the default `npm run test:run` excludes them.
+- They cover:
+  - the transition function against `state.ts` on every status × event × actor;
+  - the status and append-only triggers, for the service role and the superuser;
+  - reference allocation under 40 parallel calls, and racing retries of one submit;
+  - the clock columns through start, pause, resume and stop;
+  - RLS and roles: an admin without a mortgage role reads nothing, and an
+    adviser can act only on their own requests.
 
 **End-to-end (Playwright):**
 
@@ -467,14 +497,16 @@ defaults. Check the live values at launch rather than trusting the seed.
 
 **Seed:**
 
-- `supabase/seed-mortgage.sql`, reproducing:
+- `scripts/db-local/seed-mortgage.ts`, which prints SQL that `db:local:reset` loads. It reproduces:
   - C1's 11 rows;
   - Priya Raman (BZM-26-0412), Karim Haddad (BZM-26-0409) and Ahmed (BZM-26-0415, the C6 consultancy);
   - Yasmin Abdalla (head), Rashid Khan and Leena Varghese (advisers);
   - FAB, ADCB and Mashreq.
-- Times are relative to `now()`, and placeholder PDFs and images fill the files.
-- It runs only on local or staging. The script refuses the production project
-  ref `ztxbguvmwpqccxuqwdqa`.
+- Times are relative to now through `sla.ts`, so the queue shows the designed
+  remaining times (17h 42m, Paused · 9h 13m…) whenever it runs.
+- File rows are metadata only. Phase 2 adds placeholder objects.
+- It connects to nothing itself; only the local reset pipes it into the Docker
+  database.
 - `npm run db:seed` posts to the remote project, which is production, so it is
   never used for this.
 
@@ -593,10 +625,10 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 
 | Phase | Creates | Changes |
 |---|---|---|
-| **1** Data model & domain | Three migrations (§1.2); `L/{documents,checklists,state,sla,reference,payments,coverage,slots,format,schemas}.ts` + tests; `supabase/config.toml`; `supabase/seed-mortgage.sql` + guard; DB test config | `db/types.ts`; `lib/i18n/domains.ts`; `lib/schemas/staff.ts`; `lib/auth.ts` (`requireMortgageRole`) |
+| **1** Data model & domain (built) | `0138`, `0139`; `L/{documents,checklists,state,sla,reference,payments,dubai-time}.ts` + tests; `L/database.db.test.ts`, `L/testing/local-stack.ts`; `scripts/db-local/{reset.sh,seed-mortgage.ts,supabase/config.toml}`; `vitest.db.config.ts` | `db/types.ts` (mortgage parts spliced from the local schema); `lib/i18n/domains.ts`; `vitest.config.ts`; `package.json` scripts |
 | **2** Storage | Bucket migration (or S3 setup); `L/server/{storage,verify,scan}.ts`; `app/api/mortgage/drafts/**`; `app/api/admin/mortgages/files/[fileId]/route.ts`; `app/api/cron/mortgage-{worker,housekeeping}`; `lib/turnstile.ts`; integration tests | `vercel.json`; `lib/queries/health.ts`; `lib/env.ts` (G3); `.env.example`; `package.json` (`pdfjs-dist`) |
 | **3** Website W1–W7 | `M/**` (layouts, pages, `_components`); `L/client/*`; `app/api/mortgage/requests/route.ts`; `messages/{en,ar}/mortgage.json`; system-email migration + templates; `e2e/mortgage-*.spec.ts` (staging-gated) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; entry points (home band, property page, calculator defaults) |
-| **4** CMS C1, C2, C6 | `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components`, `A/_actions.ts`; `L/server/{queries,actions,notify}.ts`; `L/cms-strings.ts`; `app/api/cron/mortgage-sla-tick`; `.ics` builder; `lib/whatsapp-cloud.ts` + webhook (if D1 has landed) | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` (nav count); `vercel.json`; `lib/queries/health.ts` |
+| **4** CMS C1, C2, C6 | `lib/auth.ts` (`requireMortgageRole`); `L/slots.ts`; `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components`, `A/_actions.ts`; `L/server/{queries,actions,notify}.ts`; `L/cms-strings.ts`; `app/api/cron/mortgage-sla-tick`; `.ics` builder; `lib/whatsapp-cloud.ts` + webhook (if D1 has landed) | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` (nav count); `vercel.json`; `lib/queries/health.ts` |
 | **5** Review loop C3, C4, W8 | `A/[reference]/documents/[kind]/page.tsx` + viewer; `M/mortgages/r/[token]/page.tsx` + invite landing; `app/api/mortgage/links/**`; `L/server/{links,otp}.ts` | `L/server/notify.ts` |
 | **6** Banks & decision C5 | `A/banks/page.tsx`; `A/[reference]/decision/page.tsx`; `app/api/mortgage/packages/[token]/route.ts` | `lib/email.ts` (binary attachments) |
 | **7** Hardening | `docs/mortgage/SECURITY-REVIEW.md`, `RUNBOOK.md`; `app/api/cron/mortgage-retention`; DSR migration | `lib/queries/dsr-subject.ts`; `lib/dsr.ts`; `instrumentation*.ts`; the e2e a11y and mobile-geometry route lists |
@@ -633,11 +665,10 @@ batch rule in the global CLAUDE.md.
 2. **`transition()` lives in SQL, mirrored in TypeScript.** There is no other
    way to get SPEC's "one DB transaction" through supabase-js. The trigger turns
    "nothing else writes status" from a convention into a guarantee.
-3. **The 24-hour clock runs on wall-clock time, nights and weekends included**
-   (SPEC §2.5, §9 #5). A Friday 18:00 submission is due Saturday 18:00, and the
-   UAE weekend is Saturday–Sunday. W7 shows the applicant that exact time.
-   Either staff weekend cover or switch to working hours before launch. This
-   changes `sla.ts`, so decide before Phase 1 (D11).
+3. **The 24-hour clock ran on wall-clock time, nights and weekends included**
+   (SPEC §2.5, §9 #5). A Friday 18:00 submission would have been due Saturday
+   18:00. Decided 28 Sep: working hours (D11), built in Phase 1. What the promise
+   now says to applicants is D11a.
 4. **Arabic.** Serve English only (as SPEC says), but ship the machine-drafted
    Arabic catalogue now, because CI requires it and it makes Arabic a sign-off
    later rather than a rebuild (D12).

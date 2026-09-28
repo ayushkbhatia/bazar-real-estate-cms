@@ -19,8 +19,9 @@ Mortgage requests: the public Fast Pre-Approval / Mortgage Consultancy flow and 
 - Spec: [docs/mortgage/SPEC.md](docs/mortgage/SPEC.md) · Plan: [PLAN.md](docs/mortgage/PLAN.md) · Where things go in this repo: [IMPLEMENTATION.md](docs/mortgage/IMPLEMENTATION.md) (has the final say over the handoffs' suggested paths) · Open questions: [DECISIONS.md](docs/mortgage/DECISIONS.md) · Log: [PROGRESS.md](docs/mortgage/PROGRESS.md)
 - Designs: `docs/mortgage/frontend/` (W1–W8) and `docs/mortgage/cms/` (C1–C6). Each screen folder has a README (the build plan), a 2× PNG, `strings.en.json` and `reference/` (run `npx serve reference` to view it). They are references. Rebuild them with this repo's components and tokens; don't copy the JSX. The PNGs use the old moss accent; use the live tokens.
 - Copy in the designs is final. Use it verbatim, from `strings.en.json`.
-- Status changes only through the transition function (a SQL function, mirrored in `lib/mortgage-requests/state.ts`). Never write status directly; a trigger rejects it.
-- Deadline maths only in the SLA module. UI never computes deadlines.
+- Status changes only through the transition function (`mortgage_transition()` in migration 0139, mirrored in `lib/mortgage-requests/state.ts`). Never write status directly; a trigger rejects it.
+- Deadline maths only in the SLA module (`lib/mortgage-requests/sla.ts`). UI never computes deadlines. The 24-hour promise runs on working hours (decision D11): a budget of working time against `mortgage_settings.working_hours` minus `mortgage_holidays`.
+- Database tests run against a local Supabase stack, never production: `npm run db:local:reset` (Docker; applies every migration, then seeds the designs' data), then `npm run test:db`. The default `npm run test:run` skips them.
 - Mortgage files live only in the private mortgage bucket. Never return a public or long-lived URL. Every open or download writes a `mortgage_events` row first.
 - `mortgage_events` is append-only.
 - No PII in logs, Sentry, `error_events` context or analytics.

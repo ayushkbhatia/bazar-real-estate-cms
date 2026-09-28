@@ -22,6 +22,8 @@ export default defineConfig({
       "**/.next/**",
       "**/e2e/**",
       "**/playwright/**",
+      // Need the local Supabase stack: `npm run test:db` (vitest.db.config.ts).
+      "**/*.db.test.ts",
     ],
     coverage: {
       provider: "v8",
