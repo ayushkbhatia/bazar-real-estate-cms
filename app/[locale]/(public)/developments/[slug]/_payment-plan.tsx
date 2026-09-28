@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { KeyValueList } from "@/components/brand/mobile";
 import { cn } from "@/lib/utils";
 import type { PaymentPlan } from "@/lib/schemas/development";
+import type { CalculatorUnit } from "@/lib/developments/calculator-options";
 import {
   computePaymentBreakdown,
   splitPaymentPlan,
@@ -23,14 +24,6 @@ import {
   type Preferences,
 } from "@/lib/preferences";
 
-/**
- * A pricing option in the calculator's dropdown.
- *
- * The page used to hand this component a finished `label` string with "ft²"
- * and "AED" baked in. It is built here instead, where the visitor's
- * preferences are readable — a server component can't reach them without
- * calling `cookies()` and losing the route's ISR.
- */
 /**
  * The words a milestone shows, as opposed to the words it is matched on.
  *
@@ -53,27 +46,73 @@ function useMilestoneText(locale: string) {
   };
 }
 
-export type CalculatorUnit = {
-  id: string;
-  price_aed: number;
-  /** Unit type name. Null for the starting-price stand-in. */
-  unitType: string | null;
-  beds: number | null;
-  builtUpFt2: number | null;
-  /** The synthetic option for a project with no unit inventory. */
-  isStartingPrice: boolean;
+type OptionWords = {
+  startingPrice: (price: string) => string;
+  fromPrice: (price: string) => string;
+  beds: (beds: number) => string;
 };
 
-/** "3-bed villa · 3-bed · 2,400 ft²", or "From AED 1.6M" for the stand-in. */
-function unitLabel(u: CalculatorUnit, prefs: Preferences): string {
-  if (u.isStartingPrice) return `From ${formatPrice(u.price_aed, prefs)}`;
-  return [
-    u.unitType,
-    u.beds ? `${u.beds}-bed` : null,
-    u.builtUpFt2 ? formatArea(u.builtUpFt2, prefs) : null,
-  ]
+/** The PDF is English whatever the page's locale. */
+const ENGLISH_WORDS: OptionWords = {
+  startingPrice: (price) => `Starting price · ${price}`,
+  fromPrice: (price) => `from ${price}`,
+  beds: (beds) => `${beds}-bed`,
+};
+
+/**
+ * One dropdown option's text. Built here rather than on the server, where the
+ * visitor's preferences are readable — a server component can't reach them
+ * without calling `cookies()` and losing the route's ISR.
+ *
+ *   starting  "Starting price · AED 1.6M"
+ *   unitType  "2 Bedroom · 1,250 ft² · from AED 2.1M"
+ *   unit      "Villa · 4-bed · 5,000 ft² · AED 8M"
+ */
+function unitLabel(
+  u: CalculatorUnit,
+  prefs: Preferences,
+  words: OptionWords,
+): string {
+  const price = formatPrice(u.price_aed, prefs);
+  if (u.kind === "starting") return words.startingPrice(price);
+  const area = u.builtUpFt2 ? formatArea(u.builtUpFt2, prefs) : null;
+  if (u.kind === "unitType") {
+    // The type's own label already names its bedrooms ("2 Bedroom").
+    return [u.unitType, area, words.fromPrice(price)]
+      .filter(Boolean)
+      .join(" · ");
+  }
+  return [u.unitType, u.beds ? words.beds(u.beds) : null, area, price]
     .filter(Boolean)
     .join(" · ");
+}
+
+/**
+ * The options split by kind. Headed groups only when the list mixes unit types
+ * and inventory — a list of one kind reads fine flat, and the starting price
+ * always sits alone on top.
+ */
+function optionGroups(units: CalculatorUnit[]) {
+  const types = units.filter((u) => u.kind === "unitType");
+  const stock = units.filter((u) => u.kind === "unit");
+  const headed = types.length > 0 && stock.length > 0;
+  return [
+    {
+      kind: "starting",
+      label: null,
+      units: units.filter((u) => u.kind === "starting"),
+    },
+    {
+      kind: "unitType",
+      label: headed ? ("payment.groupUnitTypes" as const) : null,
+      units: types,
+    },
+    {
+      kind: "unit",
+      label: headed ? ("payment.groupUnits" as const) : null,
+      units: stock,
+    },
+  ].filter((g) => g.units.length > 0);
 }
 
 /**
@@ -109,6 +148,13 @@ export function PaymentPlanSection({
   const locale = useLocale();
   const milestoneText = useMilestoneText(locale);
   const { prefs } = usePreferences();
+  const words: OptionWords = {
+    startingPrice: (price) => t("payment.startingPrice", { price }),
+    fromPrice: (price) => t("payment.fromPrice", { price }),
+    beds: (beds) => t("payment.beds", { beds }),
+  };
+  // The starting price, when the project publishes one — `calculatorOptions`
+  // always lists it first.
   const [selectedId, setSelectedId] = useState(units[0]?.id ?? "");
   const [downloading, setDownloading] = useState(false);
 
@@ -138,7 +184,9 @@ export function PaymentPlanSection({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           developmentName,
-          unitLabel: selected ? unitLabel(selected, DEFAULT_PREFERENCES) : null,
+          unitLabel: selected
+            ? unitLabel(selected, DEFAULT_PREFERENCES, ENGLISH_WORDS)
+            : null,
           priceAed: price,
           plan,
         }),
@@ -371,16 +419,28 @@ export function PaymentPlanSection({
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
               disabled={units.length === 0}
-              aria-label="Pick a unit type to price"
+              aria-label={t("payment.pickPrice")}
             >
               {units.length === 0 ? (
-                <option>No pricing published yet</option>
+                <option>{t("payment.noPricing")}</option>
               ) : (
-                units.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {unitLabel(u, prefs)}
-                  </option>
-                ))
+                optionGroups(units).map((g) =>
+                  g.label ? (
+                    <optgroup key={g.kind} label={t(g.label)}>
+                      {g.units.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {unitLabel(u, prefs, words)}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ) : (
+                    g.units.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {unitLabel(u, prefs, words)}
+                      </option>
+                    ))
+                  ),
+                )
               )}
             </select>
             {/* The stacked figures below duplicate this on narrow screens, so

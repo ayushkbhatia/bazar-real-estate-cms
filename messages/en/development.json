@@ -32,7 +32,14 @@
     "pricingFor": "Pricing for",
     "customPdf": "Custom plan as PDF",
     "preparing": "Preparing…",
-    "eyebrow": "Payment plan · {plan}"
+    "eyebrow": "Payment plan · {plan}",
+    "startingPrice": "Starting price · {price}",
+    "fromPrice": "from {price}",
+    "beds": "{beds}-bed",
+    "groupUnitTypes": "Unit types",
+    "groupUnits": "Available units",
+    "pickPrice": "Pick a price to plan against",
+    "noPricing": "No pricing published yet"
   },
   "units": {
     "type": "Type",

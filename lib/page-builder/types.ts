@@ -100,7 +100,10 @@ export type BlockNeed =
    * ONE read, whichever projects they name — see lib/queries/landing-projects.
    */
   | "project"
-  /** The project's available units, which the payment-plan calculator prices. */
+  /**
+   * What the payment-plan calculator prices: the project's available units and
+   * the unit types an editor has priced — prices only, no layouts.
+   */
   | "project_units"
   /** The project's unit types and their floor plans. */
   | "project_unit_types"

@@ -27,7 +27,10 @@ import type { CategoryTile } from "@/app/[locale]/(public)/_components/marketing
 import type { PropType } from "@/app/[locale]/(public)/_components/marketing/prop-type-grid";
 import type { FeatureRowItem } from "@/app/[locale]/(public)/_components/marketing/feature-rows";
 import type { CtaVariant } from "@/app/[locale]/(public)/_components/marketing/cta-band";
-import type { CalculatorUnit } from "@/app/[locale]/(public)/developments/[slug]/_payment-plan";
+import {
+  calculatorOptions,
+  type CalculatorUnit,
+} from "@/lib/developments/calculator-options";
 import type { RenderTile } from "@/app/[locale]/(public)/developments/[slug]/_components/renders-gallery";
 import type { ProjectFactsBandProps } from "@/app/[locale]/(public)/_components/marketing/project-facts-band";
 import type { LandingProject } from "@/lib/queries/landing-projects";
@@ -409,33 +412,15 @@ export function projectFactsProps(
 }
 
 /**
- * What the calculator can price: the units on sale, or — for the many projects
- * that publish a plan but no inventory — the starting price, labelled as the
- * floor rather than as a unit. The same rule the project page applies.
+ * What the calculator can price — the starting price first, then each priced
+ * unit type, then the units on sale. The same rule the project page applies.
  */
 export function calculatorUnitsFor(p: LandingProject): CalculatorUnit[] {
-  if (p.units.length > 0) {
-    return p.units.map((u) => ({
-      id: u.id,
-      price_aed: u.priceAed ?? p.startingPrice ?? 0,
-      unitType: u.unitType,
-      beds: u.beds,
-      builtUpFt2: u.builtUpFt2,
-      isStartingPrice: false,
-    }));
-  }
-  return p.startingPrice
-    ? [
-        {
-          id: "starting-price",
-          price_aed: p.startingPrice,
-          unitType: null,
-          beds: null,
-          builtUpFt2: null,
-          isStartingPrice: true,
-        },
-      ]
-    : [];
+  return calculatorOptions({
+    startingPrice: p.startingPrice,
+    unitTypes: p.unitTypePrices,
+    units: p.units,
+  });
 }
 
 export function projectPaymentPlanProps(

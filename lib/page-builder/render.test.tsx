@@ -150,6 +150,7 @@ const PROJECT: LandingProject = {
       placeholder: false,
     },
   ],
+  unitTypePrices: [],
 };
 
 const ADVISOR = {

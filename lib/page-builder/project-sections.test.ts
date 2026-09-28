@@ -55,6 +55,7 @@ function project(over: Partial<LandingProject> = {}): LandingProject {
         placeholder: false,
       },
     ],
+    unitTypePrices: [],
     ...over,
   };
 }
@@ -118,27 +119,50 @@ describe("project facts", () => {
 });
 
 describe("the payment-plan calculator", () => {
-  it("prices the units on sale when there are any", () => {
+  it("opens on the starting price, then priced unit types, then units on sale", () => {
     const units = adapt.calculatorUnitsFor(
       project({
+        unitTypePrices: [
+          { id: "t4", label: "4 Bedroom", beds: 4, sizeFromFt2: 4800, priceFromAed: 8_200_000 },
+          { id: "t5", label: "5 Bedroom", beds: 5, sizeFromFt2: null, priceFromAed: 9_500_000 },
+        ],
         units: [
           { id: "u1", unitType: "Villa", beds: 4, builtUpFt2: 5000, priceAed: 8_000_000 },
           { id: "u2", unitType: "Villa", beds: 5, builtUpFt2: 6000, priceAed: null },
         ],
       }),
     );
-    expect(units.map((u) => [u.id, u.price_aed, u.isStartingPrice])).toEqual([
-      ["u1", 8_000_000, false],
+    expect(units.map((u) => [u.id, u.kind, u.price_aed])).toEqual([
+      ["starting-price", "starting", 7_900_000],
+      ["type-t4", "unitType", 8_200_000],
+      ["type-t5", "unitType", 9_500_000],
+      ["unit-u1", "unit", 8_000_000],
       // A unit with no price is priced at the floor rather than at zero.
-      ["u2", 7_900_000, false],
+      ["unit-u2", "unit", 7_900_000],
     ]);
   });
 
-  it("stands the starting price in for a project with no inventory", () => {
+  it("stands the starting price alone for a project with nothing else priced", () => {
     expect(adapt.calculatorUnitsFor(project())).toEqual([
-      expect.objectContaining({ id: "starting-price", isStartingPrice: true }),
+      expect.objectContaining({ id: "starting-price", kind: "starting" }),
     ]);
     expect(adapt.calculatorUnitsFor(project({ startingPrice: null }))).toEqual([]);
+  });
+
+  it("still prices unit types when the project publishes no starting price", () => {
+    const units = adapt.calculatorUnitsFor(
+      project({
+        startingPrice: null,
+        unitTypePrices: [
+          { id: "t4", label: "4 Bedroom", beds: 4, sizeFromFt2: null, priceFromAed: 8_200_000 },
+        ],
+        units: [
+          // Nothing to price it at: left out rather than offered at zero.
+          { id: "u1", unitType: "Villa", beds: 4, builtUpFt2: null, priceAed: null },
+        ],
+      }),
+    );
+    expect(units.map((u) => u.id)).toEqual(["type-t4"]);
   });
 });
 
