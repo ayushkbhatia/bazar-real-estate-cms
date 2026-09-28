@@ -405,7 +405,7 @@ for (const seed of PRE_APPROVALS) {
         request_id: requestId,
         purpose: "reupload",
         document_id: documentId,
-        // Local test link: /mortgages/r/karim-local-reupload. Hashing to be settled in Phase 5.
+        // Local test link: /mortgages/r/karim-local-reupload, stored as its SHA-256 like every link token.
         token_hash: createHash("sha256").update("karim-local-reupload").digest("hex"),
         expires_at: new Date(pausedAt.getTime() + 7 * DAY_MS),
         created_by: owner.id,
@@ -572,8 +572,10 @@ out.push(
   "insert into public.mortgage_reference_counters (yy, last_number) values (26, 418) " +
     "on conflict (yy) do update set last_number = greatest(public.mortgage_reference_counters.last_number, 418);",
 );
+// The flow open to anyone, as the local e2e specs expect (playwright.mortgage.config.ts);
+// production's flag is the team's to set in the CMS.
 out.push(
-  `update public.mortgage_settings set round_robin_last_staff_id = ${lit(STAFF.leena.id)} where id = 1;`,
+  `update public.mortgage_settings set round_robin_last_staff_id = ${lit(STAFF.leena.id)}, flag = 'public' where id = 1;`,
 );
 
 process.stdout.write(

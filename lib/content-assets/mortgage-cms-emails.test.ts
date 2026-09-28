@@ -310,7 +310,8 @@ describe("the Fast Pre-Approval invitation", () => {
       "Start your application: https://bazar.example/mortgages/r/sample-token",
     );
     expect(email.html).toContain('href="https://bazar.example/mortgages/r/sample-token"');
-    expect(email.text).toContain("you'll be asked for a code we send to your mobile");
+    // D5: the code goes by email until WhatsApp is connected, so the email names no channel.
+    expect(email.text).toContain("we'll send you a code to confirm it's you");
     expect(email.text).toContain("The link works until Wed 30 Sep, 10:00.");
     // Neutral about how the code arrives: that is still open (D5).
     expect(email.text).not.toMatch(/WhatsApp|SMS|text message/i);

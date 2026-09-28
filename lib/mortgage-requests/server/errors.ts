@@ -29,6 +29,13 @@ export type MortgageErrorCode =
   // Submitting (POST /api/mortgage/requests)
   | "files_not_ready"
   | "documents_incomplete"
+  // Secure links (W8, the invite; SPEC §8)
+  | "link_unavailable"
+  | "link_locked"
+  | "code_wrong"
+  | "code_expired"
+  | "code_cooldown"
+  | "code_failed"
   | "internal";
 
 export class MortgageApiError extends Error {

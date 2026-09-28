@@ -537,3 +537,127 @@ Phase 4" in DECISIONS.md, every string of them in `PENDING_CMS_COPY`.
 - The office's address isn't in the booking email or the `.ics` (not given).
 - Phase 5 builds the invite landing (`/mortgages/r/[token]`): until then an
   invite link leads nowhere.
+
+## Phase 5 — The review loop: C3, C4, W8 and the invite · 28 Sep 2026
+
+Decided before starting: "D5 WhatsApp, D7 7 days, D21 your recommendation".
+Codes and link messages go by email until the WhatsApp Business API (D1) is
+connected; links last seven days; every kind has SPEC's proposed checks, and
+the salary certificate's three recorded figures are required before Accept.
+The undesigned parts are built on the defaults under "Defaults built in Phase
+5" in DECISIONS.md, every string in `PENDING_CMS_COPY` or `copy-status.ts`.
+
+**Built**
+- **`0145_mortgage_review.sql`:**
+  - review, through the reviewer's own session: `mortgage_set_check`,
+    `mortgage_set_recorded`, `mortgage_set_statement_period` (whole months,
+    at most two years) and `mortgage_accept_document` (every required check,
+    a clean file). Only while the document is in review, only by its owner or
+    the Head of mortgages, each with its event;
+  - `mortgage_request_reupload` and `mortgage_cancel_reupload`: the link (its
+    hash, seven days), the request, the document to "re-upload requested",
+    the promise paused with the working time left (from `sla.ts`) and resumed
+    on cancel; one open request per document; a cancel revokes the link and
+    expires its draft, so unsent uploads go at the worker's next sweep;
+  - the link, service role only: `mortgage_link_issue_code` (a minute between
+    codes), `mortgage_link_verify` (five wrong codes lock the link for good;
+    a right one starts a two-hour session, its hash stored),
+    `mortgage_fulfil_reupload` (only this link's finished, clean files of the
+    document's kind, added or replacing; back to review with the checks
+    cleared; the promise resumes; the team is told) and
+    `mortgage_submit_invite` (the applicant's own Fast Pre-Approval, from the
+    consultation's details, linked to it);
+  - the links' draft, session and code-channel columns; three outbox kinds;
+    the "Re-upload received" bell.
+- **`0141` changed in place** (not in production): an invite's application is
+  created with the inviting adviser as owner, so the round robin isn't moved
+  and one "assigned" line is logged.
+- **`0146_mortgage_review_emails.sql`** (a subagent): three emails — the
+  re-upload request (the adviser's message quoted, the link), the code, and
+  the team's "re-upload received" (no applicant details). Drafts, with
+  Arabic machine drafts.
+- **Server (`L/server/`):** `links.ts` (lookup and state, the code, the
+  session, uploads into the link's own draft through the W5/W6 pipeline,
+  sending, the invite, and a retried invite answered with the application it
+  already made), `link-http.ts`, `review.ts` (the viewer's data), `cms-kit.ts`
+  (what every CMS action shares). `drafts.ts` presigns, completes, checks and
+  deletes inside a draft the caller has already authorised, scoped to kinds
+  and counting a document's existing files.
+- **API:** `/api/mortgage/links/[token]/{otp,verify,files,…/complete,submit}`,
+  rate-limited per IP and per link (by the token's hash), not behind the flag.
+- **CMS (`A/`):** C3 and C4 at `[reference]/documents/[kind]` — tabs with
+  their state, file chips ordered by period, zoom (`+` `-`), rotate (`R`),
+  `[` `]` between files, the logged download, the page pill; pdf.js loads in
+  the browser only. The review panel: checks with sub-lines, "Record for
+  pricing", statement periods (they tick "Covers the last N months"),
+  Accept, the accepted and awaiting states, "Next: …". C4's form: reason
+  chips, the message prefilled when months are missing, channels, the pause
+  note. C2: Review and Open lead to the viewer; "Requested {when} ·
+  {reason} · Cancel request" (confirmed first); "Request documents" (a
+  picker); "Accept application" enabled at 4 of 4 (the banks are Phase 6).
+- **Website (`M/mortgages/r/[token]`):** the server picks the state
+  (unavailable, expired, locked, used or applied, code, verified); the code
+  gate; W8 as designed; the invite landing (W5/W6 under the secure pill, then
+  W7 without the stepper). The flag gate moved to `apply/layout.tsx`. The
+  page sends no referrer; PostHog strips the token from every URL.
+- **Local:** the seed opens the flow (`flag = 'public'`) and
+  `seed-mortgage-files.ts` uploads a labelled placeholder for every seeded
+  file, so the viewer opens them.
+
+**Verified**
+- **Unit:** `L/review.test.ts` (14): coverage and its wording, the link's
+  states, replace or add, masking, salted codes, cookie names. `cms.test.ts`
+  words the Phase 5 activity lines; `verify.test.ts` opens the labelled
+  placeholders. The full suite: 4,565 pass.
+- **Database:** `L/links.db.test.ts` (9): who may review, and when; statement
+  periods; a re-upload answered three days later resumes with exactly the
+  working time left at the pause, the accepted documents and their files
+  unchanged; add or replace; one open request per document; cancel revokes,
+  resumes and clears unsent uploads; five wrong codes lock the link for good,
+  a code expires, a minute between codes; an expired link opens nothing; one
+  link's session opens no other; another link's file refused; the invite
+  makes one linked pre-approval owned by the inviter without moving the round
+  robin, and a retry gets it back. All 83 database tests pass.
+- **End to end:** `e2e/mortgage-review.spec.ts` (local only): C4, the code,
+  W8's upload and Send, "You've already sent this", and C2 back in review
+  with the clock running. With the Phase 3 and 4 specs, all 8 pass.
+- **In the browser** (local stack, 1440 and 375): W8 against the PNG
+  (Karim); C3 against the PNG (Priya's salary certificate); C4 → C2 on
+  Priya's statements, and Cancel; an invite from C6 to W7 (Ahmed →
+  BZM-26-0419, due Thu 1 Oct 13:00); pdf.js under Turbopack.
+- **Done when:** Karim's seeded file completed the loop in the browser, and
+  the time left after the resume (9h 13m, due Tue 18:13) is the time left at
+  the pause.
+
+**Found and fixed**
+- `0145`'s review functions read `t.req.id` inside SQL, which Postgres parses
+  as a table: every check, period, accept and re-upload failed. Now
+  `(t.req).id`.
+- W5/W6 dropped files picked before the page's draft existed (Phase 3's
+  "flaky when cold" spec): they now wait and go in once it exists.
+- W8 said "3 months missing" for statements asked for again for another
+  reason (a replaced file has no period yet). The coverage now shows only for
+  "Period incomplete".
+- An invite's application was round-robin assigned, then reassigned.
+- The viewer's panel remounted on every save, losing keyboard focus. It stays
+  mounted and takes the server's state field by field.
+
+**Deviations**
+- W8's adviser line shows the job title on their staff record (D16): Yasmin
+  reads "Head of mortgages" where the PNG says "Mortgage adviser".
+- Codes go by email (D5, until D1); the secure pill reads "…code sent to
+  k•••@example.com".
+- No `otp.ts`: a code only exists for a link, so it lives in `links.ts`.
+- Replaced files are removed from storage when the re-upload is sent; their
+  rows stay, marked removed.
+- The session cookie is SameSite=Strict (SPEC §8), so a link opened from an
+  email app asks for a code again, even in a browser that verified earlier.
+
+**Open**
+- **Not applied to production:** `0138`–`0146`. Apply them at the batch
+  merge; the flag stays `off`.
+- D1: WhatsApp rows are recorded as skipped; email carries the codes and
+  links.
+- D16: who the team is. D29: the three new emails are drafts.
+- Design: the defaults for FE-2, W8's other kinds and CMS-2, 3, 5 and 17
+  (DECISIONS.md).

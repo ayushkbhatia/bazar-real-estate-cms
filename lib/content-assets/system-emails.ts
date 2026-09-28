@@ -14,16 +14,22 @@ import {
   formSubmissionTemplate,
   listingReferencesBlock,
   consultationLength,
+  minuteCount,
+  mortgageAdviserMessageBlock,
+  mortgageCodeTemplate,
   mortgageConsultancyReceivedTemplate,
   mortgageConsultationBookedTemplate,
   mortgageConsultationFormatName,
   mortgageDocumentsBlock,
+  mortgageFileCount,
   mortgagePreapprovalInviteTemplate,
   mortgagePreapprovalReceivedTemplate,
+  mortgageReuploadRequestTemplate,
   mortgageServiceName,
   mortgageTeamAtRiskTemplate,
   mortgageTeamBreachedTemplate,
   mortgageTeamNewRequestTemplate,
+  mortgageTeamReuploadReceivedTemplate,
   permitExpiryWarningTemplate,
   staffInvitationTemplate,
   staffPasswordResetTemplate,
@@ -242,6 +248,36 @@ export type MortgagePreapprovalInviteOpts = {
   expiresAt: string;
 };
 
+/** An adviser's request to replace or add to one document (C4 → W8). */
+export type MortgageReuploadRequestOpts = {
+  /** Applicant's full name; only the first name reaches the body. */
+  name: string;
+  reference: string;
+  adviserName: string;
+  /**
+   * The document's display name, e.g. "Last 1 year's bank statements", in
+   * the language the email goes out in (`mortgageDocumentName` in
+   * lib/email-templates.ts has both).
+   */
+  documentName: string;
+  /** The adviser's free text, plain text, up to 1,000 characters. */
+  message: string;
+  /** Absolute secure link, https://…/mortgages/r/<token>. */
+  link: string;
+  /** ISO instant the link expires. */
+  expiresAt: string;
+};
+
+/** The one-time code that opens a secure link. */
+export type MortgageCodeOpts = { name: string; code: string; minutes: number };
+
+type MortgageTeamReuploadReceivedOpts = MortgageTeamAlertOpts & {
+  /** The document's display name, in English like the rest of the alert. */
+  documentName: string;
+  /** How many new files the applicant sent. */
+  files: number;
+};
+
 const site = () => emailSiteUrl();
 
 /**
@@ -382,6 +418,50 @@ const BINDINGS = {
       link: `${site()}/mortgages/r/sample-token`,
       expiresAt: "2026-09-30T06:00:00Z",
     },
+  }),
+  mortgage_reupload_request: bind<MortgageReuploadRequestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_document: o.documentName,
+        mortgage_secure_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageReuploadRequestTemplate(o, brand),
+    // W8's file: Karim's 12-month statements, three months short. The
+    // message is C4's example, on two lines so the preview shows a break.
+    sample: {
+      name: "Karim Haddad",
+      reference: "BZM-26-0409",
+      adviserName: "Yasmin Abdalla",
+      documentName: "Last 1 year's bank statements",
+      message:
+        "Your statements cover September 2025 to May 2026.\nFor a full year, please add June, July and August 2026.",
+      link: `${site()}/mortgages/r/sample-token`,
+      // Sent Tuesday 22 Sep at 11:52 in Dubai; links last 7 days (D7).
+      expiresAt: "2026-09-29T07:52:00Z",
+    },
+  }),
+  mortgage_code: bind<MortgageCodeOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        verification_code: o.code,
+        mortgage_code_expires_in: minuteCount(o.minutes, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageCodeTemplate(o, brand),
+    sample: { name: "Karim Haddad", code: "730528", minutes: 10 },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
     context: (o, locale = "en") => ({
@@ -607,6 +687,24 @@ const BINDINGS = {
     builtin: (o, brand) => mortgageTeamBreachedTemplate(o, brand),
     sample: { ...SAMPLE_TEAM_ALERT, dueAt: "2026-09-24T10:14:00Z" },
   }),
+  mortgage_team_reupload_received: bind<MortgageTeamReuploadReceivedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_document: o.documentName,
+        mortgage_files: mortgageFileCount(o.files, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamReuploadReceivedTemplate(o, brand),
+    // The re-upload's sample: Karim's missing months, in one file.
+    sample: {
+      reference: "BZM-26-0409",
+      service: "pre_approval",
+      link: `${site()}/admin/mortgages/BZM-26-0409`,
+      documentName: "Last 1 year's bank statements",
+      files: 1,
+    },
+  }),
   permit_expiry_warning: bind<PermitOpts>({
     context: (o) => ({
       values: {
@@ -825,6 +923,29 @@ export function mortgagePreapprovalInviteEmail(
   return send("mortgage_preapproval_invite", opts, locale);
 }
 
+/**
+ * An adviser's request to replace or add to one document: which one, their
+ * message quoted as they typed it, and the secure link to upload it, which
+ * asks for a code first.
+ */
+export function mortgageReuploadRequestEmail(
+  opts: MortgageReuploadRequestOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_reupload_request", opts, locale);
+}
+
+/**
+ * The one-time code that opens a secure link, re-upload or invitation. The
+ * subject never carries the code.
+ */
+export function mortgageCodeEmail(
+  opts: MortgageCodeOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_code", opts, locale);
+}
+
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
   locale: EmailLocale = "en",
@@ -922,6 +1043,13 @@ export function mortgageTeamBreachedEmail(
   return send("mortgage_team_breached", opts);
 }
 
+/** The applicant sent the document they were asked for: back in review. */
+export function mortgageTeamReuploadReceivedEmail(
+  opts: MortgageTeamAlertOpts & { documentName: string; files: number },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_reupload_received", opts);
+}
+
 export function permitExpiryWarningEmail(
   opts: PermitOpts,
 ): Promise<RenderedEmail> {
@@ -1010,7 +1138,7 @@ export async function previewSystemEmail(
 
 /**
  * Every system email as it sends today, from rows already read. The gallery
- * shows all twenty-four at once; resolving each through the database would be
+ * shows all twenty-seven at once; resolving each through the database would be
  * thirty-odd queries for one page, so it reads the rows and the design once
  * and renders here.
  */

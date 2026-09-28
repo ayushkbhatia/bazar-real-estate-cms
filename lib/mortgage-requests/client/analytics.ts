@@ -24,6 +24,13 @@ type Events = {
   mortgage_request_submitted: { service: string; residency: string; employment_type: string; entry_point: string };
   mortgage_request_failed: { service: string; status: number };
   mortgage_apply_exit: { step: string };
+  // W8 and the invite landing (SPEC §8: the route, never the token).
+  mortgage_reupload_viewed: { kind: string; reason: string; state: string };
+  mortgage_reupload_otp_sent: { purpose: string };
+  mortgage_reupload_otp_failed: { attempt: number };
+  mortgage_reupload_verified: { purpose: string };
+  mortgage_reupload_sent: { kind: string; files: number };
+  mortgage_invite_submitted: { employment_type: string };
 };
 
 const ALLOWED: { [E in keyof Events]: readonly (keyof Events[E])[] } = {
@@ -37,6 +44,12 @@ const ALLOWED: { [E in keyof Events]: readonly (keyof Events[E])[] } = {
   mortgage_request_submitted: ["service", "residency", "employment_type", "entry_point"],
   mortgage_request_failed: ["service", "status"],
   mortgage_apply_exit: ["step"],
+  mortgage_reupload_viewed: ["kind", "reason", "state"],
+  mortgage_reupload_otp_sent: ["purpose"],
+  mortgage_reupload_otp_failed: ["attempt"],
+  mortgage_reupload_verified: ["purpose"],
+  mortgage_reupload_sent: ["kind", "files"],
+  mortgage_invite_submitted: ["employment_type"],
 };
 
 /** Only the listed keys, and only short enum-like strings, numbers and booleans. */

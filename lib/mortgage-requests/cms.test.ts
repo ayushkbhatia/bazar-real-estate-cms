@@ -313,8 +313,28 @@ describe("activity lines (00-foundations §11)", () => {
     expect([reassign?.text, reassign?.sub]).toEqual(["Reassigned to Rashid", "by Yasmin"]);
     expect([booked?.text, booked?.sub]).toEqual(["Rashid booked Wed 23 Sep · 10:00", "Phone call with Rashid Khan"]);
     expect([invite?.text, invite?.sub]).toEqual(["Rashid sent a pre-approval link", "Expires 29 Sep"]);
-    expect(describeEvent(event("status.changed", { to: "awaiting_applicant", event: "reupload_requested" }), ctx)?.text).toBe(
-      "Moved to Awaiting applicant",
-    );
+    expect(describeEvent(event("status.changed", { to: "with_banks", event: "sent_to_banks" }), ctx)?.text).toBe("Moved to With banks");
+  });
+
+  it("words the Phase 5 review: the re-upload says itself, so its status changes stay quiet", () => {
+    const lines = [
+      describeEvent(event("reupload.requested", { kind: "bank_statements_12m", reason: "period_incomplete" }, YASMIN), ctx),
+      describeEvent(event("reupload.fulfilled", { kind: "bank_statements_12m", files: 1, replaced: false }), ctx),
+      describeEvent(event("reupload.cancelled", { kind: "passport" }, YASMIN), ctx),
+      describeEvent(event("link.locked", { purpose: "reupload" }), ctx),
+      describeEvent(event("invite.used", { reference: "BZM-26-0419" }), ctx),
+      describeEvent(event("owner.assigned", { owner_staff_id: RASHID, via: "invite" }), ctx),
+    ];
+    expect(lines.map((l) => [l?.text, l?.sub ?? null])).toEqual([
+      ["Yasmin asked for Last 1 year's bank statements again", "Period incomplete"],
+      ["Ahmed sent Last 1 year's bank statements", "1 file"],
+      ["Yasmin cancelled the request for Passport copy", null],
+      ["The secure link locked after five wrong codes", null],
+      ["Ahmed applied for Fast Pre-Approval", "BZM-26-0419"],
+      ["Assigned to Rashid", "Sent the pre-approval link"],
+    ]);
+    for (const quiet of ["reupload_requested", "reupload_fulfilled", "reupload_cancelled"]) {
+      expect(describeEvent(event("status.changed", { to: "in_review", event: quiet }), ctx)).toBeNull();
+    }
   });
 });

@@ -45,7 +45,8 @@ async function signIn(page: Page) {
 test("C1: the file you open is highlighted when you come back", async ({ page }) => {
   await signIn(page);
   await page.goto("/admin/mortgages");
-  await page.getByRole("link", { name: "Priya Raman" }).click();
+  // The seeded row: the apply specs submit applications under the same name.
+  await page.locator('tr[data-reference="BZM-26-0412"]').getByRole("link", { name: "Priya Raman" }).click();
   await expect(page).toHaveURL(/\/admin\/mortgages\/BZM-26-0412$/);
   await expect(page.getByRole("heading", { name: "Salaried document set" })).toBeVisible();
   await page.goBack();

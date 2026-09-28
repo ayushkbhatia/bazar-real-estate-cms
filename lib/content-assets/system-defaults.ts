@@ -98,8 +98,38 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>{{mortgage_adviser}} has sent you a secure link to apply for Fast Pre-Approval with Bazar.</p>",
       "<p>Your details carry over from your consultation request ({{mortgage_reference}}), so you'll only need to upload your documents.</p>",
       '<a data-email-button="" href="{{mortgage_secure_url}}">Start your application</a>',
-      "<p>Before you upload, you'll be asked for a code we send to your mobile.</p>",
+      "<p>Before you upload, we'll send you a code to confirm it's you.</p>",
       "<p>The link works until <strong>{{mortgage_link_expires}}</strong>. It's personal to you, so please don't forward this email.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  // Reviewing the documents (0146). Provisional too (D29). The subject is
+  // W8's heading, and the adviser's message is a panel so every line of it is
+  // quoted. Neither email says how the code arrives: by email until WhatsApp
+  // is connected, by WhatsApp after (D5).
+  mortgage_reupload_request: {
+    subject: "One document needs another look — {{mortgage_reference}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>{{mortgage_adviser}} has asked for another look at one document for your application {{mortgage_reference}}: <strong>{{mortgage_document}}</strong>.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>Your application is on hold until the document arrives. Any documents we've already accepted stay accepted.</p>",
+      '<a data-email-button="" href="{{mortgage_secure_url}}">Upload your document</a>',
+      "<p>Before you upload, we'll send you a code to confirm it's you.</p>",
+      "<p>The link works until <strong>{{mortgage_link_expires}}</strong>. It's personal to you, so please don't forward this email.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  // Never the code in the subject: a phone prints the subject on its lock
+  // screen.
+  mortgage_code: {
+    subject: "Your Bazar verification code",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>Use this code to open your secure link:</p>",
+      "<h2>{{verification_code}}</h2>",
+      "<p>It expires in {{mortgage_code_expires_in}}.</p>",
+      "<p>If you didn't ask for it, you can ignore this email — nobody can open your application without the code.</p>",
       "<p>— The Bazar mortgage team</p>",
     ].join(""),
   },
@@ -251,6 +281,22 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<li><p>Was due: {{mortgage_due}}</p></li>",
       "</ul>",
       "<p>The applicant was told to expect contact by then. If the decision needs more time, let them know.</p>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">Open the request</a>',
+      "<p>— Bazar CMS</p>",
+    ].join(""),
+  },
+  // 0146. The clock resumes rather than restarts (SPEC §2.5), so "resumed".
+  mortgage_team_reupload_received: {
+    subject: "Re-upload received · {{mortgage_reference}}",
+    body: [
+      "<p>A re-upload has arrived.</p>",
+      "<ul>",
+      "<li><p>Reference: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>Service: {{mortgage_service}}</p></li>",
+      "<li><p>Document: {{mortgage_document}}</p></li>",
+      "<li><p>Uploaded: {{mortgage_files}}</p></li>",
+      "</ul>",
+      "<p>The request is back in review, and the clock on its promise to the applicant has resumed.</p>",
       '<a data-email-button="" href="{{mortgage_request_url}}">Open the request</a>',
       "<p>— Bazar CMS</p>",
     ].join(""),

@@ -19,6 +19,7 @@ export const CMS_MESSAGES = {
   "activity": {
     "accepted": "{actor} accepted {document}",
     "assigned": {
+      "invite": "Sent the pre-approval link",
       "roundRobin": "Round-robin · mortgage team",
       "title": "Assigned to {owner}"
     },
@@ -52,6 +53,8 @@ export const CMS_MESSAGES = {
       "sub": "Expires {when}",
       "title": "{actor} sent a pre-approval link"
     },
+    "inviteUsed": "{firstName} applied for Fast Pre-Approval",
+    "linkLocked": "The secure link locked after five wrong codes",
     "opened": "{actor} opened {document}",
     "packageSent": {
       "sub": "{count} documents · structured summary",
@@ -62,6 +65,10 @@ export const CMS_MESSAGES = {
       "sub": "by {actor}",
       "title": "Reassigned to {owner}"
     },
+    "reuploadCancelled": "{actor} cancelled the request for {document}",
+    "reuploadFiles": "{count, plural, one {# file} other {# files}}",
+    "reuploadReceived": "{firstName} sent {document}",
+    "reuploadRequested": "{actor} asked for {document} again",
     "statusChanged": "Moved to {status}",
     "submitted": {
       "sub": "Confirmation shown · email sent",
@@ -183,7 +190,112 @@ export const CMS_MESSAGES = {
     "owner": {
       "reassign": "Reassign",
       "title": "Owner"
+    },
+    "request": {
+      "continue": "Continue",
+      "label": "Which document?",
+      "none": "Every document is accepted or already requested.",
+      "title": "Request documents"
+    },
+    "reupload": {
+      "cancel": "Cancel request",
+      "cancelled": "Request cancelled.",
+      "confirm": {
+        "body": "The link we sent {firstName} for their {document} will stop working, and the 24-hour clock starts again.",
+        "keep": "Keep request",
+        "title": "Cancel this request?"
+      },
+      "sent": "Requested {when} · {reason}"
     }
+  },
+  "c3": {
+    "accepted": "Document accepted.",
+    "acceptedBy": "Accepted by {name} · {time}",
+    "action": {
+      "accept": "Accept document"
+    },
+    "allAccepted": "Back to file →",
+    "awaiting": "Waiting for {firstName} · requested {when}",
+    "check": {
+      "salary": {
+        "addressed": "Addressed to a bank",
+        "name": "Name matches the application",
+        "recent": "Issued within the last 30 days",
+        "signed": "Signed and stamped by the employer",
+        "stated": "Monthly salary stated"
+      },
+      "value": {
+        "issued": "{date} · {days} days ago",
+        "salary": "AED {amount} gross",
+        "signed": "HR signature and company stamp"
+      }
+    },
+    "fieldsNeeded": "Record the three figures to accept.",
+    "invalidAed": "A whole amount in AED.",
+    "next": "Next: {document} →",
+    "opened": "Opened by {name} · {time} · logged",
+    "openedPending": "Opening…",
+    "period": {
+      "from": "From",
+      "hint": "Set the months each file covers; coverage follows.",
+      "pick": "Month",
+      "title": "Statement periods",
+      "to": "To"
+    },
+    "readOnlyAccepted": "Accepted documents can't be changed.",
+    "record": {
+      "employedSince": "Employed since",
+      "employer": "Employer",
+      "salary": "Monthly gross salary",
+      "title": "Record for pricing"
+    },
+    "required": {
+      "salaryCertificate": "Required: addressed to the bank · PDF · max 10 MB"
+    },
+    "saved": "Saved"
+  },
+  "c4": {
+    "channelRequired": "Choose at least one way to send it.",
+    "check": {
+      "covers": "Covers the last 12 months",
+      "holder": "Account holder matches the trade licence",
+      "issued": "Issued by the bank",
+      "value": {
+        "missing": "{months} missing",
+        "original": "Original PDFs, not scans"
+      }
+    },
+    "coverage": {
+      "count": "{have} of {total}",
+      "title": "Coverage · last 12 months",
+      "titleN": "Coverage · last {count} months"
+    },
+    "message": {
+      "example": "Your statements cover September 2025 to May 2026. For a full year, please add June, July and August 2026.",
+      "label": "Message to {firstName}"
+    },
+    "messageRequired": "Write a message.",
+    "pause": "The 24-hour clock pauses until {firstName} uploads. {count, plural, =0 {No other document is accepted yet.} one {Their accepted document stays accepted.} other {Their # accepted documents stay accepted.}}",
+    "prefill": {
+      "months": "Your statements cover {received}. Please add {missing}.",
+      "none": "Please add statements for {missing}.",
+      "year": "Your statements cover {received}. For a full year, please add {missing}."
+    },
+    "reason": {
+      "expired": "Expired",
+      "other": "Other",
+      "pagesMissing": "Pages missing",
+      "periodIncomplete": "Period incomplete",
+      "unreadable": "Unreadable",
+      "wrongDocument": "Wrong document"
+    },
+    "reasonRequired": "Choose a reason.",
+    "required": {
+      "bankStatements12m": "Required: several files · PDF · max 40 MB total"
+    },
+    "send": "Send request to {firstName}",
+    "sent": "Request sent to {firstName}.",
+    "whatsappPending": "WhatsApp isn't connected yet, so this goes by email."
   },
   "c6": {
     "action": {
@@ -298,6 +410,14 @@ export const CMS_MESSAGES = {
     "salaryCertificate": "Addressed to the bank · PDF · max 10 MB",
     "tradeLicense": "Valid / current · PDF, JPG, PNG · max 10 MB"
   },
+  "docShort": {
+    "bankStatements12m": "bank statements",
+    "bankStatements3m": "bank statements",
+    "emiratesId": "Emirates ID",
+    "passport": "passport copy",
+    "salaryCertificate": "salary certificate",
+    "tradeLicense": "trade licence"
+  },
   "docState": {
     "accepted": "Accepted",
     "reuploadRequested": "Re-upload requested",
@@ -348,7 +468,9 @@ export const CMS_MESSAGES = {
     "atRiskBody": "{remaining} left · due {dueAt}",
     "breached": "Promise missed · {reference}",
     "breachedBody": "Was due {dueAt}",
-    "newRequest": "New {service} request · {reference}"
+    "newRequest": "New {service} request · {reference}",
+    "reupload": "Re-upload received · {reference}",
+    "reuploadBody": "{document} · back in review"
   },
   "owner": {
     "unassigned": "Unassigned"
@@ -425,15 +547,25 @@ export const CMS_MESSAGES = {
     "eyebrow": "Reviewing · {index} of {total}",
     "fileAndPage": "File {file} of {files} · page {page} of {total}",
     "fileMeta": "{name} · {pages} · {size}",
+    "loadFailed": "The file didn't open. Reload to try again.",
+    "noFiles": "No files yet.",
     "page": "Page {page} of {total}",
     "pages": "{count, plural, one {# page} other {# pages}}",
     "requestReupload": "Request re-upload",
-    "zoom": "{percent}%"
+    "required": "Required: {hint}",
+    "rotate": "Rotate",
+    "scanning": "This file is still being checked. It opens once the check is done.",
+    "stage": "{document}, page {page} of {total}",
+    "tabs": "Documents",
+    "zoom": "{percent}%",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   }
 } as const;
 
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
+  "activity.assigned.invite",
   "activity.atRisk",
   "activity.booked.sub",
   "activity.booked.title",
@@ -448,8 +580,14 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.held",
   "activity.inviteSent.sub",
   "activity.inviteSent.title",
+  "activity.inviteUsed",
+  "activity.linkLocked",
   "activity.reassigned.sub",
   "activity.reassigned.title",
+  "activity.reuploadCancelled",
+  "activity.reuploadFiles",
+  "activity.reuploadReceived",
+  "activity.reuploadRequested",
   "activity.statusChanged",
   "c1.aria.next",
   "c1.aria.owner",
@@ -477,6 +615,39 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.tabFooter",
   "c2.activity.showLatest",
   "c2.docs.scanning",
+  "c2.request.continue",
+  "c2.request.label",
+  "c2.request.none",
+  "c2.request.title",
+  "c2.reupload.cancel",
+  "c2.reupload.cancelled",
+  "c2.reupload.confirm.body",
+  "c2.reupload.confirm.keep",
+  "c2.reupload.confirm.title",
+  "c2.reupload.sent",
+  "c3.accepted",
+  "c3.acceptedBy",
+  "c3.allAccepted",
+  "c3.awaiting",
+  "c3.fieldsNeeded",
+  "c3.invalidAed",
+  "c3.openedPending",
+  "c3.period.from",
+  "c3.period.hint",
+  "c3.period.pick",
+  "c3.period.title",
+  "c3.period.to",
+  "c3.readOnlyAccepted",
+  "c3.saved",
+  "c4.channelRequired",
+  "c4.coverage.titleN",
+  "c4.messageRequired",
+  "c4.prefill.months",
+  "c4.prefill.none",
+  "c4.prefill.year",
+  "c4.reasonRequired",
+  "c4.sent",
+  "c4.whatsappPending",
   "c6.book.needsContact",
   "c6.book.none",
   "c6.book.passed",
@@ -507,6 +678,12 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "common.save",
   "common.soonBanks",
   "common.soonViewer",
+  "docShort.bankStatements12m",
+  "docShort.bankStatements3m",
+  "docShort.emiratesId",
+  "docShort.passport",
+  "docShort.salaryCertificate",
+  "docShort.tradeLicense",
   "edit.employmentLocked",
   "edit.invalid",
   "edit.submit",
@@ -526,6 +703,8 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "notify.breached",
   "notify.breachedBody",
   "notify.newRequest",
+  "notify.reupload",
+  "notify.reuploadBody",
   "reassign.label",
   "reassign.submit",
   "reassign.title",
@@ -551,7 +730,16 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "settings.ltv.title",
   "settings.save",
   "settings.saved",
-  "settings.title"
+  "settings.title",
+  "viewer.loadFailed",
+  "viewer.noFiles",
+  "viewer.required",
+  "viewer.rotate",
+  "viewer.scanning",
+  "viewer.stage",
+  "viewer.tabs",
+  "viewer.zoomIn",
+  "viewer.zoomOut"
 ];
 
 export const cmsT = createTranslator({ locale: "en", messages: { cms: CMS_MESSAGES }, namespace: "cms" });

@@ -121,9 +121,7 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
     },
   ],
   mortgage_enquiry_ack: [],
-  // No page link yet. The flow lives in app/[locale]/(mortgage)/, a route
-  // group usage.test.ts's route check does not look in: add
-  // `path: "/mortgages/apply"` together with that group as a candidate.
+  // The applicant flow's confirmations, from the step that submits them.
   mortgage_consultancy_received: [
     {
       label: "Mortgage application · Mortgage Consultancy",
@@ -153,6 +151,20 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
       note: "Sent when an adviser sends a consultancy applicant a secure link to apply for Fast Pre-Approval.",
     },
   ],
+  mortgage_reupload_request: [
+    {
+      label: "Mortgage requests · Request re-upload",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser asks a Fast Pre-Approval applicant to replace or add to one document, with the adviser's message and a secure link to upload it.",
+    },
+  ],
+  // No page: a secure link is one applicant's, not a page anyone can open.
+  mortgage_code: [
+    {
+      label: "Secure link · verification code",
+      note: "Sent when an applicant opens a re-upload link or a pre-approval invitation and asks for the code that unlocks it. Codes go by email until WhatsApp is connected.",
+    },
+  ],
   mortgage_team_new_request: [
     {
       label: "Mortgage application · submitted",
@@ -172,6 +184,13 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
       label: "Promise clock · missed",
       adminPath: "/admin/mortgages",
       note: "Sent when a Fast Pre-Approval passes its due time with no decision.",
+    },
+  ],
+  mortgage_team_reupload_received: [
+    {
+      label: "Secure link · Send documents",
+      adminPath: "/admin/mortgages",
+      note: "Sent to the request's owner and the Head of mortgages when an applicant sends the document they were asked for; the request is back in review.",
     },
   ],
   valuation_request_ack: [

@@ -87,4 +87,15 @@ if ! out="$(cd "$ROOT" && npx --no-install tsx scripts/db-local/seed-mortgage.ts
   exit 1
 fi
 
+# The seeded files' bytes, so the CMS viewer opens them: placeholders in the
+# local bucket, with the local stack's own URL and key (never production's).
+echo "· uploading the seeded files' placeholders"
+stack_env="$(supabase status --workdir "$WORKDIR" -o env 2>/dev/null)"
+api_url="$(printf '%s\n' "$stack_env" | sed -n 's/^API_URL="\(.*\)"$/\1/p')"
+service_key="$(printf '%s\n' "$stack_env" | sed -n 's/^SERVICE_ROLE_KEY="\(.*\)"$/\1/p')"
+if ! (cd "$ROOT" && API_URL="$api_url" SERVICE_ROLE_KEY="$service_key" npx --no-install tsx scripts/db-local/seed-mortgage-files.ts); then
+  echo "uploading the placeholders failed" >&2
+  exit 1
+fi
+
 echo "· done — API http://127.0.0.1:55321, database postgresql://postgres:postgres@127.0.0.1:55322/postgres"

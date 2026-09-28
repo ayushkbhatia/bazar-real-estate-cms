@@ -158,6 +158,7 @@ as $$
 declare
   r          public.mortgage_requests;
   v_owner    uuid;
+  v_pinned   uuid;
   v_property uuid;
   v_kinds    public.mortgage_doc_kind[];
 begin
@@ -194,7 +195,15 @@ begin
 
   perform set_config('mortgage.transition', 'on', true);
   begin
-    v_owner := public.mortgage_next_owner();
+    -- A pre-approval applied for through an invite stays with the adviser who
+    -- sent it: mortgage_submit_invite (0145) names them for its transaction,
+    -- and the round robin isn't moved.
+    v_pinned := nullif(current_setting('mortgage.pinned_owner', true), '')::uuid;
+    if v_pinned is not null then
+      v_owner := v_pinned;
+    else
+      v_owner := public.mortgage_next_owner();
+    end if;
 
     insert into public.mortgage_requests (
       reference, service, status,
@@ -259,7 +268,7 @@ begin
     insert into public.mortgage_events (request_id, actor_kind, type, data, created_at)
     values (
       r.id, 'system', 'owner.assigned',
-      jsonb_build_object('owner_staff_id', v_owner, 'via', 'round_robin'),
+      jsonb_build_object('owner_staff_id', v_owner, 'via', case when v_pinned is not null then 'invite' else 'round_robin' end),
       p_at
     );
   end if;

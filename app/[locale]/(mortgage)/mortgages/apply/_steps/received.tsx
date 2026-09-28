@@ -100,8 +100,20 @@ function ConsultancyReceived({ s }: { s: SubmittedSummary }) {
   );
 }
 
-/** W7 · Pre-approval — application received, with the promise as a time. */
-function ApplicationReceived({ s }: { s: SubmittedSummary }) {
+/**
+ * W7 · Pre-approval — application received, with the promise as a time. The
+ * invite landing (W8) shows it too, without the stepper and with the mobile
+ * already masked by the server.
+ */
+export function ApplicationReceived({
+  s,
+  maskedMobile,
+  stepper = true,
+}: {
+  s: SubmittedSummary;
+  maskedMobile?: string;
+  stepper?: boolean;
+}) {
   const t = useTranslations("mortgage");
   const rows = useSummaryRows(s);
   const rail = (
@@ -126,7 +138,7 @@ function ApplicationReceived({ s }: { s: SubmittedSummary }) {
     </RailCard>
   );
   return (
-    <FlowPage step={3} last="documents" rail={rail}>
+    <FlowPage step={stepper ? 3 : undefined} last={stepper ? "documents" : undefined} rail={rail}>
       <ConfirmationHeading eyebrow={t("w7.eyebrow")} title={t("w7.title")} body={t("w7.body")} />
       {s.dueAt ? (
         <div className="mt-9 flex flex-col gap-3 rounded-[14px] bg-bz-ink px-6 py-5 text-bz-bg md:flex-row md:items-center md:gap-[18px]">
@@ -159,7 +171,7 @@ function ApplicationReceived({ s }: { s: SubmittedSummary }) {
         <span className="mt-px text-bz-accent">
           <Glyph name="chat" />
         </span>
-        <span>{t.rich("w7.whatsapp", { ...richTags, maskedMobile: maskMobile(s.mobile) })}</span>
+        <span>{t.rich("w7.whatsapp", { ...richTags, maskedMobile: maskedMobile ?? maskMobile(s.mobile) })}</span>
       </div>
       <Onward s={s} />
     </FlowPage>

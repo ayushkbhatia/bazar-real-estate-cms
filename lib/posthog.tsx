@@ -27,6 +27,22 @@ import { useConsent } from "@/app/_consent/consent-provider";
  * converting?" would have no answer. It ships before Arabic does because the
  * data is not backfillable: events captured without the property never get it.
  */
+/** `/mortgages/r/<token>` → `/mortgages/r/[token]` in every URL-ish property an event carries. */
+export function redactSecureLinks<E extends { properties?: Record<string, unknown>; $set_once?: Record<string, unknown> } | null>(event: E): E {
+  if (!event) return event;
+  const scrub = (bag: Record<string, unknown> | undefined) => {
+    if (!bag) return;
+    for (const [key, value] of Object.entries(bag)) {
+      if (typeof value === "string" && value.includes("/mortgages/r/")) {
+        bag[key] = value.replace(/\/mortgages\/r\/[^/?#\s]+/g, "/mortgages/r/[token]");
+      }
+    }
+  };
+  scrub(event.properties);
+  scrub(event.$set_once);
+  return event;
+}
+
 export function PostHogProvider({
   children,
   locale = DEFAULT_LOCALE,
@@ -65,6 +81,9 @@ export function PostHogProvider({
           capture_pageleave: true,
           autocapture: true,
           opt_out_capturing_by_default: true,
+          // A secure mortgage link's token IS its URL (docs/mortgage SPEC §8):
+          // pageviews report the route, never the token.
+          before_send: redactSecureLinks,
           loaded: (ph) => {
             // Register before opting in, so the very first pageview of the
             // session already carries the locale.

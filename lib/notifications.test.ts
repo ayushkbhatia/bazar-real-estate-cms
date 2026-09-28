@@ -9,6 +9,7 @@ describe("NOTIFICATION_KIND_LABEL", () => {
       "mortgage_at_risk",
       "mortgage_breached",
       "mortgage_request",
+      "mortgage_reupload",
       "new_enquiry",
       "system",
     ]);

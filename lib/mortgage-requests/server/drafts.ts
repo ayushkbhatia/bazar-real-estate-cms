@@ -104,11 +104,11 @@ export function safeFileName(name: string): string {
 
 export async function createDraft(
   deps: DraftDeps,
-  input: { ip: string | null },
+  input: { ip: string | null; /** A secure link's draft lives as long as the link (Phase 5). */ expiresAt?: string },
 ): Promise<{ draftId: string; draftToken: string; expiresAt: string }> {
   const now = nowOf(deps);
   const token = newToken();
-  const expiresAt = new Date(now.getTime() + DRAFT_TTL_MS).toISOString();
+  const expiresAt = input.expiresAt ?? new Date(now.getTime() + DRAFT_TTL_MS).toISOString();
   const { data, error } = await deps.db
     .from("mortgage_upload_drafts")
     .insert({
@@ -142,7 +142,7 @@ export async function authoriseDraft(deps: DraftDeps, draftId: string, token: st
 }
 
 /** Files that count against a draft's limits: finished ones, and uploads still in time to arrive. */
-async function liveFiles(deps: DraftDeps, draftId: string): Promise<FileRow[]> {
+export async function liveFiles(deps: DraftDeps, draftId: string): Promise<FileRow[]> {
   const { data, error } = await deps.db
     .from("mortgage_files")
     .select(FILE_COLUMNS)
@@ -190,8 +190,28 @@ export async function presignFile(
   input: PresignInput,
 ): Promise<{ fileId: string; uploadUrl: string; headers: Record<string, string> }> {
   const draft = await authoriseDraft(deps, input.draftId, input.token);
+  return presignIntoDraft(deps, draft.id, input);
+}
 
-  if (!(DOC_KINDS as readonly string[]).includes(input.kind)) {
+/**
+ * What a draft upload must also respect beyond its own files: a secure
+ * link's (Phase 5) document kinds, and the files a document already holds —
+ * a re-upload that adds to statements counts the ones received.
+ */
+export type DraftScope = {
+  kinds?: readonly DocKind[];
+  existing?: readonly { sizeBytes: number }[];
+};
+
+/** Presign into a draft the caller has already authorised (the draft's token, or a secure link's session). */
+export async function presignIntoDraft(
+  deps: DraftDeps,
+  draftId: string,
+  input: Pick<PresignInput, "kind" | "name" | "size" | "mime" | "replaces">,
+  scope: DraftScope = {},
+): Promise<{ fileId: string; uploadUrl: string; headers: Record<string, string> }> {
+  const draft = { id: draftId };
+  if (!(DOC_KINDS as readonly string[]).includes(input.kind) || (scope.kinds && !scope.kinds.includes(input.kind as DocKind))) {
     throw new MortgageApiError(422, "invalid", "unknown document kind", {}, "kind");
   }
   const kind = input.kind as DocKind;
@@ -213,9 +233,10 @@ export async function presignFile(
       throw new MortgageApiError(422, "invalid", "replaces must name ready files of the same document", {}, "replaces");
     }
   }
-  const sameKind = live
-    .filter((f) => f.kind === kind && !replaces.includes(f.id))
-    .map((f) => ({ sizeBytes: Number(f.size_bytes) }));
+  const sameKind = [
+    ...live.filter((f) => f.kind === kind && !replaces.includes(f.id)).map((f) => ({ sizeBytes: Number(f.size_bytes) })),
+    ...(scope.existing ?? []),
+  ];
   const error = checkFile(kind, { sizeBytes: input.size, mime: declared ?? "" }, sameKind);
   if (error) throw ruleError(error);
 
@@ -357,6 +378,18 @@ export async function completeFile(
   input: { draftId: string; token: string | null; fileId: string },
 ): Promise<FileStatus> {
   const draft = await authoriseDraft(deps, input.draftId, input.token);
+  return completeInDraft(deps, draft.id, input.fileId);
+}
+
+/** Complete an upload in a draft the caller has already authorised. */
+export async function completeInDraft(
+  deps: DraftDeps,
+  draftId: string,
+  fileId: string,
+  scope: DraftScope = {},
+): Promise<FileStatus> {
+  const draft = { id: draftId };
+  const input = { fileId };
   const file = await fileInDraft(deps, draft.id, input.fileId);
   // A repeated complete answers with where the file stands.
   if (file.state !== "pending") return statusOf(file);
@@ -365,9 +398,12 @@ export async function completeFile(
   const bytes = await deps.storage.read(file.storage_key);
   if (!bytes) throw new MortgageApiError(409, "upload_missing");
 
-  const others = (await liveFiles(deps, draft.id))
-    .filter((f) => f.kind === file.kind && f.id !== file.id && !(file.replaces ?? []).includes(f.id))
-    .map((f) => ({ sizeBytes: Number(f.size_bytes) }));
+  const others = [
+    ...(await liveFiles(deps, draft.id))
+      .filter((f) => f.kind === file.kind && f.id !== file.id && !(file.replaces ?? []).includes(f.id))
+      .map((f) => ({ sizeBytes: Number(f.size_bytes) })),
+    ...(scope.existing ?? []),
+  ];
   const checked = await checkStoredBytes(file.kind, bytes, others);
   if (!checked.ok) {
     await discard(deps, file);
@@ -399,7 +435,11 @@ export async function fileStatus(
   input: { draftId: string; token: string | null; fileId: string },
 ): Promise<FileStatus> {
   const draft = await authoriseDraft(deps, input.draftId, input.token);
-  return statusOf(await fileInDraft(deps, draft.id, input.fileId));
+  return statusInDraft(deps, draft.id, input.fileId);
+}
+
+export async function statusInDraft(deps: DraftDeps, draftId: string, fileId: string): Promise<FileStatus> {
+  return statusOf(await fileInDraft(deps, draftId, fileId));
 }
 
 /** Cancel an upload or remove a file before submit. Idempotent. */
@@ -408,7 +448,11 @@ export async function deleteFile(
   input: { draftId: string; token: string | null; fileId: string },
 ): Promise<void> {
   const draft = await authoriseDraft(deps, input.draftId, input.token);
-  const file = await fileInDraft(deps, draft.id, input.fileId);
+  await deleteInDraft(deps, draft.id, input.fileId);
+}
+
+export async function deleteInDraft(deps: DraftDeps, draftId: string, fileId: string): Promise<void> {
+  const file = await fileInDraft(deps, draftId, fileId);
   if (file.state !== "removed") await discard(deps, file);
 }
 

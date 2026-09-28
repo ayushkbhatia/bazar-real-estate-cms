@@ -342,6 +342,8 @@ export type DocumentView = {
   state: "to_review" | "accepted" | "reupload_requested";
   acceptedBy: string | null;
   files: FileView[];
+  /** The open re-upload request, while the applicant hasn't sent it. */
+  reupload: { id: string; reason: string; requestedAt: string } | null;
 };
 
 export type ConsultationView = {
@@ -450,7 +452,7 @@ export async function getRequestFile(
   if (!found) return null;
   const r = found as RequestDbRow;
 
-  const [documents, consent, events, contacts, consultations, team] = await Promise.all([
+  const [documents, consent, events, contacts, consultations, team, reuploads] = await Promise.all([
     r.service === "pre_approval"
       ? db
           .from("mortgage_documents")
@@ -484,8 +486,16 @@ export async function getRequestFile(
       .eq("request_id", r.id)
       .order("starts_at", { ascending: false }),
     loadTeam(db),
+    r.service === "pre_approval"
+      ? db
+          .from("mortgage_reupload_requests")
+          .select("id, document_id, reason, requested_at")
+          .eq("request_id", r.id)
+          .is("fulfilled_at", null)
+          .is("cancelled_at", null)
+      : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const res of [documents, consent, events, contacts, consultations]) {
+  for (const res of [documents, consent, events, contacts, consultations, reuploads]) {
     if (res.error) throw new Error(`request file read failed: ${res.error.message}`);
   }
 
@@ -562,6 +572,12 @@ export async function getRequestFile(
           image: f.mime !== "application/pdf",
           scanning: f.scan_status !== "clean",
         })),
+      reupload: (() => {
+        const open = ((reuploads.data ?? []) as { id: string; document_id: string; reason: string; requested_at: string }[]).find(
+          (u) => u.document_id === d.id,
+        );
+        return open ? { id: open.id, reason: open.reason, requestedAt: open.requested_at } : null;
+      })(),
     }));
 
   type ConsentDb = { given_at: string; ip: string | null; user_agent: string | null; wording_version: string; withdrawn_at: string | null };

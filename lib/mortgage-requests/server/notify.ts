@@ -7,11 +7,13 @@ import {
   mortgageTeamAtRiskEmail,
   mortgageTeamBreachedEmail,
   mortgageTeamNewRequestEmail,
+  mortgageTeamReuploadReceivedEmail,
 } from "@/lib/content-assets/system-emails";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import { sendEmail, type SendEmailInput, type SendEmailResult } from "@/lib/email";
 import { emailSiteUrl } from "@/lib/email-templates";
 import { reportError } from "@/lib/observability";
+import { DOC_LABEL_KEY } from "../activity";
 import { cmsT } from "../cms-strings";
 import { DOCUMENT_SETS, type DocKind, type EmploymentType } from "../documents";
 import { formatDayTime } from "../format";
@@ -121,6 +123,7 @@ async function deliver(deps: NotifyDeps, row: Claimed): Promise<Outcome> {
     case "team_new_request":
     case "team_at_risk":
     case "team_breached":
+    case "team_reupload_received":
       return deliverTeamAlert(deps, row);
     case "consultation_booked": {
       if (row.channel !== "email") return { status: "skipped", reason: `no ${row.channel} for ${row.kind}` };
@@ -166,6 +169,7 @@ const BELL_KIND = {
   team_new_request: "mortgage_request",
   team_at_risk: "mortgage_at_risk",
   team_breached: "mortgage_breached",
+  team_reupload_received: "mortgage_reupload",
 } as const;
 
 async function defaultStaffEmail(db: SupabaseClient, userId: string): Promise<string | null> {
@@ -191,7 +195,28 @@ async function deliverTeamAlert(deps: NotifyDeps, row: Claimed): Promise<Outcome
   let email: () => Promise<RenderedEmail>;
   const alert = { reference: r.reference, service: r.service, link: `${emailSiteUrl()}${path}` };
 
-  if (row.kind === "team_new_request") {
+  if (row.kind === "team_reupload_received") {
+    // `dedupe` is the re-upload request: which document, and what came back.
+    const { data: reupload } = await deps.db
+      .from("mortgage_reupload_requests")
+      .select("document_id, mortgage_documents(kind)")
+      .eq("id", row.dedupe)
+      .maybeSingle();
+    const upload = reupload as { document_id: string; mortgage_documents: { kind: DocKind } | null } | null;
+    if (!upload?.mortgage_documents) return { status: "skipped", reason: "re-upload not found" };
+    const { data: files } = await deps.db
+      .from("mortgage_files")
+      .select("upload_round")
+      .eq("document_id", upload.document_id)
+      .eq("state", "active");
+    const rounds = ((files ?? []) as { upload_round: number }[]).map((f) => f.upload_round);
+    const latest = Math.max(0, ...rounds);
+    const documentName = (cmsT as unknown as (key: string) => string)(DOC_LABEL_KEY[upload.mortgage_documents.kind]);
+    title = cmsT("notify.reupload", { reference: r.reference });
+    body = cmsT("notify.reuploadBody", { document: documentName });
+    email = () =>
+      mortgageTeamReuploadReceivedEmail({ ...alert, documentName, files: rounds.filter((n) => n === latest).length });
+  } else if (row.kind === "team_new_request") {
     title = cmsT("notify.newRequest", {
       service: r.service === "pre_approval" ? cmsT("service.preApproval") : cmsT("service.consultancy"),
       reference: r.reference,

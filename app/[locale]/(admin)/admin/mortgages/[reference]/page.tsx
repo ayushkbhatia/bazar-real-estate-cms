@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, Eye, Send } from "lucide-react";
+import { Check, Eye } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
-import { DOC_LABEL_KEY } from "@/lib/mortgage-requests/activity";
+import { DOC_LABEL_KEY, REASON_KEY } from "@/lib/mortgage-requests/activity";
 import { formatWeekdayDate, formatWhen } from "@/lib/mortgage-requests/cms-format";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
@@ -21,9 +21,11 @@ import {
 import { loadMortgageSettings, type LoadedSettings } from "@/lib/mortgage-requests/server/settings";
 import { cn } from "@/lib/utils";
 import {
+  AcceptApplicationButton,
   ActivityCard,
   BookingCard,
   BookScrollButton,
+  CancelReuploadButton,
   ClaimButton,
   ContactAttemptBar,
   ContactButtons,
@@ -32,6 +34,7 @@ import {
   HeldButton,
   InviteButton,
   ReassignDialog,
+  RequestDocumentsButton,
   type BookingDay,
   type Target,
 } from "../_components/file-actions";
@@ -71,9 +74,6 @@ const DOC_STATE = {
   reupload_requested: { key: "docState.reuploadRequested", tone: "danger", tile: "error" },
 } as const;
 
-/** The logged file route (Phase 2): every open writes an event before a byte is sent. */
-const fileHref = (id: string) => `/api/admin/mortgages/files/${id}`;
-
 export async function generateMetadata({ params }: { params: Promise<{ reference: string }> }) {
   if (!(await getMortgageRole())) return {};
   const { reference } = await params;
@@ -106,7 +106,7 @@ export default async function MortgageRequestPage({ params }: { params: Promise<
     const booking = await bookingData(supabase, file, loaded, now);
     return <Consultancy file={file} target={target} breadcrumbs={breadcrumbs} booking={booking} now={now} />;
   }
-  return <PreApproval file={file} target={target} breadcrumbs={breadcrumbs} />;
+  return <PreApproval file={file} target={target} breadcrumbs={breadcrumbs} now={now} />;
 }
 
 // ── C2 ───────────────────────────────────────────────────────────
@@ -123,37 +123,44 @@ const PRE_AT: Partial<Record<RequestFile["status"], number>> = {
   declined: 3,
 };
 
-function PreApproval({ file, target, breadcrumbs }: { file: RequestFile; target: Target; breadcrumbs: React.ReactNode }) {
+function PreApproval({
+  file,
+  target,
+  breadcrumbs,
+  now,
+}: {
+  file: RequestFile;
+  target: Target;
+  breadcrumbs: React.ReactNode;
+  now: Date;
+}) {
   const accepted = file.documents.filter((d) => d.state === "accepted").length;
   const total = file.documents.length;
-  const firstToReview = file.documents.find((d) => d.state !== "accepted")?.id;
+  const firstToReview = file.documents.find((d) => d.state === "to_review")?.id;
+  const viewer = (kind: string) => `/admin/mortgages/${file.reference}/documents/${kind}`;
   const stages = PRE_STAGES.map((k, i) => (i === 3 && file.status === "declined" ? t("status.declined") : t(k)));
-  const acceptTitle = accepted < total ? t("c2.docs.accepted", { accepted, total }) : t("common.soonBanks");
+  const acceptTitle = accepted < total ? t("c2.docs.accepted", { accepted, total }) : t("common.notOwner");
 
   return (
     <CmsShell
       title={file.fullName}
       breadcrumbs={breadcrumbs}
       secondary={
-        // Disabled buttons take no pointer events, so the reason sits on a wrapper.
-        <span title={t("common.soonViewer")} className="cursor-not-allowed">
-          <Button variant="outline" className="text-[13px]" disabled>
-            <Send strokeWidth={1.6} />
-            {t("c2.action.requestDocuments")}
-          </Button>
-        </span>
+        <RequestDocumentsButton
+          reference={file.reference}
+          canAct={file.can.act && (file.status === "new" || file.status === "in_review" || file.status === "awaiting_applicant")}
+          documents={file.documents.map((d) => ({
+            kind: d.kind,
+            name: t(DOC_LABEL_KEY[d.kind]),
+            requestable: d.state === "to_review",
+          }))}
+        />
       }
       primary={
-        // Enabled at 4 of 4 with consent on file, once bank sending exists (Phase 6).
-        <span title={acceptTitle} className="cursor-not-allowed">
-          <Button className="pointer-events-none text-[13px] opacity-40" disabled aria-describedby="accept-why">
-            <Check strokeWidth={2} />
-            {t("c2.action.acceptApplication")}
-          </Button>
-          <span id="accept-why" className="sr-only">
-            {acceptTitle}
-          </span>
-        </span>
+        <AcceptApplicationButton
+          enabled={file.can.act && file.status === "in_review" && accepted === total && total > 0 && !!file.consent && !file.consent.withdrawn}
+          why={acceptTitle}
+        />
       }
     >
       <FileRefresher />
@@ -188,7 +195,6 @@ function PreApproval({ file, target, breadcrumbs }: { file: RequestFile; target:
             <ul>
               {file.documents.map((d) => {
                 const state = DOC_STATE[d.state];
-                const firstFile = d.files.find((f) => !f.scanning);
                 const name = t(DOC_LABEL_KEY[d.kind]);
                 return (
                   <li
@@ -215,6 +221,23 @@ function PreApproval({ file, target, breadcrumbs }: { file: RequestFile; target:
                           </>
                         ) : null}
                       </p>
+                      {d.reupload ? (
+                        <p className="mt-1.5 flex flex-wrap items-center gap-2 text-[12px] text-bz-ink-2">
+                          {t("c2.reupload.sent", {
+                            when: formatWhen(d.reupload.requestedAt, now),
+                            reason: t(REASON_KEY[d.reupload.reason] ?? "c4.reason.other"),
+                          })}
+                          {file.can.act ? (
+                            <CancelReuploadButton
+                              target={target}
+                              reuploadId={d.reupload.id}
+                              kind={d.kind}
+                              firstName={file.firstName}
+                              documentName={name}
+                            />
+                          ) : null}
+                        </p>
+                      ) : null}
                       <div className="mt-3 flex flex-wrap gap-2">
                         {d.files.map((f) =>
                           f.scanning ? (
@@ -222,27 +245,27 @@ function PreApproval({ file, target, breadcrumbs }: { file: RequestFile; target:
                               <FileTagBody name={f.name} meta={t("c2.docs.scanning")} image={f.image} />
                             </span>
                           ) : (
-                            <a key={f.id} href={fileHref(f.id)} target="_blank" rel="noopener" className={cn(FILE_TAG, "hover:border-bz-border-strong")}>
+                            <Link key={f.id} href={`${viewer(d.kind)}?file=${f.id}`} prefetch={false} className={cn(FILE_TAG, "hover:border-bz-border-strong")}>
                               <FileTagBody name={f.name} meta={f.meta} image={f.image} />
-                            </a>
+                            </Link>
                           ),
                         )}
                       </div>
                     </div>
                     <div className="flex gap-1.5">
-                      {firstFile ? (
+                      {d.files.length ? (
                         d.state === "accepted" ? (
                           <Button asChild variant="ghost" className="text-[13px]">
-                            <a href={fileHref(firstFile.id)} target="_blank" rel="noopener" aria-label={`${t("c2.docs.open")} ${name}`}>
+                            <Link href={viewer(d.kind)} prefetch={false} aria-label={`${t("c2.docs.open")} ${name}`}>
                               <Eye strokeWidth={1.6} />
                               {t("c2.docs.open")}
-                            </a>
+                            </Link>
                           </Button>
                         ) : (
                           <Button asChild variant={d.id === firstToReview ? "default" : "outline"} className="text-[13px]">
-                            <a href={fileHref(firstFile.id)} target="_blank" rel="noopener" aria-label={`${t("c2.docs.review")} ${name}`}>
+                            <Link href={viewer(d.kind)} prefetch={false} aria-label={`${t("c2.docs.review")} ${name}`}>
                               {t("c2.docs.review")}
-                            </a>
+                            </Link>
                           </Button>
                         )
                       ) : null}

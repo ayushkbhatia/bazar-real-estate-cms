@@ -102,7 +102,7 @@ async function existing(db: SupabaseClient, key: string): Promise<RequestRow | n
 }
 
 /** The database's refusals, as the API's errors. */
-function fromDatabase(error: { code?: string; message: string }): MortgageApiError | null {
+export function fromDatabase(error: { code?: string; message: string }): MortgageApiError | null {
   if (error.code === "MR422") {
     if (error.message.includes("files_not_ready")) return new MortgageApiError(409, "files_not_ready");
     if (error.message.includes("documents_incomplete")) return new MortgageApiError(422, "documents_incomplete");
@@ -189,7 +189,7 @@ export async function submitRequest(
  * retired before the attach, rather than attached unseen or left pending to
  * block the submit with files_not_ready.
  */
-async function retireUnlisted(deps: SubmitDeps, draftId: string, fileIds: readonly string[]): Promise<void> {
+export async function retireUnlisted(deps: SubmitDeps, draftId: string, fileIds: readonly string[]): Promise<void> {
   const { data, error } = await deps.db
     .from("mortgage_files")
     .select(FILE_COLUMNS)
@@ -206,7 +206,7 @@ async function retireUnlisted(deps: SubmitDeps, draftId: string, fileIds: readon
  * stay, marked removed. Best effort: an object left behind is unreachable
  * (nothing references it) and costs storage, not privacy.
  */
-async function removeOrphans(deps: SubmitDeps, draftId: string): Promise<void> {
+export async function removeOrphans(deps: SubmitDeps, draftId: string): Promise<void> {
   try {
     const { data } = await deps.db
       .from("mortgage_files")

@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { MB } from "../documents";
-import { buildPdf, jpegBytes, pngBytes } from "../testing/fixtures";
+import { buildPdf, cardPng, jpegBytes, pngBytes } from "../testing/fixtures";
 import { inspectPdf, sha256Hex, sniffMime, verifyUpload } from "./verify";
 
 describe("sniffing the real type", () => {
@@ -30,6 +30,12 @@ describe("sniffing the real type", () => {
 describe("inspecting PDFs", () => {
   it("counts pages", async () => {
     expect(await inspectPdf(buildPdf({ pages: 3 }))).toEqual({ ok: true, pageCount: 3 });
+  });
+
+  it("opens the local seed's labelled placeholders, text and all", async () => {
+    const labelled = buildPdf({ pages: 2, lines: (page, pages) => ["Salary certificate", "(copy) \\ test", `Page ${page} of ${pages}`] });
+    expect(await inspectPdf(labelled)).toEqual({ ok: true, pageCount: 2 });
+    expect(sniffMime(cardPng())).toBe("image/png");
   });
 
   it("refuses a PDF that needs a password to open, as UAE e-statements often do", async () => {

@@ -48,6 +48,22 @@ function restored(files: ApplyState["files"], kinds: readonly DocKind[]): Upload
   );
 }
 
+type PickMode = "add" | "replace" | "choose_another";
+
+function pickInto(q: UploadQueue, kind: DocKind, files: File[], mode: PickMode) {
+  if (mode === "choose_another") {
+    const failed = q.items().filter((i) => i.kind === kind && i.stage === "error");
+    for (const f of failed) void q.remove(f.localId);
+    // Once the failed line is gone the row is as before: a full
+    // single-file document (or both ID sides) replaces, anything else adds.
+    const max = DOCUMENT_RULES[kind].maxFiles;
+    const ready = q.items().filter((i) => i.kind === kind && i.stage === "ready" && !i.replacedBy);
+    q.add(kind, files, { replace: max <= 2 && ready.length >= max });
+    return;
+  }
+  q.add(kind, files, { replace: mode === "replace" });
+}
+
 /**
  * The documents step's uploads: its draft (made on arrival, restored after a
  * reload, replaced when it expires), the queue that moves the files, and what
@@ -60,6 +76,9 @@ export function useDocuments(state: ApplyState | null, update: Update, kinds: re
   const [items, setItems] = useState<readonly UploadItem[]>([]);
   const [announcement, setAnnouncement] = useState<{ type: QueueEvent["type"]; item?: UploadItem } | null>(null);
   const queue = useRef<UploadQueue | null>(null);
+  // Files picked while the draft is still being made: they go in once it is,
+  // rather than being dropped (a quick picker, or a slow network).
+  const waiting = useRef<{ kind: DocKind; files: File[]; mode: PickMode }[]>([]);
   const draftRef = useRef<DraftHandle | null>(null);
   const starting = useRef(false);
   const kindsKey = kinds.join(",");
@@ -154,6 +173,7 @@ export function useDocuments(state: ApplyState | null, update: Update, kinds: re
       });
       made = q;
       queue.current = q;
+      for (const p of waiting.current.splice(0)) pickInto(q, p.kind, p.files, p.mode);
       setItems(q.items());
       setBuilt({ draftId: draft.draftId });
     })();
@@ -195,20 +215,10 @@ export function useDocuments(state: ApplyState | null, update: Update, kinds: re
 
   const actions = useMemo(
     () => ({
-      pick(kind: DocKind, files: File[], mode: "add" | "replace" | "choose_another") {
+      pick(kind: DocKind, files: File[], mode: PickMode) {
         const q = queue.current;
-        if (!q) return;
-        if (mode === "choose_another") {
-          const failed = q.items().filter((i) => i.kind === kind && i.stage === "error");
-          for (const f of failed) void q.remove(f.localId);
-          // Once the failed line is gone the row is as before: a full
-          // single-file document (or both ID sides) replaces, anything else adds.
-          const max = DOCUMENT_RULES[kind].maxFiles;
-          const ready = q.items().filter((i) => i.kind === kind && i.stage === "ready" && !i.replacedBy);
-          q.add(kind, files, { replace: max <= 2 && ready.length >= max });
-          return;
-        }
-        q.add(kind, files, { replace: mode === "replace" });
+        if (q) pickInto(q, kind, files, mode);
+        else waiting.current.push({ kind, files, mode });
       },
       cancel: (localId: string) => queue.current?.cancel(localId),
       remove: (localId: string) => void queue.current?.remove(localId),

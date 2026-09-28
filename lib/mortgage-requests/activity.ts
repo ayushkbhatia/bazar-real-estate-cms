@@ -91,7 +91,19 @@ const QUIET_TRANSITIONS = new Set([
   "contact_logged",
   "consultation_booked",
   "consultation_held",
+  "reupload_requested",
+  "reupload_fulfilled",
+  "reupload_cancelled",
 ]);
+
+export const REASON_KEY: Record<string, string> = {
+  unreadable: "c4.reason.unreadable",
+  wrong_document: "c4.reason.wrongDocument",
+  expired: "c4.reason.expired",
+  period_incomplete: "c4.reason.periodIncomplete",
+  pages_missing: "c4.reason.pagesMissing",
+  other: "c4.reason.other",
+};
 
 // The copy deck's keys are typed by next-intl; these lookups are by computed key.
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
@@ -126,6 +138,8 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       if (e.data.via === "reassign") {
         return { ...base, text: t("activity.reassigned.title", { owner }), sub: t("activity.reassigned.sub", { actor }) };
       }
+      // An invite's application stays with the adviser who sent the link (0145).
+      if (e.data.via === "invite") return { ...base, text: t("activity.assigned.title", { owner }), sub: t("activity.assigned.invite") };
       return { ...base, text: t("activity.assigned.title", { owner }), sub: t("activity.assigned.roundRobin") };
     }
     case "document.viewed":
@@ -156,6 +170,32 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
     }
     case "applicant.edited":
       return { ...base, text: t("activity.edited", { actor }) };
+    case "reupload.requested":
+      return {
+        ...base,
+        text: t("activity.reuploadRequested", { actor, document: docLabel(e.data.kind) }),
+        sub: typeof e.data.reason === "string" ? t(REASON_KEY[e.data.reason] ?? "c4.reason.other") : undefined,
+        tone: "danger",
+      };
+    case "reupload.cancelled":
+      return { ...base, text: t("activity.reuploadCancelled", { actor, document: docLabel(e.data.kind) }) };
+    case "reupload.fulfilled":
+      return {
+        ...base,
+        text: t("activity.reuploadReceived", { firstName: firstNameOf(ctx.applicantName), document: docLabel(e.data.kind) }),
+        strong: true,
+        sub: typeof e.data.files === "number" ? t("activity.reuploadFiles", { count: e.data.files }) : undefined,
+        tone: "accent",
+      };
+    case "link.locked":
+      return { ...base, text: t("activity.linkLocked"), tone: "danger" };
+    case "invite.used":
+      return {
+        ...base,
+        text: t("activity.inviteUsed", { firstName: firstNameOf(ctx.applicantName) }),
+        sub: str(e.data.reference) ?? undefined,
+        tone: "accent",
+      };
     case "sla.at_risk":
       return { ...base, text: t("activity.atRisk"), tone: "danger" };
     case "sla.breached":

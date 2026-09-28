@@ -86,6 +86,9 @@ export type TokenName =
   | "mortgage_adviser"
   | "mortgage_secure_url"
   | "mortgage_link_expires"
+  | "mortgage_document"
+  | "mortgage_files"
+  | "mortgage_code_expires_in"
   // Block tokens: a whole pre-built panel, not a word. See `kind`.
   | "valuation_range_panel"
   | "valuation_report_panel"
@@ -94,7 +97,8 @@ export type TokenName =
   | "health_jobs"
   | "health_url"
   | "form_answers"
-  | "mortgage_documents";
+  | "mortgage_documents"
+  | "mortgage_adviser_message";
 
 /**
  * `shared` tokens describe a lead and are offered in every asset. `system`
@@ -651,6 +655,41 @@ export const TOKENS: readonly TokenDef[] = [
     scope: "system",
     kind: "text",
   },
+  // Reviewing the documents (0146): the re-upload request, the code that
+  // opens a secure link, and the team's notice that the document is back.
+  // The document's name is data — the send path passes it in the language
+  // it sends in — while the counts are the code's own words, written in the
+  // language being drawn.
+  {
+    name: "mortgage_document",
+    label: "Document asked for (Last 1 year's bank statements)",
+    sample: "Last 1 year's bank statements",
+    sampleAr: "كشوف الحساب البنكية لآخر سنة",
+    fallbackAr: "المستند المطلوب",
+    fallback: "the requested document",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_files",
+    label: "How many files the applicant sent (1 file, 3 files)",
+    sample: "1 file",
+    sampleAr: "ملف واحد",
+    fallbackAr: "ملفات جديدة",
+    fallback: "new files",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_code_expires_in",
+    label: "How long the code works (10 minutes)",
+    sample: "10 minutes",
+    sampleAr: "10 دقائق",
+    fallbackAr: "دقائق قليلة",
+    fallback: "a few minutes",
+    scope: "system",
+    kind: "text",
+  },
   {
     name: "valuation_range_panel",
     label: "Instant range panel",
@@ -720,6 +759,18 @@ export const TOKENS: readonly TokenDef[] = [
     label: "Documents received panel",
     sample: "· Emirates ID — 2 files\n· Passport copy — 1 file",
     sampleAr: "· الهوية الإماراتية — ملفان\n· نسخة جواز السفر — ملف واحد",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    // A panel so that every line of it is quoted, in both halves of the
+    // email. The adviser's own words: escaped, never links or formatting,
+    // and not translated — the Arabic preview quotes the same message.
+    name: "mortgage_adviser_message",
+    label: "The adviser's message, quoted",
+    sample:
+      "> Your statements cover September 2025 to May 2026.\n> For a full year, please add June, July and August 2026.",
     fallback: "",
     scope: "system",
     kind: "block",

@@ -2,12 +2,12 @@
  * System emails — every email the site sends on its own, and which of them
  * the client can rewrite.
  *
- * Twenty-four emails fire without an advisor writing them: acknowledgements,
+ * Twenty-seven emails fire without an advisor writing them: acknowledgements,
  * confirmations, one-time codes, nurture follow-ups, and the notices the team
  * itself receives. Each has a built-in version in lib/email-templates.ts (or
  * lib/newsletter-templates.ts) and a row in `content_assets` carrying the
- * matching `system_key` (migrations 0117 and 0127; 0135, 0142 and 0144 added
- * more).
+ * matching `system_key` (migrations 0117 and 0127; 0135, 0142, 0144 and 0146
+ * added more).
  *
  * THE RULE, in one line: a PUBLISHED system row replaces the built-in email;
  * anything else — draft, missing, unreadable — and the built-in one sends.
@@ -32,6 +32,8 @@ export const SYSTEM_ASSET_KEYS = [
   "mortgage_preapproval_received",
   "mortgage_consultation_booked",
   "mortgage_preapproval_invite",
+  "mortgage_reupload_request",
+  "mortgage_code",
   "valuation_request_ack",
   "valuation_code",
   "valuation_report_requested",
@@ -46,6 +48,7 @@ export const SYSTEM_ASSET_KEYS = [
   "mortgage_team_new_request",
   "mortgage_team_at_risk",
   "mortgage_team_breached",
+  "mortgage_team_reupload_received",
   "permit_expiry_warning",
   "bulk_reassign_digest",
   "health_digest",
@@ -208,6 +211,49 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "site_url",
     ],
     required: ["mortgage_secure_url"],
+  },
+  // Reviewing the documents (0146). The re-upload request quotes the
+  // adviser's own message as a panel; the code email carries a code that
+  // opens a secure link, so the code stays out of its subject line.
+  mortgage_reupload_request: {
+    key: "mortgage_reupload_request",
+    slug: "system-mortgage-reupload-request",
+    label: "Re-upload request",
+    audience: "client",
+    trigger:
+      "Sent to a Fast Pre-Approval applicant when an adviser asks them to replace or add to one document: which document, the adviser's message, and a secure link to upload it that asks for a code first. The application is on hold until it arrives; documents already accepted stay accepted. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant asked for the document",
+    builtIn: "lib/email-templates.ts · mortgageReuploadRequestTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_document",
+      "mortgage_adviser_message",
+      "mortgage_secure_url",
+      "mortgage_link_expires",
+      "site_url",
+    ],
+    required: ["mortgage_secure_url"],
+  },
+  mortgage_code: {
+    key: "mortgage_code",
+    slug: "system-mortgage-code",
+    label: "Secure link code",
+    audience: "client",
+    trigger:
+      "Sent when an applicant opening a secure link — a re-upload request or a Fast Pre-Approval invitation — asks for the one-time code that unlocks it, valid for 10 minutes. Codes go by email until WhatsApp is connected (D5). The code is never in the subject line, which a phone shows on its lock screen. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant opening a secure link",
+    builtIn: "lib/email-templates.ts · mortgageCodeTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "verification_code",
+      "mortgage_code_expires_in",
+      "site_url",
+    ],
+    required: ["verification_code"],
   },
   valuation_request_ack: {
     key: "valuation_request_ack",
@@ -393,10 +439,11 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
     ],
     required: [],
   },
-  // The mortgage team's three alerts. Deliberately scoped to nothing about
+  // The mortgage team's four alerts. Deliberately scoped to nothing about
   // the applicant — no name, mobile, email or date of birth — because an
   // email passes through a provider and sits in an inbox: the reference, the
-  // service, the clock and the link, and the team reads the rest in the CMS.
+  // service, the clock or the document, and the link, and the team reads the
+  // rest in the CMS.
   mortgage_team_new_request: {
     key: "mortgage_team_new_request",
     slug: "system-mortgage-team-new-request",
@@ -448,6 +495,25 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "mortgage_reference",
       "mortgage_service",
       "mortgage_due",
+      "mortgage_request_url",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_request_url"],
+  },
+  mortgage_team_reupload_received: {
+    key: "mortgage_team_reupload_received",
+    slug: "system-mortgage-team-reupload-received",
+    label: "Re-upload received",
+    audience: "team",
+    trigger:
+      "Sent to the request's owner and the Head of mortgages when a Fast Pre-Approval applicant sends the document they were asked for: which document and how many files. The request is back in review and its promise clock has resumed. Nothing about the applicant. Wording is a provisional draft pending design (D29).",
+    recipient: "The request's owner and the Head of mortgages",
+    builtIn: "lib/email-templates.ts · mortgageTeamReuploadReceivedTemplate",
+    tokens: [
+      "mortgage_reference",
+      "mortgage_service",
+      "mortgage_document",
+      "mortgage_files",
       "mortgage_request_url",
       "site_url",
     ],

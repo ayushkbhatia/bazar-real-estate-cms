@@ -58,4 +58,18 @@ export const PENDING_COPY: readonly PendingCopy[] = [
   { key: "residency.uaeNational.sub", gap: "D23", note: "\"Up to 85% LTV\" with the figure from mortgage_settings" },
   { key: "residency.expat.sub", gap: "D23", note: "\"Up to 80% LTV\" with the figure from mortgage_settings" },
   { key: "docs.note.attention", gap: "i18n", note: "Split from docs.note.progress: the catalogue forbids a plural inside a sentence" },
+  // W8 and the invite landing (Phase 5): only W8's verified state is designed.
+  { key: "w8.code.*", gap: "FE-2", note: "Enter-code state; the code goes by email until WhatsApp (D1, D5)" },
+  { key: "w8.state.*", gap: "FE-2", note: "Invalid, expired, locked and already-used links" },
+  { key: "w8.sent.*", gap: "FE-2", note: "After Send documents" },
+  { key: "w8.submit.*", gap: "FE-2", note: "Send failed, or the link stopped working meanwhile" },
+  { key: "w8.invite.*", gap: "FE-2", note: "The invite landing isn't designed; it reuses W5/W6" },
+  { key: "w8.ledeCount", gap: "W8 edge case", note: "The lede when the other documents aren't all accepted" },
+  { key: "w8.reason.*", gap: "W8 other kinds", note: "The flagged card's pill for reasons other than missing months" },
+  { key: "w8.drop.replace", gap: "W8 other kinds", note: "Dropzone instruction when the new files replace the old" },
+  { key: "w8.drop.add", gap: "W8 other kinds", note: "Dropzone instruction when adding to a document that isn't statements" },
+  { key: "w8.replaceNote", gap: "W8 other kinds", note: "Footnote when the new files replace the old" },
+  { key: "w8.next.checkOther", gap: "W8 other kinds", note: "Rail's first step for documents that aren't statements" },
+  { key: "w8.secure", gap: "D5 / D1", note: "Names where the code went: a masked email until WhatsApp is connected" },
+  { key: "w8.questions.body", gap: "D27 / FE-12", note: "Phone number from the design" },
 ];

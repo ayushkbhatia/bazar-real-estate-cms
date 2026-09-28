@@ -3,23 +3,31 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { z } from "zod";
-import { getCurrentStaffRow, getCurrentUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { mortgagePreapprovalInviteEmail } from "@/lib/content-assets/system-emails";
-import { sendEmail } from "@/lib/email";
 import { emailSiteUrl } from "@/lib/email-templates";
 import { reportError } from "@/lib/observability";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { detailsSchema, RESIDENCIES, toE164 } from "@/lib/mortgage-requests/details";
 import { dubaiDateKey, dubaiDayStart, dubaiWeekday } from "@/lib/mortgage-requests/dubai-time";
 import { DEFAULT_QUEUE_PARAMS, parseQueueParams, type QueueParams } from "@/lib/mortgage-requests/queue";
 import { slotsForDay, windowsFromAdviserHours, windowsFromSetting } from "@/lib/mortgage-requests/slots";
-import { getMortgageRole } from "@/lib/mortgage-requests/server/cms-auth";
+import {
+  FAILED,
+  INVALID,
+  NOT_ALLOWED,
+  refreshMortgagePaths as refresh,
+  refused,
+  sendLinkEmail,
+  targetSchema as target,
+  teamSession as team,
+  type MortgageActionResult,
+  type Target,
+} from "@/lib/mortgage-requests/server/cms-kit";
 import { listQueue, loadAdviserCalendar, type QueueResult } from "@/lib/mortgage-requests/server/cms-queries";
-import { deliverNotifications, MAX_ATTEMPTS, scrubReason } from "@/lib/mortgage-requests/server/notify";
+import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
 import { loadMortgageSettings } from "@/lib/mortgage-requests/server/settings";
 import { hashToken, newToken } from "@/lib/mortgage-requests/server/tokens";
 
@@ -34,60 +42,9 @@ import { hashToken, newToken } from "@/lib/mortgage-requests/server/tokens";
  * as a result, never a thrown error, and carry no personal data.
  */
 
-export type MortgageActionResult =
-  | { ok: true; message?: string }
-  | {
-      ok: false;
-      code: "not_allowed" | "not_found" | "conflict" | "slot_taken" | "invalid" | "failed";
-      message: string;
-      /** For the edit form: the fields to highlight. */
-      fields?: string[];
-    };
+export type { MortgageActionResult } from "@/lib/mortgage-requests/server/cms-kit";
 
 const UUID = z.string().uuid();
-const STAMP = z.string().min(10).max(40);
-
-const NOT_ALLOWED: MortgageActionResult = { ok: false, code: "not_allowed", message: cmsT("common.notOwner") };
-const INVALID: MortgageActionResult = { ok: false, code: "invalid", message: cmsT("common.failed") };
-
-/** The caller, when they are active staff on the mortgage team; null otherwise. */
-async function team() {
-  const user = await getCurrentUser();
-  if (!user) return null;
-  const [staff, role] = await Promise.all([getCurrentStaffRow(), getMortgageRole()]);
-  if (!staff || staff.status !== "active" || !role) return null;
-  return { user, staff, role, supabase: await createSupabaseServerClient() };
-}
-
-/** A database refusal as the page shows it. SQLSTATEs from 0139/0143. */
-function refused(error: { code?: string; message: string }, source: string): MortgageActionResult {
-  switch (error.code) {
-    case "MR403":
-      return NOT_ALLOWED;
-    case "MR404":
-      return { ok: false, code: "not_found", message: cmsT("common.notFound") };
-    case "MR409":
-      return error.message.includes("slot_taken")
-        ? { ok: false, code: "slot_taken", message: cmsT("c6.book.taken") }
-        : { ok: false, code: "conflict", message: cmsT("common.conflict") };
-    case "MR422":
-      return error.message.includes("slot has passed")
-        ? { ok: false, code: "invalid", message: cmsT("c6.book.passed") }
-        : INVALID;
-    default:
-      // The code only: the message can quote a value.
-      void reportError(new Error(`mortgage action failed (${error.code ?? "unknown"})`), { source });
-      return { ok: false, code: "failed", message: cmsT("common.failed") };
-  }
-}
-
-function refresh(reference?: string) {
-  revalidatePath("/admin/mortgages");
-  if (reference) revalidatePath(`/admin/mortgages/${reference}`);
-}
-
-const target = z.object({ requestId: UUID, reference: z.string().regex(/^BZM-\d{2}-\d{4,}$/), updatedAt: STAMP });
-type Target = z.infer<typeof target>;
 
 // ── C1 · the queue ───────────────────────────────────────────────
 
@@ -306,7 +263,7 @@ export async function sendPreapprovalInvite(input: Target): Promise<MortgageActi
   const s = await team();
   if (!s) return NOT_ALLOWED;
   const admin = createAdminClient();
-  if (!admin) return { ok: false, code: "failed", message: cmsT("common.failed") };
+  if (!admin) return FAILED;
 
   const { settings } = await loadMortgageSettings(s.supabase);
   const token = newToken();
@@ -320,79 +277,33 @@ export async function sendPreapprovalInvite(input: Target): Promise<MortgageActi
   if (error) return refused(error, "mortgage.cms.invite");
   const linkId = (link as { id: string }).id;
 
-  let status: "sent" | "skipped" | "failed" = "failed";
-  let providerId: string | null = null;
-  let reason: string | null = null;
-  try {
-    const { data: r, error: readError } = await admin
-      .from("mortgage_requests")
-      .select("reference, full_name, email, locale")
-      .eq("id", parsed.data.requestId)
-      .single();
-    if (readError) throw new Error(`request read failed: ${readError.code}`);
-    const request = r as { reference: string; full_name: string; email: string; locale: string };
-    const rendered = await mortgagePreapprovalInviteEmail(
-      {
-        name: request.full_name,
-        reference: request.reference,
-        adviserName: s.staff.display_name,
-        link: `${emailSiteUrl()}/mortgages/r/${token}`,
-        expiresAt,
-      },
-      request.locale === "ar" ? "ar" : "en",
-    );
-    const sent = await sendEmail({
-      to: request.email,
-      subject: rendered.subject,
-      text: rendered.text,
-      html: rendered.html,
-      // A reply reaches the adviser who sent the link.
-      ...(s.user.email ? { replyTo: s.user.email } : {}),
-    });
-    if (sent.status === "ok") {
-      status = "sent";
-      providerId = sent.id;
-    } else if (sent.status === "skipped") {
-      status = "skipped";
-      reason = sent.reason;
-    } else {
-      reason = sent.message;
-    }
-  } catch (e) {
-    reason = e instanceof Error ? e.message : String(e);
-  }
-
-  const at = new Date().toISOString();
-  const { error: recordError } = await admin.from("mortgage_notifications").insert([
+  const { data: r, error: readError } = await admin
+    .from("mortgage_requests")
+    .select("reference, full_name, email, locale")
+    .eq("id", parsed.data.requestId)
+    .single();
+  if (readError) return FAILED;
+  const request = r as { reference: string; full_name: string; email: string; locale: string };
+  const email = await mortgagePreapprovalInviteEmail(
     {
-      request_id: parsed.data.requestId,
-      kind: "preapproval_invite",
-      channel: "email",
-      status,
-      // Never claimed for a retry: the worker has no token to send.
-      attempts: MAX_ATTEMPTS,
-      dedupe: linkId,
-      sent_at: status === "sent" ? at : null,
-      provider_id: providerId,
-      last_error: reason ? scrubReason(reason) : null,
+      name: request.full_name,
+      reference: request.reference,
+      adviserName: s.staff.display_name,
+      link: `${emailSiteUrl()}/mortgages/r/${token}`,
+      expiresAt,
     },
-    {
-      request_id: parsed.data.requestId,
-      kind: "preapproval_invite",
-      channel: "whatsapp",
-      status: "skipped",
-      attempts: MAX_ATTEMPTS,
-      dedupe: linkId,
-      last_error: "whatsapp isn't connected yet",
-    },
-  ]);
-  if (recordError) await reportError(new Error(`invite record failed (${recordError.code})`), { source: "mortgage.cms.invite" });
-  await admin.from("mortgage_events").insert({
-    request_id: parsed.data.requestId,
-    actor_kind: "system",
-    type: `notification.${status}`,
-    data: { kind: "preapproval_invite", channel: "email" },
-    created_at: at,
+    request.locale === "ar" ? "ar" : "en",
+  );
+  const status = await sendLinkEmail(admin, {
+    requestId: parsed.data.requestId,
+    kind: "preapproval_invite",
+    dedupe: linkId,
+    to: request.email,
+    // A reply reaches the adviser who sent the link.
+    replyTo: s.user.email,
+    email,
+    whatsapp: true,
+    source: "mortgage.cms.invite",
   });
 
   refresh(parsed.data.reference);

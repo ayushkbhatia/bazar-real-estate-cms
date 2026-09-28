@@ -171,7 +171,8 @@ resolves correctly but reads ambiguously.
 | `cms-strings.ts` | CMS copy, verbatim from `cms/**/strings.en.json` | 4 |
 | `server/queries.ts`, `server/actions.ts` | Page loaders and the server-action wrapper (authorise → validate → RPC → outbox) | 4 |
 | `server/storage.ts`, `server/verify.ts`, `server/scan.ts` | Storage adapter; magic bytes, encrypted-PDF detection, page count, sha256; scanner adapter | 2 |
-| `server/links.ts`, `server/otp.ts` | Secure links and codes (SPEC §8) | 5 |
+| `server/links.ts`, `server/link-http.ts` | Secure links and their codes (SPEC §8): lookup and state, the code, the session, uploads into the link's own draft, sending. Built as one module (no `otp.ts`): the code only exists for a link | 5 |
+| `server/review.ts`, `server/cms-kit.ts` | The viewer's data (C3/C4) and what every CMS action shares (session, refusals, paths, a link email's record) | 5 |
 | `server/notify.ts` | Email, WhatsApp and in-app delivery for the outbox | 3–6 |
 | `client/apply-store.ts`, `client/upload-queue.ts`, `client/api.ts` | Wizard state, upload engine, API client (frontend foundations §6–8) | 3 |
 
@@ -181,7 +182,8 @@ to **AED 11,337**, matching SPEC §3 and C5.
 ### 1.4 Website routes
 
 ```
-app/[locale]/(mortgage)/layout.tsx                    flag gate, noindex, flow shell
+app/[locale]/(mortgage)/layout.tsx                    noindex, flow shell
+app/[locale]/(mortgage)/mortgages/apply/layout.tsx             the flag gate (Phase 5: a secure link works whatever the flag)
 app/[locale]/(mortgage)/_components/                  FlowLayout, FlowStepper, ServiceCard, DocumentUploadRow, …
 app/[locale]/(mortgage)/mortgages/apply/page.tsx               W1
 app/[locale]/(mortgage)/mortgages/apply/details/page.tsx       W2
@@ -197,7 +199,9 @@ app/[locale]/(mortgage)/mortgages/r/[token]/page.tsx           W8 + invite landi
   analytics. The group adds only the flow shell.
 - Built in Phase 3 without an `apply/layout.tsx`: the wizard state is a
   sessionStorage store (`lib/mortgage-requests/client/apply-store.ts`), and each
-  page runs its own guard (`useGuardedState`).
+  page runs its own guard (`useGuardedState`). Phase 5 added one, holding only
+  the flag gate, so turning intake off doesn't strand an applicant the team
+  has sent a link to.
 - Every page is `force-dynamic`, because it reads the flag and the session.
   Force-dynamic routes never enter the `check:routes` baseline.
 - **Guards to extend to the new group**, so the flow gets the same protection
@@ -325,7 +329,7 @@ in project memory.
 | `file.scan` | **Inline on `…/complete`** when the scanner answers in time. `/api/cron/mortgage-worker` retries `scan_status = pending` (built in Phase 2) | every 5 minutes; every minute once the outbox joins it |
 | `reupload.requested`, `reupload.fulfilled`, `bank.package`, `decision.sent`, `consultation.booked` | Outbox rows written in the same database function as the change; first send attempted inline, retries in `mortgage-worker` | every minute |
 | `sla.tick` | **Inside `mortgage-worker`** (`L/server/sla-tick.ts`, built in Phase 4), idempotent through `sla_*_notified_at` and `mortgage_flag_sla()`. One cron instead of two, so the alerts it queues go out in the same run | every 5 minutes, with the worker |
-| Drafts lifecycle rule | `mortgage-worker` too: expired unclaimed drafts, their objects and rows (built in Phase 2). Expired links join it in Phase 5 | with the worker |
+| Drafts lifecycle rule | `mortgage-worker` too: expired unclaimed drafts, their objects and rows (built in Phase 2). A secure link's uploads live in a draft that expires with the link (Phase 5), so the same sweep clears what was never sent; cancelling a request expires its draft at once | with the worker |
 | `retention.purge` | `/api/cron/mortgage-retention` | daily |
 
 Each new cron needs:
@@ -374,7 +378,9 @@ message) and `app/api/webhooks/whatsapp/route.ts`, verified with
 - When these aren't set, the channel is skipped and recorded as skipped in the
   outbox, and email still goes. This follows the handover rule to degrade
   gracefully without a key.
-- C4 and C5 show the WhatsApp checkbox disabled, with a note (CMS-17).
+- C4 keeps the WhatsApp checkbox (ticked, as designed) and notes under it that
+  WhatsApp isn't connected yet, so the request goes by email; the WhatsApp row
+  is recorded as skipped (CMS-17, Phase 5). C5 does the same in Phase 6.
 
 **Codes (D5).** SPEC keeps the code on `mortgage_access_links` (`otp_hash`,
 `otp_expires_at`, `otp_attempts`), separate from `otp_codes`.
@@ -649,7 +655,7 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 | **2** Storage (built) | `0140_mortgage_storage.sql` (bucket + `mortgage_attach_draft`); `L/server/{errors,tokens,storage,verify,scan,drafts,files,deps,http}.ts` + tests; `app/api/mortgage/drafts/**`; `app/api/admin/mortgages/files/[fileId]/route.ts`; `app/api/cron/mortgage-worker`; `lib/turnstile.ts`; `L/storage.db.test.ts`, `L/testing/fixtures.ts` | `vercel.json`; `lib/queries/health.ts`; `lib/env.ts` (G3); `.env.example`; `next.config.ts` (`serverExternalPackages`); `package.json` (`pdfjs-dist` ~5.6, the newest line that runs on CI's Node 20) |
 | **3** Website W1–W7 (built) | `0141_mortgage_submit.sql`, `0142_mortgage_system_emails.sql`; `M/**` (layout, pages, `_steps`, `_components`); `L/{details,format,consent,copy-status}.ts`; `L/client/*`; `L/server/{submit,notify}.ts`; `app/api/mortgage/requests/route.ts`; `lib/queries/mortgage-flow.ts`; `lib/i18n/english-only.ts`; `messages/{en,ar}/mortgage.json`; `e2e/mortgage-apply.spec.ts` + `playwright.mortgage.config.ts` (local/staging only) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`, `lib/i18n/{routing,locale-redirects}.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; `L/server/drafts.ts` (`replaces`); the mortgage-worker cron (outbox); entry points (home band, `/p/[slug]`, `/tools/mortgage`); `app/globals.css` (two Arabic heading sizes) |
 | **4** CMS C1, C2, C6 (built) | `0143_mortgage_cms.sql`, `0144_mortgage_cms_emails.sql`; `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components/{ui,queue-view,file-actions,settings-form}.tsx`, `A/_actions.ts`; `L/{cms-strings,cms-format,queue,slots,ics,activity}.ts`; `L/server/{cms-auth,cms-queries,settings,sla-tick}.ts`; `components/mortgage/glyphs.tsx` (moved from `M/_components`); `L/cms.test.ts`, `L/cms.db.test.ts`; `e2e/mortgage-cms.spec.ts`. No WhatsApp (D1 hasn't landed): those rows are recorded as skipped | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` + `admin-session.tsx` (`mortgage` in the session); `L/server/{notify,submit}.ts`; the mortgage-worker cron (the SLA tick); `lib/notifications.ts` (three bell kinds); `lib/content-assets/*` + `lib/email-templates.ts` (five emails); `L/consent.ts`; the local seed. Not `lib/auth.ts`: the role is asked of `mortgage_role()`, so the admin area never depends on the new column |
-| **5** Review loop C3, C4, W8 | `A/[reference]/documents/[kind]/page.tsx` + viewer; `M/mortgages/r/[token]/page.tsx` + invite landing; `app/api/mortgage/links/**`; `L/server/{links,otp}.ts` | `L/server/notify.ts` |
+| **5** Review loop C3, C4, W8 (built) | `0145_mortgage_review.sql`, `0146_mortgage_review_emails.sql`; `A/[reference]/documents/[kind]/page.tsx`, `A/_components/{document-review,file-stage,file-cache}.tsx`, `A/_review-actions.ts`; `M/mortgages/r/[token]/**` (page, code gate, link states, W8, the invite landing), `M/mortgages/apply/layout.tsx`; `app/api/mortgage/links/**`; `L/coverage.ts`; `L/server/{links,link-http,review,cms-kit}.ts`; `L/client/link-api.ts`; `L/review.test.ts`, `L/links.db.test.ts`; `e2e/mortgage-review.spec.ts`; `scripts/db-local/seed-mortgage-files.ts` | `0141` (an invite's owner is pinned at creation); `M/layout.tsx` (flag gate moved); `M/_components/{documents,use-documents}.ts(x)`; `M/mortgages/apply/_steps/received.tsx` (W7 reused by the invite); `A/[reference]/page.tsx`, `A/_components/file-actions.tsx`, `A/_actions.ts`; `L/server/{drafts,submit,notify,errors,cms-queries}.ts`; `L/{activity,cms-strings,copy-status}.ts`; `L/client/{api,analytics}.ts`; `lib/posthog.tsx` (secure-link paths redacted); `lib/notifications.ts` (a bell kind); `lib/content-assets/*` + `lib/email-templates.ts` (three emails); `messages/{en,ar}/mortgage.json`; `L/testing/fixtures.ts`; the local seed and `reset.sh` |
 | **6** Banks & decision C5 | `A/banks/page.tsx`; `A/[reference]/decision/page.tsx`; `app/api/mortgage/packages/[token]/route.ts` | `lib/email.ts` (binary attachments) |
 | **7** Hardening | `docs/mortgage/SECURITY-REVIEW.md`, `RUNBOOK.md`; `app/api/cron/mortgage-retention`; DSR migration | `lib/queries/dsr-subject.ts`; `lib/dsr.ts`; `instrumentation*.ts`; the e2e a11y and mobile-geometry route lists |
 
@@ -693,8 +699,9 @@ batch rule in the global CLAUDE.md.
    Arabic catalogue now, because CI requires it and it makes Arabic a sign-off
    later rather than a rebuild (D12).
 5. **Codes by email as the launch fallback (D5).** SPEC lists WhatsApp or SMS,
-   and both have outside lead times. W8's "verified with a code sent to
-   {maskedMobile}" needs a variant if email is used.
+   and both have outside lead times. Decided 28 Sep: WhatsApp, by email until
+   D1 lands. While codes go by email, W8's "verified with a code sent to
+   {maskedMobile}" is filled with the masked address ("k•••@example.com").
 6. **Scan inline, retry by cron.** This deviates from SPEC's purely background
    `file.scan`, so the applicant isn't left watching "Uploading" for a minute
    waiting on a cron tick.

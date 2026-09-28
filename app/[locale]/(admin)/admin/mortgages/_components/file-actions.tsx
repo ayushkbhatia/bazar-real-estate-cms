@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { ActivityLine } from "@/lib/mortgage-requests/activity";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
 import type { TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
 import type { Slot } from "@/lib/mortgage-requests/slots";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
@@ -30,6 +31,7 @@ import {
   sendPreapprovalInvite,
   type MortgageActionResult,
 } from "../_actions";
+import { cancelReupload } from "../_review-actions";
 import { ActivityList, Card, roleLabel } from "./ui";
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
@@ -669,5 +671,154 @@ export function ActivityCard({ items }: { items: readonly ActivityLine[] }) {
     >
       <ActivityList items={shown} />
     </Card>
+  );
+}
+
+// ── C2 · the review loop (Phase 5) ───────────────────────────────
+
+/** Take back an open re-upload request (C4 "cancelReupload"; the UI isn't designed). */
+/**
+ * Cancel a re-upload request (not designed). Asked first: the applicant's link
+ * stops working and the clock starts again, so a stray click would cost them.
+ */
+export function CancelReuploadButton({
+  target,
+  reuploadId,
+  kind,
+  firstName,
+  documentName,
+}: {
+  target: Target;
+  reuploadId: string;
+  kind: DocKind;
+  firstName: string;
+  documentName: string;
+}) {
+  const { pending, run } = useAction();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" className={LINK} disabled={pending} onClick={() => setOpen(true)}>
+        {t("c2.reupload.cancel")}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>{t("c2.reupload.confirm.title")}</DialogTitle>
+            <DialogDescription>
+              {t("c2.reupload.confirm.body", { firstName, document: documentName.charAt(0).toLowerCase() + documentName.slice(1) })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("c2.reupload.confirm.keep")}
+            </Button>
+            <Button
+              disabled={pending}
+              onClick={() => run(() => cancelReupload({ ...target, reuploadId, kind }), (r) => r.ok && setOpen(false))}
+            >
+              {t("c2.reupload.cancel")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+/** "Request documents": pick the document, then C4's form in the viewer (the picker isn't designed). */
+export function RequestDocumentsButton({
+  reference,
+  documents,
+  canAct,
+}: {
+  reference: string;
+  documents: readonly { kind: DocKind; name: string; requestable: boolean }[];
+  canAct: boolean;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const requestable = documents.filter((d) => d.requestable);
+  const [choice, setChoice] = useState(requestable[0]?.kind ?? null);
+  const fieldId = useId();
+  return (
+    <>
+      <Reason why={canAct ? null : t("common.notOwner")}>
+        <Button variant="outline" className="text-[13px]" disabled={!canAct} onClick={() => setOpen(true)}>
+          <Send strokeWidth={1.6} />
+          {t("c2.action.requestDocuments")}
+        </Button>
+      </Reason>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>{t("c2.request.title")}</DialogTitle>
+            <DialogDescription className="mono">{reference}</DialogDescription>
+          </DialogHeader>
+          {requestable.length === 0 ? (
+            <p className="text-[13px] text-bz-muted">{t("c2.request.none")}</p>
+          ) : (
+            <fieldset>
+              <legend id={fieldId} className="mb-2 text-[12px] font-medium text-bz-ink-2">
+                {t("c2.request.label")}
+              </legend>
+              <div className="flex flex-col gap-2">
+                {requestable.map((d) => (
+                  <label key={d.kind} className="flex cursor-pointer items-center gap-2.5 text-[13px]">
+                    <input type="radio" name={fieldId} checked={choice === d.kind} onChange={() => setChoice(d.kind)} className="size-4 accent-bz-ink" />
+                    {d.name}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              disabled={!choice || requestable.length === 0}
+              onClick={() => choice && router.push(`/admin/mortgages/${reference}/documents/${choice}?reupload=1`)}
+            >
+              {t("c2.request.continue")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+/**
+ * "Accept application": on at 4 of 4 accepted with consent on file (PLAN
+ * Phase 5). Choosing the banks and sending is Phase 6, so for now it says so.
+ */
+export function AcceptApplicationButton({ enabled, why }: { enabled: boolean; why: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Reason why={enabled ? null : why}>
+        <Button className="text-[13px]" disabled={!enabled} onClick={() => setOpen(true)} aria-describedby={enabled ? undefined : "accept-why"}>
+          <Check strokeWidth={2} />
+          {t("c2.action.acceptApplication")}
+        </Button>
+      </Reason>
+      {enabled ? null : (
+        <span id="accept-why" className="sr-only">
+          {why}
+        </span>
+      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>{t("c2.action.acceptApplication")}</DialogTitle>
+            <DialogDescription>{t("common.soonBanks")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setOpen(false)}>{t("common.done")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

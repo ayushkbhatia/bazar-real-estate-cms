@@ -90,10 +90,13 @@ function Thumb({ image }: { image: boolean }) {
 
 export function UploadedFile({
   item,
+  meta,
   onRemove,
   onCancel,
 }: {
   item: UploadItem;
+  /** The line under the name once the file is still: its size, unless the page says more (W8). */
+  meta?: ReactNode;
   onRemove: () => void;
   onCancel: () => void;
 }) {
@@ -130,7 +133,7 @@ export function UploadedFile({
             </span>
           </div>
         ) : (
-          <div className="mt-0.5 text-[11.5px] text-bz-muted">{t("upload.size", { size: formatMb(item.sizeBytes) })}</div>
+          <div className="mt-0.5 text-[11.5px] text-bz-muted">{meta ?? t("upload.size", { size: formatMb(item.sizeBytes) })}</div>
         )}
       </div>
       {item.stage === "ready" && !item.error ? (

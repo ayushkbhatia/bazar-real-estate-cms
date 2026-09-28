@@ -8,11 +8,13 @@ export type NotificationKind =
   | "new_enquiry"
   | "lead_reassigned"
   | "system"
-  // The mortgage team's alerts (docs/mortgage, 0143): a new request, and a
-  // Fast Pre-Approval whose 24-hour promise is at risk or missed.
+  // The mortgage team's alerts (docs/mortgage, 0143, 0145): a new request, a
+  // Fast Pre-Approval whose 24-hour promise is at risk or missed, and a
+  // re-upload the applicant has sent.
   | "mortgage_request"
   | "mortgage_at_risk"
-  | "mortgage_breached";
+  | "mortgage_breached"
+  | "mortgage_reupload";
 
 export type NotificationRow = {
   id: string;
@@ -33,6 +35,7 @@ export const NOTIFICATION_KIND_LABEL: Record<NotificationKind, string> = {
   mortgage_request: "Mortgage request",
   mortgage_at_risk: "Promise at risk",
   mortgage_breached: "Promise missed",
+  mortgage_reupload: "Re-upload received",
 };
 
 export type NotificationInsert = {

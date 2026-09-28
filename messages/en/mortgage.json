@@ -358,5 +358,107 @@
       "submitted": "Submitted"
     },
     "whatsapp": "If we need anything else, we'll message you on WhatsApp at <ink>{maskedMobile}</ink> with a secure link. You won't need to start again."
+  },
+  "w8": {
+    "adviser": {
+      "meta": "{roleLabel} · {sentAt}"
+    },
+    "alreadyReceived": "Already received: {files} · {used} of {limit} MB used",
+    "code": {
+      "error": {
+        "cooldown": "Wait a minute before asking for another code.",
+        "expired": "That code has expired. Send yourself a new one.",
+        "failed": "We couldn't send the code. Try again in a minute.",
+        "format": "Enter the 6 digits from the email.",
+        "generic": "Something went wrong. Please try again.",
+        "wrong": "{count, plural, one {That code isn't right. You have # try left.} other {That code isn't right. You have # tries left.}}"
+      },
+      "eyebrow": "Secure link",
+      "label": "Code",
+      "lede": "To keep your application private, we'll send a 6-digit code to the email address on your application.",
+      "resend": "Send a new code",
+      "send": "Send code",
+      "sent": "We sent a code to {destination}. It works for 10 minutes.",
+      "submit": "Continue",
+      "title": "Check it's you",
+      "wait": "{seconds, plural, one {You can ask for a new code in # second.} other {You can ask for a new code in # seconds.}}"
+    },
+    "coverage": {
+      "needed": "Needed · {range}",
+      "received": "Received · {range}"
+    },
+    "cta": "Send documents",
+    "drop": {
+      "add": "Add to your <b>{document}</b>",
+      "instruction": "Add statements for <b>{months}</b>",
+      "replace": "Upload a new <b>{document}</b>"
+    },
+    "eyebrow": "Application {reference} · Fast Pre-Approval",
+    "file": {
+      "readyToSend": "{size} MB · ready to send"
+    },
+    "invite": {
+      "eyebrow": "Fast Pre-Approval · from your consultation {reference}",
+      "lede": "Your details carry over from your consultation request, so all that's left is your documents. They're tailored to your employment type.",
+      "reference": "Your reference is {reference}."
+    },
+    "lede": "Thanks, {firstName}. Three of your four documents are accepted. Add what's missing below and we'll pick your file straight back up.",
+    "ledeCount": "{count, plural, =0 {Thanks, {firstName}. Add what's missing below and we'll pick your file straight back up.} one {Thanks, {firstName}. One of your documents is accepted. Add what's missing below and we'll pick your file straight back up.} other {Thanks, {firstName}. # of your documents are accepted. Add what's missing below and we'll pick your file straight back up.}}",
+    "next": {
+      "check": "<b>{adviserFirstName} checks</b> the new statements.",
+      "checkOther": "<b>{adviserFirstName} checks</b> your new document.",
+      "contact": "<b>We contact you</b> with your pre-approval.",
+      "price": "<b>We price your file</b> against our partner banks."
+    },
+    "note": "Your file is on hold until this arrives.",
+    "pill": {
+      "monthsMissing": "{count, plural, one {# month missing} other {# months missing}}"
+    },
+    "questions": {
+      "body": "Reply to {adviserFirstName} on WhatsApp, or call the mortgage team on +971 2 632 2223.",
+      "title": "Questions?"
+    },
+    "reason": {
+      "expired": "Expired",
+      "other": "Needs another look",
+      "pages_missing": "Pages missing",
+      "period_incomplete": "Period incomplete",
+      "unreadable": "Unreadable",
+      "wrong_document": "Wrong document"
+    },
+    "replaceNote": "What you send replaces the {document} we have.",
+    "secure": "Secure link for {fullName} · verified with a code sent to {maskedMobile}",
+    "sent": {
+      "body": "We've received your documents, and your application is back in review. {adviserFirstName} will be in touch.",
+      "title": "Thanks, {firstName}."
+    },
+    "state": {
+      "contact": "Questions? Call the mortgage team on +971 2 632 2223.",
+      "expired": {
+        "body": "Secure links work for 7 days. Ask your mortgage adviser to send you a new one.",
+        "title": "This link has expired"
+      },
+      "invited": {
+        "body": "Your Fast Pre-Approval application is with our mortgage team. We'll be in touch.",
+        "title": "You've already applied"
+      },
+      "locked": {
+        "body": "A wrong code was entered too many times, so we've locked the link to keep your application safe. Ask your mortgage adviser for a new one.",
+        "title": "This link is locked"
+      },
+      "unavailable": {
+        "body": "It may have been replaced by a newer link, or cancelled. Ask your mortgage adviser to send you a new one.",
+        "title": "This link doesn't work"
+      },
+      "used": {
+        "body": "We have your documents, and your application is back with our mortgage team. We'll be in touch.",
+        "title": "You've already sent this"
+      }
+    },
+    "submit": {
+      "error": "We couldn't send your documents. Please try again in a moment.",
+      "gone": "This link can no longer be used. Ask your mortgage adviser for a new one."
+    },
+    "title": "One document needs another look"
   }
 }

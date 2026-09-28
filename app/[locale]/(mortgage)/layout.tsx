@@ -4,8 +4,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RouteMessages } from "@/lib/i18n/route-messages";
 import { asLocale, DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { getPublicBranding } from "@/lib/queries/site-settings";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { callerIsStaff, readFlag } from "@/lib/mortgage-requests/server/http";
 import { FlowFooter, FlowTopBar } from "./_components/shell";
 import "./mortgage.css";
 
@@ -13,10 +11,10 @@ import "./mortgage.css";
  * The mortgage application flow (docs/mortgage, W1–W8): its own route group,
  * so it gets a quiet shell of its own instead of the marketplace chrome.
  *
- * Behind the `mortgage_requests` flag (SPEC §4.1; `mortgage_settings.flag`):
- * off, every route here is a 404; staff, only signed-in staff see it; public,
- * everyone. Read per request, so flipping it in the CMS needs no deploy —
- * which is also why the group is dynamic and never prerendered.
+ * The application itself is behind the `mortgage_requests` flag
+ * (apply/layout.tsx). The secure links under /mortgages/r/ are not: each is
+ * sent by the team to one applicant already in the system, and switching
+ * intake off mustn't strand them. The group is dynamic and never prerendered.
  *
  * English only for now (D12): proxy.ts sends `/ar/mortgages/…` back to
  * English, and this refuses to render a non-English tree in case anything
@@ -35,14 +33,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-async function flowOpen(): Promise<boolean> {
-  const db = createAdminClient();
-  if (!db) return false;
-  const flag = await readFlag(db);
-  if (flag === "public") return true;
-  return flag === "staff" && (await callerIsStaff(db));
-}
-
 export default async function MortgageLayout({
   children,
   params,
@@ -53,7 +43,6 @@ export default async function MortgageLayout({
   const locale = asLocale((await params).locale);
   if (locale !== DEFAULT_LOCALE) notFound();
   setRequestLocale(locale);
-  if (!(await flowOpen())) notFound();
 
   const branding = await getPublicBranding(locale);
   const logo = branding.logo_url
