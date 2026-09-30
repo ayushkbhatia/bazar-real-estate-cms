@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import development from "../messages/en/development.json";
 
 /**
  * These specs run against the live CMS, so they must not name a project.
@@ -89,9 +90,12 @@ test("a project page with a payment plan renders the cash-flow timeline", async 
   // Every visible row carries a percentage.
   await expect(rows.first()).toContainText(/\d+%/);
 
-  // The calculator's unit picker, and the PDF button that prices off it.
+  // The calculator's price picker, and the PDF button that prices off it. The
+  // picker's name is read from the copy itself: #559 renamed it ("Pick a price
+  // to plan against") and a hard-coded /pick a unit type to price/ kept main
+  // red on a commit that hadn't broken anything.
   await expect(
-    section.getByRole("combobox", { name: /pick a unit type to price/i }),
+    section.getByRole("combobox", { name: development.payment.pickPrice }),
   ).toBeVisible();
   await expect(
     section.getByRole("button", { name: /custom plan as pdf/i }),
