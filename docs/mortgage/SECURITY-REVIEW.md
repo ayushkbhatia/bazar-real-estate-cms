@@ -10,8 +10,8 @@ it was checked, and each gap is numbered **SR-n** for the fix list.
 - **Method:** reading the code; introspecting the local database built from
   every migration (functions, grants, RLS policies, the bucket); the test
   suites (unit, database and end-to-end); and the live production headers.
-  Migrations `0138`–`0150` are not in production yet, so production checks
-  of the database and bucket wait for them (§6).
+  Migrations `0138`–`0152` reached production on 30 Sep; §6 records the
+  production checks.
 - **Legend:** ✓ in place and tested · ◐ in place, with a gap noted ·
   ✗ missing · ◻ a production or human check, not code.
 - **Since the review** (same day, Phase 7 steps 3–5): SR-4, SR-5, SR-6, SR-8
@@ -203,7 +203,8 @@ For D17's sign-off, after `0138`–`0152` are applied:
 |---|---|---|
 | HSTS on the live domain | `curl -sI https://www.bazarrealestate.ae` → `strict-transport-security: max-age=63072000` | ✓ 30 Sep |
 | HTTP redirects to HTTPS | `curl -sI http://www.bazarrealestate.ae` → 308 | ✓ 30 Sep |
-| Bucket private, capped, typed, no policies | `select public, file_size_limit, allowed_mime_types from storage.buckets where id = 'mortgage-files'`; no `storage.objects` policy mentions it | ◻ |
+| Bucket private, capped, typed, no policies | `select public, file_size_limit, allowed_mime_types from storage.buckets where id = 'mortgage-files'`; no `storage.objects` policy mentions it | ✓ 30 Sep: private, 40 MB, PDF/JPEG/PNG, no policies |
+| The database's grants match the tested build | production's default privileges grant new objects to `anon` and `authenticated`; compare `has_function_privilege` / `has_table_privilege` for every mortgage function and table with the local stack, and RLS on every table | ✓ 30 Sep: identical; `anon` executes only `mortgage_flow_public`, `mortgage_bank_label` and trigger functions, and reads no mortgage table |
 | Encryption at rest (Storage and Postgres) | Supabase dashboard → project settings | ◻ |
 | Region (D4) | Supabase project region; Vercel `hnd1` | ◻ |
 | Turnstile, Upstash, scanner, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET` | `vercel env ls` (Production) | ◻ |

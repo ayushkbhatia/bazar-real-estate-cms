@@ -177,7 +177,7 @@ replace.** The security review they answer is
 | ID | What | Needed by | Status |
 |---|---|---|---|
 | G1 | Edit the protected `components/brand/cms-shell.tsx`: the "Mortgage requests" nav item, its count badge, and hiding it from staff without a mortgage role | Phase 4 · 8 Oct | **Granted 28 Sep (Phase 4).** The item is added from the session (`AdminSession.mortgage`), so the shell's static nav is unchanged for everyone else |
-| G2 | Reconnect the Supabase connector (`supabase-hub` rejects its token with a 401; `supabase` needs authorising). Needed to count `mortgage_inquiries` rows (D26), check the leftover `documents` bucket, and dump the production schema if a fresh local migrate fails | Phase 1 · 29 Sep | Open |
+| G2 | Reconnect the Supabase connector (`supabase-hub` rejects its token with a 401; `supabase` needs authorising). Needed to count `mortgage_inquiries` rows (D26), check the leftover `documents` bucket, and dump the production schema if a fresh local migrate fails | Phase 1 · 29 Sep | Open for the connector. `0138`–`0152` were applied on 30 Sep through the Management API with the project's access token instead |
 | G3 | Edit the protected `lib/env.ts` for the new variables: Turnstile, WhatsApp, the scanner, and S3 if D4 needs it | Phase 2 · 1 Oct | **Granted 28 Sep for the whole epic** (additive entries only). Phase 2 added the Turnstile and scanner variables |
 
 ---

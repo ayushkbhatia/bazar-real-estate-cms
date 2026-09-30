@@ -799,7 +799,7 @@ select at, actor_id, before ->> 'flag' as flag_before, after ->> 'flag' as flag_
 
 ## 11. Going live
 
-At the time of writing, migrations `0138`–`0151` are not in production (PROGRESS.md).
+Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.md); the flag is `off` and nobody has a mortgage role.
 
 **1. Before anything**
 

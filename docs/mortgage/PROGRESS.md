@@ -1023,10 +1023,21 @@ SR-19, SR-21, SR-26).
 - The invite card still reads "Link sent · expires …" (design copy) after a
   skipped send; the toast says it didn't go.
 
+**Applied to production, 30 Sep** (Ayush: "Apply, CI, merge"): a dry run of
+all fifteen against the production schema in one transaction, rolled back,
+then `0138`–`0152` one file at a time through the Management API, each with
+its `supabase_migrations.schema_migrations` row in the same transaction.
+Production then matched the local build: 17 tables, all with RLS; 52
+functions, with the same grants to `anon` and `authenticated` (production's
+default privileges are wider, and the explicit revokes hold); the bucket
+private, 40 MB, PDF/JPEG/PNG, no policies; the flag `off`; no staff with a
+mortgage role, no banks, no requests. `npm run db:types` from production
+differs from `db/types.ts` only by formatting and the known `meta_*` drift.
+
 **Open**
-- **Not applied to production:** `0138`–`0152`. Then §6's production checks
-  (now including the framing headers and a break-glass audit check), UAT,
-  and the flag.
+- SECURITY-REVIEW §6's remaining production checks (the framing headers once
+  deployed, a break-glass audit check), granting the team's roles (RUNBOOK
+  §6, §11), UAT, and the flag.
 - The new copy (consent withdrawal, the send warnings) is pending in
   `cms-strings.ts` until Bazar reads it.
 
