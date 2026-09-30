@@ -249,6 +249,10 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       };
     case "link.locked":
       return { ...base, text: t("activity.linkLocked"), tone: "danger" };
+    case "files.purged":
+      return typeof e.data.files === "number" ? { ...base, text: t("activity.filesPurged", { count: e.data.files }) } : null;
+    case "dsr.exported":
+      return { ...base, text: t("activity.dsrExported") };
     case "invite.used":
       return {
         ...base,

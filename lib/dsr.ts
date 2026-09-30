@@ -39,6 +39,8 @@ export type DataExportPayload = {
   enquiries: Array<Record<string, unknown>>;
   messages: Array<Record<string, unknown>>;
   newsletter_subscription: Record<string, unknown> | null;
+  /** Fast Pre-Approval and Mortgage Consultancy requests (docs/mortgage). */
+  mortgage_requests: Array<Record<string, unknown>>;
   notes: string[];
 };
 
@@ -62,6 +64,7 @@ export function buildDataExport(input: {
    * exists.
    */
   shared_with_crm?: boolean;
+  mortgage_requests?: Array<Record<string, unknown>>;
   now?: () => Date;
 }): DataExportPayload {
   const now = (input.now ?? (() => new Date()))().toISOString();
@@ -74,11 +77,22 @@ export function buildDataExport(input: {
     enquiries: input.enquiries ?? [],
     messages: input.messages ?? [],
     newsletter_subscription: input.newsletter_subscription ?? null,
+    mortgage_requests: input.mortgage_requests ?? [],
     notes: [
       "This archive contains every personal-data field Bazar holds about your account at the moment of generation.",
       "The `messages` section includes the full conversation thread with your advisor — `author_kind` identifies whether each message was sent by you (`user`), Bazar (`agent`), or the system (`system`). Advisor replies are included so you have the context of your conversation; if you only want your own messages, filter by `author_kind === 'user'`.",
       "KYC documents tied to closed transactions are retained for 7 years under UAE AML rules and are excluded from this export. Email dpo@bazar.ae to request a separate review of those.",
       "Audit-log rows are required for AML/CFT compliance and excluded from this export; on a deletion request we wipe inline IP and user-agent fields rather than dropping the rows.",
+      ...(input.mortgage_requests?.length
+        ? [
+            "The `mortgage_requests` section lists your Fast Pre-Approval and Mortgage Consultancy requests: your details, consents, each document's status and what was recorded from it, and its files by name and size. The documents themselves aren't in this archive; ask for copies at the address below.",
+            ...(input.mortgage_requests.some((r) => Array.isArray(r.shared_with_banks) && r.shared_with_banks.length > 0)
+              ? [
+                  "With your consent, a request was shared with the partner banks listed under `shared_with_banks` in it. Those banks hold their own copies, which Bazar can't recall or erase; contact them directly, or ask us to.",
+                ]
+              : []),
+          ]
+        : []),
       ...(input.shared_with_crm
         ? [
             "Your enquiry was also passed to Salesforce, the customer-relationship platform Bazar uses to manage advisory work, as described in section 4 of our privacy notice. A copy of your name, contact details and enquiry message is held there. It is covered by the same erasure request as everything above.",

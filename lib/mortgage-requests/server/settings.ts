@@ -13,6 +13,8 @@ export type MortgageSettings = {
   link_expiry_days: number;
   ltv_national_pct: number;
   ltv_expat_pct: number;
+  /** Months a closed request's files are kept (the retention purge); null until D7 decides, and nothing is deleted. */
+  retention_months: number | null;
 };
 
 export type MortgageHoliday = { day: string; name: string };
@@ -25,7 +27,7 @@ export type LoadedSettings = {
 };
 
 const COLUMNS =
-  "flag, assignment_mode, sla_budget_minutes, sla_risk_minutes, working_hours, consultation_minutes, slot_grid_minutes, link_expiry_days, ltv_national_pct, ltv_expat_pct";
+  "flag, assignment_mode, sla_budget_minutes, sla_risk_minutes, working_hours, consultation_minutes, slot_grid_minutes, link_expiry_days, ltv_national_pct, ltv_expat_pct, retention_months";
 
 /**
  * The module's settings and holidays, and the promise's policy built from

@@ -34,7 +34,7 @@ const t = cmsT as unknown as (key: string, values?: Record<string, string | numb
 // pdf.js runs in the browser only (file-stage.tsx).
 const FileStage = dynamic(() => import("./file-stage").then((m) => m.FileStage), {
   ssr: false,
-  loading: () => <div className="py-24 text-center text-[12.5px] text-bz-muted">{t("c3.openedPending")}</div>,
+  loading: () => <div className="py-24 text-center text-[12.5px] text-bz-ink-2">{t("c3.openedPending")}</div>,
 });
 
 const HINT_KEY: Record<DocKind, string> = {
@@ -436,7 +436,7 @@ export function DocumentReview({
                 onPage={onPage}
               />
             ) : (
-              <p className="py-24 text-center text-[12.5px] text-bz-muted">{files.length ? t("viewer.scanning") : t("viewer.noFiles")}</p>
+              <p className="py-24 text-center text-[12.5px] text-bz-ink-2">{files.length ? t("viewer.scanning") : t("viewer.noFiles")}</p>
             )}
           </div>
           {file ? (

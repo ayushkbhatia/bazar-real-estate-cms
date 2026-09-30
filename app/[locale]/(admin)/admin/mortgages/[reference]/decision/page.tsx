@@ -16,7 +16,7 @@ import { formatDuration } from "@/lib/mortgage-requests/sla";
 import { cn } from "@/lib/utils";
 import { DecisionView, type BankRowView, type DecidedView } from "../../_components/decision-view";
 import { ActivityCard, FileRefresher, type Target } from "../../_components/file-actions";
-import { FileHeader, PromiseClock, StageRail, StatusPill } from "../../_components/ui";
+import { CRUMB_LINK, FileHeader, PromiseClock, StageRail, StatusPill } from "../../_components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -75,8 +75,8 @@ export default async function MortgageDecisionPage({ params }: { params: Promise
       title={file.fullName}
       breadcrumbs={
         <>
-          {cmsT("nav.group")} › <Link href="/admin/mortgages">{cmsT("nav.mortgages")}</Link> ›{" "}
-          <Link href={fileHref} className="mono">
+          {cmsT("nav.group")} › <Link href="/admin/mortgages" className={CRUMB_LINK}>{cmsT("nav.mortgages")}</Link> ›{" "}
+          <Link href={fileHref} className={`mono ${CRUMB_LINK}`}>
             {file.reference}
           </Link>{" "}
           › {t("c5.decision.title")}

@@ -210,7 +210,8 @@ export function QueueView({
                 )}
               >
                 {t(SERVICE_KEY[s])}
-                {result ? <span className="mono text-[11px] text-bz-muted">{result.counts.services[s]}</span> : null}
+                {/* On the control's tint, muted text falls short of AA (4.2:1): the unselected counts are darker. */}
+                {result ? <span className={cn("mono text-[11px]", on ? "text-bz-muted" : "text-bz-ink-2")}>{result.counts.services[s]}</span> : null}
               </button>
             );
           })}
@@ -286,7 +287,8 @@ export function QueueView({
                   <span
                     className={cn(
                       "mono rounded-full px-1.5 py-px text-[10.5px]",
-                      on ? "bg-bz-ink text-bz-bg" : "bg-bz-surface-3 text-bz-muted",
+                      // Muted text on the badge's tint falls short of AA; ink-2 doesn't.
+                      on ? "bg-bz-ink text-bz-bg" : "bg-bz-surface-3 text-bz-ink-2",
                     )}
                   >
                     {count}
@@ -336,8 +338,9 @@ export function QueueView({
                       data-highlighted={highlighted || undefined}
                       onClick={(e) => open(row, e)}
                       className={cn(
-                        "cursor-pointer border-b border-bz-border last:border-b-0 hover:bg-bz-surface-2/60",
-                        highlighted && "bg-bz-surface-2 hover:bg-bz-surface-2",
+                        // A lighter hover keeps muted text at AA; the highlight keeps its tint and darkens it instead.
+                        "cursor-pointer border-b border-bz-border last:border-b-0 hover:bg-bz-surface-2/40",
+                        highlighted && "bg-bz-surface-2 hover:bg-bz-surface-2 [&_.text-bz-muted]:text-bz-ink-2",
                       )}
                     >
                       <td className={cn("px-3.5 py-3 align-middle", highlighted && "shadow-[inset_3px_0_0_var(--bz-ink)]")}>

@@ -4,6 +4,7 @@ import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { loadBanks } from "@/lib/mortgage-requests/server/banks";
 import { getMortgageRole, requireMortgageRole } from "@/lib/mortgage-requests/server/cms-auth";
 import { AddBankButton, BanksList } from "../_components/banks-view";
+import { CRUMB_LINK } from "../_components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function MortgageBanksPage() {
       title={cmsT("banks.title")}
       breadcrumbs={
         <>
-          {cmsT("nav.group")} › <Link href="/admin/mortgages">{cmsT("nav.mortgages")}</Link> › {cmsT("banks.link")}
+          {cmsT("nav.group")} › <Link href="/admin/mortgages" className={CRUMB_LINK}>{cmsT("nav.mortgages")}</Link> › {cmsT("banks.link")}
         </>
       }
       primary={canEdit ? <AddBankButton nextOrder={banks.reduce((max, b) => Math.max(max, b.sort_order + 1), 1)} /> : null}

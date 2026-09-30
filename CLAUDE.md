@@ -28,7 +28,8 @@ Mortgage requests: the public Fast Pre-Approval / Mortgage Consultancy flow and 
 - The flow's e2e specs submit real applications, so they run only against the local stack: `MORTGAGE_E2E_BASE_URL=http://localhost:3107 npx playwright test -c playwright.mortgage.config.ts`. CI's e2e job skips them.
 - Secure links (`/mortgages/r/[token]`: W8's re-upload and the pre-approval invite, `lib/mortgage-requests/server/links.ts`): the token is the URL and only its hash is stored; a code first (five wrong tries lock the link for good), then a two-hour httpOnly session per link. They are not behind the flag. A link's email is sent by its action, never the outbox, which can't hold a token. Locally, emails are dry runs: W8's e2e points a new link at its own token and code through the database container.
 - Mortgage files live only in the private mortgage bucket. Never return a public or long-lived URL. Every open or download writes a `mortgage_events` row first.
-- `mortgage_events` is append-only.
+- `mortgage_events` is append-only. Only retention and erasure may delete (0151 sets `mortgage.purge` inside their functions), and both delete bucket objects before the rows that point to them. A data-subject erasure (`/admin/dsr`) deletes a subject's mortgage requests outright; the retention job stays off until `retention_months` is set (D7).
+- Security and operations: [docs/mortgage/SECURITY-REVIEW.md](docs/mortgage/SECURITY-REVIEW.md) (each control and gap, SR-n) and [RUNBOOK.md](docs/mortgage/RUNBOOK.md). Error reports pass through `lib/pii-scrub.ts` and Sentry events through `lib/sentry-scrub.ts`; any URL a tool records goes through `lib/secure-link-redaction.ts`.
 - No PII in logs, Sentry, `error_events` context or analytics.
 - Migrations are forward-only.
 - End every phase by updating PROGRESS.md: what was built, deviations from SPEC, open TODOs.

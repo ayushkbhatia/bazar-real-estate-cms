@@ -282,6 +282,12 @@ export function OwnerAvatar({
   );
 }
 
+/**
+ * A link inside the breadcrumbs: underlined, since the shell tells links from
+ * the text around them by colour alone (WCAG 1.4.1; axe `link-in-text-block`).
+ */
+export const CRUMB_LINK = "underline decoration-1 underline-offset-2";
+
 export function roleLabel(role: "head" | "adviser" | null): string | null {
   return role === "head" ? t("role.head") : role === "adviser" ? t("role.adviser") : null;
 }

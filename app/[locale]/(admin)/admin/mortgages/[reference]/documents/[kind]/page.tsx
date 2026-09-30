@@ -8,6 +8,7 @@ import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { getMortgageRole, requireMortgageRole } from "@/lib/mortgage-requests/server/cms-auth";
 import { getViewer, isDocKind } from "@/lib/mortgage-requests/server/review";
 import { DocumentReview } from "../../../_components/document-review";
+import { CRUMB_LINK } from "../../../_components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -43,8 +44,8 @@ export default async function DocumentViewerPage({
       title={t(DOC_LABEL_KEY[kind])}
       breadcrumbs={
         <>
-          <Link href="/admin/mortgages">{t("nav.mortgages")}</Link> ›{" "}
-          <Link href={`/admin/mortgages/${data.request.reference}`}>
+          <Link href="/admin/mortgages" className={CRUMB_LINK}>{t("nav.mortgages")}</Link> ›{" "}
+          <Link href={`/admin/mortgages/${data.request.reference}`} className={CRUMB_LINK}>
             {data.request.reference} · {data.request.fullName}
           </Link>{" "}
           › Documents

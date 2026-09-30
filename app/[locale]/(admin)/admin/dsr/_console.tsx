@@ -31,6 +31,8 @@ export function DsrConsole({
   runErasure: typeof fulfilErasureRequest;
 }) {
   const [email, setEmail] = useState("");
+  // Only the mortgage module's requests are matched on it (they store a UAE mobile).
+  const [mobile, setMobile] = useState("");
   const [pending, start] = useTransition();
   const [busy, setBusy] = useState<"export" | "erase" | null>(null);
   const [lastDetail, setLastDetail] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function DsrConsole({
     setBusy("export");
     setLastDetail(null);
     start(async () => {
-      const result = await runExport(email);
+      const result = await runExport(email, mobile);
       setBusy(null);
       if (result.status === "error") {
         toast.error(result.message);
@@ -68,14 +70,14 @@ export function DsrConsole({
     }
     if (
       !confirm(
-        `Erase every personal-data field held for ${email}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright.\n\nOnly do this once you have verified the requester's identity.`,
+        `Erase every personal-data field held for ${email}${mobile.trim() ? ` (and mortgage requests for ${mobile.trim()})` : ""}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright. Mortgage requests (Fast Pre-Approval and Consultancy) are deleted outright, documents included; copies already sent to partner banks can't be recalled.\n\nOnly do this once you have verified the requester's identity.`,
       )
     )
       return;
     setBusy("erase");
     setLastDetail(null);
     start(async () => {
-      const result = await runErasure(email);
+      const result = await runErasure(email, mobile);
       setBusy(null);
       if (result.status === "error") {
         toast.error(result.message);
@@ -103,7 +105,23 @@ export function DsrConsole({
           <p className="text-[11.5px] text-bz-muted">
             The address the request came from. Everything Bazar holds is keyed
             to it — enquiries and their message threads, valuation requests,
-            mortgage enquiries, and the newsletter list.
+            mortgage enquiries, mortgage requests, and the newsletter list.
+          </p>
+        </div>
+        <div className="mt-4 flex flex-col gap-1.5">
+          <Label htmlFor="dsr-mobile">UAE mobile (optional)</Label>
+          <Input
+            id="dsr-mobile"
+            type="tel"
+            inputMode="tel"
+            placeholder="+971 50 123 4567"
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+            autoComplete="off"
+          />
+          <p className="text-[11.5px] text-bz-muted">
+            Also finds the subject&apos;s mortgage requests made with another
+            email address. Use it only once you know the number is theirs.
           </p>
         </div>
 
@@ -169,6 +187,12 @@ export function DsrConsole({
             transaction history can still be reconstructed for seven years.
             KYC documents tied to a closed deal are out of scope and need a
             separate review.
+          </li>
+          <li>
+            Mortgage requests are the exception: they are deleted outright,
+            documents included. If a request went to partner banks, the result
+            names them — their copies can&apos;t be recalled, so say so in your
+            reply.
           </li>
           <li>
             Both actions are recorded in <span className="mono">dsr_requests</span>{" "}

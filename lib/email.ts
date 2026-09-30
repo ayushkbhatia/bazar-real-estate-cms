@@ -1,6 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import { env, isResendConfigured } from "@/lib/env";
+import { maskEmail, scrubPii } from "@/lib/pii-scrub";
 
 const DEFAULT_FROM = "Bazar Real Estate <onboarding@resend.dev>";
 const DEFAULT_REPLY_TO = "hello@bazar.ae";
@@ -117,8 +118,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   // Before the client check, so the reason is the real one: "dry run" rather
   // than "no API key" when a developer happens to have both.
   if (isEmailDryRun()) {
+    // The address is masked: function logs are no place for a recipient list.
     console.warn(
-      `[email] DRY RUN — not sending "${input.subject}" to ${input.to}. Set EMAIL_DRY_RUN=false to send.`,
+      `[email] DRY RUN — not sending "${scrubPii(input.subject)}" to ${maskEmail(input.to)}. Set EMAIL_DRY_RUN=false to send.`,
     );
     return {
       status: "skipped",
@@ -130,9 +132,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   if (!resend) {
     console.warn(
       "[email] RESEND_API_KEY not set — skipping",
-      input.subject,
+      scrubPii(input.subject),
       "to",
-      input.to,
+      maskEmail(input.to),
     );
     return { status: "skipped", reason: "RESEND_API_KEY not set" };
   }
@@ -161,7 +163,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
         : {}),
     });
     if (result.error) {
-      console.warn("[email] Resend error", result.error.message);
+      console.warn("[email] Resend error", scrubPii(result.error.message));
       return { status: "error", message: explainResendError(result.error.message) };
     }
     if (!result.data?.id) {
@@ -170,7 +172,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     return { status: "ok", id: result.data.id };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.warn("[email] Resend threw", message);
+    console.warn("[email] Resend threw", scrubPii(message));
     return { status: "error", message };
   }
 }

@@ -52,6 +52,37 @@ const ALLOWED: { [E in keyof Events]: readonly (keyof Events[E])[] } = {
   mortgage_invite_submitted: ["employment_type"],
 };
 
+/**
+ * The W1-to-submit funnels, as PostHog should chart them (PLAN Phase 7): each
+ * step one of the events above, filtered by a property where the event serves
+ * several steps. A step reads as "the visitor got this far"; none of them
+ * carries anything about who the visitor is.
+ */
+export const APPLY_FUNNELS = {
+  pre_approval: [
+    { event: "mortgage_apply_viewed", where: { step: "service" } },
+    { event: "mortgage_service_selected", where: { service: "pre_approval" } },
+    { event: "mortgage_apply_viewed", where: { step: "details" } },
+    { event: "mortgage_details_completed", where: { service: "pre_approval" } },
+    { event: "mortgage_apply_viewed", where: { step: "documents" } },
+    { event: "mortgage_doc_file_added" },
+    { event: "mortgage_request_submitted", where: { service: "pre_approval" } },
+  ],
+  consultancy: [
+    { event: "mortgage_apply_viewed", where: { step: "service" } },
+    { event: "mortgage_service_selected", where: { service: "consultancy" } },
+    { event: "mortgage_apply_viewed", where: { step: "details" } },
+    { event: "mortgage_details_completed", where: { service: "consultancy" } },
+    { event: "mortgage_apply_viewed", where: { step: "review" } },
+    { event: "mortgage_request_submitted", where: { service: "consultancy" } },
+  ],
+} as const satisfies Record<string, readonly { event: keyof Events; where?: Record<string, string> }[]>;
+
+/** The properties an event may carry, for the tests that hold them to no personal data. */
+export function allowedProperties(event: keyof Events): readonly string[] {
+  return ALLOWED[event] as readonly string[];
+}
+
 /** Only the listed keys, and only short enum-like strings, numbers and booleans. */
 export function safeProperties<E extends keyof Events>(event: E, props: Events[E]): Record<string, string | number | boolean> {
   const out: Record<string, string | number | boolean> = {};

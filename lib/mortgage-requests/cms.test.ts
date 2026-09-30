@@ -362,6 +362,9 @@ describe("activity lines (00-foundations §11)", () => {
       ["ENBD opened the package", null],
       ["Yasmin opened a bank's letter", null],
     ]);
+    // Phase 7: retention and a data-subject export leave their mark too.
+    expect(describeEvent(event("files.purged", { files: 4, reason: "retention" }, null), ctx)?.text).toBe("4 files deleted: the retention period ended");
+    expect(describeEvent(event("dsr.exported", {}, null), ctx)?.text).toBe("The applicant's data was exported at their request");
     for (const quiet of ["sent_to_banks", "pre_approved", "declined"]) {
       expect(describeEvent(event("status.changed", { to: "with_banks", event: quiet }), ctx)).toBeNull();
     }

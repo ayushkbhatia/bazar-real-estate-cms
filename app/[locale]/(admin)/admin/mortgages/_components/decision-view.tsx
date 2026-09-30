@@ -204,7 +204,8 @@ function BankResponses({
               className={cn(
                 "grid grid-cols-[22px_38px_minmax(0,1fr)] items-center gap-x-3.5 gap-y-3 px-5 py-4 md:grid-cols-[22px_38px_minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,.9fr)]",
                 i > 0 && "border-t border-bz-border",
-                on && "bg-bz-surface-2",
+                // The lead row's tint takes muted labels under AA (4.2:1): darker there.
+                on && "bg-bz-surface-2 [&_.text-bz-muted]:text-bz-ink-2",
               )}
             >
               {row.status === "pre_approved" && row.offer ? (

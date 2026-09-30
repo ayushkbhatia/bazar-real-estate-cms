@@ -5473,6 +5473,17 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      mortgage_erase_requests: {
+        Args: { p_request_ids: string[] }
+        Returns: Json
+      }
+      mortgage_erasure_files: {
+        Args: { p_request_ids: string[] }
+        Returns: {
+          file_id: string
+          storage_key: string
+        }[]
+      }
       mortgage_flag_sla: {
         Args: { p_at?: string; p_request_id: string; p_state: string }
         Returns: boolean
@@ -5796,6 +5807,15 @@ export type Database = {
         }
         Returns: Json
       }
+      mortgage_retention_files: {
+        Args: { p_limit?: number; p_months: number }
+        Returns: {
+          file_id: string
+          request_id: string
+          storage_key: string
+        }[]
+      }
+      mortgage_retire_files: { Args: { p_file_ids: string[] }; Returns: number }
       mortgage_review_target: {
         Args: { p_document_id: string; p_expected_updated_at?: string }
         Returns: {

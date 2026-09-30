@@ -43,22 +43,7 @@ import {
   type Target,
 } from "../_components/file-actions";
 import { loadBanks, sendable } from "@/lib/mortgage-requests/server/banks";
-import {
-  ActivityList,
-  Card,
-  DocTile,
-  DocumentBar,
-  FILE_TAG,
-  FileHeader,
-  FileTagBody,
-  KeyValueList,
-  OwnerAvatar,
-  Pill,
-  PromiseClock,
-  roleLabel,
-  StageRail,
-  StatusPill,
-} from "../_components/ui";
+import { ActivityList, Card, CRUMB_LINK, DocTile, DocumentBar, FILE_TAG, FileHeader, FileTagBody, KeyValueList, OwnerAvatar, Pill, PromiseClock, roleLabel, StageRail, StatusPill } from "../_components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -102,7 +87,7 @@ export default async function MortgageRequestPage({ params }: { params: Promise<
   const target: Target = { requestId: file.id, reference: file.reference, updatedAt: file.updatedAt };
   const breadcrumbs = (
     <>
-      {cmsT("nav.group")} › <Link href="/admin/mortgages">{cmsT("nav.mortgages")}</Link> › <span className="mono">{file.reference}</span>
+      {cmsT("nav.group")} › <Link href="/admin/mortgages" className={CRUMB_LINK}>{cmsT("nav.mortgages")}</Link> › <span className="mono">{file.reference}</span>
     </>
   );
 
@@ -362,7 +347,7 @@ function PreApproval({
                 );
               })}
             </ul>
-            <div className="flex items-center gap-2 border-t border-bz-border bg-bz-surface-2 px-5 py-[11px] text-[12px] text-bz-muted">
+            <div className="flex items-center gap-2 border-t border-bz-border bg-bz-surface-2 px-5 py-[11px] text-[12px] text-bz-ink-2">
               <Glyph name="lock" size={14} />
               {t("c2.docs.private")}
             </div>

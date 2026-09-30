@@ -841,3 +841,110 @@ CMS-6), every string in `PENDING_CMS_COPY`.
 - D29: the three new emails are drafts. D1: WhatsApp is recorded as skipped.
 - D6: with no scanner configured in production, a letter waits unusable
   (fail closed), like the applicant's files.
+
+## Phase 7 — Hardening: the security review, retention, DSR, scrubbing, accessibility · 30 Sep 2026
+
+Ayush: "go ahead with Phase 7". PLAN's step 2 — fixing what the security
+review finds — waits for Ayush to approve the list, so this entry covers
+steps 1 and 3–6; the fixes that belonged to steps 3 and 4 are in. UAT and
+switching the flag on need production (the migrations applied, D6, D14) and
+the mortgage team.
+
+**Built**
+- **Step 1, `docs/mortgage/SECURITY-REVIEW.md`:** every route, action and job
+  against SPEC §7 and §8 — each control, where it lives, how it was checked
+  (code, the local database's functions, grants and policies, the test
+  suites, the live production headers) — and 21 numbered items. SR-1 to SR-3
+  are production settings the code already fails closed on or backs up
+  (Upstash, Turnstile, a scanner); SR-4 to SR-9 are fixed below (except
+  SR-7); SR-7, SR-10 to SR-17 and SR-22 to SR-25 wait for approval; SR-18 to
+  SR-21 and SR-26 are decisions or checks. SR-22 to SR-26 came from writing
+  the runbook, the most serious being that a withdrawn consent doesn't cut
+  off a bank's link. §6 is the production checklist for D17's sign-off.
+- **Step 3, retention and DSR (`0151_mortgage_retention_erasure.sql`):**
+  - four service-role functions: the files retention has due, retiring them
+    (rows kept as removed, nameless, with a `files.purged` line), the files an
+    erasure has to delete (documents, bank letters and a secure link's unsent
+    uploads, whose draft only points at the request), and the erasure
+    itself, which records which banks already hold a package and deletes the
+    requests with everything hanging off them, the activity log included,
+    through the `mortgage.purge` path reserved for it in `0139`;
+  - `/api/cron/mortgage-retention` (daily, `L/server/retention.ts`): bucket
+    objects first, then the rows; nothing while `retention_months` is null
+    (D7), which the health page says; the settings page shows the period;
+  - `/admin/dsr` finds mortgage requests by email and, in a new optional
+    field, a UAE mobile (`L/server/dsr.ts`); the archive lists them; an
+    export is written to each request's activity; erasure deletes them first
+    (objects, then rows) and says which banks can't be asked to forget.
+- **Step 4, scrubbing:** `lib/pii-scrub.ts` (emails, UAE and + phone numbers,
+  Bearer values, secure-link tokens, secret-named fields) in `reportError`
+  (message, stack and context, before `error_events`, the log or Sentry);
+  `lib/sentry-scrub.ts` as `beforeSend`, `beforeSendTransaction` and
+  `beforeBreadcrumb` on the server, edge and browser; `lib/email.ts` masks
+  recipients in its log lines. The funnels from W1 to submit are written as
+  code (`APPLY_FUNNELS`), and a test holds every flow event to no personal
+  property. The Head's settings page shows the promise's met rate and median
+  working time over the last 30 days (`L/metrics.ts`, from `slaStatus()`).
+- **Step 5, accessibility:** `e2e/mortgage-a11y.spec.ts` runs axe (WCAG 2.1
+  A/AA) on W1–W8 (W2 with its errors, W5 empty and full, W6's gallery of row
+  states, W8's code gate and upload), the bank's package page, and C1–C6 with
+  the Decline dialog, the Record response dialog, C5's Decline tab, the banks
+  page and the settings; and a keyboard-only pass: each step's heading takes
+  focus, errors take it to the field, Enter opens the file picker.
+- **Step 6, `docs/mortgage/RUNBOOK.md`** (a subagent drafted the operational
+  sections; retention and DSR are ours): where to look, stuck scans, emails
+  that didn't arrive, WhatsApp templates, a disputed clock, break-glass,
+  recording a consent withdrawal, partner banks, locked-out applicants, the
+  flag, going live, data-subject requests and retention. Each
+  data-changing statement writes its own audit row; the retention ones were
+  run on the local stack. The activity now words `files.purged` and
+  `dsr.exported`.
+
+**Verified**
+- **Unit:** 354 files, 4,658 tests. New: `lib/pii-scrub.test.ts`,
+  `lib/sentry-scrub.test.ts`, `reportError` in `observability.test.ts`,
+  `L/metrics.test.ts`, `L/dsr.test.ts`, `L/client/analytics.test.ts`, the
+  mortgage notes in `lib/dsr.test.ts`, API paths in
+  `lib/secure-link-redaction.test.ts`.
+- **Database:** 104 tests in 8 files. New, `L/dsr.db.test.ts` (3): retention
+  deletes a 13-month-closed request's files (objects first), leaves a
+  2-month-closed and an open one, does nothing unset, and doesn't repeat;
+  erasure finds a subject by email and by mobile, exports what's held, and
+  deletes it all, draft uploads and the activity log included, naming the
+  bank; only the service role may call either, and the log stays
+  append-only everywhere else.
+- **End to end:** all 17 mortgage specs pass (7 new for accessibility).
+- **In the browser:** the DSR console's mobile field, and an erasure through
+  it on a local request (`dsr_requests.payload.mortgage` records it).
+
+**Found and fixed**
+- Tokens in API paths (`/api/mortgage/links/<token>/…`,
+  `/api/mortgage/packages/<token>/…`) weren't redacted: a breadcrumb or span
+  would have carried one to Sentry. Found by the scrubber's test, which had
+  first been written to expect them unchanged.
+- The DB tests' test staff now leave the team when each file finishes
+  (Phase 6), and the retention and erasure tests switch off their bank.
+- Accessibility: muted text on tinted backgrounds (the lead offer's row on
+  C5, the queue's filter and tab counts, a highlighted queue row, C2's
+  "private" line, the viewer's loading line) was 4.2:1; breadcrumb links were
+  told apart by colour alone.
+
+**Deviations**
+- `anonymise_by_email` isn't re-issued with a mortgage block (IMPLEMENTATION
+  §1.15): the action erases mortgage requests first, from app code, since SQL
+  can't delete storage objects and they must go before their rows.
+- An erasure deletes mortgage requests outright, where the platform's
+  erasure keeps AML-relevant rows pseudonymised; D7 may change that.
+- The mobile-geometry gate isn't extended to the mortgage routes: its checks
+  are for public marketing pages, and the flow's 375 px layouts were checked
+  by hand in Phases 3–6.
+
+**Open**
+- **Step 2: approve SECURITY-REVIEW.md's list**, then fix SR-7, SR-10 to
+  SR-17 and SR-22 to SR-25, with tests.
+- **Not applied to production:** `0138`–`0151`. Then §6's production checks,
+  UAT with the mortgage team, and the flag: staff first, then public.
+- D6, D14 (SR-1 to SR-3), D7 (retention period; erasure and AML), D17
+  (sign-off), D4 (region), D1, D29.
+- The shared CMS sidebar's group labels fail contrast on every admin page:
+  filed as a separate task (the file is protected).

@@ -195,10 +195,10 @@ export function FileStage({
 
   const value = loaded?.id === file.id ? loaded.value : null;
   if (!value) {
-    return <div className="py-24 text-center text-[12.5px] text-bz-muted">{t("c3.openedPending")}</div>;
+    return <div className="py-24 text-center text-[12.5px] text-bz-ink-2">{t("c3.openedPending")}</div>;
   }
   if (value.kind === "failed") {
-    return <div className="py-24 text-center text-[12.5px] text-bz-muted">{t("viewer.loadFailed")}</div>;
+    return <div className="py-24 text-center text-[12.5px] text-bz-ink-2">{t("viewer.loadFailed")}</div>;
   }
   const total = value.kind === "pdf" ? value.doc.numPages : 1;
   return (
