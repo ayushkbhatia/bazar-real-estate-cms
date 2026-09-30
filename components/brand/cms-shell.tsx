@@ -203,7 +203,7 @@ export function CmsShell({
         </div>
         {NAV_GROUPS.map((g) => (
           <div key={g.group}>
-            <div className="px-2.5 pt-3.5 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted-2 uppercase">
+            <div className="px-2.5 pt-3.5 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted uppercase">
               {g.group}
             </div>
             {g.items.map((item) => {
@@ -286,7 +286,7 @@ export function CmsShell({
           <div className="flex flex-col gap-4 pb-2">
             {NAV_GROUPS.map((g) => (
               <div key={g.group}>
-                <div className="px-1 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted-2 uppercase">
+                <div className="px-1 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted uppercase">
                   {g.group}
                 </div>
                 <div className="flex flex-col">
