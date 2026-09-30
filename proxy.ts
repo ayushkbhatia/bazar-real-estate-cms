@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { legacyQueryRedirect } from "@/lib/filters/search-redirect";
 import { isNonLocalisedPath } from "@/lib/i18n/non-localised";
+import { isEnglishOnlyPath } from "@/lib/i18n/english-only";
 import {
   SETLANG_PARAM,
   internalPath,
@@ -34,13 +35,22 @@ export async function proxy(request: NextRequest) {
     return updateSession(request);
   }
 
-  // 2. The CMS is English-only, permanently (ADR-0007). Redirecting rather
-  //    than rewriting is what makes every future [dir="rtl"] rule provably
-  //    inert inside /admin.
-  if (pathname === "/ar/admin" || pathname.startsWith("/ar/admin/")) {
-    return NextResponse.redirect(
-      new URL(pathname.replace(/^\/ar/, ""), request.url),
-    );
+  // 2. The CMS is English-only, permanently (ADR-0007), and the mortgage
+  //    application flow is for now (D12) — see lib/i18n/english-only.ts.
+  //    Redirecting rather than rewriting is what makes every future
+  //    [dir="rtl"] rule provably inert inside them. The query survives: the
+  //    flow's entry links carry `?service=` and `?from=`. 307, because the
+  //    flow's half of this ends when its Arabic is approved, and a 308 would
+  //    be cached by browsers past that day.
+  const prefixed = localeFromPathname(pathname);
+  if (
+    prefixed &&
+    prefixed !== DEFAULT_LOCALE &&
+    isEnglishOnlyPath(stripLocalePrefix(pathname))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = stripLocalePrefix(pathname);
+    return NextResponse.redirect(url, 307);
   }
 
   // 2a. The WordPress site's `?lang=` parameter.
@@ -132,8 +142,8 @@ export async function proxy(request: NextRequest) {
   //     - **Only unprefixed paths.** The URL outranks the cookie. `/buy` with
   //       an `ar` preference redirects; `/ar/buy` with an `en` preference does
   //       not, because someone following an Arabic link asked for Arabic.
-  //     - **Never `/admin`.** The CMS is English-only (ADR-0007) and branch 3
-  //       below bounces `/ar/admin` back here — redirecting it would be an
+  //     - **Never an English-only path** (`/admin`, `/mortgages`). Branch 2
+  //       above bounces `/ar/admin` back here — redirecting it would be an
   //       infinite loop, not a wrong page.
   //
   //     307, not 308: which URL a visitor gets depends on their cookie, and a
@@ -144,8 +154,7 @@ export async function proxy(request: NextRequest) {
     preferred &&
     preferred !== DEFAULT_LOCALE &&
     localeFromPathname(pathname) === null &&
-    pathname !== "/admin" &&
-    !pathname.startsWith("/admin/") &&
+    !isEnglishOnlyPath(pathname) &&
     (request.method === "GET" || request.method === "HEAD")
   ) {
     const url = request.nextUrl.clone();

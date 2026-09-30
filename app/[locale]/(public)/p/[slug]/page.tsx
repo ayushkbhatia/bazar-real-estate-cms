@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
 import Link from "@/components/i18n/link";
+import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
 import {
   ChevronRight,
   BedDouble,
@@ -320,7 +321,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // No session lookup: with customer accounts gone the property page is the
   // same for everyone, which keeps it out of dynamic rendering.
-  const [amenityTaxonomy, similar, enquiryForm, valuationGate] =
+  const [amenityTaxonomy, similar, enquiryForm, valuationGate, mortgageFlowOpen] =
     await Promise.all([
       listAmenitiesTaxonomy(),
       getSimilarProperties(
@@ -331,6 +332,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       // The listing enquiry dialog — fields and copy come from /admin/forms.
       getForm("property_enquiry"),
       getForm("valuation_report_gate"),
+      // The "Get mortgage pre-approval" button (docs/mortgage, SPEC §4.1).
+      isMortgageFlowPublic(),
     ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
@@ -602,6 +605,23 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             listedDays={daysSince(property.published_at)}
           />
         </div>
+        {/*
+          Into the mortgage application flow with this listing attached, for
+          sale listings, once the flow is open to the public. Not designed;
+          kept quiet beside the price rather than competing with the
+          enquiry card.
+        */}
+        {mortgageFlowOpen && property.mode !== "rent" ? (
+          <div className="mt-4 flex justify-end">
+            <Link
+              href={MORTGAGE_ENTRY_LINKS.propertyDetail(property.reference)}
+              data-testid="mortgage-pre-approval"
+              className="inline-flex h-9 items-center rounded-md border border-bz-border-strong px-3.5 text-[13px] font-medium text-bz-ink transition-colors hover:bg-bz-surface-2 pointer-coarse:min-h-11"
+            >
+              {t("actions.mortgagePreApproval")}
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       {/* Key facts */}

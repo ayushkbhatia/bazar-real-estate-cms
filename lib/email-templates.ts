@@ -18,6 +18,12 @@ import {
 } from "@/lib/content-assets/email-brand";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
 import { isolateForLocale } from "@/lib/i18n/bidi";
+import { localeDateTag } from "@/lib/i18n/dates";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
+import { DUBAI_TIME_ZONE } from "@/lib/mortgage-requests/dubai-time";
+import { formatDayTime } from "@/lib/mortgage-requests/format";
+import { formatDuration } from "@/lib/mortgage-requests/sla";
+import type { MortgageService } from "@/lib/mortgage-requests/state";
 
 type Rendered = { subject: string; text: string; html: string };
 
@@ -196,6 +202,7 @@ export type EmailBlock = { html: string; text: string };
 
 const dirOf = (locale: EmailLocale) => (locale === "ar" ? "rtl" : "ltr");
 const startOf = (locale: EmailLocale) => (locale === "ar" ? "right" : "left");
+const endOf = (locale: EmailLocale) => (locale === "ar" ? "left" : "right");
 
 /**
  * The few words the PANELS supply themselves.
@@ -217,6 +224,7 @@ function panelWords(locale: EmailLocale) {
       references: "المراجع:",
       andMore: (n: number) => `…و${n} أخرى`,
       noAnswers: "(لا إجابات)",
+      documentsReceived: "المستندات المستلمة",
     };
   }
   return {
@@ -228,6 +236,7 @@ function panelWords(locale: EmailLocale) {
     references: "References:",
     andMore: (n: number) => `…and ${n} more`,
     noAnswers: "(no answers)",
+    documentsReceived: "Documents received",
   };
 }
 
@@ -346,6 +355,159 @@ export function formAnswersBlock(
     text: rows
       .map(([label, value]) => `${iso(label, locale)}: ${iso(value, locale)}`)
       .join("\n"),
+  };
+}
+
+/**
+ * The documents a Fast Pre-Approval applicant uploads, named as the upload
+ * step names them (docs/mortgage/SPEC.md §2.2). English verbatim from the
+ * designs, except "licence" in the UAE spelling (D28). The Arabic is a
+ * machine first draft (ADR-0008), like the rest of the emails' Arabic.
+ */
+const MORTGAGE_DOCUMENT_NAMES: Record<EmailLocale, Record<DocKind, string>> = {
+  en: {
+    emirates_id: "Emirates ID",
+    passport: "Passport copy",
+    salary_certificate: "Salary certificate",
+    bank_statements_3m: "Last 3 months' bank statements",
+    trade_license: "Business trade licence",
+    bank_statements_12m: "Last 1 year's bank statements",
+  },
+  ar: {
+    emirates_id: "الهوية الإماراتية",
+    passport: "نسخة جواز السفر",
+    salary_certificate: "شهادة الراتب",
+    bank_statements_3m: "كشوف الحساب البنكية لآخر 3 أشهر",
+    trade_license: "الرخصة التجارية",
+    bank_statements_12m: "كشوف الحساب البنكية لآخر سنة",
+  },
+};
+
+type PluralForms = Partial<Record<Intl.LDMLPluralRule, (n: number) => string>> & {
+  other: (n: number) => string;
+};
+
+/**
+ * "1 file", "3 files" — and in Arabic every form the language has: ملف واحد
+ * (1), ملفان (2), 3 ملفات (3–10), 11 ملفاً (11–99), 100 ملف. Which form a
+ * number takes is CLDR's rule, read from Intl.PluralRules rather than written
+ * here, so a count of 11 cannot come out in the 3–10 form.
+ */
+const FILE_COUNT: Record<EmailLocale, PluralForms> = {
+  en: { one: (n) => `${n} file`, other: (n) => `${n} files` },
+  ar: {
+    zero: (n) => `${n} ملف`,
+    one: () => "ملف واحد",
+    two: () => "ملفان",
+    few: (n) => `${n} ملفات`,
+    many: (n) => `${n} ملفاً`,
+    other: (n) => `${n} ملف`,
+  },
+};
+
+const PLURAL_RULES: Record<EmailLocale, Intl.PluralRules> = {
+  en: new Intl.PluralRules("en"),
+  ar: new Intl.PluralRules("ar"),
+};
+
+function fileCount(n: number, locale: EmailLocale): string {
+  const forms = FILE_COUNT[locale];
+  return (forms[PLURAL_RULES[locale].select(n)] ?? forms.other)(n);
+}
+
+/**
+ * "1 file", "3 files", "ملفان" — for a count the caller was handed. Null for
+ * one that isn't a count (zero, negative, not a number), so an email says
+ * what `{{mortgage_files}}` falls back to rather than "0 files".
+ */
+export function mortgageFileCount(files: number, locale: EmailLocale = "en"): string | null {
+  const n = Math.round(files);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return fileCount(n, locale);
+}
+
+/**
+ * "1 document", "4 documents" — and in Arabic every form: مستند واحد (1),
+ * مستندان (2), 4 مستندات (3–10), 11 مستنداً (11–99), 100 مستند. CLDR picks
+ * the form, as for the file counts above.
+ */
+const DOCUMENT_COUNT: Record<EmailLocale, PluralForms> = {
+  en: { one: (n) => `${n} document`, other: (n) => `${n} documents` },
+  ar: {
+    zero: (n) => `${n} مستند`,
+    one: () => "مستند واحد",
+    two: () => "مستندان",
+    few: (n) => `${n} مستندات`,
+    many: (n) => `${n} مستنداً`,
+    other: (n) => `${n} مستند`,
+  },
+};
+
+/**
+ * How many documents a bank's package holds, in words. Null for a count that
+ * isn't one (zero, negative, not a number), so the email says what
+ * `{{mortgage_document_count}}` falls back to rather than "0 documents".
+ */
+export function mortgageDocumentCount(
+  documents: number,
+  locale: EmailLocale = "en",
+): string | null {
+  const n = Math.round(documents);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const forms = DOCUMENT_COUNT[locale];
+  return (forms[PLURAL_RULES[locale].select(n)] ?? forms.other)(n);
+}
+
+/**
+ * A document's name as the upload step gives it, in the language asked for:
+ * what a send path passes as the `documentName` of a re-upload email, so an
+ * Arabic applicant reads the name in Arabic.
+ */
+export function mortgageDocumentName(kind: DocKind, locale: EmailLocale = "en"): string {
+  return MORTGAGE_DOCUMENT_NAMES[locale][kind];
+}
+
+/**
+ * The "Documents received" list the confirmation page (W7) shows, as a
+ * panel: each document the applicant sent and how many files it came in, in
+ * the order given — the order the upload step asked for them.
+ *
+ * The names and counts are the code's own words, not the applicant's, so
+ * nothing here is isolated: an Arabic count ("3 ملفات") already reads right
+ * to left in an RTL cell. The eyebrow drops its tracking in Arabic, where
+ * letter-spacing pulls joined letters apart.
+ */
+export function mortgageDocumentsBlock(
+  documents: readonly { kind: DocKind; files: number }[],
+  locale: EmailLocale = "en",
+): EmailBlock {
+  if (documents.length === 0) return { html: "", text: "" };
+  const t = panelWords(locale);
+  const rows = documents.map((d) => ({
+    name: MORTGAGE_DOCUMENT_NAMES[locale][d.kind],
+    count: fileCount(d.files, locale),
+  }));
+  const eyebrow =
+    locale === "ar"
+      ? "font-size:12px"
+      : "font-size:11px;letter-spacing:0.12em;text-transform:uppercase";
+  return {
+    html: `<div dir="${dirOf(locale)}" style="margin:24px 0;padding:18px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px;text-align:${startOf(locale)}">
+      <div style="${eyebrow};color:#99896e">${t.documentsReceived}</div>
+      <table role="presentation" dir="${dirOf(locale)}" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:10px">
+        ${rows
+          .map(
+            (r) => `<tr>
+          <td style="padding:8px 0;border-top:1px solid #F0F0EA;font-size:14px;color:#32312d;text-align:${startOf(locale)}">${escape(r.name)}</td>
+          <td style="padding:8px 0;padding-${startOf(locale)}:12px;border-top:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;text-align:${endOf(locale)}">${escape(r.count)}</td>
+        </tr>`,
+          )
+          .join("")}
+      </table>
+    </div>`,
+    text:
+      `${t.documentsReceived}:\n` +
+      rows.map((r) => `  · ${r.name} — ${r.count}`).join("\n"),
   };
 }
 
@@ -968,6 +1130,901 @@ export function bulkReassignDigestTemplate(
     <p><strong>${opts.count} ${opts.count === 1 ? "listing was" : "listings were"}</strong> just assigned to you in the Bazar CMS.</p>
     ${refs.html}
     <p style="margin-top:22px">${button(url, "Open my queue", brand)}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Mortgage flow ─────────────────────────────────────────────────────
+//
+// The applicant's confirmations (docs/mortgage/SPEC.md §6), sent the moment a
+// request is submitted. Provisional wording — the copy for every mortgage
+// email is an open design decision (docs/mortgage/DECISIONS.md D29) — so they
+// say what the confirmation pages (W4, W7) already say, and no more. Times are
+// Asia/Dubai, printed by the function the pages use, so the email and the
+// screen the applicant just left agree to the minute.
+//
+// The body names the applicant by first name and nothing else about them: no
+// date of birth, mobile or email address. An inbox is not the place for them.
+
+/** "Priya Raman" → "Priya". Blank greets "there", as `{{lead_first_name}}` does. */
+function applicantFirstName(name: string): string {
+  return name.trim().split(/\s+/)[0] || "there";
+}
+
+/** Mortgage Consultancy submitted (W3 → W4). */
+export function mortgageConsultancyReceivedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    /** ISO instant. */
+    submittedAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const received = formatDayTime(opts.submittedAt, "en");
+  const subject = `We've received your request — ${opts.reference}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Thank you for requesting a mortgage consultation with Bazar. We received your request on ${received}.\n\n` +
+    `Your reference is ${opts.reference}.\n\n` +
+    `A member of our mortgage team will contact you shortly.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Thank you for requesting a mortgage consultation with Bazar. We received your request on ${escape(received)}.</p>
+    <p>Your reference is <strong>${escape(opts.reference)}</strong>.</p>
+    <p>A member of our mortgage team will contact you shortly.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * Fast Pre-Approval submitted (W5/W6 → W7).
+ *
+ * `dueAt` comes from the server, which has it from the SLA module: the
+ * promise is 24 WORKING hours (D11), so the due time is usually days after
+ * submission, and the copy says "working hours" rather than let "24 hours"
+ * read as a clock the team is not keeping (D11a).
+ */
+export function mortgagePreapprovalReceivedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    /** ISO instant. */
+    submittedAt: string;
+    /** ISO instant: when the team has promised to contact them by. */
+    dueAt: string;
+    /** In the order the upload step asked for them. */
+    documents: readonly { kind: DocKind; files: number }[];
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const due = formatDayTime(opts.dueAt, "en");
+  const documents = mortgageDocumentsBlock(opts.documents);
+  const subject = `Your Fast Pre-Approval application — ${opts.reference}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Thank you for applying for Fast Pre-Approval with Bazar. Your details and documents have reached our mortgage team.\n\n` +
+    `Your reference is ${opts.reference}.\n\n` +
+    `We'll contact you by ${due} — 24 working hours from when you submitted.\n\n` +
+    (documents.text ? `${documents.text}\n\n` : "") +
+    `If we need anything else, we'll message you on WhatsApp with a secure link. You won't need to start again.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Thank you for applying for Fast Pre-Approval with Bazar. Your details and documents have reached our mortgage team.</p>
+    <p>Your reference is <strong>${escape(opts.reference)}</strong>.</p>
+    <p>We'll contact you by <strong>${escape(due)}</strong> — 24 working hours from when you submitted.</p>
+    ${documents.html}
+    <p>If we need anything else, we'll message you on WhatsApp with a secure link. You won't need to start again.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Mortgage CMS ──────────────────────────────────────────────────────
+//
+// What the mortgage team's work sends (docs/mortgage/SPEC.md §6): three alerts
+// to the team, and the applicant's consultation booking and Fast Pre-Approval
+// invitation. Provisional wording like the confirmations above (D29). Each
+// built-in's text half is what its starting wording in
+// lib/content-assets/system-defaults.ts flattens to, sentence for sentence, so
+// publishing that wording unchanged sends the same email.
+
+/** How a consultation is held (`mortgage_consult_format`). */
+export type MortgageConsultationFormat = "phone" | "video" | "office";
+
+/**
+ * The two services by the names the website and the CMS give them. The
+ * Arabic is the flow's own (messages/ar/mortgage.json), a machine first draft
+ * like the rest of the emails' Arabic (ADR-0008).
+ */
+const MORTGAGE_SERVICE_NAMES: Record<EmailLocale, Record<MortgageService, string>> = {
+  en: { pre_approval: "Fast Pre-Approval", consultancy: "Mortgage Consultancy" },
+  ar: { pre_approval: "الموافقة المبدئية السريعة", consultancy: "استشارة التمويل العقاري" },
+};
+
+export function mortgageServiceName(
+  service: MortgageService,
+  locale: EmailLocale = "en",
+): string {
+  return MORTGAGE_SERVICE_NAMES[locale][service];
+}
+
+const CONSULTATION_FORMATS: Record<EmailLocale, Record<MortgageConsultationFormat, string>> = {
+  en: { phone: "Phone call", video: "Video call", office: "At our office" },
+  ar: { phone: "مكالمة هاتفية", video: "مكالمة فيديو", office: "في مكتبنا" },
+};
+
+export function mortgageConsultationFormatName(
+  format: MortgageConsultationFormat,
+  locale: EmailLocale = "en",
+): string {
+  return CONSULTATION_FORMATS[locale][format];
+}
+
+/**
+ * "20 minutes", and in Arabic every form: دقيقة واحدة (1), دقيقتان (2),
+ * 3 دقائق (3–10), 20 دقيقة (11 and up). CLDR picks the form, as for the file
+ * counts above.
+ */
+const MINUTE_COUNT: Record<EmailLocale, PluralForms> = {
+  en: { one: (n) => `${n} minute`, other: (n) => `${n} minutes` },
+  ar: {
+    zero: (n) => `${n} دقيقة`,
+    one: () => "دقيقة واحدة",
+    two: () => "دقيقتان",
+    few: (n) => `${n} دقائق`,
+    many: (n) => `${n} دقيقة`,
+    other: (n) => `${n} دقيقة`,
+  },
+};
+
+/**
+ * A number of minutes in words — a consultation's length, how long a code
+ * lasts. Null for one that isn't a length (zero, negative, not a number), so
+ * the email says what its token falls back to rather than "0 minutes".
+ */
+export function minuteCount(
+  minutes: number,
+  locale: EmailLocale = "en",
+): string | null {
+  if (!Number.isFinite(minutes) || minutes <= 0) return null;
+  const n = Math.round(minutes);
+  const forms = MINUTE_COUNT[locale];
+  return (forms[PLURAL_RULES[locale].select(n)] ?? forms.other)(n);
+}
+
+/**
+ * A consultation's length in words, or null — in which case the email says
+ * what `{{mortgage_consultation_duration}}` falls back to.
+ */
+export function consultationLength(
+  minutes: number,
+  locale: EmailLocale = "en",
+): string | null {
+  return minuteCount(minutes, locale);
+}
+
+/**
+ * A few labelled facts — "Reference: BZM-26-0412" — as a list in both
+ * halves. The text half is how the rich-text renderer flattens a list ("· "
+ * and one fact a line), which is what keeps a built-in and its starting
+ * wording word for word the same.
+ */
+function factList(
+  facts: readonly { label: string; value: string; strong?: boolean; after?: string }[],
+): EmailBlock {
+  return {
+    html: `<ul style="margin:0 0 14px;padding-left:22px">${facts
+      .map(
+        (f) =>
+          `<li style="margin:0 0 4px">${escape(f.label)}: ${
+            f.strong ? `<strong>${escape(f.value)}</strong>` : escape(f.value)
+          }${f.after ? ` ${escape(f.after)}` : ""}</li>`,
+      )
+      .join("")}</ul>`,
+    text: facts
+      .map((f) => `· ${f.label}: ${f.value}${f.after ? ` ${f.after}` : ""}`)
+      .join("\n"),
+  };
+}
+
+/**
+ * All a team alert carries: the request's reference, its service and a link
+ * to it. Nothing about the applicant — no name, mobile, email or date of
+ * birth. An email passes through a provider and waits in an inbox; the team
+ * reads the rest in the CMS, behind the link.
+ */
+type MortgageTeamAlert = {
+  reference: string;
+  service: MortgageService;
+  /** Absolute URL of the request in the CMS. */
+  link: string;
+};
+
+const TEAM_SIGN_OFF = "— Bazar CMS";
+
+/** A new request, to its owner and the Head of mortgages. */
+export function mortgageTeamNewRequestTemplate(
+  opts: MortgageTeamAlert & {
+    /** ISO instant. */
+    submittedAt: string;
+    /** Who owns it; null while nobody does. */
+    ownerName: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const service = mortgageServiceName(opts.service);
+  const facts = factList([
+    { label: "Reference", value: opts.reference, strong: true },
+    { label: "Service", value: service },
+    { label: "Received", value: formatDayTime(opts.submittedAt, "en") },
+    // "Unassigned" is what `{{mortgage_owner}}` falls back to.
+    { label: "Owner", value: opts.ownerName?.trim() || "Unassigned" },
+  ]);
+  const subject = `New ${service} · ${opts.reference}`;
+
+  const text =
+    `A new mortgage request has arrived.\n\n` +
+    `${facts.text}\n\n` +
+    `Open the request: ${opts.link}\n\n` +
+    `The applicant's details are in the CMS, not in this email.\n\n` +
+    `${TEAM_SIGN_OFF}\n`;
+
+  const html = shell(
+    `
+    <p>A new mortgage request has arrived.</p>
+    ${facts.html}
+    <p style="margin-top:22px">${button(opts.link, "Open the request", brand)}</p>
+    <p style="font-size:13px;color:${brand.mutedColor}">The applicant's details are in the CMS, not in this email.</p>
+    <p style="margin-top:24px;color:#5a5a55">${TEAM_SIGN_OFF}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * A Fast Pre-Approval inside its last working hours (the at-risk window, 4
+ * by default). "Left" is WORKING time, as sla.ts counts it, so the due time
+ * beside it is the instant to plan by.
+ */
+export function mortgageTeamAtRiskTemplate(
+  opts: MortgageTeamAlert & {
+    /** Working seconds left on the promise, from sla.ts. */
+    remainingSeconds: number;
+    /** ISO instant the promise falls due. */
+    dueAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const remaining = formatDuration(opts.remainingSeconds);
+  const facts = factList([
+    { label: "Reference", value: opts.reference, strong: true },
+    { label: "Service", value: mortgageServiceName(opts.service) },
+    { label: "Due", value: formatDayTime(opts.dueAt, "en") },
+  ]);
+  const subject = `At risk · ${opts.reference} has ${remaining} left`;
+
+  const text =
+    `This request has ${remaining} of working time left before its promise to the applicant falls due.\n\n` +
+    `${facts.text}\n\n` +
+    `Open the request: ${opts.link}\n\n` +
+    `${TEAM_SIGN_OFF}\n`;
+
+  const html = shell(
+    `
+    <p>This request has <strong>${escape(remaining)}</strong> of working time left before its promise to the applicant falls due.</p>
+    ${facts.html}
+    <p style="margin-top:22px">${button(opts.link, "Open the request", brand)}</p>
+    <p style="margin-top:24px;color:#5a5a55">${TEAM_SIGN_OFF}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * A Fast Pre-Approval past its due time with the clock still running. The
+ * clock stops only on a decision (SPEC §2.5), so "no decision yet" is what a
+ * breach means — not a claim about whether anyone has called.
+ */
+export function mortgageTeamBreachedTemplate(
+  opts: MortgageTeamAlert & {
+    /** ISO instant the promise fell due. */
+    dueAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const facts = factList([
+    { label: "Reference", value: opts.reference, strong: true },
+    { label: "Service", value: mortgageServiceName(opts.service) },
+    { label: "Was due", value: formatDayTime(opts.dueAt, "en") },
+  ]);
+  const subject = `Promise missed · ${opts.reference}`;
+
+  const text =
+    `This request has missed its promise to the applicant, and there is no decision yet.\n\n` +
+    `${facts.text}\n\n` +
+    `The applicant was told to expect contact by then. If the decision needs more time, let them know.\n\n` +
+    `Open the request: ${opts.link}\n\n` +
+    `${TEAM_SIGN_OFF}\n`;
+
+  const html = shell(
+    `
+    <p>This request has missed its promise to the applicant, and there is no decision yet.</p>
+    ${facts.html}
+    <p>The applicant was told to expect contact by then. If the decision needs more time, let them know.</p>
+    <p style="margin-top:22px">${button(opts.link, "Open the request", brand)}</p>
+    <p style="margin-top:24px;color:#5a5a55">${TEAM_SIGN_OFF}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * A consultation booked from a Mortgage Consultancy request (C6). The send
+ * path attaches the calendar invite; this only says it is there. A blank
+ * adviser reads as `{{mortgage_adviser}}` falls back.
+ */
+export function mortgageConsultationBookedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    /** ISO instant. */
+    startsAt: string;
+    durationMinutes: number;
+    format: MortgageConsultationFormat;
+    adviserName: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const adviser = opts.adviserName.trim() || "Bazar's mortgage team";
+  const when = formatDayTime(opts.startsAt, "en");
+  const facts = factList([
+    { label: "When", value: when, strong: true, after: "(UAE time)" },
+    { label: "How", value: mortgageConsultationFormatName(opts.format) },
+    {
+      label: "Duration",
+      value: consultationLength(opts.durationMinutes) ?? "as in your calendar invite",
+    },
+    { label: "Reference", value: opts.reference },
+  ]);
+  const subject = `Your mortgage consultation is booked for ${when}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Your mortgage consultation with ${adviser} is booked.\n\n` +
+    `${facts.text}\n\n` +
+    `A calendar invite is attached — open it to add the consultation to your calendar.\n\n` +
+    `If the time no longer suits you, reply to this email and we'll find another.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Your mortgage consultation with ${escape(adviser)} is booked.</p>
+    ${facts.html}
+    <p>A calendar invite is attached — open it to add the consultation to your calendar.</p>
+    <p>If the time no longer suits you, reply to this email and we'll find another.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * The secure link a consultancy applicant is sent to apply for Fast
+ * Pre-Approval (C6 → W8's invite landing). Their details carry over, so the
+ * link leads straight to the documents — after a code sent to their mobile,
+ * named without its channel because that is still open (D5).
+ */
+export function mortgagePreapprovalInviteTemplate(
+  opts: {
+    name: string;
+    /** The consultancy request's reference. */
+    reference: string;
+    adviserName: string;
+    /** Absolute secure link, /mortgages/r/<token>. */
+    link: string;
+    /** ISO instant. */
+    expiresAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const adviser = opts.adviserName.trim() || "Bazar's mortgage team";
+  const expires = formatDayTime(opts.expiresAt, "en");
+  const subject = "Your secure link to apply for Fast Pre-Approval";
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `${adviser} has sent you a secure link to apply for Fast Pre-Approval with Bazar.\n\n` +
+    `Your details carry over from your consultation request (${opts.reference}), so you'll only need to upload your documents.\n\n` +
+    `Start your application: ${opts.link}\n\n` +
+    `Before you upload, we'll send you a code to confirm it's you.\n\n` +
+    `The link works until ${expires}. It's personal to you, so please don't forward this email.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>${escape(adviser)} has sent you a secure link to apply for Fast Pre-Approval with Bazar.</p>
+    <p>Your details carry over from your consultation request (${escape(opts.reference)}), so you'll only need to upload your documents.</p>
+    <p style="margin-top:22px">${button(opts.link, "Start your application", brand)}</p>
+    <p>Before you upload, we'll send you a code to confirm it's you.</p>
+    <p>The link works until <strong>${escape(expires)}</strong>. It's personal to you, so please don't forward this email.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Mortgage review ───────────────────────────────────────────────────
+//
+// What reviewing a Fast Pre-Approval's documents sends (docs/mortgage/SPEC.md
+// §6, PLAN Phase 5): an adviser's request to replace or add to one document
+// (C4 → W8), the one-time code that opens a secure link, and the team's
+// notice that the document has come back. Provisional wording like the rest
+// (D29), and held to the same rule: each built-in's text half is what its
+// starting wording flattens to, sentence for sentence.
+//
+// None of them says how the code arrives. It goes by email until WhatsApp is
+// connected, and by WhatsApp after (D5), so a sentence naming either would be
+// wrong half the time.
+
+/**
+ * An adviser's message to the applicant (C4), as the email quotes it.
+ *
+ * Plain text the adviser typed in the CMS: escaped, its line breaks kept, and
+ * nothing in it made into a link or markup — an adviser who types `<b>` or
+ * `**` sends those characters. A panel rather than a word so that the
+ * built-in email and its starting wording quote it the same way, every line
+ * of it; a value dropped into a rich-text quote has only its first line
+ * marked in the plain-text half.
+ *
+ * Tidied the way the plain-text half tidies everything, so the two agree
+ * line for line: control characters and trailing spaces go, a run of blank
+ * lines becomes one, and a blank message draws nothing.
+ */
+export function mortgageAdviserMessageBlock(
+  message: string,
+  locale: EmailLocale = "en",
+): EmailBlock {
+  const lines: string[] = [];
+  for (const raw of message.replace(/\r\n?/g, "\n").split("\n")) {
+    const line = raw.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").replace(/\s+$/, "");
+    if (line === "" && (lines.length === 0 || lines[lines.length - 1] === "")) continue;
+    lines.push(line);
+  }
+  while (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
+  if (lines.length === 0) return { html: "", text: "" };
+
+  return {
+    html: `<div dir="${dirOf(locale)}" style="margin:20px 0;padding:14px 18px;background:#fff;border:1px solid #E5E5DF;border-radius:8px;color:#32312d;text-align:${startOf(locale)}">${lines
+      .map((l) => (l ? iso(escape(l), locale) : ""))
+      .join("<br>")}</div>`,
+    // A blank line stays blank rather than a bare ">", which the plain-text
+    // half would drop.
+    text: lines.map((l) => (l ? `> ${iso(l, locale)}` : "")).join("\n"),
+  };
+}
+
+/**
+ * An adviser asks a Fast Pre-Approval applicant to replace or add to one
+ * document (C4 → W8). The request is on hold until it arrives; the documents
+ * already accepted are not asked for again. A blank adviser or document name
+ * reads as its token falls back.
+ */
+export function mortgageReuploadRequestTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    adviserName: string;
+    /** "Last 1 year's bank statements". */
+    documentName: string;
+    /** The adviser's own words, plain text. */
+    message: string;
+    /** Absolute secure link, /mortgages/r/<token>. */
+    link: string;
+    /** ISO instant. */
+    expiresAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const adviser = opts.adviserName.trim() || "Bazar's mortgage team";
+  const documentName = opts.documentName.trim() || "the requested document";
+  const message = mortgageAdviserMessageBlock(opts.message);
+  const expires = formatDayTime(opts.expiresAt, "en");
+  const subject = `One document needs another look — ${opts.reference}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `${adviser} has asked for another look at one document for your application ${opts.reference}: ${documentName}.\n\n` +
+    (message.text ? `${message.text}\n\n` : "") +
+    `Your application is on hold until the document arrives. Any documents we've already accepted stay accepted.\n\n` +
+    `Upload your document: ${opts.link}\n\n` +
+    `Before you upload, we'll send you a code to confirm it's you.\n\n` +
+    `The link works until ${expires}. It's personal to you, so please don't forward this email.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>${escape(adviser)} has asked for another look at one document for your application ${escape(opts.reference)}: <strong>${escape(documentName)}</strong>.</p>
+    ${message.html}
+    <p>Your application is on hold until the document arrives. Any documents we've already accepted stay accepted.</p>
+    <p style="margin-top:22px">${button(opts.link, "Upload your document", brand)}</p>
+    <p>Before you upload, we'll send you a code to confirm it's you.</p>
+    <p>The link works until <strong>${escape(expires)}</strong>. It's personal to you, so please don't forward this email.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * The one-time code that opens a secure link — a re-upload request or a Fast
+ * Pre-Approval invitation (SPEC §8). The code is the point of the email, so
+ * it is set large in a face that does not confuse 0 with O, and it is never
+ * in the subject line, which a phone prints on its lock screen.
+ */
+export function mortgageCodeTemplate(
+  opts: {
+    name: string;
+    code: string;
+    /** How long the code works. */
+    minutes: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  // "a few minutes" is what `{{mortgage_code_expires_in}}` falls back to.
+  const expiresIn = minuteCount(opts.minutes) ?? "a few minutes";
+  const subject = "Your Bazar verification code";
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Use this code to open your secure link:\n\n` +
+    `${opts.code}\n\n` +
+    `It expires in ${expiresIn}.\n\n` +
+    `If you didn't ask for it, you can ignore this email — nobody can open your application without the code.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Use this code to open your secure link:</p>
+    <p style="font-family:'Courier New',monospace;font-size:28px;letter-spacing:6px;color:${brand.textColor};margin:12px 0">${escape(opts.code)}</p>
+    <p>It expires in ${escape(expiresIn)}.</p>
+    <p>If you didn't ask for it, you can ignore this email — nobody can open your application without the code.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * The applicant has sent the document an adviser asked for (W8 → C2): the
+ * request is back in review and its promise clock has resumed. Like every
+ * team alert, it names the request by reference and nothing about the
+ * applicant.
+ */
+export function mortgageTeamReuploadReceivedTemplate(
+  opts: MortgageTeamAlert & {
+    /** "Last 1 year's bank statements". */
+    documentName: string;
+    /** How many new files arrived with it. */
+    files: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const facts = factList([
+    { label: "Reference", value: opts.reference, strong: true },
+    { label: "Service", value: mortgageServiceName(opts.service) },
+    // The fallbacks are `{{mortgage_document}}`'s and `{{mortgage_files}}`'s.
+    { label: "Document", value: opts.documentName.trim() || "the requested document" },
+    { label: "Uploaded", value: mortgageFileCount(opts.files) ?? "new files" },
+  ]);
+  const subject = `Re-upload received · ${opts.reference}`;
+
+  const text =
+    `A re-upload has arrived.\n\n` +
+    `${facts.text}\n\n` +
+    `The request is back in review, and the clock on its promise to the applicant has resumed.\n\n` +
+    `Open the request: ${opts.link}\n\n` +
+    `${TEAM_SIGN_OFF}\n`;
+
+  const html = shell(
+    `
+    <p>A re-upload has arrived.</p>
+    ${facts.html}
+    <p>The request is back in review, and the clock on its promise to the applicant has resumed.</p>
+    <p style="margin-top:22px">${button(opts.link, "Open the request", brand)}</p>
+    <p style="margin-top:24px;color:#5a5a55">${TEAM_SIGN_OFF}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Mortgage decision ─────────────────────────────────────────────────
+//
+// What deciding a Fast Pre-Approval sends the applicant (docs/mortgage/SPEC.md
+// §6, PLAN Phase 6): the adviser's own message — prefilled in the CMS and
+// edited before it goes (D19, C5) — quoted the way the re-upload request
+// quotes one, then how to reach them; a pre-approval also has the bank's
+// letter, which the send path attaches. Provisional wording like the rest
+// (D29), held to the same rule: each built-in's text half is what its starting
+// wording flattens to, sentence for sentence.
+//
+// The subject never says what the message does. A phone prints the subject on
+// its lock screen, so both outcomes are "an update", in the same words: a
+// warmer subject for good news would make the plain one read as bad news.
+// Nothing about the applicant beyond their first name.
+
+/** One subject for both outcomes, so a lock screen tells neither apart. */
+function mortgageDecisionSubject(reference: string): string {
+  return `An update on your Fast Pre-Approval application — ${reference}`;
+}
+
+/**
+ * Who has written, as an opening line names them, and the name the reply line
+ * uses. A blank adviser reads as `{{mortgage_adviser}}` falls back — "Bazar's
+ * mortgage team" — except that the opening line then names the team once, not
+ * "Bazar's mortgage team from Bazar's mortgage team". That line is the one
+ * place these emails and their starting wording can differ, because tokens
+ * cannot branch, and only when the send path has no name for the adviser.
+ */
+function mortgageAdviserLines(adviserName: string): { adviser: string; writer: string } {
+  const named = adviserName.trim();
+  const adviser = named || "Bazar's mortgage team";
+  return { adviser, writer: named ? `${named} from Bazar's mortgage team` : adviser };
+}
+
+/**
+ * A Fast Pre-Approval declined (C5's Decline, D19): who has written, their
+ * message quoted as they wrote it, and how to reach them.
+ */
+export function mortgageDecisionDeclinedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    adviserName: string;
+    /** The adviser's own words, plain text. */
+    message: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const { adviser, writer } = mortgageAdviserLines(opts.adviserName);
+  const message = mortgageAdviserMessageBlock(opts.message);
+  const subject = mortgageDecisionSubject(opts.reference);
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `${writer} has written about your Fast Pre-Approval application ${opts.reference}.\n\n` +
+    (message.text ? `${message.text}\n\n` : "") +
+    `You can reply to this email to reach ${adviser} directly, or call the mortgage team on +971 2 632 2223.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>${escape(writer)} has written about your Fast Pre-Approval application ${escape(opts.reference)}.</p>
+    ${message.html}
+    <p>You can reply to this email to reach ${escape(adviser)} directly, or call the mortgage team on +971 2 632 2223.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * A Fast Pre-Approval confirmed (C5's Pre-approve): who has written, their
+ * message quoted as they wrote it, the bank whose letter is attached, and how
+ * to reach them. The send path attaches the letter; this only says it is
+ * there. A blank bank reads as `{{mortgage_bank}}` falls back.
+ */
+export function mortgageDecisionPreApprovedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    adviserName: string;
+    /** The adviser's own words, plain text. */
+    message: string;
+    /** The bank whose pre-approval letter is attached. */
+    bankName: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const { adviser, writer } = mortgageAdviserLines(opts.adviserName);
+  const bank = opts.bankName.trim() || "the bank";
+  const message = mortgageAdviserMessageBlock(opts.message);
+  const subject = mortgageDecisionSubject(opts.reference);
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `${writer} has written about your Fast Pre-Approval application ${opts.reference}.\n\n` +
+    (message.text ? `${message.text}\n\n` : "") +
+    `Your pre-approval letter from ${bank} is attached.\n\n` +
+    `You can reply to this email to reach ${adviser} directly, or call the mortgage team on +971 2 632 2223.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>${escape(writer)} has written about your Fast Pre-Approval application ${escape(opts.reference)}.</p>
+    ${message.html}
+    <p>Your pre-approval letter from ${escape(bank)} is attached.</p>
+    <p>You can reply to this email to reach ${escape(adviser)} directly, or call the mortgage team on +971 2 632 2223.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Partner banks ─────────────────────────────────────────────────────
+//
+// What sending a Fast Pre-Approval to the banks sends (SPEC §6, PLAN Phase 6):
+// each chosen bank's package inbox gets an expiring, logged link to a
+// structured summary and the documents — never the documents themselves
+// (SPEC §8) — and a bank that hasn't answered can be sent a reminder with a
+// fresh link, since the first is stored only as its hash.
+//
+// Neither carries anything about the applicant: no name, date of birth or
+// salary. The reference is all the email holds; the details are behind the
+// link, where every open and download is recorded. English in practice, as
+// the team's alerts are: a bank's language is not recorded.
+
+/**
+ * "Tue 22 Sep" — a day, as the mortgage flow prints one: Asia/Dubai, and in
+ * English the words formatDayTime assembles (its fixed month names keep
+ * September "Sep" where current ICU writes "Sept"), less the time.
+ */
+export function mortgageDay(value: string, locale: EmailLocale = "en"): string {
+  if (locale === "en") return formatDayTime(value, "en").replace(/, \d{2}:\d{2}$/, "");
+  return new Intl.DateTimeFormat(localeDateTag(locale), {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: DUBAI_TIME_ZONE,
+  }).format(new Date(value));
+}
+
+/**
+ * A partner bank's package (C2's Accept application → With banks): who has
+ * shared it, how many documents it holds, and the link, which works until
+ * `expiresAt`. A blank bank, adviser or count reads as its token falls back.
+ */
+export function mortgageBankPackageTemplate(
+  opts: {
+    /** "First Abu Dhabi Bank". */
+    bankName: string;
+    reference: string;
+    adviserName: string;
+    /** Absolute package link, /mortgages/p/<token>. */
+    link: string;
+    /** ISO instant. */
+    expiresAt: string;
+    /** How many documents the package holds. */
+    documentCount: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  // The fallbacks are `{{mortgage_bank}}`'s and `{{mortgage_document_count}}`'s.
+  const bank = opts.bankName.trim() || "the bank";
+  const documents = mortgageDocumentCount(opts.documentCount) ?? "its documents";
+  const { adviser, writer } = mortgageAdviserLines(opts.adviserName);
+  const expires = formatDayTime(opts.expiresAt, "en");
+  const subject = `Fast Pre-Approval package ${opts.reference} from Bazar`;
+
+  const text =
+    `Hello to the team at ${bank},\n\n` +
+    `${writer} has shared a Fast Pre-Approval application with you: a structured summary and ${documents}.\n\n` +
+    `Open the package: ${opts.link}\n\n` +
+    `The link works until ${expires}. Every open and download is recorded.\n\n` +
+    `Reply to this email to reach ${adviser}.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello to the team at ${escape(bank)},</p>
+    <p>${escape(writer)} has shared a Fast Pre-Approval application with you: a structured summary and ${escape(documents)}.</p>
+    <p style="margin-top:22px">${button(opts.link, "Open the package", brand)}</p>
+    <p>The link works until <strong>${escape(expires)}</strong>. Every open and download is recorded.</p>
+    <p>Reply to this email to reach ${escape(adviser)}.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * A reminder to a bank that hasn't answered (C5's Send a reminder): the day
+ * the package went, and a fresh link — the first one is stored only as its
+ * hash, so it cannot be sent again. Worded to read the same with or without
+ * the adviser's name, so it and its starting wording never differ.
+ */
+export function mortgageBankReminderTemplate(
+  opts: {
+    bankName: string;
+    reference: string;
+    adviserName: string;
+    /** The fresh link. */
+    link: string;
+    /** ISO instant the fresh link expires. */
+    expiresAt: string;
+    /** ISO instant the package first went to this bank. */
+    sentAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const bank = opts.bankName.trim() || "the bank";
+  const { adviser } = mortgageAdviserLines(opts.adviserName);
+  const sent = mortgageDay(opts.sentAt, "en");
+  const expires = formatDayTime(opts.expiresAt, "en");
+  const subject = `Reminder: Fast Pre-Approval package ${opts.reference}`;
+
+  const text =
+    `Hello to the team at ${bank},\n\n` +
+    `A reminder that ${adviser} shared Fast Pre-Approval application ${opts.reference} with you on ${sent}. We'd be grateful for your response.\n\n` +
+    `Here's a fresh link, working until ${expires}.\n\n` +
+    `Open the package: ${opts.link}\n\n` +
+    `Every open and download is recorded.\n\n` +
+    `Reply to this email to reach ${adviser}.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello to the team at ${escape(bank)},</p>
+    <p>A reminder that ${escape(adviser)} shared Fast Pre-Approval application ${escape(opts.reference)} with you on ${escape(sent)}. We'd be grateful for your response.</p>
+    <p>Here's a fresh link, working until <strong>${escape(expires)}</strong>.</p>
+    <p style="margin-top:22px">${button(opts.link, "Open the package", brand)}</p>
+    <p>Every open and download is recorded.</p>
+    <p>Reply to this email to reach ${escape(adviser)}.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
   `,
     brand,
   );

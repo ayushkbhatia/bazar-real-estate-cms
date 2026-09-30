@@ -53,6 +53,7 @@ const REPO_ROOT = path.join(__dirname, "..", "..");
  */
 const SEARCH_PREFIXES = [
   "app/[locale]/(public)/",
+  "app/[locale]/(mortgage)/",
   "app/[locale]/error.tsx",
   "app/[locale]/not-found.tsx",
   "app/_consent/",

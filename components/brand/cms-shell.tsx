@@ -25,6 +25,8 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdminSession } from "@/app/[locale]/(admin)/_components/admin-session";
+import { MortgageNavIcon } from "@/components/mortgage/glyphs";
 import { Wordmark } from "./wordmark";
 import { NotificationsBell } from "./notifications-bell";
 import { NotificationsChime } from "@/lib/realtime/notifications-chime";
@@ -38,6 +40,8 @@ type NavItem = {
   label: string;
   href: string;
   icon: React.ElementType;
+  /** A count beside the label (the mortgage queue's new requests). */
+  badge?: number;
 };
 
 const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
@@ -95,6 +99,50 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   },
 ];
 
+/**
+ * "Mortgage requests" joins the Inbox group after Enquiries for members of
+ * the mortgage team only — everyone else, admins included, never sees it
+ * (docs/mortgage/cms/00-foundations §3–4, decision D10). Its badge is the
+ * count of new requests, resolved by the admin layout with the session.
+ */
+function navGroups(mortgage: { newCount: number } | null) {
+  if (!mortgage) return NAV_GROUPS;
+  return NAV_GROUPS.map((g) =>
+    g.group !== "Inbox"
+      ? g
+      : {
+          ...g,
+          items: g.items.flatMap((item) =>
+            item.href === "/admin/enquiries"
+              ? [
+                  item,
+                  {
+                    label: "Mortgage requests",
+                    href: "/admin/mortgages",
+                    icon: MortgageNavIcon,
+                    badge: mortgage.newCount,
+                  },
+                ]
+              : [item],
+          ),
+        },
+  );
+}
+
+function NavBadge({ count, active }: { count: number; active: boolean }) {
+  if (count <= 0) return null;
+  return (
+    <span
+      className={cn(
+        "mono ms-auto rounded-full px-[7px] py-px text-[10.5px] leading-[1.5]",
+        active ? "bg-white/[.18] text-bz-bg" : "bg-bz-accent-soft text-bz-accent",
+      )}
+    >
+      {count}
+    </span>
+  );
+}
+
 // The 5 NAV_GROUPS (13 links) collapse to 5 thumb-reachable tabs on
 // mobile. Each non-More tab links to its group's primary destination;
 // "More" opens a bottom sheet exposing the full NAV_GROUPS (single
@@ -121,7 +169,11 @@ function activeCmsTab(pathname: string | null): string {
     )
   )
     return "catalogue";
-  if (["/admin/enquiries", "/admin/valuations"].some((m) => p.startsWith(m)))
+  if (
+    ["/admin/enquiries", "/admin/valuations", "/admin/mortgages"].some((m) =>
+      p.startsWith(m),
+    )
+  )
     return "inbox";
   if (
     [
@@ -172,6 +224,7 @@ export function CmsShell({
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const activeTab = activeCmsTab(pathname);
+  const groups = navGroups(useAdminSession()?.mortgage ?? null);
 
   const mobileTabs: TabItem[] = [
     ...CMS_PRIMARY_TABS.map((t) => ({
@@ -201,7 +254,7 @@ export function CmsShell({
             <Wordmark sublabel="CMS" size="sm" />
           </Link>
         </div>
-        {NAV_GROUPS.map((g) => (
+        {groups.map((g) => (
           <div key={g.group}>
             <div className="px-2.5 pt-3.5 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted-2 uppercase">
               {g.group}
@@ -225,6 +278,9 @@ export function CmsShell({
                 >
                   <Icon size={15} strokeWidth={1.6} />
                   {item.label}
+                  {item.badge != null ? (
+                    <NavBadge count={item.badge} active={!!isActive} />
+                  ) : null}
                 </Link>
               );
             })}
@@ -284,7 +340,7 @@ export function CmsShell({
         <MobileTabBar tabs={mobileTabs} />
         <BottomSheet open={moreOpen} onOpenChange={setMoreOpen} title="Menu">
           <div className="flex flex-col gap-4 pb-2">
-            {NAV_GROUPS.map((g) => (
+            {groups.map((g) => (
               <div key={g.group}>
                 <div className="px-1 pb-1.5 text-[10.5px] font-medium tracking-widest text-bz-muted-2 uppercase">
                   {g.group}
@@ -310,6 +366,9 @@ export function CmsShell({
                       >
                         <Icon size={17} strokeWidth={1.6} />
                         {item.label}
+                        {item.badge != null ? (
+                          <NavBadge count={item.badge} active={!!isActive} />
+                        ) : null}
                       </Link>
                     );
                   })}

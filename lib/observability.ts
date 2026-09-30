@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
+import { scrubContext, scrubPii } from "@/lib/pii-scrub";
 
 /**
  * Where a swallowed error goes.
@@ -28,6 +29,13 @@ import { env } from "@/lib/env";
  * survives. An error reporter that can itself fail the request it is
  * reporting on is worse than none. Every path here is guarded, and the last
  * resort is `console.error`, which on Vercel lands in the function logs.
+ *
+ * ── Nothing personal leaves ──────────────────────────────────────────────
+ * `error_events` is readable by every staff member, and messages are written
+ * by libraries and providers — a unique-violation quotes the value, a mail
+ * provider quotes the address. So the message, the stack and the context are
+ * scrubbed of emails, phone numbers, tokens and secret-named fields
+ * (`lib/pii-scrub.ts`) before they're stored, logged or forwarded.
  */
 
 export type ReportInput = {
@@ -109,8 +117,9 @@ export async function reportError(
   err: unknown,
   input: ReportInput,
 ): Promise<void> {
-  const message = messageOf(err).slice(0, 2000);
+  const message = scrubPii(messageOf(err)).slice(0, 2000);
   const level = input.level ?? "error";
+  const reported = scrubContext(input.context ?? {});
 
   // Forward first, so a Sentry that is configured still sees the event even
   // if the database write is the thing that is broken.
@@ -119,7 +128,7 @@ export async function reportError(
       Sentry.captureException(err, {
         level,
         tags: { source: input.source },
-        contexts: { report: (input.context ?? {}) as Record<string, unknown> },
+        contexts: { report: reported },
       });
     } catch {
       // A broken forward must not cost us the local record.
@@ -129,15 +138,15 @@ export async function reportError(
   try {
     const admin = createAdminClient();
     if (!admin) {
-      console.error(`[${input.source}] ${message}`, input.context ?? {});
+      console.error(`[${input.source}] ${message}`, reported);
       return;
     }
 
     const fingerprint = fingerprintOf(input.source, message);
     const stack = stackOf(err);
     const context = {
-      ...(input.context ?? {}),
-      ...(stack ? { stack } : {}),
+      ...reported,
+      ...(stack ? { stack: scrubPii(stack) } : {}),
     };
 
     // One statement for both the first sighting and the 288th. `count` is
@@ -155,7 +164,7 @@ export async function reportError(
       // The table not existing is the expected state between merging this and
       // applying 0134; it is not worth shouting about, and the console still
       // carries the original problem.
-      console.error(`[${input.source}] ${message}`, input.context ?? {});
+      console.error(`[${input.source}] ${message}`, reported);
       if (error.code !== "42P01" && error.code !== "PGRST202") {
         console.error("[observability] could not record:", error.message);
       }
@@ -163,8 +172,8 @@ export async function reportError(
   } catch (reporterFailure) {
     // Last resort. On Vercel this is the function log, which is the backstop
     // the whole design assumes when the database itself is unreachable.
-    console.error(`[${input.source}] ${message}`, input.context ?? {});
-    console.error("[observability] reporter threw:", reporterFailure);
+    console.error(`[${input.source}] ${message}`, reported);
+    console.error("[observability] reporter threw:", scrubPii(String(reporterFailure)));
   }
 }
 

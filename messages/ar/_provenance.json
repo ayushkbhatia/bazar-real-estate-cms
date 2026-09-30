@@ -6539,5 +6539,1643 @@
     "sourceHash": "4f83cff0b887",
     "reviewed": false,
     "note": "Corrected outside the pipeline, by Claude in the PR that added it: MT used التخطيط / الخطة — planning, a scheme. The site calls a floor plan المخطط, as the form's own title does (اطّلع على هذا المخطط)."
+  },
+  "mortgage.actions.back": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "76900f1bfd16",
+    "reviewed": false
+  },
+  "mortgage.common.whatHappensNext": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8f9b77e6e0b4",
+    "reviewed": false
+  },
+  "mortgage.consent.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "38d66478a333",
+    "reviewed": false
+  },
+  "mortgage.consent.pending": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b601608aaa05",
+    "reviewed": false
+  },
+  "mortgage.consultNext.contact": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "bc1146425ffb",
+    "reviewed": false
+  },
+  "mortgage.consultNext.receive": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "df6eacd83353",
+    "reviewed": false
+  },
+  "mortgage.consultNext.review": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "49f7e87f25e8",
+    "reviewed": false
+  },
+  "mortgage.doc.bankStatements12m.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ba0046aa94fc",
+    "reviewed": false
+  },
+  "mortgage.doc.bankStatements12m.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "495d8ef53fbc",
+    "reviewed": false
+  },
+  "mortgage.doc.bankStatements3m.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "05385195da3f",
+    "reviewed": false
+  },
+  "mortgage.doc.bankStatements3m.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "66e2be3a5463",
+    "reviewed": false
+  },
+  "mortgage.doc.emiratesId.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "0497eeb8c304",
+    "reviewed": false
+  },
+  "mortgage.doc.emiratesId.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "175d5a3f78a8",
+    "reviewed": false
+  },
+  "mortgage.doc.emiratesId.noun": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "175d5a3f78a8",
+    "reviewed": false
+  },
+  "mortgage.doc.passport.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7604be7d01e9",
+    "reviewed": false
+  },
+  "mortgage.doc.passport.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "80538065e57b",
+    "reviewed": false
+  },
+  "mortgage.doc.passport.noun": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "cbc471ca6009",
+    "reviewed": false
+  },
+  "mortgage.doc.salaryCertificate.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6e7003da756f",
+    "reviewed": false
+  },
+  "mortgage.doc.salaryCertificate.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1f283b9c76be",
+    "reviewed": false
+  },
+  "mortgage.doc.state.accepted": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a00fb0c50741",
+    "reviewed": false
+  },
+  "mortgage.doc.tradeLicense.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "68390367185d",
+    "reviewed": false
+  },
+  "mortgage.doc.tradeLicense.name": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "0e5777f83bf5",
+    "reviewed": false
+  },
+  "mortgage.doc.tradeLicense.noun": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8178ac72b28d",
+    "reviewed": false
+  },
+  "mortgage.docs.cta": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f4a43a19e007",
+    "reviewed": false
+  },
+  "mortgage.docs.error.draft": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d9031540831e",
+    "reviewed": false
+  },
+  "mortgage.docs.error.retry": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d8b8392e2c54",
+    "reviewed": false
+  },
+  "mortgage.docs.expired": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e6478f83fded",
+    "reviewed": false
+  },
+  "mortgage.docs.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9d0c9bf67ec3",
+    "reviewed": false
+  },
+  "mortgage.docs.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "76e3c408d2c8",
+    "reviewed": false
+  },
+  "mortgage.docs.monthsRange": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ba318cc195ce",
+    "reviewed": false
+  },
+  "mortgage.docs.note.attention": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f18a09213c3b",
+    "reviewed": false
+  },
+  "mortgage.docs.note.consent": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "82d7c8457019",
+    "reviewed": false
+  },
+  "mortgage.docs.note.none": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4581536ff6fa",
+    "reviewed": false
+  },
+  "mortgage.docs.note.progress": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4ce61dbeb477",
+    "reviewed": false
+  },
+  "mortgage.employment.businessOwner.sub": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5dd2d894a5d2",
+    "reviewed": false
+  },
+  "mortgage.employment.businessOwner.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f2395b7910be",
+    "reviewed": false
+  },
+  "mortgage.employment.salaried.sub": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c7f269c9d2b3",
+    "reviewed": false
+  },
+  "mortgage.employment.salaried.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9fb72472a1bf",
+    "reviewed": false
+  },
+  "mortgage.field.dateOfBirth": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "eb4c4e239122",
+    "reviewed": false
+  },
+  "mortgage.field.email": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f2488fd4ef4a",
+    "reviewed": false
+  },
+  "mortgage.field.fullName": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f13a64ba2fea",
+    "reviewed": false
+  },
+  "mortgage.field.mobile": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "187e80ba4d8a",
+    "reviewed": false
+  },
+  "mortgage.preNext.contact": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "bf1949802444",
+    "reviewed": false
+  },
+  "mortgage.preNext.price": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "44ba09255230",
+    "reviewed": false
+  },
+  "mortgage.preNext.review": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "015f526b3bee",
+    "reviewed": false
+  },
+  "mortgage.received.backToBazar": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a7d63e60da0c",
+    "reviewed": false
+  },
+  "mortgage.received.estimatePayment": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4c673021df7b",
+    "reviewed": false
+  },
+  "mortgage.residency.expat.sub": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "08d2a0b0c4a3",
+    "reviewed": false
+  },
+  "mortgage.residency.expat.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8ad5c24ba8a1",
+    "reviewed": false
+  },
+  "mortgage.residency.uaeNational.sub": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "08d2a0b0c4a3",
+    "reviewed": false
+  },
+  "mortgage.residency.uaeNational.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a60fe0a1ec83",
+    "reviewed": false
+  },
+  "mortgage.security.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e05d911f05d5",
+    "reviewed": false
+  },
+  "mortgage.security.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "556da9a87289",
+    "reviewed": false
+  },
+  "mortgage.selections.change": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c0bf75bd78bf",
+    "reviewed": false
+  },
+  "mortgage.selections.edit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "464c4ffd019e",
+    "reviewed": false
+  },
+  "mortgage.selections.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "93324ac4d08e",
+    "reviewed": false
+  },
+  "mortgage.selections.service.consultancy": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5f13b8325470",
+    "reviewed": false
+  },
+  "mortgage.selections.service.preApproval": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f8fa10cc742c",
+    "reviewed": false
+  },
+  "mortgage.service.consultancy": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4c1567590239",
+    "reviewed": false
+  },
+  "mortgage.service.preApproval": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "78174a8ee249",
+    "reviewed": false
+  },
+  "mortgage.shell.brand": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c2d701d54cfb",
+    "reviewed": false
+  },
+  "mortgage.shell.exit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d17d84a60499",
+    "reviewed": false
+  },
+  "mortgage.shell.footer.legal": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "85f800fd1060",
+    "reviewed": false
+  },
+  "mortgage.shell.footer.phone": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "8a7510ef448d",
+    "reviewed": true
+  },
+  "mortgage.shell.footer.privacy": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "506ff3946215",
+    "reviewed": false
+  },
+  "mortgage.shell.footer.terms": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "12a0015fa322",
+    "reviewed": false
+  },
+  "mortgage.shell.permit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ea4cb552160f",
+    "reviewed": false
+  },
+  "mortgage.shell.section": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9be66b076b9c",
+    "reviewed": false
+  },
+  "mortgage.stepper.chooseService": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9f35b91dc284",
+    "reviewed": false
+  },
+  "mortgage.stepper.documents": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b4e929d8bcfe",
+    "reviewed": false
+  },
+  "mortgage.stepper.done": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4ddb3e96801a",
+    "reviewed": false
+  },
+  "mortgage.stepper.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "68db1e0dca6e",
+    "reviewed": false
+  },
+  "mortgage.stepper.submit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "155f816c0407",
+    "reviewed": false
+  },
+  "mortgage.stepper.yourDetails": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c0bcd4c0f8e7",
+    "reviewed": false
+  },
+  "mortgage.submit.error.botCheck": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2bae1fcb48b6",
+    "reviewed": false
+  },
+  "mortgage.submit.error.details": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2d1d26c455e2",
+    "reviewed": false
+  },
+  "mortgage.submit.error.draftExpired": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "57256ee9ff84",
+    "reviewed": false
+  },
+  "mortgage.submit.error.filesNotReady": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "17ebc95249d9",
+    "reviewed": false
+  },
+  "mortgage.submit.error.generic": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "57e770b42d3e",
+    "reviewed": false
+  },
+  "mortgage.submit.error.rateLimited": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8fec57d8c917",
+    "reviewed": false
+  },
+  "mortgage.submit.sending": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b8ed5279e897",
+    "reviewed": false
+  },
+  "mortgage.summary.employment": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "fe3f5ecd0b68",
+    "reviewed": false
+  },
+  "mortgage.summary.received": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "49f19beeecf4",
+    "reviewed": false
+  },
+  "mortgage.summary.reference": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "71bf90935fc2",
+    "reviewed": false
+  },
+  "mortgage.summary.residency": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ea99b7d52e75",
+    "reviewed": false
+  },
+  "mortgage.summary.service": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d677190e0a99",
+    "reviewed": false
+  },
+  "mortgage.track.done": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "11a6767d5674",
+    "reviewed": false
+  },
+  "mortgage.track.next": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1ff57a29d7c9",
+    "reviewed": false
+  },
+  "mortgage.track.now": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "fe18013d93d2",
+    "reviewed": false
+  },
+  "mortgage.upload.addMore": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b4693ebe824e",
+    "reviewed": false
+  },
+  "mortgage.upload.announce.added": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "43c8a42eb33b",
+    "reviewed": false
+  },
+  "mortgage.upload.announce.failed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2982699f89b1",
+    "reviewed": false
+  },
+  "mortgage.upload.announce.removed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c95d15876655",
+    "reviewed": false
+  },
+  "mortgage.upload.cancel": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "19766ed6ccb2",
+    "reviewed": false
+  },
+  "mortgage.upload.cancelFile": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2e10d835c068",
+    "reviewed": false
+  },
+  "mortgage.upload.chooseAnother": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "26eac8f8c95b",
+    "reviewed": false
+  },
+  "mortgage.upload.dropMany": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d80198c9772c",
+    "reviewed": false
+  },
+  "mortgage.upload.dropOne": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "866e540ef222",
+    "reviewed": false
+  },
+  "mortgage.upload.error.badType": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "72c07b095f48",
+    "reviewed": false
+  },
+  "mortgage.upload.error.badTypePdf": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4ab076a40078",
+    "reviewed": false
+  },
+  "mortgage.upload.error.draftExpired": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "bb3ca4ec54dd",
+    "reviewed": false
+  },
+  "mortgage.upload.error.encryptedPdf": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5d1da04a5cb1",
+    "reviewed": false
+  },
+  "mortgage.upload.error.generic": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "26b64861d803",
+    "reviewed": false
+  },
+  "mortgage.upload.error.infected": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8abd942335ca",
+    "reviewed": false
+  },
+  "mortgage.upload.error.network": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "76fb28a339b9",
+    "reviewed": false
+  },
+  "mortgage.upload.error.scanFailed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "af07b6a6d877",
+    "reviewed": false
+  },
+  "mortgage.upload.error.tooLarge": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "04a619532cf9",
+    "reviewed": false
+  },
+  "mortgage.upload.error.tooLargePdf": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "50fe7c0ebb13",
+    "reviewed": false
+  },
+  "mortgage.upload.error.tooManyFiles": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c8a3d2a842fd",
+    "reviewed": false
+  },
+  "mortgage.upload.error.totalExceeded": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "95e96c232b49",
+    "reviewed": false
+  },
+  "mortgage.upload.error.unreadable": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b59649d23950",
+    "reviewed": false
+  },
+  "mortgage.upload.leaveWarning": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ebe7056cce4b",
+    "reviewed": false
+  },
+  "mortgage.upload.pickerLabel": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7837add16ced",
+    "reviewed": false
+  },
+  "mortgage.upload.pill.added": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6b02e0d363a4",
+    "reviewed": false
+  },
+  "mortgage.upload.pill.filesAdded": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6e5ad3c5e311",
+    "reviewed": false
+  },
+  "mortgage.upload.pill.needsAttention": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c1ebc7817870",
+    "reviewed": false
+  },
+  "mortgage.upload.pill.uploading": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8b898ca34ce7",
+    "reviewed": false
+  },
+  "mortgage.upload.progress": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "63abd6ddd7d1",
+    "reviewed": false
+  },
+  "mortgage.upload.progressLabel": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "215b57dec11d",
+    "reviewed": false
+  },
+  "mortgage.upload.remove": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e6a3c4a1250a",
+    "reviewed": false
+  },
+  "mortgage.upload.replace": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "95e154398a4b",
+    "reviewed": false
+  },
+  "mortgage.upload.retry": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "942087cc2d41",
+    "reviewed": false
+  },
+  "mortgage.upload.size": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "55aa0a3318ad",
+    "reviewed": false
+  },
+  "mortgage.upload.totalUsed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "588876847bc9",
+    "reviewed": false
+  },
+  "mortgage.upload.uploadMany": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b19cbda7bf5a",
+    "reviewed": false
+  },
+  "mortgage.upload.uploadOne": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "507ae671a6e1",
+    "reviewed": false
+  },
+  "mortgage.w1.consultancy.chip": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ec1a1c8f7497",
+    "reviewed": false
+  },
+  "mortgage.w1.consultancy.desc": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a4fe0cfcfab6",
+    "reviewed": false
+  },
+  "mortgage.w1.consultancy.needs": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "879d3990c087",
+    "reviewed": false
+  },
+  "mortgage.w1.contact": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7f18cf84c394",
+    "reviewed": false
+  },
+  "mortgage.w1.cta": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "31fbef162594",
+    "reviewed": false
+  },
+  "mortgage.w1.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a21d019624ec",
+    "reviewed": false
+  },
+  "mortgage.w1.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "22b99af57e11",
+    "reviewed": false
+  },
+  "mortgage.w1.needsLabel": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3427f0b8e0b2",
+    "reviewed": false
+  },
+  "mortgage.w1.note": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "34573945a1dd",
+    "reviewed": false
+  },
+  "mortgage.w1.preApproval.badge": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "fda2336f86f8",
+    "reviewed": false
+  },
+  "mortgage.w1.preApproval.chip": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7e03dd79c9f7",
+    "reviewed": false
+  },
+  "mortgage.w1.preApproval.desc": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8ba0036a9269",
+    "reviewed": false
+  },
+  "mortgage.w1.preApproval.needs": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d7782045c9fa",
+    "reviewed": false
+  },
+  "mortgage.w1.rail.consultancy": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6c27501343d4",
+    "reviewed": false
+  },
+  "mortgage.w1.rail.preApproval": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "51f8412ec3f1",
+    "reviewed": false
+  },
+  "mortgage.w1.rail.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "240f1b8f331d",
+    "reviewed": false
+  },
+  "mortgage.w1.switch.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f24e9d4d61b7",
+    "reviewed": false
+  },
+  "mortgage.w1.switch.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a7bd1b4a58e4",
+    "reviewed": false
+  },
+  "mortgage.w1.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "62346666a543",
+    "reviewed": false
+  },
+  "mortgage.w2.cta.consultancy": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "31fbef162594",
+    "reviewed": false
+  },
+  "mortgage.w2.cta.preApproval": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "cdc863d7914d",
+    "reviewed": false
+  },
+  "mortgage.w2.dateOfBirth.placeholder": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6287660fa0a0",
+    "reviewed": false
+  },
+  "mortgage.w2.email.placeholder": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8d12b7f58c0d",
+    "reviewed": false
+  },
+  "mortgage.w2.employment.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ea8972863d1c",
+    "reviewed": false
+  },
+  "mortgage.w2.employment.note": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5793930b8bc0",
+    "reviewed": false
+  },
+  "mortgage.w2.error.banner": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1e164f67abbc",
+    "reviewed": false
+  },
+  "mortgage.w2.error.dateOfBirth.not_a_date": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a6b0cf9217b8",
+    "reviewed": false
+  },
+  "mortgage.w2.error.dateOfBirth.not_in_past": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ac31dc26b6d2",
+    "reviewed": false
+  },
+  "mortgage.w2.error.dateOfBirth.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ee33db126790",
+    "reviewed": false
+  },
+  "mortgage.w2.error.dateOfBirth.too_old": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "54609ec9c61f",
+    "reviewed": false
+  },
+  "mortgage.w2.error.email.invalid": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3f0440fe56a1",
+    "reviewed": false
+  },
+  "mortgage.w2.error.email.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "280f46b89657",
+    "reviewed": false
+  },
+  "mortgage.w2.error.employmentType.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "69110dd4f46f",
+    "reviewed": false
+  },
+  "mortgage.w2.error.fullName.characters": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "819710d2df5c",
+    "reviewed": false
+  },
+  "mortgage.w2.error.fullName.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "de9f41135737",
+    "reviewed": false
+  },
+  "mortgage.w2.error.fullName.too_long": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f33a5506b30e",
+    "reviewed": false
+  },
+  "mortgage.w2.error.fullName.too_short": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "41409d365063",
+    "reviewed": false
+  },
+  "mortgage.w2.error.mobile.landline": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "40f88779e500",
+    "reviewed": false
+  },
+  "mortgage.w2.error.mobile.not_mobile": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "23d502dd0916",
+    "reviewed": false
+  },
+  "mortgage.w2.error.mobile.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3e1cc02cf785",
+    "reviewed": false
+  },
+  "mortgage.w2.error.residency.required": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "668ee4f819d3",
+    "reviewed": false
+  },
+  "mortgage.w2.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2668676296b9",
+    "reviewed": false
+  },
+  "mortgage.w2.fullName.hint": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ce60a7872704",
+    "reviewed": false
+  },
+  "mortgage.w2.fullName.placeholder": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ce60a7872704",
+    "reviewed": false
+  },
+  "mortgage.w2.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e26db812a88e",
+    "reviewed": false
+  },
+  "mortgage.w2.mobile.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "937d6505c565",
+    "reviewed": false
+  },
+  "mortgage.w2.mobile.placeholder": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "deddcc45057d",
+    "reviewed": true
+  },
+  "mortgage.w2.mobile.prefix": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "7821345c6577",
+    "reviewed": true
+  },
+  "mortgage.w2.rail.employment.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ad8735b33efd",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.employment.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ea8972863d1c",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.private.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c24c32e8ec59",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.private.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b4f43ece4e7c",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.residency.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "134e168784f1",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.residency.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "fbff4ee5b1d2",
+    "reviewed": false
+  },
+  "mortgage.w2.rail.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6e90dfe0796a",
+    "reviewed": false
+  },
+  "mortgage.w2.residency.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "fbff4ee5b1d2",
+    "reviewed": false
+  },
+  "mortgage.w2.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "15c43f6771f3",
+    "reviewed": false
+  },
+  "mortgage.w3.cta": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "80e7b2171b20",
+    "reviewed": false
+  },
+  "mortgage.w3.details.edit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "464c4ffd019e",
+    "reviewed": false
+  },
+  "mortgage.w3.details.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c0bcd4c0f8e7",
+    "reviewed": false
+  },
+  "mortgage.w3.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "03154a00e82f",
+    "reviewed": false
+  },
+  "mortgage.w3.fine": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "bef96a79ce4f",
+    "reviewed": false
+  },
+  "mortgage.w3.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e0d61ee443ac",
+    "reviewed": false
+  },
+  "mortgage.w3.noDocs.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7cbb58140334",
+    "reviewed": false
+  },
+  "mortgage.w3.noDocs.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c70aa3790899",
+    "reviewed": false
+  },
+  "mortgage.w3.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c3159404a215",
+    "reviewed": false
+  },
+  "mortgage.w4.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b7972aeb19ae",
+    "reviewed": false
+  },
+  "mortgage.w4.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4f2273f73624",
+    "reviewed": false
+  },
+  "mortgage.w4.rail.contactOn": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3eb7658b28f4",
+    "reviewed": false
+  },
+  "mortgage.w4.rail.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "73023a399137",
+    "reviewed": false
+  },
+  "mortgage.w4.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "879bc7a78c0b",
+    "reviewed": false
+  },
+  "mortgage.w4.track.receivedAt": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2bcb0bf31e9d",
+    "reviewed": false
+  },
+  "mortgage.w5.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "0b1b1290a4b9",
+    "reviewed": false
+  },
+  "mortgage.w6.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6470c93bf4fa",
+    "reviewed": false
+  },
+  "mortgage.w7.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5b1bf4e1fae5",
+    "reviewed": false
+  },
+  "mortgage.w7.due.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7d5cf156404b",
+    "reviewed": false
+  },
+  "mortgage.w7.due.note": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "bf15f5de4db1",
+    "reviewed": false
+  },
+  "mortgage.w7.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c24896c755bd",
+    "reviewed": false
+  },
+  "mortgage.w7.rail.docsReceived": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "adf87595988c",
+    "reviewed": false
+  },
+  "mortgage.w7.rail.fileCount": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e60f4a210767",
+    "reviewed": false
+  },
+  "mortgage.w7.rail.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4a198896ec9c",
+    "reviewed": false
+  },
+  "mortgage.w7.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8569efc4ed5a",
+    "reviewed": false
+  },
+  "mortgage.w7.track.submitted": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "64900440a8c9",
+    "reviewed": false
+  },
+  "mortgage.w7.whatsapp": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "736365519dc5",
+    "reviewed": false
+  },
+  "property.actions.mortgagePreApproval": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9c1aa08a3aa6",
+    "reviewed": false
+  },
+  "mortgage.w8.adviser.meta": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "8fb2e46e2466",
+    "reviewed": true
+  },
+  "mortgage.w8.alreadyReceived": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "83359cfcffee",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.cooldown": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "0573e541f850",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.expired": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "00e05f03f6c8",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.failed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ae6a383c3565",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.format": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f69d9eb1f80c",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.generic": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3ccd9d6586ef",
+    "reviewed": false
+  },
+  "mortgage.w8.code.error.wrong": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5bca886c1a73",
+    "reviewed": false
+  },
+  "mortgage.w8.code.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "04368b8bcce9",
+    "reviewed": false
+  },
+  "mortgage.w8.code.label": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "340f463033e0",
+    "reviewed": false
+  },
+  "mortgage.w8.code.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "04d249855a87",
+    "reviewed": false
+  },
+  "mortgage.w8.code.resend": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9200fc2f31ae",
+    "reviewed": false
+  },
+  "mortgage.w8.code.send": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "66a5b4090d14",
+    "reviewed": false
+  },
+  "mortgage.w8.code.sent": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "cad058ea6ecd",
+    "reviewed": false
+  },
+  "mortgage.w8.code.submit": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "31fbef162594",
+    "reviewed": false
+  },
+  "mortgage.w8.code.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1d3f92a204f4",
+    "reviewed": false
+  },
+  "mortgage.w8.code.wait": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d9be3761315a",
+    "reviewed": false
+  },
+  "mortgage.w8.coverage.needed": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4f5d7e44f63c",
+    "reviewed": false
+  },
+  "mortgage.w8.coverage.received": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8b2fd588b244",
+    "reviewed": false
+  },
+  "mortgage.w8.cta": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "240664911121",
+    "reviewed": false
+  },
+  "mortgage.w8.drop.add": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9482d2436216",
+    "reviewed": false
+  },
+  "mortgage.w8.drop.instruction": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a931a017f8ff",
+    "reviewed": false
+  },
+  "mortgage.w8.drop.replace": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ccc36e05f64b",
+    "reviewed": false
+  },
+  "mortgage.w8.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "5b38cdb42d50",
+    "reviewed": false
+  },
+  "mortgage.w8.file.readyToSend": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b2291c485d1e",
+    "reviewed": false
+  },
+  "mortgage.w8.invite.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e0a1189966f8",
+    "reviewed": false
+  },
+  "mortgage.w8.invite.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "08ada35f0f9a",
+    "reviewed": false
+  },
+  "mortgage.w8.invite.reference": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ef24b854ed83",
+    "reviewed": false
+  },
+  "mortgage.w8.lede": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9f1e1f4f3126",
+    "reviewed": false
+  },
+  "mortgage.w8.ledeCount": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "029c82ad3f5a",
+    "reviewed": false
+  },
+  "mortgage.w8.next.check": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c9fa3719d62c",
+    "reviewed": false
+  },
+  "mortgage.w8.next.checkOther": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "25340ba2ff7c",
+    "reviewed": false
+  },
+  "mortgage.w8.next.contact": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ccbe0c79e2ca",
+    "reviewed": false
+  },
+  "mortgage.w8.next.price": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3c72dbd11d4b",
+    "reviewed": false
+  },
+  "mortgage.w8.note": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "eadd60f88a18",
+    "reviewed": false
+  },
+  "mortgage.w8.pill.monthsMissing": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8ae0ac72e249",
+    "reviewed": false
+  },
+  "mortgage.w8.questions.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1522ce94a207",
+    "reviewed": false
+  },
+  "mortgage.w8.questions.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "3fc2334e5b29",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.expired": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "424a2551d356",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.other": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "07e086390cd5",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.pages_missing": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8ed495239a09",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.period_incomplete": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "acc479202424",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.unreadable": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "89e45653b9f8",
+    "reviewed": false
+  },
+  "mortgage.w8.reason.wrong_document": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "cb9790783b4c",
+    "reviewed": false
+  },
+  "mortgage.w8.replaceNote": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "134c0923ff38",
+    "reviewed": false
+  },
+  "mortgage.w8.secure": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b1eaea019207",
+    "reviewed": false
+  },
+  "mortgage.w8.sent.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "74c980529283",
+    "reviewed": false
+  },
+  "mortgage.w8.sent.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "1ff78101476b",
+    "reviewed": false
+  },
+  "mortgage.w8.state.contact": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f2a11d00ce0c",
+    "reviewed": false
+  },
+  "mortgage.w8.state.expired.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "8dde8355e6a0",
+    "reviewed": false
+  },
+  "mortgage.w8.state.expired.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7cb87dcb8d50",
+    "reviewed": false
+  },
+  "mortgage.w8.state.invited.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f70cdc43f35d",
+    "reviewed": false
+  },
+  "mortgage.w8.state.invited.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f41c528a3a92",
+    "reviewed": false
+  },
+  "mortgage.w8.state.locked.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e37fa8cda03a",
+    "reviewed": false
+  },
+  "mortgage.w8.state.locked.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d9ec7ce44732",
+    "reviewed": false
+  },
+  "mortgage.w8.state.unavailable.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "134337912cbc",
+    "reviewed": false
+  },
+  "mortgage.w8.state.unavailable.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "947afc829497",
+    "reviewed": false
+  },
+  "mortgage.w8.state.used.body": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "66648caf3f8d",
+    "reviewed": false
+  },
+  "mortgage.w8.state.used.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e9f1f78758d2",
+    "reviewed": false
+  },
+  "mortgage.w8.submit.error": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e23992a86907",
+    "reviewed": false
+  },
+  "mortgage.w8.submit.gone": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "65f7053c6674",
+    "reviewed": false
+  },
+  "mortgage.w8.title": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "e9699a85e417",
+    "reviewed": false
   }
 }

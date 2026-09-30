@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getForm } from "@/lib/queries/forms";
+import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { img, str } from "@/lib/master-pages";
 import {
@@ -24,6 +25,17 @@ export async function generateMetadata({
 }
 
 /** The three fields every output section carries. */
+/**
+ * "Talk to advisor": the link an editor set wins; the shipped default
+ * (/contact, which ignores what the visitor came for) gives way to the
+ * consultancy flow once it's open (SPEC §4.1 "Mortgage calculator · Talk to
+ * advisor").
+ */
+function advisorHref(stored: string | null, flowOpen: boolean): string {
+  if (flowOpen && (!stored || stored === "/contact")) return MORTGAGE_ENTRY_LINKS.calculatorAdvisor;
+  return stored ?? "/contact";
+}
+
 function head(v: SectionValues) {
   return {
     eyebrow: str(v, "eyebrow"),
@@ -44,11 +56,16 @@ export default async function MortgagePage({
   // `ResolvedForm`, a folded `SectionValues` bag and the assumptions object
   // are plain JSON and cross the boundary intact, the same way the dialogs
   // do it.
-  const [preApprovalForm, content, mortgage] = await Promise.all([
+  const [storedForm, content, mortgage, flowOpen] = await Promise.all([
     getForm("mortgage_preapproval"),
     getMasterPageContent("mortgage", locale),
     getPublicMortgageSettings(),
+    isMortgageFlowPublic(),
   ]);
+  // Once the mortgage application flow is open (docs/mortgage, D25), its
+  // buttons replace the old pre-approval form, which filed an enquiry and
+  // nothing more: the form stops drawing here and in the hero.
+  const preApprovalForm = flowOpen ? { ...storedForm, enabled: false } : storedForm;
 
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
@@ -89,7 +106,8 @@ export default async function MortgagePage({
           scenarioNote: str(bandV, "scenario_note"),
           talkLabel: str(bandV, "talk_label"),
           advisorCtaLabel: str(bandV, "advisor_cta_label"),
-          advisorCtaHref: str(bandV, "advisor_cta_href") ?? "/contact",
+          advisorCtaHref: advisorHref(str(bandV, "advisor_cta_href"), flowOpen),
+          flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.calculatorPreApproval : null,
           whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
           fallbackCtaLabel: str(bandV, "fallback_cta_label"),
           jumpCtaLabel: str(bandV, "jump_cta_label"),

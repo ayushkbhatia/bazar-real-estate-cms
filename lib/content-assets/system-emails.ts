@@ -13,6 +13,29 @@ import {
   formatAedShort,
   formSubmissionTemplate,
   listingReferencesBlock,
+  consultationLength,
+  minuteCount,
+  mortgageAdviserMessageBlock,
+  mortgageBankPackageTemplate,
+  mortgageBankReminderTemplate,
+  mortgageCodeTemplate,
+  mortgageConsultancyReceivedTemplate,
+  mortgageConsultationBookedTemplate,
+  mortgageConsultationFormatName,
+  mortgageDay,
+  mortgageDecisionDeclinedTemplate,
+  mortgageDecisionPreApprovedTemplate,
+  mortgageDocumentCount,
+  mortgageDocumentsBlock,
+  mortgageFileCount,
+  mortgagePreapprovalInviteTemplate,
+  mortgagePreapprovalReceivedTemplate,
+  mortgageReuploadRequestTemplate,
+  mortgageServiceName,
+  mortgageTeamAtRiskTemplate,
+  mortgageTeamBreachedTemplate,
+  mortgageTeamNewRequestTemplate,
+  mortgageTeamReuploadReceivedTemplate,
   permitExpiryWarningTemplate,
   staffInvitationTemplate,
   staffPasswordResetTemplate,
@@ -33,6 +56,9 @@ import {
 import type { EmailBrand } from "./email-brand";
 import type { EmailContext } from "./email-html";
 import { getFormDef } from "@/lib/forms/registry";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
+import { formatDayTime } from "@/lib/mortgage-requests/format";
+import { formatDuration } from "@/lib/mortgage-requests/sla";
 import { FORM_REPLY_SAMPLE, FORM_REPLY_SAMPLE_AR } from "./form-replies";
 import {
   readEmailBrand,
@@ -148,7 +174,206 @@ type DigestOpts = Parameters<typeof bulkReassignDigestTemplate>[0];
 type HealthDigestOpts = Parameters<typeof healthDigestTemplate>[0];
 type FormOpts = Parameters<typeof formSubmissionTemplate>[0];
 
+/** One document a Fast Pre-Approval applicant sent, and how many files. */
+export type MortgageDocumentLine = { kind: DocKind; files: number };
+
+/** What the mortgage flow's submit hands both confirmations. */
+export type MortgageReceivedOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  /** "BZM-26-0415". */
+  reference: string;
+  /** ISO instant. */
+  submittedAt: string;
+};
+
+export type MortgagePreapprovalReceivedOpts = MortgageReceivedOpts & {
+  /** ISO instant: when the team has promised to contact them by (sla.ts). */
+  dueAt: string;
+  /** In the order given, which is the order the upload step asked for them. */
+  documents: MortgageDocumentLine[];
+};
+
+/**
+ * What every mortgage team alert is given: the request's reference, its
+ * service and where it is in the CMS. Nothing about the applicant — the
+ * alerts carry no name, mobile, email or date of birth, and the team reads
+ * those behind the link.
+ */
+export type MortgageTeamAlertOpts = {
+  /** "BZM-26-0412". */
+  reference: string;
+  service: "consultancy" | "pre_approval";
+  /** Absolute URL of the request in the CMS. */
+  link: string;
+};
+
+type MortgageTeamNewRequestOpts = MortgageTeamAlertOpts & {
+  /** ISO instant. */
+  submittedAt: string;
+  /** The owner's name; null while nobody owns the request. */
+  ownerName: string | null;
+};
+
+type MortgageTeamAtRiskOpts = MortgageTeamAlertOpts & {
+  /** Working seconds left on the promise, from sla.ts. */
+  remainingSeconds: number;
+  /** ISO instant the promise falls due. */
+  dueAt: string;
+};
+
+type MortgageTeamBreachedOpts = MortgageTeamAlertOpts & {
+  /** ISO instant the promise fell due. */
+  dueAt: string;
+};
+
+/** A consultation booked on a Mortgage Consultancy request (C6). */
+export type MortgageConsultationBookedOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  reference: string;
+  /** ISO instant. */
+  startsAt: string;
+  /** 20 unless the settings say otherwise. */
+  durationMinutes: number;
+  format: "phone" | "video" | "office";
+  /** "Rashid Khan". */
+  adviserName: string;
+};
+
+/** The Fast Pre-Approval invitation an adviser sends a consultancy applicant. */
+export type MortgagePreapprovalInviteOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  /** The consultancy request's reference. */
+  reference: string;
+  adviserName: string;
+  /** Absolute secure link, https://…/mortgages/r/<token>. */
+  link: string;
+  /** ISO instant. */
+  expiresAt: string;
+};
+
+/** An adviser's request to replace or add to one document (C4 → W8). */
+export type MortgageReuploadRequestOpts = {
+  /** Applicant's full name; only the first name reaches the body. */
+  name: string;
+  reference: string;
+  adviserName: string;
+  /**
+   * The document's display name, e.g. "Last 1 year's bank statements", in
+   * the language the email goes out in (`mortgageDocumentName` in
+   * lib/email-templates.ts has both).
+   */
+  documentName: string;
+  /** The adviser's free text, plain text, up to 1,000 characters. */
+  message: string;
+  /** Absolute secure link, https://…/mortgages/r/<token>. */
+  link: string;
+  /** ISO instant the link expires. */
+  expiresAt: string;
+};
+
+/** The one-time code that opens a secure link. */
+export type MortgageCodeOpts = { name: string; code: string; minutes: number };
+
+/** An adviser's decline of a Fast Pre-Approval, in their own words (C5, D19). */
+export type MortgageDecisionDeclinedOpts = {
+  /** Applicant's full name; only the first name reaches the body. */
+  name: string;
+  reference: string;
+  /** Who declined it; blank reads as Bazar's mortgage team. */
+  adviserName: string;
+  /**
+   * The adviser's message, plain text: prefilled from the reason in the CMS
+   * and edited before it goes (lib/mortgage-requests/decline.ts).
+   */
+  message: string;
+};
+
+/** An adviser's confirmation of a Fast Pre-Approval, in their own words (C5). */
+export type MortgageDecisionPreApprovedOpts = MortgageDecisionDeclinedOpts & {
+  /** The bank whose pre-approval letter the send path attaches. */
+  bankName: string;
+};
+
+/**
+ * A partner bank's package (C2's Accept application → With banks). Nothing
+ * about the applicant: the reference is all a bank email holds, and the
+ * details are behind the link.
+ */
+export type MortgageBankPackageOpts = {
+  /** "First Abu Dhabi Bank". */
+  bankName: string;
+  reference: string;
+  /** Who sent it; blank reads as Bazar's mortgage team. */
+  adviserName: string;
+  /** Absolute package link, https://…/mortgages/p/<token>. */
+  link: string;
+  /** ISO instant the link expires. */
+  expiresAt: string;
+  /** How many documents the package holds. */
+  documentCount: number;
+};
+
+/** A reminder to a bank that hasn't answered, with a fresh link (C5). */
+export type MortgageBankReminderOpts = {
+  bankName: string;
+  reference: string;
+  adviserName: string;
+  /** The fresh link: the first is stored only as its hash. */
+  link: string;
+  /** ISO instant the fresh link expires. */
+  expiresAt: string;
+  /** ISO instant the package first went to this bank. */
+  sentAt: string;
+};
+
+type MortgageTeamReuploadReceivedOpts = MortgageTeamAlertOpts & {
+  /** The document's display name, in English like the rest of the alert. */
+  documentName: string;
+  /** How many new files the applicant sent. */
+  files: number;
+};
+
 const site = () => emailSiteUrl();
+
+/**
+ * The values both mortgage confirmations share. Times go through the flow's
+ * own formatter — "Thu 24 Sep, 14:14", Asia/Dubai — so the email says what
+ * the confirmation page said. The recipient's language picks the Arabic
+ * form, the same way it picks the panels'.
+ */
+function mortgageValues(o: MortgageReceivedOpts, locale: EmailLocale) {
+  return {
+    lead_first_name: firstName(o.name),
+    lead_name: o.name,
+    mortgage_reference: o.reference,
+    mortgage_submitted: formatDayTime(o.submittedAt, locale),
+    site_url: site(),
+  };
+}
+
+/**
+ * The values every team alert shares. The team's emails send in English;
+ * `locale` is only the admin's Arabic preview, where the service's name is
+ * the one value that has a language.
+ */
+function mortgageTeamValues(o: MortgageTeamAlertOpts, locale: EmailLocale) {
+  return {
+    mortgage_reference: o.reference,
+    mortgage_service: mortgageServiceName(o.service, locale),
+    mortgage_request_url: o.link,
+    site_url: site(),
+  };
+}
+
+/** One sample request for all three team alerts: the gallery's BZM-26-0412. */
+const SAMPLE_TEAM_ALERT: MortgageTeamAlertOpts = {
+  reference: "BZM-26-0412",
+  service: "pre_approval",
+  link: `${site()}/admin/mortgages/BZM-26-0412`,
+};
 
 const SAMPLE_ENQUIRY: EnquiryOpts = {
   name: "Amira Haddad",
@@ -173,6 +398,226 @@ const BINDINGS = {
         "Mortgage pre-approval request.\nProperty price: AED 2,400,000\nDeposit: AED 480,000 (20%)\nTerm: 25 years at 4.49%\nEstimated monthly: AED 10,670",
       propertyReference: null,
       propertyTitle: null,
+    },
+  }),
+  mortgage_consultancy_received: bind<MortgageReceivedOpts>({
+    context: (o, locale = "en") => ({ values: mortgageValues(o, locale) }),
+    builtin: (o, brand) => mortgageConsultancyReceivedTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      submittedAt: "2026-09-22T05:47:00Z",
+    },
+  }),
+  mortgage_preapproval_received: bind<MortgagePreapprovalReceivedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageValues(o, locale),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+      blocks: { mortgage_documents: mortgageDocumentsBlock(o.documents, locale) },
+    }),
+    builtin: (o, brand) => mortgagePreapprovalReceivedTemplate(o, brand),
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      // A Tuesday 10:14 application; 24 working hours later is Thursday 14:14.
+      submittedAt: "2026-09-22T06:14:00Z",
+      dueAt: "2026-09-24T10:14:00Z",
+      documents: [
+        { kind: "emirates_id", files: 2 },
+        { kind: "passport", files: 1 },
+        { kind: "salary_certificate", files: 1 },
+        { kind: "bank_statements_3m", files: 3 },
+      ],
+    },
+  }),
+  mortgage_consultation_booked: bind<MortgageConsultationBookedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_consultation_when: formatDayTime(o.startsAt, locale),
+        mortgage_consultation_format: mortgageConsultationFormatName(o.format, locale),
+        mortgage_consultation_duration: consultationLength(o.durationMinutes, locale),
+        mortgage_adviser: o.adviserName,
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageConsultationBookedTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      // Wednesday 10:00 in Dubai.
+      startsAt: "2026-09-23T06:00:00Z",
+      durationMinutes: 20,
+      format: "phone",
+      adviserName: "Rashid Khan",
+    },
+  }),
+  mortgage_preapproval_invite: bind<MortgagePreapprovalInviteOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_secure_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgagePreapprovalInviteTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      adviserName: "Rashid Khan",
+      link: `${site()}/mortgages/r/sample-token`,
+      expiresAt: "2026-09-30T06:00:00Z",
+    },
+  }),
+  mortgage_reupload_request: bind<MortgageReuploadRequestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_document: o.documentName,
+        mortgage_secure_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageReuploadRequestTemplate(o, brand),
+    // W8's file: Karim's 12-month statements, three months short. The
+    // message is C4's example, on two lines so the preview shows a break.
+    sample: {
+      name: "Karim Haddad",
+      reference: "BZM-26-0409",
+      adviserName: "Yasmin Abdalla",
+      documentName: "Last 1 year's bank statements",
+      message:
+        "Your statements cover September 2025 to May 2026.\nFor a full year, please add June, July and August 2026.",
+      link: `${site()}/mortgages/r/sample-token`,
+      // Sent Tuesday 22 Sep at 11:52 in Dubai; links last 7 days (D7).
+      expiresAt: "2026-09-29T07:52:00Z",
+    },
+  }),
+  mortgage_code: bind<MortgageCodeOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        lead_name: o.name,
+        verification_code: o.code,
+        mortgage_code_expires_in: minuteCount(o.minutes, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageCodeTemplate(o, brand),
+    sample: { name: "Karim Haddad", code: "730528", minutes: 10 },
+  }),
+  // The bank emails fill no lead token: a bank is never told who applied.
+  mortgage_bank_package: bind<MortgageBankPackageOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        mortgage_bank: o.bankName,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_document_count: mortgageDocumentCount(o.documentCount, locale),
+        mortgage_package_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageBankPackageTemplate(o, brand),
+    // Priya's file, sent to FAB on Wednesday 23 Sep at 11:30 in Dubai with
+    // her four documents; package links last 7 days.
+    sample: {
+      bankName: "First Abu Dhabi Bank",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      link: `${site()}/mortgages/p/sample-token`,
+      expiresAt: "2026-09-30T07:30:00Z",
+      documentCount: 4,
+    },
+  }),
+  mortgage_bank_reminder: bind<MortgageBankReminderOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        mortgage_bank: o.bankName,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_package_sent: mortgageDay(o.sentAt, locale),
+        mortgage_package_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageBankReminderTemplate(o, brand),
+    // FAB hasn't answered the package above by Friday 25 Sep at 10:00, so
+    // Yasmin sends a reminder with a fresh link, good for another 7 days.
+    sample: {
+      bankName: "First Abu Dhabi Bank",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      link: `${site()}/mortgages/p/sample-token`,
+      expiresAt: "2026-10-02T06:00:00Z",
+      sentAt: "2026-09-23T07:30:00Z",
+    },
+  }),
+  mortgage_decision_pre_approved: bind<MortgageDecisionPreApprovedOpts>({
+    // No `lead_name`, as for the decline.
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_bank: o.bankName,
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageDecisionPreApprovedTemplate(o, brand),
+    // C5's example: Priya pre-approved by FAB, the lead offer, and ADCB too.
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      bankName: "First Abu Dhabi Bank",
+      message:
+        "Good news, Priya: you're pre-approved. First Abu Dhabi Bank has pre-approved you for up to AED 2,150,000 at 3.99% fixed for 3 years, valid until 21 November 2026. ADCB has also pre-approved you for up to AED 2,000,000.\n\nI'll call you tomorrow morning to talk through both. Yasmin",
+    },
+  }),
+  mortgage_decision_declined: bind<MortgageDecisionDeclinedOpts>({
+    // No `lead_name`: this email holds nothing of the applicant but their
+    // first name, so its scope has no full name to fill.
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageDecisionDeclinedTemplate(o, brand),
+    // The confirmation's Priya, declined on debt burden: the CMS's prefilled
+    // message for that reason, signed by Yasmin, its paragraphs kept.
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      message:
+        "Priya, thank you for applying for Fast Pre-Approval with Bazar. I've been through your application carefully, and I'm sorry to say we're not able to secure a pre-approval for you at the moment.\n\nUAE Central Bank rules cap your total monthly repayments, including the new mortgage, at half of your monthly income. With your current loan and card repayments, a mortgage would take you over that limit.\n\nPaying down or closing a loan or credit card can bring you back within it, and we can then look at your application again.\n\nIf you'd like to talk it through, just reply to this email.\n\nYasmin",
     },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
@@ -357,6 +802,66 @@ const BINDINGS = {
       minutesElapsed: 64,
     },
   }),
+  mortgage_team_new_request: bind<MortgageTeamNewRequestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_submitted: formatDayTime(o.submittedAt, locale),
+        // Blank is nobody, which the token says as "Unassigned".
+        mortgage_owner: o.ownerName?.trim() || null,
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamNewRequestTemplate(o, brand),
+    sample: {
+      ...SAMPLE_TEAM_ALERT,
+      // Tuesday 10:14 in Dubai: the application the confirmation's sample is.
+      submittedAt: "2026-09-22T06:14:00Z",
+      ownerName: "Rashid Khan",
+    },
+  }),
+  mortgage_team_at_risk: bind<MortgageTeamAtRiskOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_remaining: formatDuration(o.remainingSeconds),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamAtRiskTemplate(o, brand),
+    sample: {
+      ...SAMPLE_TEAM_ALERT,
+      remainingSeconds: 6480,
+      dueAt: "2026-09-24T10:14:00Z",
+    },
+  }),
+  mortgage_team_breached: bind<MortgageTeamBreachedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamBreachedTemplate(o, brand),
+    sample: { ...SAMPLE_TEAM_ALERT, dueAt: "2026-09-24T10:14:00Z" },
+  }),
+  mortgage_team_reupload_received: bind<MortgageTeamReuploadReceivedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageTeamValues(o, locale),
+        mortgage_document: o.documentName,
+        mortgage_files: mortgageFileCount(o.files, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageTeamReuploadReceivedTemplate(o, brand),
+    // The re-upload's sample: Karim's missing months, in one file.
+    sample: {
+      reference: "BZM-26-0409",
+      service: "pre_approval",
+      link: `${site()}/admin/mortgages/BZM-26-0409`,
+      documentName: "Last 1 year's bank statements",
+      files: 1,
+    },
+  }),
   permit_expiry_warning: bind<PermitOpts>({
     context: (o) => ({
       values: {
@@ -529,6 +1034,118 @@ export async function enquiryAcknowledgementEmail(
   return binding.builtin(rest, brand);
 }
 
+/**
+ * The applicant's confirmation of a Mortgage Consultancy request. `locale` is
+ * the language they applied in; the flow is English-only until its Arabic is
+ * approved (docs/mortgage/DECISIONS.md D12), so today that is "en".
+ */
+export function mortgageConsultancyReceivedEmail(
+  opts: MortgageReceivedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_consultancy_received", opts, locale);
+}
+
+/**
+ * The applicant's confirmation of a Fast Pre-Approval application: their
+ * reference, the time the team will contact them by and what they sent.
+ */
+export function mortgagePreapprovalReceivedEmail(
+  opts: MortgagePreapprovalReceivedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_preapproval_received", opts, locale);
+}
+
+/**
+ * The applicant's confirmation that their consultation is booked: when, how,
+ * with whom and for how long. The caller attaches the calendar invite (.ics);
+ * the email says it is attached.
+ */
+export function mortgageConsultationBookedEmail(
+  opts: MortgageConsultationBookedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_consultation_booked", opts, locale);
+}
+
+/**
+ * The secure link a consultancy applicant is sent to apply for Fast
+ * Pre-Approval, with when it expires and the code it will ask for.
+ */
+export function mortgagePreapprovalInviteEmail(
+  opts: MortgagePreapprovalInviteOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_preapproval_invite", opts, locale);
+}
+
+/**
+ * An adviser's request to replace or add to one document: which one, their
+ * message quoted as they typed it, and the secure link to upload it, which
+ * asks for a code first.
+ */
+export function mortgageReuploadRequestEmail(
+  opts: MortgageReuploadRequestOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_reupload_request", opts, locale);
+}
+
+/**
+ * The one-time code that opens a secure link, re-upload or invitation. The
+ * subject never carries the code.
+ */
+export function mortgageCodeEmail(
+  opts: MortgageCodeOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_code", opts, locale);
+}
+
+/**
+ * A declined Fast Pre-Approval: the adviser's message quoted as they wrote
+ * it, and how to reach them. The subject never says it was declined.
+ */
+export function mortgageDecisionDeclinedEmail(
+  opts: MortgageDecisionDeclinedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_decision_declined", opts, locale);
+}
+
+/**
+ * A confirmed Fast Pre-Approval: the adviser's message quoted as they wrote
+ * it, the bank whose letter the caller attaches, and how to reach them. Its
+ * subject is the decline's, word for word.
+ */
+export function mortgageDecisionPreApprovedEmail(
+  opts: MortgageDecisionPreApprovedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_decision_pre_approved", opts, locale);
+}
+
+// The partner banks' emails. Nothing about the applicant goes to a bank, and
+// they send in English: a bank's language is not recorded, so the send path
+// passes none.
+
+/** A Fast Pre-Approval package: the reference and an expiring, logged link. */
+export function mortgageBankPackageEmail(
+  opts: MortgageBankPackageOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_bank_package", opts, locale);
+}
+
+/** A reminder to a bank that hasn't answered, with a fresh link. */
+export function mortgageBankReminderEmail(
+  opts: MortgageBankReminderOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_bank_reminder", opts, locale);
+}
+
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
   locale: EmailLocale = "en",
@@ -600,6 +1217,37 @@ export function enquiryEscalationEmail(
   opts: EscalationOpts,
 ): Promise<RenderedEmail> {
   return send("enquiry_escalation", opts);
+}
+
+// The mortgage team's alerts, to the request's owner and the Head of
+// mortgages. English, like every team email: no locale is taken.
+
+/** A new Fast Pre-Approval or Mortgage Consultancy request. */
+export function mortgageTeamNewRequestEmail(
+  opts: MortgageTeamAlertOpts & { submittedAt: string; ownerName: string | null },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_new_request", opts);
+}
+
+/** A Fast Pre-Approval inside its last working hours. */
+export function mortgageTeamAtRiskEmail(
+  opts: MortgageTeamAlertOpts & { remainingSeconds: number; dueAt: string },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_at_risk", opts);
+}
+
+/** A Fast Pre-Approval past its due time with no decision. */
+export function mortgageTeamBreachedEmail(
+  opts: MortgageTeamAlertOpts & { dueAt: string },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_breached", opts);
+}
+
+/** The applicant sent the document they were asked for: back in review. */
+export function mortgageTeamReuploadReceivedEmail(
+  opts: MortgageTeamAlertOpts & { documentName: string; files: number },
+): Promise<RenderedEmail> {
+  return send("mortgage_team_reupload_received", opts);
 }
 
 export function permitExpiryWarningEmail(
@@ -690,7 +1338,7 @@ export async function previewSystemEmail(
 
 /**
  * Every system email as it sends today, from rows already read. The gallery
- * shows all seventeen at once; resolving each through the database would be
+ * shows all thirty-one at once; resolving each through the database would be
  * thirty-odd queries for one page, so it reads the rows and the design once
  * and renders here.
  */

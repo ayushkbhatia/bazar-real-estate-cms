@@ -7,7 +7,14 @@ import { isSupabaseConfigured } from "@/lib/env";
 export type NotificationKind =
   | "new_enquiry"
   | "lead_reassigned"
-  | "system";
+  | "system"
+  // The mortgage team's alerts (docs/mortgage, 0143, 0145): a new request, a
+  // Fast Pre-Approval whose 24-hour promise is at risk or missed, and a
+  // re-upload the applicant has sent.
+  | "mortgage_request"
+  | "mortgage_at_risk"
+  | "mortgage_breached"
+  | "mortgage_reupload";
 
 export type NotificationRow = {
   id: string;
@@ -25,6 +32,10 @@ export const NOTIFICATION_KIND_LABEL: Record<NotificationKind, string> = {
   new_enquiry: "New enquiry",
   lead_reassigned: "Lead reassigned",
   system: "System",
+  mortgage_request: "Mortgage request",
+  mortgage_at_risk: "Promise at risk",
+  mortgage_breached: "Promise missed",
+  mortgage_reupload: "Re-upload received",
 };
 
 export type NotificationInsert = {

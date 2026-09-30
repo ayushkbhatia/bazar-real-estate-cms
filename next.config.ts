@@ -38,6 +38,10 @@ const nextConfig: NextConfig = {
    * the routes that matter finish in well under a second each.
    */
   staticPageGenerationTimeout: 180,
+  // pdf.js checks uploaded mortgage documents on the server
+  // (lib/mortgage-requests/server/verify.ts) and loads its worker module at
+  // runtime; left unbundled, Node resolves it the way the tests do.
+  serverExternalPackages: ["pdfjs-dist"],
   images: {
     remotePatterns: supabaseHost
       ? [
@@ -81,6 +85,22 @@ const nextConfig: NextConfig = {
       // hides the failure until deploy.
       bodySizeLimit: "4mb",
     },
+  },
+  // No other site may frame the CMS or the mortgage flow (the applicant's
+  // pages, their secure links, a bank's package page): a framed page could be
+  // dressed up to steer a click (docs/mortgage/SECURITY-REVIEW.md SR-15).
+  // Nothing frames them here either — the CMS's own iframes are `srcDoc`
+  // email previews. `X-Frame-Options` is for browsers that predate
+  // `frame-ancestors`. `:path*` matches the bare path too.
+  async headers() {
+    const noFraming = [
+      { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+      { key: "X-Frame-Options", value: "DENY" },
+    ];
+    return ["/admin/:path*", "/ar/admin/:path*", "/mortgages/:path*", "/ar/mortgages/:path*"].map((source) => ({
+      source,
+      headers: noFraming,
+    }));
   },
   // Sprint 13: portals expect `.xml` extensions in feed URLs. We host
   // the routes under cleaner segment names (no dots in folder names)

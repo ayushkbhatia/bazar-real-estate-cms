@@ -1,0 +1,464 @@
+{
+  "actions": {
+    "back": "Back"
+  },
+  "common": {
+    "whatHappensNext": "What happens next"
+  },
+  "consent": {
+    "label": "I authorise Bazar Real Estate to share these documents with its partner banks for the sole purpose of obtaining my mortgage pre-approval.",
+    "pending": "(Consent wording to be confirmed by compliance.)"
+  },
+  "consultNext": {
+    "contact": "<b>We contact you</b> to arrange your consultation.",
+    "receive": "<b>We receive your request</b> straight away.",
+    "review": "<b>An adviser reviews</b> your profile and residency."
+  },
+  "doc": {
+    "bankStatements12m": {
+      "hint": "Several files · PDF · max 40 MB total",
+      "name": "Last 1 year's bank statements"
+    },
+    "bankStatements3m": {
+      "hint": "Several files · PDF · max 25 MB total",
+      "name": "Last 3 months' bank statements"
+    },
+    "emiratesId": {
+      "hint": "Front and back · PDF, JPG, PNG · max 10 MB",
+      "name": "Emirates ID",
+      "noun": "Emirates ID"
+    },
+    "passport": {
+      "hint": "Photo page · PDF, JPG, PNG · max 10 MB",
+      "name": "Passport copy",
+      "noun": "passport"
+    },
+    "salaryCertificate": {
+      "hint": "Addressed to the bank · PDF · max 10 MB",
+      "name": "Salary certificate"
+    },
+    "state": {
+      "accepted": "Accepted"
+    },
+    "tradeLicense": {
+      "hint": "Valid / current · PDF, JPG, PNG · max 10 MB",
+      "name": "Business trade licence",
+      "noun": "licence"
+    }
+  },
+  "docs": {
+    "cta": "Get Fast Pre-Approval",
+    "error": {
+      "draft": "We couldn't prepare your uploads. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "expired": "Your uploads expired after 24 hours, so we've cleared them. Please upload your documents again.",
+    "eyebrow": "Step 3 · Documents",
+    "lede": "These documents are tailored to your employment type — you only see what a bank actually needs from you. Accepted formats: PDF, JPG, JPEG, PNG.",
+    "monthsRange": "{from} to {to}",
+    "note": {
+      "attention": "{count, plural, one {# file needs attention} other {# files need attention}}",
+      "consent": "Tick the consent box to continue",
+      "none": "0 of {total} documents added",
+      "progress": "<ink>{ready} of {total} ready</ink>"
+    }
+  },
+  "employment": {
+    "businessOwner": {
+      "sub": "Trade licence holder",
+      "title": "Business Owner"
+    },
+    "salaried": {
+      "sub": "Employed, fixed salary",
+      "title": "Salaried"
+    }
+  },
+  "field": {
+    "dateOfBirth": "Date of birth",
+    "email": "Email address",
+    "fullName": "Full name",
+    "mobile": "Mobile number"
+  },
+  "preNext": {
+    "contact": "<b>We contact you within 24 hours</b> with your pre-approval.",
+    "price": "<b>We price it</b> against our partner banks.",
+    "review": "<b>We review your file</b> — usually the same working day."
+  },
+  "received": {
+    "backToBazar": "Back to Bazar",
+    "estimatePayment": "Estimate your monthly payment"
+  },
+  "residency": {
+    "expat": {
+      "sub": "Up to {ltv}% LTV",
+      "title": "UAE Resident / Expat"
+    },
+    "uaeNational": {
+      "sub": "Up to {ltv}% LTV",
+      "title": "UAE National"
+    }
+  },
+  "security": {
+    "body": "Encrypted in transit and at rest. Only Bazar's mortgage team can open them, and every view is recorded.",
+    "title": "Your documents are protected"
+  },
+  "selections": {
+    "change": "Change",
+    "edit": "Edit",
+    "label": "Your selections",
+    "service": {
+      "consultancy": "Service: Mortgage Consultancy",
+      "preApproval": "Service: Fast Pre-Approval"
+    }
+  },
+  "service": {
+    "consultancy": "Mortgage Consultancy",
+    "preApproval": "Fast Pre-Approval"
+  },
+  "shell": {
+    "brand": "Bazar",
+    "exit": "Exit",
+    "footer": {
+      "legal": "© 2026 Bazar Real Estate L.L.C. · Regulated by ADREC",
+      "phone": "+971 2 632 2223",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Use"
+    },
+    "permit": "Mortgage brokerage · ADREC permit MB-2026-01184",
+    "section": "Mortgages"
+  },
+  "stepper": {
+    "chooseService": "Choose service",
+    "documents": "Documents",
+    "done": "completed",
+    "label": "Application progress",
+    "submit": "Submit",
+    "yourDetails": "Your details"
+  },
+  "submit": {
+    "error": {
+      "botCheck": "We couldn't verify this browser. Please reload the page and try again.",
+      "details": "Please check your details and try again.",
+      "draftExpired": "Your uploads expired after 24 hours. Please upload your documents again.",
+      "filesNotReady": "Some documents are still being checked. Wait a moment, then try again.",
+      "generic": "We couldn't send your request. Please try again in a moment.",
+      "rateLimited": "Too many attempts from this connection. Please wait a few minutes and try again."
+    },
+    "sending": "Sending…"
+  },
+  "summary": {
+    "employment": "Employment",
+    "received": "Received",
+    "reference": "Reference",
+    "residency": "Residency",
+    "service": "Service"
+  },
+  "track": {
+    "done": "Done",
+    "next": "Next",
+    "now": "Now"
+  },
+  "upload": {
+    "addMore": "Add more files",
+    "announce": {
+      "added": "{name} added to {document}.",
+      "failed": "{name} couldn't be added to {document}.",
+      "removed": "{name} removed."
+    },
+    "cancel": "Cancel",
+    "cancelFile": "Cancel upload of {name}",
+    "chooseAnother": "Choose another file",
+    "dropMany": "Drop files here or",
+    "dropOne": "Drop a file here or",
+    "error": {
+      "badType": "Upload a PDF, JPG or PNG file.",
+      "badTypePdf": "This document must be a PDF.",
+      "draftExpired": "Your uploads expired. Please upload this document again.",
+      "encryptedPdf": "This PDF is password-protected. Download an unprotected copy from your bank or employer and upload that.",
+      "generic": "Something went wrong with this file. Please try again.",
+      "infected": "This file didn't pass our security check. Please upload a different copy.",
+      "network": "The upload was interrupted. Check your connection and try again.",
+      "scanFailed": "We couldn't check this file. Please upload it again.",
+      "tooLarge": "This file is {size} MB and the limit is {limit} MB. Save it at a lower resolution, or upload a photo of the {documentNoun} instead.",
+      "tooLargePdf": "This file is {size} MB and the limit is {limit} MB. Save it at a lower resolution and upload it again.",
+      "tooManyFiles": "{limit, plural, one {Upload one file for this document.} other {Upload up to # files for this document.}}",
+      "totalExceeded": "These statements come to {total} MB and the limit is {limit} MB in total. Remove a file or upload smaller copies.",
+      "unreadable": "We couldn't read this file. Try saving it again and uploading the new copy."
+    },
+    "leaveWarning": "Your documents are still uploading. Leave this page?",
+    "pickerLabel": "Choose files for {document}",
+    "pill": {
+      "added": "Added",
+      "filesAdded": "{count, plural, one {# file added} other {# files added}}",
+      "needsAttention": "Needs attention",
+      "uploading": "Uploading"
+    },
+    "progress": "{loaded} of {total} MB",
+    "progressLabel": "Uploading {name}",
+    "remove": "Remove {name}",
+    "replace": "Replace",
+    "retry": "Retry",
+    "size": "{size} MB",
+    "totalUsed": "{used} of {limit} MB used",
+    "uploadMany": "Upload documents",
+    "uploadOne": "Upload document"
+  },
+  "w1": {
+    "consultancy": {
+      "chip": "No documents required",
+      "desc": "Personalised mortgage guidance from our team.",
+      "needs": "Your personal details only."
+    },
+    "contact": "Prefer to talk it through? Call <ink>+971 2 632 2223</ink> or WhatsApp <ink>+971 50 691 1103</ink>.",
+    "cta": "Continue",
+    "eyebrow": "Step 1 · Choose your service",
+    "lede": "Pick a service to begin. We only ask for what that service actually needs.",
+    "needsLabel": "What we'll ask for",
+    "note": "Next: your details",
+    "preApproval": {
+      "badge": "Within 24 hours",
+      "chip": "Supporting documents required",
+      "desc": "Get your mortgage pre-approval within 24 hours.",
+      "needs": "Your personal details, then four documents matched to your employment type."
+    },
+    "rail": {
+      "consultancy": "For when you're still exploring: how much you could borrow, how UAE mortgages work and which route suits you.",
+      "preApproval": "For when you're ready to make an offer. A pre-approval shows sellers and developers that your finance is lined up.",
+      "title": "Which one is right for you?"
+    },
+    "switch": {
+      "body": "Start with a consultation and your adviser can send you a Fast Pre-Approval link when you're ready. Your details carry over.",
+      "title": "You can switch later"
+    },
+    "title": "How can we assist you?"
+  },
+  "w2": {
+    "cta": {
+      "consultancy": "Continue",
+      "preApproval": "Continue to documents"
+    },
+    "dateOfBirth": {
+      "placeholder": "DD / MM / YYYY"
+    },
+    "email": {
+      "placeholder": "you@email.com"
+    },
+    "employment": {
+      "label": "Employment type",
+      "note": "Your <b>Employment Type</b> decides which documents you'll be asked for next — Salaried and Business Owner see different lists."
+    },
+    "error": {
+      "banner": "Please check the highlighted details.",
+      "dateOfBirth": {
+        "not_a_date": "Enter a real date as DD / MM / YYYY.",
+        "not_in_past": "Your date of birth must be in the past.",
+        "required": "Enter your date of birth.",
+        "too_old": "Check the year of your date of birth."
+      },
+      "email": {
+        "invalid": "Enter a valid email address, like you@email.com.",
+        "required": "Enter your email address."
+      },
+      "employmentType": {
+        "required": "Choose your employment type."
+      },
+      "fullName": {
+        "characters": "Use letters, spaces, hyphens and apostrophes only.",
+        "required": "Enter your full name as it appears on your Emirates ID.",
+        "too_long": "Your name can be up to 100 characters.",
+        "too_short": "Your name needs at least 2 letters."
+      },
+      "mobile": {
+        "landline": "This looks like a landline. Enter a UAE mobile number starting with 5.",
+        "not_mobile": "Enter a 9-digit UAE mobile number starting with 5, like 50 000 0000.",
+        "required": "Enter your UAE mobile number."
+      },
+      "residency": {
+        "required": "Choose your residency status."
+      }
+    },
+    "eyebrow": "Step 2 · Your details",
+    "fullName": {
+      "hint": "As on your Emirates ID",
+      "placeholder": "As on your Emirates ID"
+    },
+    "lede": "Required for both Mortgage Consultancy and Fast Pre-Approval.",
+    "mobile": {
+      "label": "{label}, {prefix}",
+      "placeholder": "50 000 0000",
+      "prefix": "+971"
+    },
+    "rail": {
+      "employment": {
+        "body": "Determines the exact documents a bank needs to pre-approve you — nothing irrelevant is requested.",
+        "title": "Employment type"
+      },
+      "private": {
+        "body": "Your answers stay in your browser until you submit. No bank and no credit bureau is contacted at this stage.",
+        "title": "Nothing is shared yet"
+      },
+      "residency": {
+        "body": "Sets your maximum loan-to-value and which partner banks can lend to you.",
+        "title": "Residency status"
+      },
+      "title": "Why we ask"
+    },
+    "residency": {
+      "label": "Residency status"
+    },
+    "title": "Personal details"
+  },
+  "w3": {
+    "cta": "Request a Consultation",
+    "details": {
+      "edit": "Edit",
+      "title": "Your details"
+    },
+    "eyebrow": "Step 3 · Mortgage Consultancy",
+    "fine": "By submitting, you agree to be contacted by Bazar's mortgage team about this request. <link>Privacy Policy</link>",
+    "lede": "Because you chose Mortgage Consultancy, the form ends at your personal details. Our team will reach out to guide you personally.",
+    "noDocs": {
+      "body": "Consultancy is guidance only — there's nothing to upload. Submit your details and a mortgage adviser will contact you.",
+      "title": "No supporting documents required"
+    },
+    "title": "You're all set — no documents needed"
+  },
+  "w4": {
+    "body": "A member of our mortgage team will contact you shortly.",
+    "eyebrow": "Request received",
+    "rail": {
+      "contactOn": "We'll contact you on",
+      "title": "Your request"
+    },
+    "title": "Thank you for your interest.",
+    "track": {
+      "receivedAt": "Received {time}"
+    }
+  },
+  "w5": {
+    "title": "Upload your salaried documents"
+  },
+  "w6": {
+    "title": "Upload your business documents"
+  },
+  "w7": {
+    "body": "Your details and documents have been submitted successfully. Our mortgage team will review your application and contact you regarding your pre-approval.",
+    "due": {
+      "label": "We'll contact you by",
+      "note": "24 hours from when you submitted. Most files are reviewed the same working day."
+    },
+    "eyebrow": "Application received",
+    "rail": {
+      "docsReceived": "Documents received",
+      "fileCount": "{count, plural, one {# file} other {# files}}",
+      "title": "Your application"
+    },
+    "title": "Thank you.",
+    "track": {
+      "submitted": "Submitted"
+    },
+    "whatsapp": "If we need anything else, we'll message you on WhatsApp at <ink>{maskedMobile}</ink> with a secure link. You won't need to start again."
+  },
+  "w8": {
+    "adviser": {
+      "meta": "{roleLabel} · {sentAt}"
+    },
+    "alreadyReceived": "Already received: {files} · {used} of {limit} MB used",
+    "code": {
+      "error": {
+        "cooldown": "Wait a minute before asking for another code.",
+        "expired": "That code has expired. Send yourself a new one.",
+        "failed": "We couldn't send the code. Try again in a minute.",
+        "format": "Enter the 6 digits from the email.",
+        "generic": "Something went wrong. Please try again.",
+        "wrong": "{count, plural, one {That code isn't right. You have # try left.} other {That code isn't right. You have # tries left.}}"
+      },
+      "eyebrow": "Secure link",
+      "label": "Code",
+      "lede": "To keep your application private, we'll send a 6-digit code to the email address on your application.",
+      "resend": "Send a new code",
+      "send": "Send code",
+      "sent": "We sent a code to {destination}. It works for 10 minutes.",
+      "submit": "Continue",
+      "title": "Check it's you",
+      "wait": "{seconds, plural, one {You can ask for a new code in # second.} other {You can ask for a new code in # seconds.}}"
+    },
+    "coverage": {
+      "needed": "Needed · {range}",
+      "received": "Received · {range}"
+    },
+    "cta": "Send documents",
+    "drop": {
+      "add": "Add to your <b>{document}</b>",
+      "instruction": "Add statements for <b>{months}</b>",
+      "replace": "Upload a new <b>{document}</b>"
+    },
+    "eyebrow": "Application {reference} · Fast Pre-Approval",
+    "file": {
+      "readyToSend": "{size} MB · ready to send"
+    },
+    "invite": {
+      "eyebrow": "Fast Pre-Approval · from your consultation {reference}",
+      "lede": "Your details carry over from your consultation request, so all that's left is your documents. They're tailored to your employment type.",
+      "reference": "Your reference is {reference}."
+    },
+    "lede": "Thanks, {firstName}. Three of your four documents are accepted. Add what's missing below and we'll pick your file straight back up.",
+    "ledeCount": "{count, plural, =0 {Thanks, {firstName}. Add what's missing below and we'll pick your file straight back up.} one {Thanks, {firstName}. One of your documents is accepted. Add what's missing below and we'll pick your file straight back up.} other {Thanks, {firstName}. # of your documents are accepted. Add what's missing below and we'll pick your file straight back up.}}",
+    "next": {
+      "check": "<b>{adviserFirstName} checks</b> the new statements.",
+      "checkOther": "<b>{adviserFirstName} checks</b> your new document.",
+      "contact": "<b>We contact you</b> with your pre-approval.",
+      "price": "<b>We price your file</b> against our partner banks."
+    },
+    "note": "Your file is on hold until this arrives.",
+    "pill": {
+      "monthsMissing": "{count, plural, one {# month missing} other {# months missing}}"
+    },
+    "questions": {
+      "body": "Reply to {adviserFirstName} on WhatsApp, or call the mortgage team on +971 2 632 2223.",
+      "title": "Questions?"
+    },
+    "reason": {
+      "expired": "Expired",
+      "other": "Needs another look",
+      "pages_missing": "Pages missing",
+      "period_incomplete": "Period incomplete",
+      "unreadable": "Unreadable",
+      "wrong_document": "Wrong document"
+    },
+    "replaceNote": "What you send replaces the {document} we have.",
+    "secure": "Secure link for {fullName} · verified with a code sent to {maskedMobile}",
+    "sent": {
+      "body": "We've received your documents, and your application is back in review. {adviserFirstName} will be in touch.",
+      "title": "Thanks, {firstName}."
+    },
+    "state": {
+      "contact": "Questions? Call the mortgage team on +971 2 632 2223.",
+      "expired": {
+        "body": "Secure links work for 7 days. Ask your mortgage adviser to send you a new one.",
+        "title": "This link has expired"
+      },
+      "invited": {
+        "body": "Your Fast Pre-Approval application is with our mortgage team. We'll be in touch.",
+        "title": "You've already applied"
+      },
+      "locked": {
+        "body": "A wrong code was entered too many times, so we've locked the link to keep your application safe. Ask your mortgage adviser for a new one.",
+        "title": "This link is locked"
+      },
+      "unavailable": {
+        "body": "It may have been replaced by a newer link, or cancelled. Ask your mortgage adviser to send you a new one.",
+        "title": "This link doesn't work"
+      },
+      "used": {
+        "body": "We have your documents, and your application is back with our mortgage team. We'll be in touch.",
+        "title": "You've already sent this"
+      }
+    },
+    "submit": {
+      "error": "We couldn't send your documents. Please try again in a moment.",
+      "gone": "This link can no longer be used. Ask your mortgage adviser for a new one."
+    },
+    "title": "One document needs another look"
+  }
+}

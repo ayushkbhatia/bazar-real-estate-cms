@@ -18,11 +18,14 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
+    "test:db": "vitest run --config vitest.db.config.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "db:types": "bash scripts/db-types.sh",
     "db:check": "bash scripts/check-migrations.sh",
     "db:seed": "bash scripts/db-seed.sh",
+    "db:local:reset": "bash scripts/db-local/reset.sh",
+    "db:local:stop": "supabase stop --workdir scripts/db-local",
     "seed:demo": "node --env-file=.env.local scripts/seed-demo-content/index.ts"
   },
   "dependencies": {
@@ -54,6 +57,7 @@
     "next-intl": "^4.13.6",
     "next-themes": "^0.4.6",
     "nuqs": "^2.8.9",
+    "pdfjs-dist": "~5.6.205",
     "posthog-js": "^1.374.2",
     "posthog-node": "^5.34.6",
     "qrcode": "^1.5.4",

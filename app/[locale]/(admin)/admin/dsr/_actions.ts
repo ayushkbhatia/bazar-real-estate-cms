@@ -7,6 +7,8 @@ import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { getSubjectByEmail } from "@/lib/queries/dsr-subject";
 import { approxJsonByteSize, exportFilename, generateDsrToken } from "@/lib/dsr";
+import { eraseMortgageRequests, logMortgageExport, uaeMobileE164 } from "@/lib/mortgage-requests/server/dsr";
+import { supabaseStorage } from "@/lib/mortgage-requests/server/storage";
 import { drainCrmErasures } from "@/lib/salesforce/erasure-queue";
 
 /**
@@ -32,6 +34,16 @@ function normalise(email: unknown): string {
 }
 
 /**
+ * The optional UAE mobile, which only the mortgage module's requests are
+ * matched on. Blank is fine; anything else must be a UAE mobile.
+ */
+function mobileOf(raw: unknown): { ok: true; mobile: string | null } | { ok: false } {
+  if (typeof raw !== "string" || !raw.trim()) return { ok: true, mobile: null };
+  const mobile = uaeMobileE164(raw);
+  return mobile ? { ok: true, mobile } : { ok: false };
+}
+
+/**
  * Record an access request and return the archive for download.
  *
  * The archive is built fresh at fulfilment time rather than stored, so it can
@@ -40,6 +52,7 @@ function normalise(email: unknown): string {
  */
 export async function fulfilExportRequest(
   emailRaw: unknown,
+  mobileRaw?: unknown,
 ): Promise<
   | { status: "ok"; filename: string; json: string; message: string }
   | { status: "error"; message: string }
@@ -51,8 +64,11 @@ export async function fulfilExportRequest(
   const email = normalise(emailRaw);
   if (!email.includes("@"))
     return { status: "error", message: "Enter the subject's email address." };
+  const mobile = mobileOf(mobileRaw);
+  if (!mobile.ok)
+    return { status: "error", message: "The mobile must be a UAE mobile, or blank." };
 
-  const subject = await getSubjectByEmail(email);
+  const subject = await getSubjectByEmail(email, { mobile: mobile.mobile });
   if (!subject)
     return { status: "error", message: "Lookup failed — check the logs." };
 
@@ -60,6 +76,8 @@ export async function fulfilExportRequest(
 
   const admin = createAdminClient();
   if (admin) {
+    // Each mortgage request's own activity says its data was exported.
+    await logMortgageExport(admin, subject.mortgageRequestIds);
     // account_id is nullable as of 0067 — nobody has an account any more.
     const { error } = await admin.from("dsr_requests").insert({
       account_id: null,
@@ -111,6 +129,7 @@ export async function fulfilExportRequest(
  */
 export async function fulfilErasureRequest(
   emailRaw: unknown,
+  mobileRaw?: unknown,
 ): Promise<DsrActionResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Backend not configured." };
@@ -119,6 +138,9 @@ export async function fulfilErasureRequest(
   const email = normalise(emailRaw);
   if (!email.includes("@"))
     return { status: "error", message: "Enter the subject's email address." };
+  const mobile = mobileOf(mobileRaw);
+  if (!mobile.ok)
+    return { status: "error", message: "The mobile must be a UAE mobile, or blank." };
 
   const admin = createAdminClient();
   if (!admin)
@@ -129,7 +151,28 @@ export async function fulfilErasureRequest(
 
   // Snapshot what was held BEFORE scrubbing: afterwards it is unfindable by
   // email, and the audit row would be empty.
-  const before = await getSubjectByEmail(email);
+  const before = await getSubjectByEmail(email, { mobile: mobile.mobile });
+  // Without the snapshot the mortgage requests can't be found, and erasing the
+  // rest would report a job done that wasn't.
+  if (!before)
+    return { status: "error", message: "Lookup failed — nothing was erased. Check the logs." };
+
+  // The mortgage module's requests go first, and are deleted rather than
+  // pseudonymised (docs/mortgage SPEC §8): their files from the private bucket,
+  // then the rows. First, so that if the bucket refuses, nothing else has
+  // changed yet and the request can simply be run again.
+  let mortgage;
+  try {
+    mortgage = await eraseMortgageRequests(
+      { db: admin, storage: supabaseStorage(admin) },
+      before.mortgageRequestIds,
+    );
+  } catch (error) {
+    return {
+      status: "error",
+      message: `The mortgage requests couldn't be erased (${error instanceof Error ? error.message : "unknown error"}). Nothing was changed; try again.`,
+    };
+  }
 
   // Mark the CRM work while the email still links the rows, and mark it
   // before the scrub rather than after: an interrupted request then leaves a
@@ -199,7 +242,7 @@ export async function fulfilErasureRequest(
     // record of what was actually erased, plus what happened in the CRM —
     // `dsr_requests` is the compliance evidence, and "we also told
     // Salesforce" is part of what it has to evidence.
-    payload: { ...((data ?? {}) as Record<string, unknown>), crm } as never,
+    payload: { ...((data ?? {}) as Record<string, unknown>), crm, mortgage } as never,
     confirmed_at: new Date().toISOString(),
     fulfilled_at: new Date().toISOString(),
   });
@@ -208,8 +251,8 @@ export async function fulfilErasureRequest(
     action: "dsr.erasure_fulfilled",
     target_kind: "data_subject",
     target_id: email,
-    before: before ? { ...before.tally } : null,
-    after: { ...((data ?? {}) as Record<string, unknown>), crm },
+    before: { ...before.tally },
+    after: { ...((data ?? {}) as Record<string, unknown>), crm, mortgage },
   });
 
   const tally = (data ?? {}) as Record<string, number | boolean | string>;
@@ -218,6 +261,16 @@ export async function fulfilErasureRequest(
     .map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`);
 
   if (crm.scrubbed > 0) parts.push(`Salesforce leads: ${crm.scrubbed}`);
+  if (mortgage.requests.length > 0) {
+    parts.push(
+      `mortgage requests deleted: ${mortgage.requests.length} (${mortgage.requests.join(", ")}), with ${mortgage.files} ${mortgage.files === 1 ? "file" : "files"}`,
+    );
+  }
+  // A bank's copy is beyond reach: say so, so the reply to the subject does too.
+  const banks = [...new Set(mortgage.shared_with_banks.map((b) => b.label))];
+  if (banks.length > 0) {
+    parts.push(`already sent to ${banks.join(", ")}, which Bazar can't recall — tell the subject, and the banks if they ask`);
+  }
 
   revalidatePath("/admin/dsr");
 

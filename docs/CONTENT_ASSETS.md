@@ -6,7 +6,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 
 | Tab | Route | What it is |
 |---|---|---|
-| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 18 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
+| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 32 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
 | **Form replies** | `/admin/content-assets/replies` | Every public form, the email its visitor receives, and which reply answers which form |
 | **Outreach** | `?view=outreach` | Email and WhatsApp copy an advisor sends by hand from the enquiry composer |
 | **Email design** | `/admin/content-assets/design` | The logo, colours and footer every email is wrapped in |
@@ -19,7 +19,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 | | **Outreach** | **Site emails** |
 |---|---|---|
 | Who sends it | an advisor, by hand | the site, with nobody watching |
-| Where it is used | the enquiry composer | seventeen send paths (below) |
+| Where it is used | the enquiry composer | thirty-one send paths (below) |
 | Channels | email + WhatsApp | email only |
 | Body is | plain text, the **middle** of a message — `staffReplyTemplate` adds greeting and signature | rich text (HTML), the **whole** message; only the brand header and footer are added |
 | Draft means | it does not appear in the composer | Bazar's built-in wording sends |
@@ -164,18 +164,19 @@ and the `sampleAr` the preview uses.
 
 **The built-in templates are English.** An Arabic lead whose email has no
 Arabic — and no published row at all — gets the English built-in. Arabic
-built-ins would mean a second copy of seventeen templates in code; the Arabic
+built-ins would mean a second copy of thirty-one templates in code; the Arabic
 first draft in the rows (below) is the answer instead.
 
 ### The Arabic first draft
 
 `lib/content-assets/system-defaults-ar.ts` holds an Arabic draft of all
-seventeen system emails, and migration 0129 writes it into the rows **only
-where nobody had written one**. A machine first draft the client edits, per
-ADR-0008 — the alternative was seventeen empty Arabic tabs. Every row stays a
-draft, so this changed nothing that sends. `arabic.test.ts` checks each draft
-is Arabic, uses exactly the tokens its English uses, and appears in the
-migration verbatim.
+thirty-one system emails, and migrations 0129, 0135, 0142, 0144, 0146, 0148
+and 0150 write it into the rows **only where nobody had written one**. A
+machine first draft the client edits, per ADR-0008 — the alternative was
+thirty-one empty Arabic tabs. Every row stays a draft, so this changed nothing
+that sends.
+`arabic.test.ts` checks each draft is Arabic, uses exactly the tokens its
+English uses, and appears in the migration verbatim.
 
 ## How resolution works
 
@@ -222,7 +223,7 @@ route around them:
 - the system rows **cannot be deleted or trashed** — a trigger refuses;
 - their `slug`, `kind` and `system_key` **cannot change**;
 - a system row **must have a subject**, and `system_key` is one of the
-  seventeen known values;
+  thirty-one known values;
 - `body_format = 'html'` only on system rows — outreach stays plain text.
 
 ### Reading past RLS
@@ -379,6 +380,72 @@ braces left over.
 - **0117** — Settings → Templates, which wrote `{subject, body}` overrides into
   `site_settings.email_templates` that nothing read, was replaced by four
   `system_key` rows. The column is left in place, unread.
+- **0142** — the mortgage flow's two confirmations, `mortgage_consultancy_received`
+  and `mortgage_preapproval_received`, sent to the applicant on submit: the
+  reference (`{{mortgage_reference}}`, required), and for Fast Pre-Approval the
+  contact-by time (`{{mortgage_due}}`, 24 *working* hours, required) and the
+  `{{mortgage_documents}}` panel. Seeded as drafts in both languages; the
+  wording is provisional until the mortgage copy is designed (D29 in
+  docs/mortgage/DECISIONS.md).
+- **0144** — the mortgage CMS's five. To a request's owner and the Head of
+  mortgages: `mortgage_team_new_request`, `mortgage_team_at_risk` (4 working
+  hours or less left on a Fast Pre-Approval's promise; `{{mortgage_remaining}}`
+  is working time) and `mortgage_team_breached` — the reference, the service,
+  the clock and `{{mortgage_request_url}}` (required with the reference), and
+  nothing about the applicant: no applicant token is in their scope, and they
+  always send in English. To the applicant: `mortgage_consultation_booked`
+  (when, how, with whom and how long; the send path attaches the `.ics`) and
+  `mortgage_preapproval_invite` (`{{mortgage_secure_url}}`, required, when it
+  expires, and the code their mobile will be sent). Seeded as drafts with an
+  Arabic first draft each; wording provisional (D29).
+- **0146** — reviewing the documents, three more. To the applicant:
+  `mortgage_reupload_request`, an adviser's request to replace or add to one
+  document — `{{mortgage_document}}`, the secure link (required), when it
+  expires, and the adviser's own message as the `{{mortgage_adviser_message}}`
+  panel: plain text, escaped, its line breaks kept and every line quoted in
+  both halves, never a link or markup; and `mortgage_code`, the one-time code
+  that opens a secure link (`{{verification_code}}`, required;
+  `{{mortgage_code_expires_in}}` is "10 minutes" in words, plural-aware in
+  Arabic), kept out of the subject line because a phone shows it on the lock
+  screen. Neither says how the code arrives — email until WhatsApp is
+  connected (D5). To the owner and the Head of mortgages:
+  `mortgage_team_reupload_received` — reference, service, document and
+  `{{mortgage_files}}`, that the request is back in review with its clock
+  resumed, and nothing about the applicant, like 0144's alerts. Seeded as
+  drafts with an Arabic first draft each; wording provisional (D29).
+- **0148** — the decision, one more. To the applicant:
+  `mortgage_decision_declined`, sent when an adviser declines a Fast
+  Pre-Approval in the CMS — who has written (`{{mortgage_adviser}}`), their
+  own message as the `{{mortgage_adviser_message}}` panel the re-upload
+  request quotes (required, since the message is the email), and how to reach
+  them: reply, or the mortgage team's number. The subject is "an update",
+  never the outcome, because a phone shows it on the lock screen; the scope
+  holds nothing of the applicant but `{{lead_first_name}}` — no full name,
+  mobile, email address, date of birth or income. With no name for the
+  adviser, the built-in names the team once in its opening line; the
+  starting wording, which cannot branch, names it twice. The Arabic draft
+  isolates the team's phone number so it reads left to right. Seeded as a
+  draft; wording provisional (D29).
+- **0150** — partner banks and the pre-approval, three more. To a partner
+  bank's package inbox: `mortgage_bank_package`, sent when an adviser sends a
+  file to the banks — who has shared it, `{{mortgage_document_count}}` ("4
+  documents", plural-aware in Arabic) and `{{mortgage_package_url}}`, an
+  expiring link to the structured summary and the documents, where every open
+  and download is recorded, with `{{mortgage_link_expires}}`; and
+  `mortgage_bank_reminder`, for a bank that has not answered — the day the
+  package went (`{{mortgage_package_sent}}`, a Dubai date) and a fresh link,
+  since the first is stored only as its hash. Both greet "the team at
+  `{{mortgage_bank}}`", require the reference and the link, and carry nothing
+  about the applicant: no applicant token is in their scope. They are filed
+  with the client emails, the gallery's only group for anyone outside the
+  team, and send in English. To the applicant:
+  `mortgage_decision_pre_approved`, the decline's twin — the adviser's message
+  as the same panel (required), "Your pre-approval letter from
+  `{{mortgage_bank}}` is attached" (the send path attaches it; attachments may
+  now be bytes, so a PDF survives), the reply and call line, and the decline's
+  subject word for word, so a lock screen tells the two outcomes apart by
+  nothing. Seeded as drafts with an Arabic first draft each; wording
+  provisional (D29).
 - **0129** — Arabic: `subject_ar`/`body_ar` on every asset, an Arabic first
   draft of all seventeen system emails, `valuation_requests.locale`, RTL
   rendering, and the EN/AR toggle across the four screens.

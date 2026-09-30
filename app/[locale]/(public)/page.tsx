@@ -30,6 +30,7 @@ import {
   HOME_TESTIMONIAL_COUNT,
 } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
 import { getPartners, getTestimonials } from "@/lib/queries/content-sections";
 import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
@@ -89,6 +90,7 @@ export default async function HomePage({
     listForm,
     testimonials,
     partners,
+    mortgageFlowOpen,
   ] = await Promise.all([
     listPublishedProperties({
       mode: "buy",
@@ -110,6 +112,9 @@ export default async function HomePage({
     // The logo strip's institutions, from the same library — one document
     // read by this page, /about and /partners, so an edit lands on all three.
     getPartners(),
+    // Whether the mortgage band's button opens the application flow
+    // (docs/mortgage, SPEC §4.1) or, as before, the calculator.
+    isMortgageFlowPublic(),
   ]);
 
   // Hero variant is driven entirely by site_settings now — the page used to
@@ -321,6 +326,7 @@ export default async function HomePage({
         key="mortgage_calculator"
         eyebrow={str(mortgageV, "eyebrow")}
         heading={str(mortgageV, "heading")}
+        preApprovalHref={mortgageFlowOpen ? MORTGAGE_ENTRY_LINKS.home : undefined}
       />
     ),
 

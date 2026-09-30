@@ -146,6 +146,8 @@ function scannedFiles(): string[] {
          */
         "app/\\[locale\\]/(public)/**/*.ts",
         "app/\\[locale\\]/(public)/**/*.tsx",
+        "app/\\[locale\\]/(mortgage)/**/*.ts",
+        "app/\\[locale\\]/(mortgage)/**/*.tsx",
         "components/brand/**/*.tsx",
         "components/ui/**/*.tsx",
         "lib/**/*.ts",

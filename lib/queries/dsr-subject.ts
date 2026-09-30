@@ -1,14 +1,17 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildDataExport, type DataExportPayload } from "@/lib/dsr";
+import { findMortgageRequests, mortgageExport } from "@/lib/mortgage-requests/server/dsr";
 
 /**
  * Data-subject lookup, keyed by email.
  *
  * With customer accounts removed, everything Bazar holds about a person hangs
  * off their email address rather than an `accounts` row: enquiries and their
- * message threads, valuation requests, mortgage enquiries and the newsletter
- * list.
+ * message threads, valuation requests, mortgage enquiries, the newsletter
+ * list, and the mortgage module's requests — which can also be found by a UAE
+ * mobile, since an applicant may have used another address
+ * (lib/mortgage-requests/server/dsr.ts).
  *
  * Service-role throughout — the subject has no session, and a staff member is
  * acting on their behalf after verifying identity over email. RLS would hide
@@ -20,6 +23,8 @@ export type SubjectTally = {
   messages: number;
   valuation_requests: number;
   mortgage_inquiries: number;
+  /** Fast Pre-Approval and Mortgage Consultancy requests, by email or the mobile given. */
+  mortgage_requests: number;
   newsletter: number;
 };
 
@@ -28,6 +33,8 @@ export type SubjectRecord = {
   found: boolean;
   tally: SubjectTally;
   export: DataExportPayload;
+  /** The mortgage requests found, for the export's log line and for erasure. */
+  mortgageRequestIds: string[];
 };
 
 const EMPTY: SubjectTally = {
@@ -35,6 +42,7 @@ const EMPTY: SubjectTally = {
   messages: 0,
   valuation_requests: 0,
   mortgage_inquiries: 0,
+  mortgage_requests: 0,
   newsletter: 0,
 };
 
@@ -47,6 +55,7 @@ const EMPTY: SubjectTally = {
  */
 export async function getSubjectByEmail(
   emailRaw: string,
+  opts: { mobile?: string | null } = {},
 ): Promise<SubjectRecord | null> {
   const email = emailRaw.trim().toLowerCase();
   if (!email) return null;
@@ -55,7 +64,7 @@ export async function getSubjectByEmail(
   if (!admin) return null;
 
   try {
-    const [enquiries, valuations, mortgages, newsletter] = await Promise.all([
+    const [enquiries, valuations, mortgages, newsletter, mortgageRequests] = await Promise.all([
       admin
         .from("enquiries")
         .select(
@@ -72,7 +81,11 @@ export async function getSubjectByEmail(
         .select("*")
         .ilike("email", email)
         .maybeSingle(),
+      // The mortgage module also matches a UAE mobile, when the request gave one.
+      findMortgageRequests(admin, { email, mobile: opts.mobile }),
     ]);
+    const mortgageRequestIds = mortgageRequests.map((r) => r.id);
+    const mortgageRows = await mortgageExport(admin, mortgageRequestIds);
 
     const enquiryRows = enquiries.data ?? [];
 
@@ -106,6 +119,7 @@ export async function getSubjectByEmail(
       messages: messageRows.length,
       valuation_requests: (valuations.data ?? []).length,
       mortgage_inquiries: (mortgages.data ?? []).length,
+      mortgage_requests: mortgageRequestIds.length,
       newsletter: newsletter.data ? 1 : 0,
     };
 
@@ -115,6 +129,7 @@ export async function getSubjectByEmail(
       email,
       found,
       tally,
+      mortgageRequestIds,
       export: buildDataExport({
         // No account row exists any more; the subject is the address itself.
         account: { email },
@@ -123,6 +138,7 @@ export async function getSubjectByEmail(
         shared_with_crm: enquiryRows.some((e) => e.crm_external_id != null),
         newsletter_subscription:
           (newsletter.data as Record<string, unknown> | null) ?? null,
+        mortgage_requests: mortgageRows,
       }),
     };
   } catch (error) {

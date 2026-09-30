@@ -6,6 +6,10 @@ describe("NOTIFICATION_KIND_LABEL", () => {
     const kinds = Object.keys(NOTIFICATION_KIND_LABEL);
     expect(kinds.sort()).toEqual([
       "lead_reassigned",
+      "mortgage_at_risk",
+      "mortgage_breached",
+      "mortgage_request",
+      "mortgage_reupload",
       "new_enquiry",
       "system",
     ]);

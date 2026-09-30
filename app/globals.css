@@ -1238,6 +1238,9 @@
 :lang(ar) :is(h1, h2).text-\[24px\] {
   font-size: 22px;
 }
+:lang(ar) :is(h1, h2).text-\[25px\] {
+  font-size: 23px;
+}
 :lang(ar) :is(h1, h2).text-\[26px\] {
   font-size: 24px;
 }
@@ -1322,6 +1325,9 @@
   }
   :lang(ar) :is(h1, h2).md\:text-\[52px\] {
     font-size: 50px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[54px\] {
+    font-size: 52px;
   }
   :lang(ar) :is(h1, h2).md\:text-\[56px\] {
     font-size: 54px;

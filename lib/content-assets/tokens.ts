@@ -73,6 +73,26 @@ export type TokenName =
   | "form_surface"
   | "source_path"
   | "responses_url"
+  | "mortgage_reference"
+  | "mortgage_submitted"
+  | "mortgage_due"
+  | "mortgage_service"
+  | "mortgage_owner"
+  | "mortgage_remaining"
+  | "mortgage_request_url"
+  | "mortgage_consultation_when"
+  | "mortgage_consultation_format"
+  | "mortgage_consultation_duration"
+  | "mortgage_adviser"
+  | "mortgage_secure_url"
+  | "mortgage_link_expires"
+  | "mortgage_document"
+  | "mortgage_files"
+  | "mortgage_code_expires_in"
+  | "mortgage_bank"
+  | "mortgage_document_count"
+  | "mortgage_package_sent"
+  | "mortgage_package_url"
   // Block tokens: a whole pre-built panel, not a word. See `kind`.
   | "valuation_range_panel"
   | "valuation_report_panel"
@@ -80,7 +100,9 @@ export type TokenName =
   | "health_errors"
   | "health_jobs"
   | "health_url"
-  | "form_answers";
+  | "form_answers"
+  | "mortgage_documents"
+  | "mortgage_adviser_message";
 
 /**
  * `shared` tokens describe a lead and are offered in every asset. `system`
@@ -495,6 +517,225 @@ export const TOKENS: readonly TokenDef[] = [
     scope: "system",
     kind: "url",
   },
+  // The mortgage flow's confirmations. Times are Asia/Dubai, printed by
+  // lib/mortgage-requests/format.ts exactly as the confirmation page prints
+  // them, so the email and the screen the applicant just left agree. The
+  // fallbacks are a net for a value the send path always has.
+  {
+    name: "mortgage_reference",
+    label: "Mortgage request reference",
+    sample: "BZM-26-0412",
+    fallbackAr: "الرقم الظاهر في صفحة التأكيد",
+    fallback: "the one on your confirmation page",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_submitted",
+    label: "When the applicant submitted",
+    sample: "Tue 22 Sep, 09:47",
+    sampleAr: "الثلاثاء، 22 سبتمبر، 09:47",
+    fallbackAr: "يوم إرساله",
+    fallback: "the day you sent it",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // The promise runs on WORKING hours (docs/mortgage/DECISIONS.md D11), so
+    // this is rarely 24 clock hours after submission: a Tuesday 10:14
+    // application is due Thursday 14:14. Copy around it says "working hours".
+    name: "mortgage_due",
+    label: "When we'll contact them by (24 working hours)",
+    sample: "Thu 24 Sep, 14:14",
+    sampleAr: "الخميس، 24 سبتمبر، 14:14",
+    fallbackAr: "الموعد الظاهر في صفحة التأكيد",
+    fallback: "the time on your confirmation page",
+    scope: "system",
+    kind: "text",
+  },
+  // The mortgage team's alerts (0144). They carry nothing about the
+  // applicant — the reference, the service, the clock and a link to the
+  // request in the CMS, where the team reads the rest — so the only name here
+  // is a colleague's. The service's name is the one value with a language:
+  // the context writes it in the language being drawn, as `property_line`'s
+  // "For" is.
+  {
+    name: "mortgage_service",
+    label: "Service (Fast Pre-Approval or Mortgage Consultancy)",
+    sample: "Fast Pre-Approval",
+    sampleAr: "الموافقة المبدئية السريعة",
+    fallbackAr: "طلب تمويل عقاري",
+    fallback: "mortgage request",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // Null is a real value here, not a gap: a request nobody has claimed.
+    name: "mortgage_owner",
+    label: "Who owns the request (Unassigned when nobody does)",
+    sample: "Rashid Khan",
+    sampleAr: "راشد خان",
+    fallbackAr: "غير مُسند",
+    fallback: "Unassigned",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // WORKING time, as sla.ts counts it: "1h 48m" at 18:30 on a Thursday is
+    // not due by 20:18 that evening. The due time beside it is the instant.
+    name: "mortgage_remaining",
+    label: "Working time left on the promise",
+    sample: "1h 48m",
+    fallbackAr: "ساعات قليلة",
+    fallback: "only a few hours",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_request_url",
+    label: "Link to the request (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/mortgages/BZM-26-0412",
+    fallback: "https://www.bazarrealestate.ae/admin/mortgages",
+    scope: "system",
+    kind: "url",
+  },
+  // The applicant's booking and invitation (0144). Times are Asia/Dubai,
+  // printed by lib/mortgage-requests/format.ts like the confirmations'.
+  {
+    name: "mortgage_consultation_when",
+    label: "Consultation day and time (UAE time)",
+    sample: "Wed 23 Sep, 10:00",
+    sampleAr: "الأربعاء، 23 سبتمبر، 10:00",
+    fallbackAr: "الموعد الوارد في دعوة التقويم",
+    fallback: "the time in your calendar invite",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_consultation_format",
+    label: "Consultation format (phone, video or office)",
+    sample: "Phone call",
+    sampleAr: "مكالمة هاتفية",
+    fallbackAr: "حسب الاتفاق",
+    fallback: "as arranged",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_consultation_duration",
+    label: "Consultation length",
+    sample: "20 minutes",
+    sampleAr: "20 دقيقة",
+    fallbackAr: "كما في دعوة التقويم",
+    fallback: "as in your calendar invite",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_adviser",
+    label: "Mortgage adviser's name",
+    sample: "Rashid Khan",
+    sampleAr: "راشد خان",
+    fallbackAr: "فريق التمويل العقاري في بازار",
+    fallback: "Bazar's mortgage team",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_secure_url",
+    label: "Secure link to apply (Fast Pre-Approval)",
+    sample: "https://www.bazarrealestate.ae/mortgages/r/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "mortgage_link_expires",
+    label: "When the secure link expires",
+    sample: "Wed 30 Sep, 10:00",
+    sampleAr: "الأربعاء، 30 سبتمبر، 10:00",
+    fallbackAr: "تاريخ انتهاء صلاحيته",
+    fallback: "its expiry date",
+    scope: "system",
+    kind: "text",
+  },
+  // Reviewing the documents (0146): the re-upload request, the code that
+  // opens a secure link, and the team's notice that the document is back.
+  // The document's name is data — the send path passes it in the language
+  // it sends in — while the counts are the code's own words, written in the
+  // language being drawn.
+  {
+    name: "mortgage_document",
+    label: "Document asked for (Last 1 year's bank statements)",
+    sample: "Last 1 year's bank statements",
+    sampleAr: "كشوف الحساب البنكية لآخر سنة",
+    fallbackAr: "المستند المطلوب",
+    fallback: "the requested document",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_files",
+    label: "How many files the applicant sent (1 file, 3 files)",
+    sample: "1 file",
+    sampleAr: "ملف واحد",
+    fallbackAr: "ملفات جديدة",
+    fallback: "new files",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_code_expires_in",
+    label: "How long the code works (10 minutes)",
+    sample: "10 minutes",
+    sampleAr: "10 دقائق",
+    fallbackAr: "دقائق قليلة",
+    fallback: "a few minutes",
+    scope: "system",
+    kind: "text",
+  },
+  // Partner banks and the pre-approval (0150). The bank's name is data, like
+  // a reference: never translated. The count and the day are the code's own
+  // words, written in the language being drawn. A bank email names no
+  // applicant, so none of these describes one.
+  {
+    name: "mortgage_bank",
+    label: "Partner bank's name",
+    sample: "First Abu Dhabi Bank",
+    fallbackAr: "البنك",
+    fallback: "the bank",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_document_count",
+    label: "How many documents the package holds (4 documents)",
+    sample: "4 documents",
+    sampleAr: "4 مستندات",
+    fallbackAr: "مستنداته",
+    fallback: "its documents",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // Asia/Dubai, as every mortgage time is printed; a day, not a time.
+    name: "mortgage_package_sent",
+    label: "The day the package went to the bank",
+    sample: "Wed 23 Sep",
+    sampleAr: "الأربعاء، 23 سبتمبر",
+    fallbackAr: "تاريخ سابق",
+    fallback: "an earlier date",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_package_url",
+    label: "Secure link to the package (for the bank)",
+    sample: "https://www.bazarrealestate.ae/mortgages/p/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
+    scope: "system",
+    kind: "url",
+  },
   {
     name: "valuation_range_panel",
     label: "Instant range panel",
@@ -555,6 +796,27 @@ export const TOKENS: readonly TokenDef[] = [
     label: "Table of answers",
     sample: "Name: Amira Haddad\nEmail: amira@example.com",
     sampleAr: "الاسم: أميرة حداد\nالبريد: amira@example.com",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "mortgage_documents",
+    label: "Documents received panel",
+    sample: "· Emirates ID — 2 files\n· Passport copy — 1 file",
+    sampleAr: "· الهوية الإماراتية — ملفان\n· نسخة جواز السفر — ملف واحد",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    // A panel so that every line of it is quoted, in both halves of the
+    // email. The adviser's own words: escaped, never links or formatting,
+    // and not translated — the Arabic preview quotes the same message.
+    name: "mortgage_adviser_message",
+    label: "The adviser's message, quoted",
+    sample:
+      "> Your statements cover September 2025 to May 2026.\n> For a full year, please add June, July and August 2026.",
     fallback: "",
     scope: "system",
     kind: "block",

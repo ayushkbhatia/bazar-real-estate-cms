@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { DEFAULT_LOCALE, LOCALES } from "./locales";
+import { isEnglishOnlyPath } from "./english-only";
 import { isNonLocalisedPath } from "./non-localised";
 
 /**
@@ -34,9 +35,9 @@ import { isNonLocalisedPath } from "./non-localised";
  *
  *   - **Non-localised routes** (`lib/i18n/non-localised.ts`) — `/api/*`,
  *     `/sold/*`, `/sso/*` and friends live outside `[locale]` by contract.
- *   - **`/admin`** — the CMS is English-only (ADR-0007) and `proxy.ts`
- *     bounces `/ar/admin` straight back out, so `/ar/sign-in` → `/ar/admin/login`
- *     would redirect twice to reach where one hop already goes.
+ *   - **An English-only path** (`/admin`, `/mortgages`; lib/i18n/english-only.ts)
+ *     — `proxy.ts` bounces `/ar/admin` straight back out, so `/ar/sign-in` →
+ *     `/ar/admin/login` would redirect twice to reach where one hop already goes.
  *   - **Absolute URLs** — another origin has no locale of ours.
  *
  * Everything else is a page under `[locale]`, and its twin keeps the reader in
@@ -55,7 +56,7 @@ function staysUnprefixed(destination: string): boolean {
   // Absolute, protocol-relative, or anything that is not a path of ours.
   if (!destination.startsWith("/") || destination.startsWith("//")) return true;
   if (isNonLocalisedPath(destination)) return true;
-  return destination === "/admin" || destination.startsWith("/admin/");
+  return isEnglishOnlyPath(destination);
 }
 
 export function localiseDestination(

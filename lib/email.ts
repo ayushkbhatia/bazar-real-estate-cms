@@ -1,9 +1,22 @@
 import "server-only";
 import { Resend } from "resend";
 import { env, isResendConfigured } from "@/lib/env";
+import { maskEmail, scrubPii } from "@/lib/pii-scrub";
 
 const DEFAULT_FROM = "Bazar Real Estate <onboarding@resend.dev>";
 const DEFAULT_REPLY_TO = "hello@bazar.ae";
+
+/** A file sent with a message. */
+export type EmailAttachment = {
+  filename: string;
+  /**
+   * Text or bytes. A string is sent as its UTF-8 encoding, which is right for
+   * a calendar invite (.ics) and wrong for anything binary; a PDF — a bank's
+   * pre-approval letter — goes as a Uint8Array, byte for byte.
+   */
+  content: string | Uint8Array;
+  contentType?: string;
+};
 
 export type SendEmailInput = {
   to: string;
@@ -15,7 +28,7 @@ export type SendEmailInput = {
   /** Override the reply-to (defaults to RESEND_REPLY_TO or hello@bazar.ae). */
   replyTo?: string;
   /** Files sent with the message, e.g. a generated PDF. */
-  attachments?: { filename: string; content: string; contentType?: string }[];
+  attachments?: EmailAttachment[];
 };
 
 export type SendEmailResult =
@@ -105,8 +118,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   // Before the client check, so the reason is the real one: "dry run" rather
   // than "no API key" when a developer happens to have both.
   if (isEmailDryRun()) {
+    // The address is masked: function logs are no place for a recipient list.
     console.warn(
-      `[email] DRY RUN — not sending "${input.subject}" to ${input.to}. Set EMAIL_DRY_RUN=false to send.`,
+      `[email] DRY RUN — not sending "${scrubPii(input.subject)}" to ${maskEmail(input.to)}. Set EMAIL_DRY_RUN=false to send.`,
     );
     return {
       status: "skipped",
@@ -118,9 +132,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   if (!resend) {
     console.warn(
       "[email] RESEND_API_KEY not set — skipping",
-      input.subject,
+      scrubPii(input.subject),
       "to",
-      input.to,
+      maskEmail(input.to),
     );
     return { status: "skipped", reason: "RESEND_API_KEY not set" };
   }
@@ -137,14 +151,19 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
         ? {
             attachments: input.attachments.map((a) => ({
               filename: a.filename,
-              content: Buffer.from(a.content, "utf8"),
+              // Bytes are copied as they are: through a string, a PDF's
+              // binary would come out as mangled UTF-8.
+              content:
+                typeof a.content === "string"
+                  ? Buffer.from(a.content, "utf8")
+                  : Buffer.from(a.content),
               ...(a.contentType ? { contentType: a.contentType } : {}),
             })),
           }
         : {}),
     });
     if (result.error) {
-      console.warn("[email] Resend error", result.error.message);
+      console.warn("[email] Resend error", scrubPii(result.error.message));
       return { status: "error", message: explainResendError(result.error.message) };
     }
     if (!result.data?.id) {
@@ -153,7 +172,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     return { status: "ok", id: result.data.id };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.warn("[email] Resend threw", message);
+    console.warn("[email] Resend threw", scrubPii(message));
     return { status: "error", message };
   }
 }

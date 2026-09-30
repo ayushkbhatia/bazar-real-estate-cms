@@ -3,7 +3,8 @@
     "reference": "REF",
     "share": "Share",
     "copied": "Copied",
-    "sendToAdvisor": "Send to advisor"
+    "sendToAdvisor": "Send to advisor",
+    "mortgagePreApproval": "Get mortgage pre-approval"
   },
   "agent": {
     "call": "Call",

@@ -1,3 +1,4 @@
+import { isolateLtr } from "@/lib/i18n/bidi";
 import type { SystemAssetKey } from "./system";
 import type { SystemEmailDefault } from "./system-defaults";
 
@@ -16,6 +17,13 @@ import type { SystemEmailDefault } from "./system-defaults";
  * Sentence order follows the English so the two can be read side by side, and
  * the tone is the formal register the site's Arabic already uses.
  */
+
+/**
+ * The mortgage team's number, a Latin run inside an Arabic sentence, so it is
+ * isolated left to right: bare, its "+" and its groups reorder (lib/i18n/bidi).
+ */
+const MORTGAGE_TEAM_PHONE = isolateLtr("+971 2 632 2223");
+
 export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault> = {
   enquiry_auto_reply: {
     subject: "وصلنا طلبك",
@@ -37,6 +45,139 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>سيعود إليك أحد المستشارين بما ستموّله البنوك الشريكة فعلياً وفق هذه الأرقام، وبما تحتاجه منك لتأكيد ذلك.</p>",
       "<p>تفاصيل طلبك:</p>",
       "<blockquote><p>{{enquiry_message}}</p></blockquote>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // Figures in Western digits, as the dates these sentences carry are
+  // printed (lib/i18n/dates.ts pins `nu-latn`) — "٢٤" beside "14:14" in one
+  // sentence would read as two systems.
+  mortgage_consultancy_received: {
+    subject: "وصلنا طلبك — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>شكراً لطلبك استشارة في التمويل العقاري من بازار. استلمنا طلبك في {{mortgage_submitted}}.</p>",
+      "<p>رقمك المرجعي هو <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>سيتواصل معك أحد أعضاء فريق التمويل العقاري لدينا قريباً.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_preapproval_received: {
+    subject: "طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>شكراً لتقديم طلب الموافقة المبدئية السريعة مع بازار. وصلت بياناتك ومستنداتك إلى فريق التمويل العقاري لدينا.</p>",
+      "<p>رقمك المرجعي هو <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>سنتواصل معك بحلول <strong>{{mortgage_due}}</strong> — أي بعد 24 ساعة عمل من تقديم طلبك.</p>",
+      "<p>{{mortgage_documents}}</p>",
+      "<p>إن احتجنا إلى أي شيء آخر، سنراسلك عبر واتساب برابط آمن. لن تحتاج إلى البدء من جديد.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // The adviser may be a man or a woman and the site does not record which,
+  // so no verb here agrees with the adviser: the link "reaches you from" them
+  // rather than "he sent" it.
+  mortgage_consultation_booked: {
+    subject: "موعد استشارتك في التمويل العقاري: {{mortgage_consultation_when}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>تم حجز استشارتك في التمويل العقاري مع {{mortgage_adviser}}.</p>",
+      "<ul>",
+      "<li><p>الموعد: <strong>{{mortgage_consultation_when}}</strong> (بتوقيت الإمارات)</p></li>",
+      "<li><p>الطريقة: {{mortgage_consultation_format}}</p></li>",
+      "<li><p>المدة: {{mortgage_consultation_duration}}</p></li>",
+      "<li><p>الرقم المرجعي: {{mortgage_reference}}</p></li>",
+      "</ul>",
+      "<p>دعوة التقويم مرفقة — افتحها لإضافة الاستشارة إلى تقويمك.</p>",
+      "<p>إن لم يعد الموعد مناسباً لك، يكفي الرد على هذه الرسالة وسنجد موعداً آخر.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_preapproval_invite: {
+    subject: "رابطك الآمن لتقديم طلب الموافقة المبدئية السريعة",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>وصلك من {{mortgage_adviser}} رابط آمن لتقديم طلب الموافقة المبدئية السريعة مع بازار.</p>",
+      "<p>تنتقل بياناتك من طلب الاستشارة ({{mortgage_reference}}) تلقائياً، فلن تحتاج إلا إلى رفع مستنداتك.</p>",
+      '<a data-email-button="" href="{{mortgage_secure_url}}">ابدأ طلبك</a>',
+      "<p>قبل الرفع، سنرسل إليك رمزاً للتأكد من هويتك.</p>",
+      "<p>يعمل الرابط حتى <strong>{{mortgage_link_expires}}</strong>. وهو خاص بك، فيُرجى عدم إعادة توجيه هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // The re-upload request (0146). The adviser stays out of the verb again:
+  // the document needs another look "at the request of" them.
+  mortgage_reupload_request: {
+    subject: "أحد مستنداتك يحتاج إلى نظرة أخرى — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>بطلب من {{mortgage_adviser}}، يحتاج أحد مستندات طلبك {{mortgage_reference}} إلى نظرة أخرى: <strong>{{mortgage_document}}</strong>.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>طلبك متوقف مؤقتاً إلى أن يصلنا المستند. وتبقى المستندات التي سبق أن قبلناها مقبولة.</p>",
+      '<a data-email-button="" href="{{mortgage_secure_url}}">ارفع مستندك</a>',
+      "<p>قبل الرفع، سنرسل إليك رمزاً للتأكد من هويتك.</p>",
+      "<p>يعمل الرابط حتى <strong>{{mortgage_link_expires}}</strong>. وهو خاص بك، فيُرجى عدم إعادة توجيه هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_code: {
+    subject: "رمز التحقق من بازار",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>استخدم هذا الرمز لفتح رابطك الآمن:</p>",
+      "<h2>{{verification_code}}</h2>",
+      "<p>تنتهي صلاحيته خلال {{mortgage_code_expires_in}}.</p>",
+      "<p>إن لم تطلبه، يمكنك تجاهل هذه الرسالة — لا يمكن لأحد فتح طلبك من دون هذا الرمز.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // Partner banks (0150). Their send paths pass no language, so these go in
+  // English; the Arabic is here because every system email has one, as the
+  // team alerts' is. A bank is addressed in the plural, and the application
+  // "reaches you from" the adviser, so no verb agrees with the adviser.
+  mortgage_bank_package: {
+    subject: "ملف طلب الموافقة المبدئية السريعة {{mortgage_reference}} من بازار",
+    body: [
+      "<p>تحية طيبة إلى فريق {{mortgage_bank}}،</p>",
+      "<p>وصلكم من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، طلب للموافقة المبدئية السريعة: ملخص منظّم و{{mortgage_document_count}}.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">فتح الملف</a>',
+      "<p>يعمل الرابط حتى <strong>{{mortgage_link_expires}}</strong>. ويُسجَّل كل فتح وكل تنزيل.</p>",
+      "<p>للتواصل مع {{mortgage_adviser}}، يكفي الرد على هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_bank_reminder: {
+    subject: "تذكير: ملف طلب الموافقة المبدئية السريعة {{mortgage_reference}}",
+    body: [
+      "<p>تحية طيبة إلى فريق {{mortgage_bank}}،</p>",
+      "<p>نذكّركم بطلب الموافقة المبدئية السريعة {{mortgage_reference}} الذي وصلكم من {{mortgage_adviser}} في {{mortgage_package_sent}}. ونتطلع إلى ردّكم.</p>",
+      "<p>إليكم رابطاً جديداً يعمل حتى <strong>{{mortgage_link_expires}}</strong>.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">فتح الملف</a>',
+      "<p>يُسجَّل كل فتح وكل تنزيل.</p>",
+      "<p>للتواصل مع {{mortgage_adviser}}، يكفي الرد على هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // The decision (0148, 0150). No verb agrees with the adviser: a message
+  // "reaches you from" them. Both outcomes share one subject, "an update",
+  // so a lock screen tells neither apart.
+  mortgage_decision_pre_approved: {
+    subject: "تحديث بشأن طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>وصلتك رسالة من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، بخصوص طلبك للموافقة المبدئية السريعة {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>مرفق بهذه الرسالة خطاب موافقتك المبدئية الصادر عن {{mortgage_bank}}.</p>",
+      `<p>يمكنك الرد على هذه الرسالة للتواصل مع {{mortgage_adviser}} مباشرةً، أو الاتصال بفريق التمويل العقاري على ${MORTGAGE_TEAM_PHONE}.</p>`,
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_decision_declined: {
+    subject: "تحديث بشأن طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>وصلتك رسالة من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، بخصوص طلبك للموافقة المبدئية السريعة {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      `<p>يمكنك الرد على هذه الرسالة للتواصل مع {{mortgage_adviser}} مباشرةً، أو الاتصال بفريق التمويل العقاري على ${MORTGAGE_TEAM_PHONE}.</p>`,
       "<p>— فريق التمويل العقاري في بازار</p>",
     ].join(""),
   },
@@ -143,6 +284,66 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>{{property_line}}</p>",
       '<a data-email-button="" href="{{enquiry_url}}">فتح الطلب</a>',
       "<p>— محرّك العملاء في بازار</p>",
+    ].join(""),
+  },
+  // The mortgage team's alerts. Their send paths pass no language, so these
+  // always go in English; the Arabic is here because every system email has
+  // one, and so the Arabic tab opens on a sentence like the others do.
+  mortgage_team_new_request: {
+    subject: "طلب جديد · {{mortgage_service}} · {{mortgage_reference}}",
+    body: [
+      "<p>وصل طلب تمويل عقاري جديد.</p>",
+      "<ul>",
+      "<li><p>الرقم المرجعي: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>الخدمة: {{mortgage_service}}</p></li>",
+      "<li><p>وقت الاستلام: {{mortgage_submitted}}</p></li>",
+      "<li><p>المسؤول عن الطلب: {{mortgage_owner}}</p></li>",
+      "</ul>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">فتح الطلب</a>',
+      "<p>بيانات مقدّم الطلب في نظام بازار، وليست في هذه الرسالة.</p>",
+      "<p>— نظام بازار</p>",
+    ].join(""),
+  },
+  mortgage_team_at_risk: {
+    subject: "معرّض للتأخير · {{mortgage_reference}} · الوقت المتبقي {{mortgage_remaining}}",
+    body: [
+      "<p>تبقّى لهذا الطلب <strong>{{mortgage_remaining}}</strong> من وقت العمل قبل أن يحين الموعد الذي وعدنا به مقدّم الطلب.</p>",
+      "<ul>",
+      "<li><p>الرقم المرجعي: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>الخدمة: {{mortgage_service}}</p></li>",
+      "<li><p>موعد الاستحقاق: {{mortgage_due}}</p></li>",
+      "</ul>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">فتح الطلب</a>',
+      "<p>— نظام بازار</p>",
+    ].join(""),
+  },
+  mortgage_team_breached: {
+    subject: "تجاوز المهلة الموعودة · {{mortgage_reference}}",
+    body: [
+      "<p>تجاوز هذا الطلب الموعد الذي وعدنا به مقدّم الطلب، ولا قرار بعد.</p>",
+      "<ul>",
+      "<li><p>الرقم المرجعي: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>الخدمة: {{mortgage_service}}</p></li>",
+      "<li><p>كان موعد الاستحقاق: {{mortgage_due}}</p></li>",
+      "</ul>",
+      "<p>وُعد مقدّم الطلب بالتواصل قبل هذا الموعد. إن احتاج القرار إلى وقت أطول، فيُرجى إبلاغ مقدّم الطلب بذلك.</p>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">فتح الطلب</a>',
+      "<p>— نظام بازار</p>",
+    ].join(""),
+  },
+  mortgage_team_reupload_received: {
+    subject: "وصل المستند المطلوب · {{mortgage_reference}}",
+    body: [
+      "<p>وصل مستند أُعيد رفعه.</p>",
+      "<ul>",
+      "<li><p>الرقم المرجعي: <strong>{{mortgage_reference}}</strong></p></li>",
+      "<li><p>الخدمة: {{mortgage_service}}</p></li>",
+      "<li><p>المستند: {{mortgage_document}}</p></li>",
+      "<li><p>الملفات المرفوعة: {{mortgage_files}}</p></li>",
+      "</ul>",
+      "<p>عاد الطلب إلى المراجعة، واستُؤنف احتساب المهلة التي وعدنا بها مقدّم الطلب.</p>",
+      '<a data-email-button="" href="{{mortgage_request_url}}">فتح الطلب</a>',
+      "<p>— نظام بازار</p>",
     ].join(""),
   },
   permit_expiry_warning: {

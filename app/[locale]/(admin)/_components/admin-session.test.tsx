@@ -53,6 +53,7 @@ const SESSION: AdminSession = {
   staff: { display_name: "Staff Member", title: "Advisor", role: "admin" },
   notifications: ROWS,
   unread: 1,
+  mortgage: null,
 };
 
 let fetchSpy: ReturnType<typeof vi.fn>;

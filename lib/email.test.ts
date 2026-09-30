@@ -7,6 +7,7 @@
  * to the node environment so the real env-loading code path runs.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { EmailAttachment } from "./email";
 
 /**
  * sendEmail's from + replyTo chain:
@@ -138,6 +139,70 @@ describe("sendEmail · from + reply-to env chain", () => {
     });
     expect(result.status).toBe("skipped");
     expect(sendSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("sendEmail · attachments", () => {
+  const send = async (attachments: EmailAttachment[]) => {
+    const { sendEmail } = await importEmail();
+    const result = await sendEmail({
+      to: "applicant@example.com",
+      subject: "Test",
+      text: "plain",
+      html: "<p>html</p>",
+      attachments,
+    });
+    expect(result.status).toBe("ok");
+    return sendSpy.mock.calls[0][0].attachments as {
+      filename: string;
+      content: Buffer;
+      contentType?: string;
+    }[];
+  };
+
+  it("hands Resend a Uint8Array's bytes exactly, as a Buffer", async () => {
+    // A PDF's signature, then every byte value there is — including the ones
+    // that are not valid UTF-8, which a trip through a string would mangle.
+    const bytes = Uint8Array.from([
+      ...[0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x37, 0x0a],
+      ...Array.from({ length: 256 }, (_, i) => i),
+    ]);
+    const [pdf] = await send([
+      { filename: "pre-approval-letter.pdf", content: bytes, contentType: "application/pdf" },
+    ]);
+    expect(Buffer.isBuffer(pdf.content)).toBe(true);
+    expect(pdf.content.equals(Buffer.from(bytes))).toBe(true);
+    expect(pdf.content.length).toBe(bytes.length);
+    expect(pdf.filename).toBe("pre-approval-letter.pdf");
+    expect(pdf.contentType).toBe("application/pdf");
+  });
+
+  it("sends only a view's own bytes, not the whole buffer behind it", async () => {
+    const whole = Uint8Array.from([1, 2, 3, 0xff, 0xfe, 0x00, 7, 8]);
+    const view = whole.subarray(3, 6);
+    const [file] = await send([{ filename: "part.bin", content: view }]);
+    expect([...file.content]).toEqual([0xff, 0xfe, 0x00]);
+    expect(file).not.toHaveProperty("contentType");
+  });
+
+  it("still sends a string as its UTF-8 encoding, as the booking's .ics needs", async () => {
+    const ics = "BEGIN:VCALENDAR\r\nSUMMARY:Mortgage consultation — مرحباً\r\nEND:VCALENDAR\r\n";
+    const [invite] = await send([
+      { filename: "bazar-consultation.ics", content: ics, contentType: "text/calendar; charset=utf-8" },
+    ]);
+    expect(invite.content.equals(Buffer.from(ics, "utf8"))).toBe(true);
+    expect(invite.content.toString("utf8")).toBe(ics);
+  });
+
+  it("sends a text and a binary attachment side by side, each its own way", async () => {
+    const bytes = Uint8Array.from([0x25, 0x50, 0x44, 0x46, 0xc3, 0x28]);
+    const [text, binary] = await send([
+      { filename: "note.txt", content: "é" },
+      { filename: "letter.pdf", content: bytes },
+    ]);
+    expect([...text.content]).toEqual([0xc3, 0xa9]);
+    // 0xc3 0x28 is not UTF-8; it arrives exactly as given.
+    expect([...binary.content]).toEqual([...bytes]);
   });
 });
 

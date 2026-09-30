@@ -176,6 +176,7 @@ function scannedFiles(): string[] {
         // directory zero times and the whole guard passes vacuously. G-14 shipped
         // with exactly that bug and scanned nothing under app/ for a wave.
         "app/\\[locale\\]/(public)/**/*.tsx",
+        "app/\\[locale\\]/(mortgage)/**/*.tsx",
         "components/brand/**/*.tsx",
       ],
       { cwd: REPO_ROOT, encoding: "utf8" },

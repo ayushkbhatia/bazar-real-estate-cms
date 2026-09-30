@@ -4,7 +4,7 @@ vi.mock("@/lib/env", () => ({ env: {} }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => null }));
 vi.mock("@sentry/nextjs", () => ({ captureException: vi.fn() }));
 
-const { normaliseMessage, fingerprintOf } = await import("./observability");
+const { normaliseMessage, fingerprintOf, reportError } = await import("./observability");
 
 describe("normaliseMessage", () => {
   it("collapses the ids that make every occurrence look different", () => {
@@ -63,5 +63,22 @@ describe("fingerprintOf", () => {
     const fp = fingerprintOf("cron/x", "boom");
     expect(fp).toHaveLength(32);
     expect(fp).toMatch(/^[0-9a-f]+$/);
+  });
+});
+
+describe("reportError", () => {
+  it("keeps personal data out of what it records", async () => {
+    // No database here (the mock above), so the report lands in the function log.
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    await reportError(new Error("Resend refused priya.raman@example.com"), {
+      source: "test.email",
+      context: { email: "priya.raman@example.com", requestId: "3f1c2a4e", note: "call 0502184417" },
+    });
+    expect(log).toHaveBeenCalledWith("[test.email] Resend refused [email]", {
+      email: "[redacted]",
+      requestId: "3f1c2a4e",
+      note: "call [phone]",
+    });
+    log.mockRestore();
   });
 });

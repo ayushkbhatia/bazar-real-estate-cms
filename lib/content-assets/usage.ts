@@ -121,6 +121,112 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
     },
   ],
   mortgage_enquiry_ack: [],
+  // The applicant flow's confirmations, from the step that submits them.
+  mortgage_consultancy_received: [
+    {
+      label: "Mortgage application · Mortgage Consultancy",
+      path: "/mortgages/apply/review",
+      note: "Sent when an applicant submits a consultancy request in the mortgage application flow.",
+    },
+  ],
+  mortgage_preapproval_received: [
+    {
+      label: "Mortgage application · Fast Pre-Approval",
+      path: "/mortgages/apply/documents",
+      note: "Sent when an applicant submits a Fast Pre-Approval application with their documents.",
+    },
+  ],
+  // The mortgage CMS's emails: sent from, or about, the team's queue.
+  mortgage_consultation_booked: [
+    {
+      label: "Mortgage requests · Book consultation",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser books a consultation on a Mortgage Consultancy request, with the calendar invite attached.",
+    },
+  ],
+  mortgage_preapproval_invite: [
+    {
+      label: "Mortgage requests · Send pre-approval link",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser sends a consultancy applicant a secure link to apply for Fast Pre-Approval.",
+    },
+  ],
+  mortgage_reupload_request: [
+    {
+      label: "Mortgage requests · Request re-upload",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser asks a Fast Pre-Approval applicant to replace or add to one document, with the adviser's message and a secure link to upload it.",
+    },
+  ],
+  // No page: a secure link is one applicant's, not a page anyone can open.
+  mortgage_code: [
+    {
+      label: "Secure link · verification code",
+      note: "Sent when an applicant opens a re-upload link or a pre-approval invitation and asks for the code that unlocks it. Codes go by email until WhatsApp is connected.",
+    },
+  ],
+  // Partner banks and the decision (0150): from a request's file
+  // (/admin/mortgages/[reference]) and its decision screen
+  // (/admin/mortgages/[reference]/decision). A link cannot name one request,
+  // so it names the queue, and the note names the screen.
+  mortgage_bank_package: [
+    {
+      label: "Mortgage requests · Send to partner banks",
+      adminPath: "/admin/mortgages",
+      note: "Sent to each chosen partner bank's package inbox when an adviser sends a Fast Pre-Approval file to the banks from the request's file: the reference and a link to the package, nothing about the applicant.",
+    },
+  ],
+  mortgage_bank_reminder: [
+    {
+      label: "Mortgage requests · Send a reminder",
+      adminPath: "/admin/mortgages",
+      note: "Sent to a partner bank that has not answered when an adviser sends it a reminder from the request's decision screen, with a fresh link to the package.",
+    },
+  ],
+  mortgage_decision_pre_approved: [
+    {
+      label: "Mortgage requests · Confirm pre-approval",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser confirms a Fast Pre-Approval from the request's decision screen, with the message they wrote and the bank's pre-approval letter attached.",
+    },
+  ],
+  // From a request's file (/admin/mortgages/[reference]); the queue is the
+  // nearest page a link can name.
+  mortgage_decision_declined: [
+    {
+      label: "Mortgage requests · Decline application",
+      adminPath: "/admin/mortgages",
+      note: "Sent when an adviser declines a Fast Pre-Approval application from its file, with the message they wrote to the applicant.",
+    },
+  ],
+  mortgage_team_new_request: [
+    {
+      label: "Mortgage application · submitted",
+      adminPath: "/admin/mortgages",
+      note: "Sent to the request's owner and the Head of mortgages when any mortgage request arrives.",
+    },
+  ],
+  mortgage_team_at_risk: [
+    {
+      label: "Promise clock · at risk",
+      adminPath: "/admin/mortgages",
+      note: "Sent when a Fast Pre-Approval has 4 working hours or less left on its promise.",
+    },
+  ],
+  mortgage_team_breached: [
+    {
+      label: "Promise clock · missed",
+      adminPath: "/admin/mortgages",
+      note: "Sent when a Fast Pre-Approval passes its due time with no decision.",
+    },
+  ],
+  mortgage_team_reupload_received: [
+    {
+      label: "Secure link · Send documents",
+      adminPath: "/admin/mortgages",
+      note: "Sent to the request's owner and the Head of mortgages when an applicant sends the document they were asked for; the request is back in review.",
+    },
+  ],
   valuation_request_ack: [
     { label: "Valuation tool", path: "/tools/valuation", adminPath: "/admin/valuations" },
   ],
