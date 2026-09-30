@@ -80,6 +80,8 @@ test("C4 → W8 → C2: a re-upload goes out, comes back, and the file is in rev
   await page.getByRole("textbox", { name: "Message to Priya" }).fill("The July statement is blurred. Please upload the original PDF.");
   await page.getByRole("button", { name: "Send request to Priya" }).click();
   await page.waitForURL(new RegExp(`/admin/mortgages/${PRIYA}$`));
+  // The local stack sends no email: the answer says the link didn't reach her (SR-25).
+  await expect(page.getByText("The request is recorded, but this site isn't sending email, so the link didn't reach Priya.")).toBeVisible();
   await expect(page.getByText("Awaiting applicant")).toBeVisible();
   await expect(page.getByText(/^Paused/)).toBeVisible();
 

@@ -521,11 +521,11 @@ function ReviewPanel({
     return null;
   }, [data.documents, index, kind]);
 
-  const run = (action: () => Promise<{ ok: boolean; message?: string }>, after?: () => void) =>
+  const run = (action: () => Promise<{ ok: boolean; message?: string; warning?: boolean }>, after?: () => void) =>
     start(async () => {
       const result = await action();
       if (result.ok) {
-        if (result.message) toast.success(result.message);
+        if (result.message) (result.warning ? toast.warning : toast.success)(result.message);
         after?.();
       } else if (result.message) {
         toast.error(result.message);

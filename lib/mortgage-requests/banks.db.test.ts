@@ -17,7 +17,9 @@
  *   · pre-approving: a valid lead offer with its letter and consent on file;
  *     the clock stops, banks still deciding are withdrawn, and the applicant is
  *     emailed the adviser's words with the letter attached;
- *   · the banks themselves: the Head or an admin.
+ *   · the banks themselves: the Head or an admin;
+ *   · a withdrawal of consent (0152): the banks still deciding withdrawn, every
+ *     link stopped, the reminder and the package refused.
  */
 
 import { randomUUID } from "node:crypto";
@@ -536,6 +538,81 @@ describe.skipIf(!stack)("partner banks and the decision (local Supabase)", () =>
     const refused = await preApprove(owner, await read(row.id), subs[0]!.id);
     expect(refused.error?.message).toContain("no_consent");
     expect((await read(row.id)).status).toBe("with_banks");
+  }, 60_000);
+
+  // ── Consent withdrawn (SECURITY-REVIEW SR-17, SR-22) ─────────
+
+  function withdraw(as: TestStaff, row: Row, expected: string | null = row.updated_at) {
+    return as.client.rpc("mortgage_withdraw_consent", { p_request_id: row.id, p_expected_updated_at: expected ?? undefined });
+  }
+
+  it("records a withdrawal of consent: banks still deciding withdrawn, every link stopped, the reminder refused", async () => {
+    const { row, subs, tokens } = await withBanks(2);
+    expect((await withdraw(other, row)).error?.code).toBe("MR403");
+    expect((await withdraw(admin, row)).error?.code).toBe("MR403");
+    expect((await withdraw(owner, row, "2020-01-01T00:00:00Z")).error?.code).toBe("MR409");
+
+    const before = Date.now();
+    const { data, error } = await withdraw(owner, row);
+    expect(error).toBeNull();
+    const after = data as Row;
+    expect(after.status).toBe("with_banks");
+    expect(after.updated_at).not.toBe(row.updated_at);
+
+    const { data: consent } = await service.from("mortgage_consents").select("withdrawn_at").eq("request_id", row.id).single();
+    expect(new Date((consent as { withdrawn_at: string }).withdrawn_at).getTime()).toBeGreaterThanOrEqual(before - 5_000);
+    for (const s of await submissions(row.id)) {
+      expect(s.status).toBe("withdrawn");
+      expect(new Date(s.package_expires_at!).getTime()).toBeLessThanOrEqual(Date.now());
+    }
+    expect((await events(row.id)).find((e) => e.type === "consent.withdrawn")).toMatchObject({
+      actor_kind: "staff",
+      actor_id: owner.id,
+      data: { banks_withdrawn: 2, links_stopped: 2 },
+    });
+
+    // The links show nothing, and nothing new can go to a bank.
+    for (const token of tokens) expect(packageState(await findPackage(service, token), new Date())).toBe("unavailable");
+    const [link] = packageLinks([subs[0]!.bank_id], new Date(), days).links;
+    const reminder = await owner.client.rpc("mortgage_bank_reminder", {
+      p_submission_id: subs[0]!.id,
+      p_token_hash: hashToken(link!.token),
+      p_expires_at: link!.expiresAt,
+    });
+    expect(reminder.error?.code).toBe("MR422");
+    expect(reminder.error?.message).toContain("no_consent");
+
+    // Once is enough: there's nothing left to withdraw.
+    expect((await withdraw(head, after)).error?.code).toBe("MR409");
+  }, 60_000);
+
+  it("closes the package, and its downloads, when consent is gone however it went", async () => {
+    const { row, tokens } = await withBanks(1);
+    const { data: docs } = await service.from("mortgage_documents").select("id, kind").eq("request_id", row.id).limit(1);
+    const doc = (docs as { id: string; kind: string }[])[0]!;
+    const file = {
+      id: randomUUID(),
+      document_id: doc.id,
+      kind: doc.kind,
+      state: "active",
+      storage_key: `f/${randomUUID()}`,
+      original_name: `${doc.kind}.pdf`,
+      mime: "application/pdf",
+      size_bytes: 1000,
+      scan_status: "clean",
+    };
+    expect((await service.from("mortgage_files").insert(file)).error).toBeNull();
+    const mem = memoryStorage();
+    mem.objects.set(file.storage_key, buildPdf());
+    expect(packageState(await findPackage(service, tokens[0]!), new Date())).toBe("open");
+
+    // Withdrawn straight in the table (as the runbook once did): the link is still live, the consent isn't.
+    await service.from("mortgage_consents").update({ withdrawn_at: new Date().toISOString() }).eq("request_id", row.id);
+    const found = await findPackage(service, tokens[0]!);
+    expect(found?.consented).toBe(false);
+    expect(packageState(found, new Date())).toBe("unavailable");
+    await expect(openPackageFile({ db: service, storage: mem.storage }, tokens[0]!, file.id)).rejects.toMatchObject({ status: 404 });
+    expect(mem.reads).toEqual([]);
   }, 60_000);
 
   // ── The banks ───────────────────────────────────────────────

@@ -9,6 +9,7 @@ import { CHECKLISTS } from "@/lib/mortgage-requests/checklists";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { coverage, monthBounds, monthOf } from "@/lib/mortgage-requests/coverage";
 import { DOC_KINDS, requiredStatementMonths, type DocKind } from "@/lib/mortgage-requests/documents";
+import { mayActOn } from "@/lib/mortgage-requests/permissions";
 import { clockPause, clockResume } from "@/lib/mortgage-requests/sla";
 import {
   FAILED,
@@ -208,6 +209,7 @@ const reuploadInput = targetSchema.extend({
 type RequestClock = {
   status: string;
   updated_at: string;
+  owner_staff_id: string | null;
   full_name: string;
   email: string;
   locale: string;
@@ -218,7 +220,7 @@ type RequestClock = {
 async function readClock(db: SupabaseClient, requestId: string): Promise<RequestClock | null> {
   const { data, error } = await db
     .from("mortgage_requests")
-    .select("status, updated_at, full_name, email, locale, sla_due_at, sla_remaining_seconds")
+    .select("status, updated_at, owner_staff_id, full_name, email, locale, sla_due_at, sla_remaining_seconds")
     .eq("id", requestId)
     .single();
   return error ? null : (data as RequestClock);
@@ -246,6 +248,10 @@ export async function requestReupload(input: z.input<typeof reuploadInput>): Pro
   let request = await readClock(s.supabase, b.requestId);
   if (!request) return FAILED;
   if (request.updated_at !== b.updatedAt) return refused({ code: "MR409", message: "" }, "mortgage.cms.reupload");
+  // The move below is the system's, made with the service role, so the caller's
+  // right to act is checked before it rather than only by the request's own
+  // function after it (SECURITY-REVIEW SR-12).
+  if (!mayActOn(s.role, request.owner_staff_id, s.user.id)) return NOT_ALLOWED;
   // A reviewer can ask before the owner's first open moved the file on: that
   // move happens now, as the system's (SPEC §2.4 "Owner opens the first document").
   if (request.status === "new") {
@@ -304,8 +310,11 @@ export async function requestReupload(input: z.input<typeof reuploadInput>): Pro
   });
 
   refresh(b.reference, b.kind);
+  const firstName = request.full_name.trim().split(/\s+/)[0] ?? "";
   if (status === "failed") return { ok: false, code: "failed", message: t("c6.invite.emailFailed") };
-  return { ok: true, message: t("c4.sent", { firstName: request.full_name.trim().split(/\s+/)[0] ?? "" }) };
+  // Email switched off (locally, a dry run): the request stands, but the link reached no one (SR-25).
+  if (status === "skipped") return { ok: true, warning: true, message: t("c4.emailSkipped", { firstName }) };
+  return { ok: true, message: t("c4.sent", { firstName }) };
 }
 
 /** Take a re-upload request back (C2): the link stops, the document is reviewable, the promise resumes. */

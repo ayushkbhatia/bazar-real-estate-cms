@@ -940,11 +940,93 @@ the mortgage team.
   by hand in Phases 3–6.
 
 **Open**
-- **Step 2: approve SECURITY-REVIEW.md's list**, then fix SR-7, SR-10 to
-  SR-17 and SR-22 to SR-25, with tests.
+- ~~Step 2: approve SECURITY-REVIEW.md's list, then fix SR-7, SR-10 to SR-17
+  and SR-22 to SR-25, with tests.~~ Done: the next entry.
 - **Not applied to production:** `0138`–`0151`. Then §6's production checks,
   UAT with the mortgage team, and the flag: staff first, then public.
 - D6, D14 (SR-1 to SR-3), D7 (retention period; erasure and AML), D17
   (sign-off), D4 (region), D1, D29.
 - The shared CMS sidebar's group labels fail contrast on every admin page:
   filed as a separate task (the file is protected).
+
+## Phase 7, step 2 — The security review's fixes · 30 Sep 2026
+
+Ayush approved SECURITY-REVIEW.md's list: "approved, fix all of them". Every
+item that is code is fixed and tested; SECURITY-REVIEW.md §5 says how, item by
+item, and RUNBOOK.md follows. Left: ops (SR-1 to SR-3) and decisions (SR-18,
+SR-19, SR-21, SR-26).
+
+**Built**
+- **`0152_mortgage_review_fixes.sql`:**
+  - SR-10: EXECUTE on `mortgage_transition()` revoked from `authenticated`;
+    the actions' functions still call it as their owner;
+  - SR-11: `mortgage_log_event()` takes from a signed-in caller only
+    `document.viewed` or `document.downloaded` naming a file of that request
+    (a document's, or a bank's letter);
+  - SR-14: a trigger on `staff` writes `staff.mortgage_role_change` for every
+    change to `mortgage_role`, naming the actor and reason when the SQL sets
+    `mortgage.audit_actor` / `mortgage.audit_note` (RUNBOOK §6 now does);
+  - SR-17, SR-22: `mortgage_withdraw_consent()` (owner or Head) records the
+    withdrawal, withdraws the banks still deciding, stops every package link
+    and logs `consent.withdrawn`; `mortgage_bank_reminder()` refuses a file
+    without consent (`no_consent`).
+- **C2's Consent card** (not designed; copy pending): "Record a withdrawal"
+  with a confirm dialog, for the owner or the Head, on a decided file too
+  (`can.withdrawConsent`, apart from `can.act`); a withdrawn consent loses its
+  tick and shows when; an Activity line with the links stopped.
+- **The package page and its downloads** read the consent
+  (`findPackage` → `consented`); without one, "unavailable", as for a
+  withdrawn link (SR-22).
+- **Partner banks for admins** (SR-13): `/admin/settings/partner-banks`, a
+  "Partner banks" tab in Site settings (admin-only layout), the same list and
+  dialog; `saveBank` takes the Head or an admin (`bankEditorSession()`).
+- **Honest send results** (SR-25): `L/sends.ts` (`sendOutcome`): a bank is
+  reached when every inbox is; sending to banks, the reminder, the invite and
+  the re-upload say when an email failed, reached some inboxes, or was
+  skipped because email is off — `MortgageActionResult.warning` shows a
+  warning toast instead of a success.
+- **The outbox** (SR-23): each delivery run first gives up a fifth attempt
+  claimed over ten minutes ago (`failed`, `notification.failed`, reported).
+- **Smaller:** `ph-no-capture` on the mortgage CMS and the package page
+  (SR-7); `mayActOn()` before `requestReupload`'s service-role move (SR-12);
+  `frame-ancestors 'none'` and `X-Frame-Options: DENY` on `/admin` and
+  `/mortgages` (SR-15, `next.config.ts`); `readJson` answers 415 to anything
+  but `application/json` (SR-16); the dev scanner refused on Preview as well
+  as Production (SR-24).
+
+**Verified**
+- **Unit:** 357 files, 4,667 tests. New: `L/permissions.test.ts`,
+  `L/sends.test.ts`, `L/server/http.test.ts`; `deps.test.ts` covers Preview.
+- **Database:** 109 tests in 8 files (`npm run db:local:reset` applies
+  `0138`–`0152` in order). New: a direct transition refused (`42501`) for the
+  owner and the Head, contacts through `mortgage_log_contact` instead;
+  `mortgage_log_event` refusals (other types, another request's file, no
+  file, an admin, a non-staff actor); the role audit with and without the
+  runbook's settings; consent withdrawal (owner or Head only, stale version,
+  links stopped, submissions withdrawn, event, reminder refused, twice
+  refused); the package closed when consent is gone however it went; a
+  stuck fifth attempt given up, a fresh one left alone.
+- **End to end:** 20 mortgage tests pass. New `e2e/mortgage-security.spec.ts`
+  (the framing headers, a 415, an admin keeping the banks from settings); the
+  decision spec records a withdrawal on C2 after the pre-approval and checks
+  no link is live; the review spec checks the re-upload's "isn't sending
+  email" warning; axe scans the withdrawal dialog.
+- **SQL:** the runbook's break-glass statements, run on the local stack,
+  write both audit rows with the actor and note; a wrong actor id fails the
+  update.
+
+**Deviations**
+- SR-15 applies `frame-ancestors 'none'` to pages only; the API's files are
+  downloads, never framed.
+- The reminder's ten-minute wait also applies after a failed send, so the
+  retry waits too; the warning says so.
+- The invite card still reads "Link sent · expires …" (design copy) after a
+  skipped send; the toast says it didn't go.
+
+**Open**
+- **Not applied to production:** `0138`–`0152`. Then §6's production checks
+  (now including the framing headers and a break-glass audit check), UAT,
+  and the flag.
+- The new copy (consent withdrawal, the send warnings) is pending in
+  `cms-strings.ts` until Bazar reads it.
+

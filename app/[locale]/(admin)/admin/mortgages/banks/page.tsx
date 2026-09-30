@@ -16,7 +16,8 @@ export async function generateMetadata() {
  * Partner banks (Phase 6; not designed, decision D3 open): the banks a file
  * can be sent to and where each receives its package. The whole team can
  * read the list; the Head of mortgages, or an admin on the team, changes it
- * (`mortgage_save_bank()`, 0149, says so too).
+ * (`mortgage_save_bank()`, 0149, says so too). Admins without a mortgage role
+ * keep the same list at /admin/settings/partner-banks (SR-13).
  */
 export default async function MortgageBanksPage() {
   const { role, staff, supabase } = await requireMortgageRole();

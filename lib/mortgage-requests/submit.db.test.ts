@@ -14,7 +14,7 @@
  *     text by version, and starts the promise from sla.ts;
  *   · Replace keeps the old file until the new one is clean;
  *   · the notification outbox sends once, retries with a backoff, and gives
- *     up after five attempts;
+ *     up after five attempts, and on a fifth whose sender died mid-send (SR-23);
  *   · visitors can ask whether the flow is open, and nothing else.
  */
 
@@ -416,6 +416,37 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     expect(await outboxRow(requestId)).toMatchObject({ status: "failed", attempts: MAX_ATTEMPTS });
     const { data: events } = await service.from("mortgage_events").select("type").eq("request_id", requestId);
     expect((events as { type: string }[]).filter((e) => e.type === "notification.failed")).toHaveLength(1);
+  });
+
+  it("gives up on a fifth attempt whose sender died mid-send, and says so (SR-23)", async () => {
+    const stuck = (requestId: string, claimedAgoMs: number) =>
+      service
+        .from("mortgage_notifications")
+        .update({ status: "sending", attempts: MAX_ATTEMPTS, claimed_at: new Date(Date.now() - claimedAgoMs).toISOString() })
+        .eq("request_id", requestId)
+        .eq("kind", "applicant_received");
+    const ok = async () => ({ status: "ok" as const, id: "re_late" });
+
+    // Claimed for the fifth time eleven minutes ago and never recorded: failed, logged once.
+    const dead = await consultancy();
+    await stuck(dead, 11 * 60_000);
+    await deliverNotifications({ db: service, send: ok }, { requestId: dead });
+    await deliverNotifications({ db: service, send: ok }, { requestId: dead });
+    expect(await outboxRow(dead)).toMatchObject({
+      status: "failed",
+      attempts: MAX_ATTEMPTS,
+      provider_id: null,
+      last_error: "the fifth attempt never finished",
+    });
+    const { data: events } = await service.from("mortgage_events").select("type, data").eq("request_id", dead);
+    const failed = (events as { type: string; data: Record<string, unknown> }[]).filter((e) => e.type === "notification.failed");
+    expect(failed).toEqual([{ type: "notification.failed", data: { kind: "applicant_received", channel: "email" } }]);
+
+    // Claimed a minute ago: its sender may still be sending.
+    const busy = await consultancy();
+    await stuck(busy, 60_000);
+    await deliverNotifications({ db: service, send: ok }, { requestId: busy });
+    expect(await outboxRow(busy)).toMatchObject({ status: "sending", attempts: MAX_ATTEMPTS });
   });
 
   // The sender passes its own clock, as deliverNotifications does: the

@@ -253,6 +253,12 @@ test("C1–C6, their dialogs, the banks page and the settings", async ({ page })
   await page.getByRole("dialog").getByRole("radio", { name: "Monthly debts too high (DBR)" }).click();
   await audit(page, "C2 · Decline");
   await page.keyboard.press("Escape");
+  // Opened and cancelled: the seeded consent stays on file.
+  await page.getByTestId("consent-card").getByRole("button", { name: "Record a withdrawal" }).click();
+  await expect(page.getByRole("dialog", { name: "Record a withdrawal of consent?" })).toBeVisible();
+  await audit(page, "C2 · Record a withdrawal");
+  await page.getByRole("dialog").getByRole("button", { name: "Cancel" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
 
   await page.goto("/admin/mortgages/BZM-26-0412/documents/salary_certificate");
   await expect(page.getByRole("button", { name: "Accept document" })).toBeVisible();

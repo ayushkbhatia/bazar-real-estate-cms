@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, Eye } from "lucide-react";
+import { Check, Eye, X } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ import {
   InviteButton,
   ReassignDialog,
   RequestDocumentsButton,
+  WithdrawConsentButton,
   type BookingDay,
   type SendableBank,
   type Target,
@@ -386,21 +387,38 @@ function PreApproval({
           <OwnerCard file={file} target={target} />
           <Card title={t("c2.consent.title")}>
             {file.consent ? (
-              <div className="flex gap-2.5">
+              <div className="flex gap-2.5" data-testid="consent-card">
+                {/* A withdrawn consent loses its tick (SR-17). */}
                 <span
                   aria-hidden
-                  className="grid size-[18px] shrink-0 place-items-center rounded-[5px] bg-[oklch(0.55_0.12_145)] text-bz-bg"
+                  className={cn(
+                    "grid size-[18px] shrink-0 place-items-center rounded-[5px] text-bz-bg",
+                    file.consent.withdrawn ? "bg-[oklch(0.55_0.18_28)]" : "bg-[oklch(0.55_0.12_145)]",
+                  )}
                 >
-                  <Check size={12} strokeWidth={2.8} />
+                  {file.consent.withdrawn ? <X size={12} strokeWidth={2.8} /> : <Check size={12} strokeWidth={2.8} />}
                 </span>
                 <div className="text-[12.5px] leading-[1.5]">
-                  <div className="font-medium">{t("c2.consent.name")}</div>
+                  <div className={cn("font-medium", file.consent.withdrawn && "line-through decoration-1")}>{t("c2.consent.name")}</div>
                   <div className="mt-0.5 text-bz-muted">{file.consent.given}</div>
-                  {file.consent.pendingCompliance ? (
+                  {file.consent.withdrawnLine ? (
+                    <div className="mt-2">
+                      <Pill tone="danger" small>
+                        {file.consent.withdrawnLine}
+                      </Pill>
+                      <p className="mt-1.5 text-bz-ink-2">{t("c2.consent.withdrawnNote")}</p>
+                    </div>
+                  ) : null}
+                  {file.consent.pendingCompliance && !file.consent.withdrawn ? (
                     <div className="mt-2">
                       <Pill tone="warn" small>
                         {t("c2.consent.pending", { version: file.consent.wordingVersion })}
                       </Pill>
+                    </div>
+                  ) : null}
+                  {file.can.withdrawConsent && !file.consent.withdrawn ? (
+                    <div className="mt-2">
+                      <WithdrawConsentButton target={target} firstName={file.firstName} />
                     </div>
                   ) : null}
                 </div>

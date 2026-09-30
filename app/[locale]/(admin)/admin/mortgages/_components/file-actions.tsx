@@ -34,7 +34,7 @@ import {
   sendPreapprovalInvite,
   type MortgageActionResult,
 } from "../_actions";
-import { acceptApplicationAndSend, declineApplication } from "../_decision-actions";
+import { acceptApplicationAndSend, declineApplication, withdrawConsent } from "../_decision-actions";
 import { cancelReupload } from "../_review-actions";
 import { ActivityList, Card, roleLabel } from "./ui";
 
@@ -55,7 +55,7 @@ export function useAction() {
     start(async () => {
       const result = await action();
       if (result.ok) {
-        if (result.message) toast.success(result.message);
+        if (result.message) (result.warning ? toast.warning : toast.success)(result.message);
       } else {
         toast.error(result.message);
       }
@@ -721,6 +721,44 @@ export function CancelReuploadButton({
               onClick={() => run(() => cancelReupload({ ...target, reuploadId, kind }), (r) => r.ok && setOpen(false))}
             >
               {t("c2.reupload.cancel")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+/**
+ * "Record a withdrawal" (C2's Consent card; not designed — SECURITY-REVIEW
+ * SR-17): the applicant asked Bazar to stop sharing with partner banks. The
+ * owner or the Head records it; the banks still deciding are withdrawn and
+ * every package link stops (SR-22).
+ */
+export function WithdrawConsentButton({ target, firstName }: { target: Target; firstName: string }) {
+  const { pending, run } = useAction();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" className={LINK} disabled={pending} onClick={() => setOpen(true)}>
+        {t("c2.consent.withdraw.button")}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader>
+            <DialogTitle>{t("c2.consent.withdraw.title")}</DialogTitle>
+            <DialogDescription>{t("c2.consent.withdraw.body", { firstName })}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              className="bg-destructive text-white hover:bg-destructive/90"
+              disabled={pending}
+              onClick={() => run(() => withdrawConsent({ ...target, firstName }), (r) => r.ok && setOpen(false))}
+            >
+              {t("c2.consent.withdraw.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

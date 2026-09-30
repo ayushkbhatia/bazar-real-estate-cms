@@ -18,7 +18,15 @@ import { MAX_ATTEMPTS, scrubReason } from "./notify";
  */
 
 export type MortgageActionResult =
-  | { ok: true; message?: string }
+  | {
+      ok: true;
+      message?: string;
+      /**
+       * It went through, but something the adviser should know about didn't —
+       * an email that didn't go (SECURITY-REVIEW SR-25): shown as a warning.
+       */
+      warning?: boolean;
+    }
   | {
       ok: false;
       code: "not_allowed" | "not_found" | "conflict" | "slot_taken" | "invalid" | "failed";
@@ -37,6 +45,20 @@ export async function teamSession() {
   if (!user) return null;
   const [staff, role] = await Promise.all([getCurrentStaffRow(), getMortgageRole()]);
   if (!staff || staff.status !== "active" || !role) return null;
+  return { user, staff, role, supabase: await createSupabaseServerClient() };
+}
+
+/**
+ * The caller, when they may keep the partner banks (SPEC §7): the Head of
+ * mortgages, or an admin — who needs no mortgage role for it, since the banks
+ * page shows no applicant (SECURITY-REVIEW SR-13). `mortgage_save_bank()`
+ * decides again.
+ */
+export async function bankEditorSession() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const [staff, role] = await Promise.all([getCurrentStaffRow(), getMortgageRole()]);
+  if (!staff || staff.status !== "active" || !(role === "head" || staff.role === "admin")) return null;
   return { user, staff, role, supabase: await createSupabaseServerClient() };
 }
 

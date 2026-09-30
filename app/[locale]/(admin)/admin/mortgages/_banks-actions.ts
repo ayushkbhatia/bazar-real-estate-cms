@@ -5,12 +5,13 @@ import { z } from "zod";
 import { logAudit } from "@/lib/audit";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { BANK_COLUMNS, type BankRow } from "@/lib/mortgage-requests/server/banks";
-import { NOT_ALLOWED, refused, teamSession, type MortgageActionResult } from "@/lib/mortgage-requests/server/cms-kit";
+import { bankEditorSession, NOT_ALLOWED, refused, type MortgageActionResult } from "@/lib/mortgage-requests/server/cms-kit";
 
 /**
  * Partner banks (Phase 6; decision D3 is open, so the list is data, not
- * code): the Head of mortgages, or an admin on the team, adds a bank or
- * changes one. `mortgage_save_bank()` (0149) decides who may and checks the
+ * code): the Head of mortgages (at /admin/mortgages/banks), or an admin (at
+ * /admin/settings/partner-banks, with or without a mortgage role), adds a bank
+ * or changes one. `mortgage_save_bank()` (0149) decides who may and checks the
  * rest; each save leaves an audit row.
  */
 
@@ -37,7 +38,7 @@ export async function saveBank(input: z.input<typeof bankInput>): Promise<Mortga
     const field = String(parsed.error.issues[0]?.path[0] ?? "");
     return { ok: false, code: "invalid", message: cmsT("banks.error.invalid"), fields: field ? [field] : [] };
   }
-  const s = await teamSession();
+  const s = await bankEditorSession();
   if (!s) return NOT_ALLOWED;
   const b = parsed.data;
   if (b.active && b.inboxes.length === 0) {
@@ -70,6 +71,7 @@ export async function saveBank(input: z.input<typeof bankInput>): Promise<Mortga
     after: auditShape(saved),
   });
   revalidatePath("/admin/mortgages/banks");
+  revalidatePath("/admin/settings/partner-banks");
   return { ok: true, message: cmsT("banks.saved") };
 }
 

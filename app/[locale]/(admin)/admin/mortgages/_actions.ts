@@ -308,6 +308,11 @@ export async function sendPreapprovalInvite(input: Target): Promise<MortgageActi
 
   refresh(parsed.data.reference);
   if (status === "failed") return { ok: false, code: "failed", message: cmsT("c6.invite.emailFailed") };
+  // Email switched off (locally, a dry run): the link exists, but nobody has it (SR-25).
+  if (status === "skipped") {
+    const firstName = request.full_name.trim().split(/\s+/)[0] ?? "";
+    return { ok: true, warning: true, message: cmsT("c6.invite.emailSkipped", { firstName }) };
+  }
   return { ok: true };
 }
 

@@ -82,7 +82,12 @@ type SubmissionRow = {
   package_expires_at: string | null;
 };
 
-export type FoundPackage = { submission: SubmissionRow; bank: BankRow };
+/**
+ * `consented` is whether the applicant's consent to share with partner banks
+ * still stands: withdrawing it closes every package (SECURITY-REVIEW SR-22),
+ * whatever the link's own expiry says.
+ */
+export type FoundPackage = { submission: SubmissionRow; bank: BankRow; consented: boolean };
 
 /** The submission a package token opens, or null. A malformed token is looked up as nothing. */
 export async function findPackage(db: SupabaseClient, token: string): Promise<FoundPackage | null> {
@@ -95,13 +100,24 @@ export async function findPackage(db: SupabaseClient, token: string): Promise<Fo
   if (error) throw new Error(`package read failed: ${error.code}`);
   const submission = data as SubmissionRow | null;
   if (!submission) return null;
-  const { data: bank } = await db.from("mortgage_partner_banks").select(BANK_COLUMNS).eq("id", submission.bank_id).single();
-  return { submission, bank: bank as BankRow };
+  const [{ data: bank }, consent] = await Promise.all([
+    db.from("mortgage_partner_banks").select(BANK_COLUMNS).eq("id", submission.bank_id).single(),
+    db
+      .from("mortgage_consents")
+      .select("id", { count: "exact", head: true })
+      .eq("request_id", submission.request_id)
+      .is("withdrawn_at", null),
+  ]);
+  if (consent.error) throw new Error(`consent read failed: ${consent.error.code}`);
+  return { submission, bank: bank as BankRow, consented: (consent.count ?? 0) > 0 };
 }
 
-/** Whether a package can be opened. Withdrawn and unknown read the same: the page never says which. */
+/**
+ * Whether a package can be opened. Withdrawn, a consent withdrawn and unknown
+ * read the same: the page never says which.
+ */
 export function packageState(found: FoundPackage | null, now: Date): "open" | "expired" | "unavailable" {
-  if (!found || found.submission.status === "withdrawn") return "unavailable";
+  if (!found || found.submission.status === "withdrawn" || !found.consented) return "unavailable";
   const expires = found.submission.package_expires_at;
   if (!expires || new Date(expires).getTime() <= now.getTime()) return "expired";
   return "open";

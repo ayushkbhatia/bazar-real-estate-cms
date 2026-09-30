@@ -43,6 +43,10 @@ export const CMS_MESSAGES = {
     "callNoAnswer": "{actor} called · no answer",
     "callReached": "{actor} called · reached",
     "claimed": "{owner} claimed this request",
+    "consentWithdrawn": {
+      "sub": "{count, plural, one {# bank link stopped} other {# bank links stopped}}",
+      "title": "{actor} recorded {firstName}'s withdrawal of consent"
+    },
     "consultReceived": {
       "sub": "Mortgage Consultancy · no documents",
       "title": "Request received from the website"
@@ -125,6 +129,7 @@ export const CMS_MESSAGES = {
     "readOnly": "Only the Head of mortgages or an admin can change the partner banks.",
     "save": "Save bank",
     "saved": "Saved.",
+    "settingsNote": "The mortgage team's Head keeps the same list in the Mortgage requests section.",
     "title": "Partner banks"
   },
   "c1": {
@@ -227,7 +232,17 @@ export const CMS_MESSAGES = {
       "given": "Given {givenAt} · {ip} · {browser}, {os}",
       "name": "Share documents with partner banks",
       "pending": "Wording {version} · pending compliance",
-      "title": "Consent"
+      "title": "Consent",
+      "withdraw": {
+        "body": "Use this when {firstName} asks Bazar to stop sharing their documents with partner banks. Banks still deciding are withdrawn, every package link on this file stops working now, and nothing more can be sent to a bank. This can't be undone.",
+        "button": "Record a withdrawal",
+        "confirm": "Record withdrawal",
+        "done": "{firstName}'s withdrawal is recorded. The banks' links have stopped.",
+        "none": "There's no consent on file to withdraw.",
+        "title": "Record a withdrawal of consent?"
+      },
+      "withdrawn": "Withdrawn {when}",
+      "withdrawnNote": "Nothing more can be shared with the banks."
     },
     "decision": {
       "by": "{name} · {when}",
@@ -272,6 +287,8 @@ export const CMS_MESSAGES = {
       "cta": "{count, plural, =0 {Choose a bank} one {Send to # bank} other {Send to # banks}}",
       "done": "Sent to {banks}.",
       "emailFailed": "The file is with the banks, but the email to {bank} didn't go. Send a reminder from the decision page.",
+      "emailPartial": "The file is with the banks, but the email to {bank} didn't reach every inbox. Send a reminder from the decision page.",
+      "emailSkipped": "The file is with the banks, but this site isn't sending email, so nothing went to {bank}.",
       "lede": "Each bank gets a structured summary and the {count} accepted documents through a secure link of its own, working until {expires}. Every open and download is recorded.",
       "noInbox": "No package inbox",
       "none": "No partner banks are set up yet.",
@@ -340,6 +357,7 @@ export const CMS_MESSAGES = {
       "title": "Coverage · last 12 months",
       "titleN": "Coverage · last {count} months"
     },
+    "emailSkipped": "The request is recorded, but this site isn't sending email, so the link didn't reach {firstName}.",
     "message": {
       "example": "Your statements cover September 2025 to May 2026. For a full year, please add June, July and August 2026.",
       "label": "Message to {firstName}"
@@ -453,6 +471,10 @@ export const CMS_MESSAGES = {
       "years": "Fixed for (years)"
     },
     "reminder": {
+      "emailFailed": "The reminder to {bank} didn't go, and its earlier link has stopped. Send another in 10 minutes.",
+      "emailSkipped": "This site isn't sending email, so no reminder went to {bank}, and its earlier link has stopped.",
+      "noConsent": "The applicant withdrew their consent, so no new link can go to {bank}.",
+      "partial": "The reminder reached only some of {bank}'s inboxes. Its earlier link has stopped; send another in 10 minutes.",
       "recent": "A reminder went to {bank} a few minutes ago.",
       "sent": "Reminder sent to {bank}."
     },
@@ -527,6 +549,7 @@ export const CMS_MESSAGES = {
     },
     "invite": {
       "emailFailed": "The link was made, but the email didn't go. Send a new link to try again.",
+      "emailSkipped": "The link was made, but this site isn't sending email, so it didn't reach {firstName}.",
       "resend": "Send a new link",
       "sent": "Link sent · expires {when}"
     },
@@ -845,6 +868,8 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.callLeftMessage",
   "activity.callReached",
   "activity.claimed",
+  "activity.consentWithdrawn.sub",
+  "activity.consentWithdrawn.title",
   "activity.declined",
   "activity.downloaded",
   "activity.downloadedLetter",
@@ -895,6 +920,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "banks.readOnly",
   "banks.save",
   "banks.saved",
+  "banks.settingsNote",
   "banks.title",
   "c1.aria.next",
   "c1.aria.owner",
@@ -923,6 +949,14 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c2.action.decision",
   "c2.action.decline",
   "c2.activity.showLatest",
+  "c2.consent.withdraw.body",
+  "c2.consent.withdraw.button",
+  "c2.consent.withdraw.confirm",
+  "c2.consent.withdraw.done",
+  "c2.consent.withdraw.none",
+  "c2.consent.withdraw.title",
+  "c2.consent.withdrawn",
+  "c2.consent.withdrawnNote",
   "c2.decision.by",
   "c2.decision.declined",
   "c2.decision.message",
@@ -944,6 +978,8 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c2.send.cta",
   "c2.send.done",
   "c2.send.emailFailed",
+  "c2.send.emailPartial",
+  "c2.send.emailSkipped",
   "c2.send.lede",
   "c2.send.noInbox",
   "c2.send.none",
@@ -964,6 +1000,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c3.saved",
   "c4.channelRequired",
   "c4.coverage.titleN",
+  "c4.emailSkipped",
   "c4.messageRequired",
   "c4.prefill.months",
   "c4.prefill.none",
@@ -1014,6 +1051,10 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c5.record.validUntil",
   "c5.record.variable",
   "c5.record.years",
+  "c5.reminder.emailFailed",
+  "c5.reminder.emailSkipped",
+  "c5.reminder.noConsent",
+  "c5.reminder.partial",
   "c5.reminder.recent",
   "c5.reminder.sent",
   "c5.template.also",
@@ -1036,6 +1077,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c6.completed",
   "c6.header.notContacted",
   "c6.invite.emailFailed",
+  "c6.invite.emailSkipped",
   "c6.invite.resend",
   "c6.invite.sent",
   "c6.log.call",

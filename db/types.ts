@@ -6134,6 +6134,56 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      mortgage_withdraw_consent: {
+        Args: { p_expected_updated_at?: string; p_request_id: string }
+        Returns: {
+          assigned_at: string | null
+          closed_at: string | null
+          created_at: string
+          date_of_birth: string
+          decided_at: string | null
+          decided_by: string | null
+          decision: Database["public"]["Enums"]["mortgage_decision"] | null
+          decision_message: string | null
+          decline_reason:
+            | Database["public"]["Enums"]["mortgage_decline_reason"]
+            | null
+          email: string
+          employment_type: Database["public"]["Enums"]["mortgage_employment"]
+          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
+          first_contact_at: string | null
+          full_name: string
+          id: string
+          lead_bank_submission_id: string | null
+          locale: string
+          mobile_e164: string
+          owner_staff_id: string | null
+          parent_request_id: string | null
+          property_id: string | null
+          property_ref: string | null
+          reference: string
+          residency: Database["public"]["Enums"]["mortgage_residency"]
+          service: Database["public"]["Enums"]["mortgage_service"]
+          sla_breach_notified_at: string | null
+          sla_due_at: string | null
+          sla_paused_at: string | null
+          sla_paused_seconds: number
+          sla_remaining_seconds: number | null
+          sla_risk_notified_at: string | null
+          sla_started_at: string | null
+          sla_stopped_at: string | null
+          status: Database["public"]["Enums"]["mortgage_status"]
+          submission_key: string | null
+          submitted_at: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "mortgage_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       release_salesforce_listing_lease: {
         Args: { p_holder: string }
         Returns: undefined

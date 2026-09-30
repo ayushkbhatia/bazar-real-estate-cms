@@ -15,7 +15,11 @@ it was checked, and each gap is numbered **SR-n** for the fix list.
 - **Legend:** ✓ in place and tested · ◐ in place, with a gap noted ·
   ✗ missing · ◻ a production or human check, not code.
 - **Since the review** (same day, Phase 7 steps 3–5): SR-4, SR-5, SR-6, SR-8
-  and SR-9 are fixed and tested (§5 says how); the rest wait for approval.
+  and SR-9 are fixed and tested (§5 says how).
+- **Step 2** (same day, the list approved): SR-7, SR-10 to SR-17 and SR-22 to
+  SR-25 are fixed and tested, in migration `0152` and the code (§5 says how).
+  What's left is ops (SR-1 to SR-3), decisions (SR-18, SR-19, SR-21, SR-26)
+  and the production checks (§6).
 
 Paths: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 `app/[locale]/(admin)/admin/mortgages/`, `L/` = `lib/mortgage-requests/`.
@@ -89,8 +93,9 @@ writes.
 | Send to banks, record responses, decide | owner | ✓ | — | `mortgage_send_to_banks`, `…_bank_reminder`, `…_letter_presign`, `…_record_bank_response`, `…_pre_approve`, `…_decline` | ✓ `banks.db.test.ts`, `decline.db.test.ts` |
 | Reassign | — | ✓ | — | `mortgage_reassign` | ✓ |
 | Settings and holidays | — | ✓ | — | `mortgage_update_settings`, `mortgage_set_holiday` | ✓ |
-| Manage partner banks | — | ✓ | admin ✓ | `mortgage_save_bank` (Head or `is_admin()`) | ◐ an admin without a mortgage role can't reach the page (**SR-13**) |
-| Break-glass access, logged and reviewed | | | | D10: grant a mortgage role for the duration | ✗ granting a role is SQL-only and unaudited (**SR-14**) |
+| Record a consent withdrawal | owner | ✓ | — | `mortgage_withdraw_consent` (`0152`): the banks still deciding withdrawn, every package link stopped | ✓ `banks.db.test.ts`, `mortgage-decision.spec.ts` |
+| Manage partner banks | — | ✓ | admin ✓ | `mortgage_save_bank` (Head or `is_admin()`); the Head at `A/banks`, an admin at `/admin/settings/partner-banks` | ✓ `banks.db.test.ts`, `mortgage-security.spec.ts` (SR-13) |
+| Break-glass access, logged and reviewed | | | | D10: grant a mortgage role for the duration, in SQL (RUNBOOK §6); a trigger on `staff` audits every change (`0152`) | ✓ `database.db.test.ts` (SR-14); the review is a person's |
 
 **Server actions** (`A/_actions.ts`, `_review-actions.ts`,
 `_decision-actions.ts`, `_banks-actions.ts`): each one checks the session
@@ -99,7 +104,11 @@ makes its change in one SQL function, which writes the event and queues the
 notifications in the same transaction. Status only moves through
 `mortgage_transition()`; the `mortgage_requests_guard` trigger rejects any
 other write to status, clock or decision columns. Next.js checks server
-actions' Origin. Exceptions: **SR-10**, **SR-11**, **SR-12**.
+actions' Origin. Since step 2 (`0152`), signed-in staff can't call
+`mortgage_transition()` itself — only the actions' functions do, as their
+owner (SR-10) — and `mortgage_log_event()` takes from them only an open or a
+download of that request's own file (SR-11); `requestReupload` checks the
+caller before it moves anything (SR-12).
 
 **Functions:** all 47 `mortgage_*` functions set `search_path`. The
 SECURITY DEFINER ones callable by signed-in users begin with
@@ -117,17 +126,18 @@ refuses to call a trigger function directly.
 | `M/mortgages/apply/*` (W1–W7) | public, behind the flag | the flag (`isMortgageFlowPublic`); answers stay in sessionStorage until submit; W4/W7 carry no reference or PII in the URL; PII regions are `ph-no-capture` | ✓ |
 | `M/mortgages/apply/gallery` | staff in production | fixtures only; 404 for anyone else on the production deployment | ✓ |
 | `M/mortgages/r/[token]` (W8, invite) | link holder | code, then session; `no-referrer`, noindex; states that show nothing of the application | ✓ |
-| `M/mortgages/p/[token]` (package) | the bank | token; opening logged first; `no-referrer`, noindex, rendered every time | ✓ |
+| `M/mortgages/p/[token]` (package) | the bank | token; a standing consent (SR-22); opening logged first; `no-referrer`, noindex, rendered every time; not framed (SR-15); `ph-no-capture` (SR-7) | ✓ |
 | `POST /api/mortgage/drafts` | public | Turnstile, rate limit per IP, flag | ◐ SR-1, SR-2 |
 | `…/drafts/[id]/files` (+ `/complete`, DELETE, GET) | draft holder (Bearer token) | token hash, per-draft limits, the §2.2 rules, scan | ◐ SR-1 |
 | `POST /api/mortgage/requests` | public | Turnstile, rate limit, flag, zod, consent, Idempotency-Key | ◐ SR-1, SR-2 |
 | `…/links/[token]/{otp,verify,files,…,submit}` | link holder | as §2; not behind the flag, so switching intake off strands nobody | ◐ SR-1 |
-| `GET /api/mortgage/packages/[token]/files/[fileId]` | the bank | open link; accepted document's clean file on this request only; logged first; rate limit | ◐ SR-1 |
+| `GET /api/mortgage/packages/[token]/files/[fileId]` | the bank | open link and a standing consent; accepted document's clean file on this request only; logged first; rate limit | ◐ SR-1 |
 | `GET /api/admin/mortgages/files/[fileId]` | team | role, logged first, scanned | ✓ |
-| `POST /api/admin/mortgages/letters` (+ `/[fileId]/complete`) | owner or Head (DB); team (complete) | session; `mortgage_letter_presign`; PDF checks and scan | ✓; SR-16 |
-| `A/*` pages and server actions | team | §3 | ✓; SR-10–SR-13 |
+| `POST /api/admin/mortgages/letters` (+ `/[fileId]/complete`) | owner or Head (DB); team (complete) | session; `mortgage_letter_presign`; PDF checks and scan; JSON only (SR-16) | ✓ |
+| `A/*` pages and server actions | team | §3; not framed (SR-15); `ph-no-capture` (SR-7) | ✓ |
+| `/admin/settings/partner-banks` | admins | the settings area's admin-only layout; `mortgage_save_bank` again | ✓ |
 | `/api/cron/mortgage-worker` | Vercel cron | Bearer `CRON_SECRET`; scans, draft purge, SLA tick, outbox; heartbeat on `/admin/settings/health` | ✓ |
-| Emails | applicant, team, banks | links are sent by the action and never stored (the outbox can't hold a token); team and bank emails carry no applicant details; the pre-approval letter is read from the private bucket at send time | ✓ |
+| Emails | applicant, team, banks | links are sent by the action and never stored (the outbox can't hold a token); team and bank emails carry no applicant details; the pre-approval letter is read from the private bucket at send time; the adviser is told when one didn't go (SR-25) | ✓ |
 
 ---
 
@@ -135,9 +145,10 @@ refuses to call a trigger function directly.
 
 Severity is about exposure if the flag were public today. "Step" says where
 the fix belongs: **3** and **4** are Phase 7 steps already asked for
-(retention and DSR; PII scrubbing), so they go ahead without waiting;
-**approval** means waiting for this list to be approved (step 2); **ops**
-means a setting or account, not code.
+(retention and DSR; PII scrubbing), so they went ahead without waiting;
+**2** is step 2, the fixes made once this list was approved (30 Sep);
+**ops** means a setting or account, not code; **decision** is someone's
+call, not code.
 
 | ID | Severity | Gap | Proposed fix | Step |
 |---|---|---|---|---|
@@ -147,21 +158,21 @@ means a setting or account, not code.
 | SR-4 | Medium | ~~**Sentry has no scrubber.**~~ **Fixed (step 4):** `beforeSend`, `beforeSendTransaction` and `beforeBreadcrumb` on the server, edge and browser (`lib/sentry-scrub.ts`); request bodies, query strings, cookies and user details never leave; tokens in `/api/mortgage/links/…` and `/api/mortgage/packages/…` paths are redacted too. Was: Once a DSN is set, `onRequestError` and `captureException` would send secure-link URLs (their tokens) and any personal data an error message quotes | A `beforeSend` (server and browser) that redacts tokens in URLs, emails, phone numbers and Bearer values in messages, breadcrumbs and request data | 4 |
 | SR-5 | Medium | ~~**`error_events` stores raw messages**~~ **Fixed (step 4):** `reportError` scrubs the message, the stack and the context before storing, logging or forwarding (`lib/pii-scrub.ts`). Was: and every staff member can read them (`0134`). A database or provider error can quote an email or a phone number | Scrub messages and contexts in `reportError` before they're stored or forwarded | 4 |
 | SR-6 | Medium | ~~**`lib/email.ts` logs the recipient's address**~~ **Fixed (step 4):** masked ("p•••@example.com"); provider errors scrubbed. Was: on a dry run and when no Resend key is set, for every email on the site | Log a masked address | 4 |
-| SR-7 | Medium | **PostHog autocapture on the CMS's mortgage pages and the bank's package page.** With analytics accepted, a click can send an element's text (an applicant's name, a salary) to PostHog. The applicant flow already marks its personal regions `ph-no-capture` | `ph-no-capture` on the mortgage CMS section and the package page | approval |
+| SR-7 | Medium | ~~**PostHog autocapture on the CMS's mortgage pages and the bank's package page.**~~ **Fixed (step 2):** the section's layout (`A/layout.tsx`) wraps every CMS page in `ph-no-capture`, and the package page's `<main>` carries it. Was: With analytics accepted, a click can send an element's text (an applicant's name, a salary) to PostHog. The applicant flow already marks its personal regions `ph-no-capture` | `ph-no-capture` on the mortgage CMS section and the package page | 2 |
 | SR-8 | Medium | ~~**DSR misses mortgage requests.**~~ **Fixed (step 3).** Was: `/admin/dsr` exports and erases the old `mortgage_inquiries` only | Find a subject's requests by email (and mobile); export them; erase them — files deleted from the bucket first, then the rows, events included, through the `mortgage.purge` path; record which banks already received a package, since those copies can't be recalled | 3 |
 | SR-9 | Medium | ~~**No retention purge.**~~ **Built (step 3)**, off until D7 sets the months. Was: `retention_months` is null until compliance answers D7 | A daily job that deletes closed requests' files after N months, off while N is unset | 3 (D7) |
-| SR-10 | Medium | **Team members can call `mortgage_transition()` directly** (it is granted to `authenticated`), so an owner or the Head could pre-approve or decline without the action-level rules: a lead offer with a letter, a reason and message, the applicant's email. It's still logged as them | Revoke EXECUTE from `authenticated`. Every staff path already goes through the specific functions, which call it as their owner | approval |
-| SR-11 | Low | **`mortgage_log_event()` lets any team member write any event type on any request** as themselves. The file route only needs `document.viewed` and `document.downloaded` | Allow signed-in callers those two types only | approval |
-| SR-12 | Low | **`requestReupload` moves a New file to In review before the database checks the caller may act**, so an adviser who doesn't own a file can move it on (the re-upload itself is then refused) | Check the caller may act first | approval |
-| SR-13 | Medium | **Admins without a mortgage role can't manage partner banks.** SPEC §7 and `mortgage_save_bank()` allow them, but the whole `/admin/mortgages` section 404s without a role (D10) | Serve the banks page outside the section's gate, admins and the Head only; or decide admins need a role | approval |
-| SR-14 | Medium | **Break-glass isn't logged.** Granting or removing a mortgage role is SQL only and writes no audit row; SPEC §7 requires break-glass access to be logged and reviewed | An audit row for every change to `staff.mortgage_role` (a trigger), and the procedure in the runbook | approval |
-| SR-15 | Low | **No `frame-ancestors` or `X-Frame-Options`** on `/admin` or `/mortgages`. SameSite cookies (Lax for staff, Strict for links) already leave a framed page signed out | `Content-Security-Policy: frame-ancestors 'none'` for those paths | approval |
-| SR-16 | Low | **JSON routes don't check the content type.** The staff letter routes rely on SameSite=Lax to stop a cross-site form POST | Require `application/json` in `readJson` | approval |
-| SR-17 | Low | **No way to record a consent withdrawal.** `withdrawn_at` exists, but only SQL can set it, and C2's Consent card still shows the tick afterwards (see SR-22 for what it doesn't stop) | Runbook procedure now; a CMS action that records it, shows it on C2, and does SR-22's cut-off | approval |
-| SR-22 | Medium | **A withdrawn consent doesn't reach the banks.** Sending to banks and pre-approving check it, but a package link already sent keeps working until it expires, its downloads too, and "Send a reminder" (`mortgage_bank_reminder`, `0149`) issues a fresh link without checking | Withdrawing consent withdraws the banks' submissions (their links stop), and the reminder, the package page and its downloads refuse a request without consent | approval |
-| SR-23 | Low | **A notification claimed on its fifth attempt can stick in `sending`** if the sender dies mid-send: the reclaim (`mortgage_claim_notifications`, `0141`) only takes rows with fewer than five attempts, and nothing reports it | Reclaim a stale fifth attempt as failed (and report it), or report `sending` rows older than an hour on the health page | approval |
-| SR-24 | Low | **The dev scanner is allowed on Preview deployments**, which read the production database (D8): with `MORTGAGE_SCANNER=dev` set for Preview, a file uploaded through a preview would be marked clean without a real scan | Refuse the dev scanner on any Vercel deployment (`VERCEL_ENV` set), not just Production, until D8 gives Preview its own database | approval |
-| SR-25 | Low | **Some results say sent when an email wasn't.** "Send a reminder" reports success whatever the send did; a bank counts as reached when any one of its inboxes was; a skipped send (dry run, no key) reads as sent | Report the send's outcome, per inbox | approval |
+| SR-10 | Medium | ~~**Team members can call `mortgage_transition()` directly**~~ **Fixed (step 2, `0152`):** EXECUTE revoked from `authenticated`; a direct call as the owner or the Head is refused (`42501`), and the actions' functions still call it as their owner. Was: (it is granted to `authenticated`), so an owner or the Head could pre-approve or decline without the action-level rules: a lead offer with a letter, a reason and message, the applicant's email. It's still logged as them | Revoke EXECUTE from `authenticated`. Every staff path already goes through the specific functions, which call it as their owner | 2 |
+| SR-11 | Low | ~~**`mortgage_log_event()` lets any team member write any event type on any request**~~ **Fixed (step 2, `0152`):** a signed-in caller may log `document.viewed` or `document.downloaded` only, naming a file of that request (a document's or a bank's letter), as themselves at the database's time. Was: as themselves. The file route only needs `document.viewed` and `document.downloaded` | Allow signed-in callers those two types only | 2 |
+| SR-12 | Low | ~~**`requestReupload` moves a New file to In review before the database checks the caller may act**~~ **Fixed (step 2):** it asks `mayActOn()` (`L/permissions.ts`: the owner or the Head) first. Was: so an adviser who doesn't own a file can move it on (the re-upload itself is then refused) | Check the caller may act first | 2 |
+| SR-13 | Medium | ~~**Admins without a mortgage role can't manage partner banks.**~~ **Fixed (step 2):** admins keep the same list at `/admin/settings/partner-banks`, behind the settings area's admin-only layout (a "Partner banks" tab); `saveBank` takes the Head or an admin (`bankEditorSession()`), and the database decides again. The Head's page is unchanged. Was: SPEC §7 and `mortgage_save_bank()` allow them, but the whole `/admin/mortgages` section 404s without a role (D10) | Serve the banks page outside the section's gate, admins and the Head only; or decide admins need a role | 2 |
+| SR-14 | Medium | ~~**Break-glass isn't logged.**~~ **Fixed (step 2, `0152`):** a trigger on `staff` writes `staff.mortgage_role_change` to `audit_log` for every change to `mortgage_role`, from the app or SQL: before, after, `via`, and the actor and reason when the SQL sets `mortgage.audit_actor` and `mortgage.audit_note` (RUNBOOK §6); without them it's recorded as the system's. Was: Granting or removing a mortgage role is SQL only and writes no audit row; SPEC §7 requires break-glass access to be logged and reviewed | An audit row for every change to `staff.mortgage_role` (a trigger), and the procedure in the runbook | 2 |
+| SR-15 | Low | ~~**No `frame-ancestors` or `X-Frame-Options`** on `/admin` or `/mortgages`.~~ **Fixed (step 2):** `frame-ancestors 'none'` and `X-Frame-Options: DENY` on both, in both locales (`next.config.ts`). Was: SameSite cookies (Lax for staff, Strict for links) already leave a framed page signed out | `Content-Security-Policy: frame-ancestors 'none'` for those paths | 2 |
+| SR-16 | Low | ~~**JSON routes don't check the content type.**~~ **Fixed (step 2):** `readJson` answers 415 unless the request says `application/json`, which a cross-site form can't send without a preflight. Was: The staff letter routes rely on SameSite=Lax to stop a cross-site form POST | Require `application/json` in `readJson` | 2 |
+| SR-17 | Low | ~~**No way to record a consent withdrawal.**~~ **Fixed (step 2):** "Record a withdrawal" on C2's Consent card (the owner or the Head; `mortgage_withdraw_consent`, `0152`), available after a decision too; the card loses its tick and says when, and the activity log has a line. Was: `withdrawn_at` exists, but only SQL can set it, and C2's Consent card still shows the tick afterwards (see SR-22 for what it doesn't stop) | Runbook procedure now; a CMS action that records it, shows it on C2, and does SR-22's cut-off | 2 |
+| SR-22 | Medium | ~~**A withdrawn consent doesn't reach the banks.**~~ **Fixed (step 2):** recording the withdrawal withdraws the banks still deciding and stops every package link on the file at once; the reminder refuses a file without consent (`0152`), and the package page and its downloads show nothing without one, however it went (`findPackage` reads it). Was: Sending to banks and pre-approving check it, but a package link already sent keeps working until it expires, its downloads too, and "Send a reminder" (`mortgage_bank_reminder`, `0149`) issues a fresh link without checking | Withdrawing consent withdraws the banks' submissions (their links stop), and the reminder, the package page and its downloads refuse a request without consent | 2 |
+| SR-23 | Low | ~~**A notification claimed on its fifth attempt can stick in `sending`**~~ **Fixed (step 2):** each delivery run first gives up a fifth attempt claimed over ten minutes ago: `failed`, a `notification.failed` event, and a report on `/admin/settings/health`. Was: if the sender dies mid-send: the reclaim (`mortgage_claim_notifications`, `0141`) only takes rows with fewer than five attempts, and nothing reports it | Reclaim a stale fifth attempt as failed (and report it), or report `sending` rows older than an hour on the health page | 2 |
+| SR-24 | Low | ~~**The dev scanner is allowed on Preview deployments**~~ **Fixed (step 2):** refused on Production and Preview (`VERCEL_ENV`); clamd is allowed on both, and local development keeps the dev scanner. Was: which read the production database (D8): with `MORTGAGE_SCANNER=dev` set for Preview, a file uploaded through a preview would be marked clean without a real scan | Refuse the dev scanner on any Vercel deployment (`VERCEL_ENV` set), not just Production, until D8 gives Preview its own database | 2 |
+| SR-25 | Low | ~~**Some results say sent when an email wasn't.**~~ **Fixed (step 2):** a bank counts as reached only when every inbox was (`L/sends.ts`); sending to banks, the reminder, the invite and the re-upload each say, as a warning, when an email failed, reached only some inboxes, or wasn't sent because email is off. Was: "Send a reminder" reports success whatever the send did; a bank counts as reached when any one of its inboxes was; a skipped send (dry run, no key) reads as sent | Report the send's outcome, per inbox | 2 |
 | SR-18 | Info | **Tokens appear in request paths**, so Vercel's request logs hold them for their retention period. Applicant links still need a code; bank package links don't (D3: a bearer link to the bank's inbox) | Accept, or ask banks for a code too (D3) | decision |
 | SR-19 | Info | **The security line and bank sharing** (§1): "Only Bazar's mortgage team can open them" leaves out the partner banks the applicant consents to | Word it for D17 (design and compliance) | decision |
 | SR-20 | — | **Production checks** (§6) | — | ops |
@@ -175,18 +186,18 @@ by colour alone. The shared CMS sidebar's group labels fail contrast on every
 admin page; that file is shared, so it's a separate task.
 
 Nothing here lets someone outside the mortgage team read an applicant's
-documents or details, except SR-22: a bank that already had a link keeps
-it for up to seven days after the applicant withdraws consent. SR-10 to
-SR-12 concern team members bypassing rules, not access; the High items are
-production settings that the code already fails closed on (SR-2, SR-3) or
-that the database backs up (SR-1). SR-22 to SR-26 were found while writing
-the runbook.
+documents or details. SR-22 did (a bank that already had a link kept it for
+up to seven days after the applicant withdrew consent) and is fixed. SR-10 to
+SR-12 concerned team members bypassing rules, not access, and are fixed. The
+High items are production settings that the code already fails closed on
+(SR-2, SR-3) or that the database backs up (SR-1). SR-22 to SR-26 were found
+while writing the runbook.
 
 ---
 
 ## 6. Production checks before switching the flag on
 
-For D17's sign-off, after `0138`–`0150` are applied:
+For D17's sign-off, after `0138`–`0152` are applied:
 
 | Check | How | Status |
 |---|---|---|
@@ -196,7 +207,9 @@ For D17's sign-off, after `0138`–`0150` are applied:
 | Encryption at rest (Storage and Postgres) | Supabase dashboard → project settings | ◻ |
 | Region (D4) | Supabase project region; Vercel `hnd1` | ◻ |
 | Turnstile, Upstash, scanner, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET` | `vercel env ls` (Production) | ◻ |
-| An admin without a mortgage role gets 404 at `/admin/mortgages` and 403 from the file route | sign in as one | ◻ |
+| An admin without a mortgage role gets 404 at `/admin/mortgages` and 403 from the file route, and can open `/admin/settings/partner-banks` | sign in as one | ◻ |
+| Nobody else can frame the CMS or the mortgage flow | `curl -sI https://www.bazarrealestate.ae/admin/login` and `/mortgages/apply` → `content-security-policy: frame-ancestors 'none'`, `x-frame-options: DENY` | ◻ |
+| Break-glass grants are audited | grant and remove a test role as RUNBOOK §6 says; two `staff.mortgage_role_change` rows in `audit_log`, the first naming you and why | ◻ |
 | Staff file route headers | open a file, check `cache-control`, `x-content-type-options`, `content-security-policy` | ◻ |
 | Package page headers | open a package link, check `referrer-policy: no-referrer` and `x-robots-tag`/meta noindex | ◻ |
 | `/mortgages/apply/gallery` 404s when signed out | curl | ◻ |

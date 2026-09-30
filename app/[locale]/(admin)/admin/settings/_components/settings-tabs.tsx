@@ -47,6 +47,14 @@ const TABS: { group: string; items: Tab[] }[] = [
       { label: "Property fields", href: "/admin/settings/fields", status: "stub" },
       { label: "Routing", href: "/admin/settings/routing", status: "live" },
       { label: "Mortgage", href: "/admin/settings/mortgage", status: "live" },
+      {
+        // The mortgage team's partner banks, which admins keep too (SPEC §7).
+        // Here because /admin/mortgages is closed to anyone without a mortgage
+        // role, admins included (D10); the list shows no applicant.
+        label: "Partner banks",
+        href: "/admin/settings/partner-banks",
+        status: "live",
+      },
     ],
   },
   {

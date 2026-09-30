@@ -10,7 +10,7 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 4. [WhatsApp templates (D1)](#4-whatsapp-templates-d1)
 5. [A disputed clock](#5-a-disputed-clock)
 6. [Break-glass access (D10, SR-14)](#6-break-glass-access-d10-sr-14)
-7. [Recording a consent withdrawal (SR-17)](#7-recording-a-consent-withdrawal-sr-17)
+7. [Recording a consent withdrawal (SR-17, SR-22)](#7-recording-a-consent-withdrawal-sr-17-sr-22)
 8. [Partner banks](#8-partner-banks)
 9. [An applicant locked out of a secure link](#9-an-applicant-locked-out-of-a-secure-link)
 10. [The feature flag](#10-the-feature-flag)
@@ -20,7 +20,7 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 
 **Before you use it**
 
-- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing), and a local database built from every migration, 30 Sep 2026. D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
+- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing; then step 2's security fixes, migration `0152`), and a local database built from every migration, 30 Sep 2026. D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
 - Screens: C1 is the queue (`/admin/mortgages`); C2 is a Fast Pre-Approval's file and C6 a consultancy's (`/admin/mortgages/[reference]`); C3/C4 is the document viewer (`…/documents/[kind]`); C5 is the decision (`…/decision`). W1–W7 are the website's application; W8 is the secure-link page.
 - The examples use the local seed's file BZM-26-0412 (Priya Raman). Put the real reference in its place.
 - The SQL returns references, ids, statuses and times, not names, emails or mobiles (an event's `data` can still hold a file name). Keep personal data out of tickets, chats and error reports.
@@ -129,9 +129,9 @@ select kind, channel, status, count(*)
 
 ### The audit log: /admin/audit-log
 
-Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`), and when a partner bank is saved (`mortgage.bank.create`, `mortgage.bank.update`). Nothing else in the module writes one. Changing someone's mortgage role writes none (SR-14). A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
+Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`), and when a partner bank is saved (`mortgage.bank.create`, `mortgage.bank.update`). Changing anyone's mortgage role writes `staff.mortgage_role_change` by itself, from a trigger on `staff` (`0152`, SR-14): the role before and after, `via` (`app` for a signed-in change, `sql` otherwise) and, when the SQL names them (§6), who and why; a change that doesn't name them is recorded as the system's. Nothing else in the module writes one. A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
 
-Every **Changes data** statement in this runbook writes its own row. This is the shape; the statements below fill it in for you:
+Every **Changes data** statement in this runbook writes its own row (§6's role changes through the trigger, the rest with an insert). This is the insert's shape; the statements below fill it in for you:
 
 ```sql
 -- Template only. Use the statements in each section, which include it.
@@ -169,7 +169,7 @@ Which scanner runs is decided by `scannerFromEnv()` in `lib/mortgage-requests/se
 
 - `MORTGAGE_SCANNER=clamd` with `MORTGAGE_CLAMD_HOST` set (and `MORTGAGE_CLAMD_PORT`, default 3310): the ClamAV daemon.
 - Anything else, on the production deployment: no scanner. Files wait for good and none can be opened. That's deliberate (fail closed), and it's where production stands until D6 is decided (SR-3).
-- `MORTGAGE_SCANNER=dev` passes everything except the EICAR test string. The production deployment refuses it; other deployments don't (SR-24).
+- `MORTGAGE_SCANNER=dev` passes everything except the EICAR test string. Production and Preview deployments refuse it (SR-24), since both read the production database (D8); it's for local development.
 
 A scanner that answers but can't scan a file (any reply but OK or FOUND) marks it `failed`: the file is deleted and the applicant sees "We couldn't check this file. Please upload it again." An infected file is deleted too, and the applicant sees "This file didn't pass our security check. Please upload a different copy."
 
@@ -215,7 +215,7 @@ select scan_status, count(*) as files, max(uploaded_at) as latest
 **Don't**
 
 - Don't set `scan_status` to `clean` by hand, or bring back an `infected` or `failed` file. A file marked clean without a scan can be attached, opened by staff and downloaded by banks.
-- Don't set `MORTGAGE_SCANNER=dev` on any deployment that uses the production database. Preview deployments do today.
+- Don't set `MORTGAGE_SCANNER=dev` on any deployment that uses the production database. Production and Preview refuse it, so their files would simply wait.
 - Don't choose a scanning service that shares uploads (never VirusTotal; D6).
 - Don't take documents by email or WhatsApp instead. Mortgage files live only in the private bucket, where every open is logged.
 
@@ -226,7 +226,8 @@ select scan_status, count(*) as files, max(uploaded_at) as latest
 **What you see**
 
 - An applicant, a team member or a bank says an email never came.
-- A CMS action says "The link was made, but the email didn't go. Send a new link to try again." or "The file is with the banks, but the email to {bank} didn't go. Send a reminder from the decision page."
+- A CMS action says "The link was made, but the email didn't go. Send a new link to try again." or "The file is with the banks, but the email to {bank} didn't go. Send a reminder from the decision page." (an error, or a warning when the file moved anyway).
+- A CMS action warns that an email "didn't reach every inbox", or that "this site isn't sending email" (a dry run or no key: §3's settings below).
 - Open errors shows "mortgage notification gave up after five attempts" (source `mortgage.notify`).
 
 **Why: there are two kinds of email**
@@ -245,11 +246,11 @@ select scan_status, count(*) as files, max(uploaded_at) as latest
 - a `notification.failed` event is written;
 - "mortgage notification gave up after five attempts" is reported, with the notification id, request id and kind.
 
-A send that died midway is taken back after 10 minutes, unless it was the fifth attempt; that row stays `sending` for good (SR-23).
+A send that died midway is taken back after 10 minutes. If it was the fifth attempt, the next run gives up instead (SR-23): the row turns `failed` with "the fifth attempt never finished", and the event and the report above follow.
 
 `skipped` is final. Reasons in `last_error` include "dry run — set EMAIL_DRY_RUN=false to send", "RESEND_API_KEY not set", "whatsapp isn't connected yet" (§4), "the promise is no longer running" (an alarm about a clock that has since paused or stopped, dropped on purpose), "the recipient has no email" and "consultation no longer booked".
 
-**Link emails.** The adviser sees at once when the send failed (the messages above), with two exceptions (SR-25). "Send a reminder" on C5 says "Reminder sent to {bank}." even when the email failed. And C2 reports a bank as failed only when every one of its inboxes failed. A `skipped` send (a dry run, no key) reads as success. Check the outbox.
+**Link emails.** The adviser is told at once how the send went (SR-25): a failure as an error, or as a warning when the action itself went through; a bank reached at only some of its inboxes as a warning; a `skipped` send (a dry run, no key) as a warning that the site isn't sending email. Only a send that reached everyone reads as a success. The outbox has each inbox's row.
 
 **Settings that stop every email on the site**, mortgage or not (`lib/email.ts`):
 
@@ -487,7 +488,7 @@ Someone outside the mortgage team (an admin, an engineer) gets a 404 at `/admin/
 
 **What break-glass is**
 
-Giving someone a mortgage role (`staff.mortgage_role`) for as long as the job takes, then removing it. There's no screen for roles: it's SQL, and today setting a role writes no audit row (SR-14). The statements below write one.
+Giving someone a mortgage role (`staff.mortgage_role`) for as long as the job takes, then removing it. There's no screen for roles: it's SQL. Every change to a role writes an audit row by itself (a trigger, `0152`, SR-14); the statements below name who ran them and why, in the same transaction, so the row says so.
 
 **When**
 
@@ -527,43 +528,36 @@ select user_id, display_name, role, status, mortgage_role
 > **Changes data.** Engineer only. In production only once the Head of mortgages has agreed.
 
 ```sql
--- CHANGES DATA. Break-glass grant, with its audit row.
-with granted as (
-  update public.staff
-     set mortgage_role = 'adviser'
-   where user_id = '<their user id>'
-     and status = 'active'
-     and mortgage_role is null
-  returning user_id, mortgage_role
-)
-insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
-select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'staff.mortgage_role_change', 'staff', g.user_id,
-       jsonb_build_object('mortgage_role', null),
-       jsonb_build_object('mortgage_role', g.mortgage_role, 'break_glass', true, 'reason', '<why>',
-                          'files', '<references>', 'until', '<date and time>', 'agreed_by', '<name>')
-  from granted g
-returning id, at;
+-- CHANGES DATA. Break-glass grant. The trigger writes the audit row, naming you and why.
+begin;
+select set_config('mortgage.audit_actor', '<your user id>', true),
+       set_config('mortgage.audit_note', 'break-glass · <why> · files <references> · until <date and time> · agreed by <name>', true);
+update public.staff
+   set mortgage_role = 'adviser'
+ where user_id = '<their user id>'
+   and status = 'active'
+   and mortgage_role is null
+returning user_id, mortgage_role;
+commit;
 ```
+
+`<your user id>` is your own `staff.user_id`: an id that isn't a user fails the update, and nothing changes. The two settings last only until `commit`.
 
 4. Remove it as soon as the job is done, the same day. If you granted `head`, put `'head'` in both places below.
 
 > **Changes data.** Engineer only.
 
 ```sql
--- CHANGES DATA. End a break-glass grant, with its audit row.
-with removed as (
-  update public.staff
-     set mortgage_role = null
-   where user_id = '<their user id>'
-     and mortgage_role = 'adviser'
-  returning user_id
-)
-insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
-select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'staff.mortgage_role_change', 'staff', r.user_id,
-       jsonb_build_object('mortgage_role', 'adviser'),
-       jsonb_build_object('mortgage_role', null, 'break_glass', true, 'reason', 'break-glass ended')
-  from removed r
-returning id, at;
+-- CHANGES DATA. End a break-glass grant. The trigger writes the audit row.
+begin;
+select set_config('mortgage.audit_actor', '<your user id>', true),
+       set_config('mortgage.audit_note', 'break-glass ended', true);
+update public.staff
+   set mortgage_role = null
+ where user_id = '<their user id>'
+   and mortgage_role = 'adviser'
+returning user_id;
+commit;
 ```
 
 5. Find files that became theirs meanwhile (round robin, or a claim). The Head reassigns each one with "Reassign" on the file's Owner card:
@@ -588,9 +582,20 @@ select r.reference, e.type, e.created_at
  order by e.created_at;
 ```
 
-An admin then confirms both `staff.mortgage_role_change` rows at `/admin/audit-log`.
+An admin then confirms both `staff.mortgage_role_change` rows at `/admin/audit-log`, or:
 
-Setting the team's own roles (§11) uses the same statements, without `break_glass`.
+```sql
+-- Read-only
+select at, actor_id, actor_kind, before, after
+  from public.audit_log
+ where action = 'staff.mortgage_role_change'
+   and target_id = '<their user id>'
+ order by at;
+```
+
+A row with `actor_kind` `system` and no `note` is a role changed without saying who: find out who.
+
+Setting the team's own roles (§11) uses the same statements, with a note that says so instead of "break-glass".
 
 **Don't**
 
@@ -601,96 +606,44 @@ Setting the team's own roles (§11) uses the same statements, without `break_gla
 
 ---
 
-## 7. Recording a consent withdrawal (SR-17)
+## 7. Recording a consent withdrawal (SR-17, SR-22)
 
 **What you see**
 
-An applicant asks, by email or phone, to withdraw their consent to share their documents with partner banks. Nothing in the CMS can record it yet.
+An applicant asks, by email or phone, to withdraw their consent to share their documents with partner banks.
 
-**Why**
+**Do**
 
-Every Fast Pre-Approval stores that consent in `mortgage_consents` (kind `partner_bank_sharing`, with the wording's version and text). A withdrawal is a time in `mortgage_consents.withdrawn_at`. There's no screen for it yet (SR-17: this runbook now, a CMS action later), so it's SQL. The owner or the Head takes the request, the Head agrees, and an engineer records it.
+The file's owner, or the Head of mortgages, opens the file (C2) and presses "Record a withdrawal" on the Consent card, then "Record withdrawal". It works on a decided file too, since the banks' links outlive the decision. It can't be undone: a new consent would be a new application.
 
-**What stops working** (checked in the SQL)
+**What happens** (`mortgage_withdraw_consent()`, `0152`)
 
-- Sending the file to banks. C2's "Accept application" is disabled, and `mortgage_transition()` (0147) refuses with "consent is not on file".
-- Pre-approving. `mortgage_pre_approve()` (0149) refuses with `no_consent`. C5's Confirm says "Consent isn't on file.", and its consent tile turns red: "Consent isn't on file · Nothing more can be shared with the banks."
-
-**What doesn't stop, today** (SR-22)
-
-- Links the banks already have keep working until they expire (`package_expires_at`: seven days after sending, or after the last reminder). The package page and its downloads don't check consent.
-- C5's "Send a reminder" isn't blocked, and it gives the bank a fresh link. Don't press it on this file.
-- C2's Consent card still shows the tick and "Given …".
+- `mortgage_consents.withdrawn_at` is set. The Consent card loses its tick and shows "Withdrawn {when}"; the Activity card says "{actor} recorded {firstName}'s withdrawal of consent", with how many bank links stopped.
+- Banks still deciding are withdrawn, and every package link on the file stops now, whatever the bank answered. A bank's page says "This package isn't available", and its downloads are refused.
+- C5's "Send a reminder" is refused ("The applicant withdrew their consent, so no new link can go to {bank}."). Sending to banks and pre-approving were already refused without consent: C2's "Accept application" is disabled, and C5's consent tile turns red.
 - Declining still works.
 - What a bank has already downloaded can't be recalled. The file's Activity shows which bank opened or downloaded what.
+
+**Then**
+
+Tell the Head. What happens to the file next is the Head's call. There's no end state for a withdrawn application yet (D20), and Decline, the only decision left, emails the applicant.
 
 **Check**
 
 ```sql
--- Read-only
-select c.id, c.kind, c.wording_version, c.given_at, c.withdrawn_at, r.reference, r.status
+-- Read-only. live_links is 0 once the withdrawal is recorded.
+select c.given_at, c.withdrawn_at, r.reference, r.status,
+       (select count(*) from public.mortgage_bank_submissions s
+         where s.request_id = r.id and s.package_expires_at > now()) as live_links
   from public.mortgage_consents c
   join public.mortgage_requests r on r.id = c.request_id
  where r.reference = 'BZM-26-0412';
 ```
 
-**Do**
-
-1. Record the withdrawal.
-
-> **Changes data.** Engineer only. In production only once the Head of mortgages has agreed.
-
-```sql
--- CHANGES DATA. Record a consent withdrawal, with its audit row.
-with withdrawn as (
-  update public.mortgage_consents
-     set withdrawn_at = now()
-   where request_id = (select id from public.mortgage_requests where reference = 'BZM-26-0412')
-     and withdrawn_at is null
-  returning id, withdrawn_at
-)
-insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
-select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'mortgage.consent.withdraw',
-       'mortgage_consent', w.id,
-       jsonb_build_object('withdrawn_at', null),
-       jsonb_build_object('withdrawn_at', w.withdrawn_at, 'reference', 'BZM-26-0412',
-                          'asked', '<when and how the applicant asked>', 'agreed_by', '<name>')
-  from withdrawn w
-returning target_id;
-```
-
-2. If the banks' access must stop now, expire the file's open package links. Each bank's page then says "This package link has expired" and its downloads are refused. The banks' recorded answers stay.
-
-> **Changes data.** Engineer only. In production only once the Head of mortgages has agreed.
-
-```sql
--- CHANGES DATA. Expire a file's open package links, with an audit row each.
-with expired as (
-  update public.mortgage_bank_submissions s
-     set package_expires_at = now()
-    from public.mortgage_bank_submissions old
-   where old.id = s.id
-     and s.request_id = (select id from public.mortgage_requests where reference = 'BZM-26-0412')
-     and s.status <> 'withdrawn'
-     and s.package_expires_at > now()
-  returning s.id, old.package_expires_at as was
-)
-insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
-select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'mortgage.bank_submission.expire',
-       'mortgage_bank_submission', x.id,
-       jsonb_build_object('package_expires_at', x.was),
-       jsonb_build_object('package_expires_at', now(), 'reference', 'BZM-26-0412',
-                          'reason', 'consent withdrawn', 'agreed_by', '<name>')
-  from expired x
-returning target_id;
-```
-
-3. Tell the owner and the Head that nothing more can go to banks from this file, and not to send reminders. What happens to the file next is the Head's call. There's no end state for a withdrawn application yet (D20), and Decline, the only decision left, emails the applicant.
-
 **Don't**
 
+- Don't set `withdrawn_at` in SQL. The package page and the reminder would still refuse (they read the consent), but the banks' submissions would stay "Awaiting reply" and nothing would reach the Activity card.
 - Don't delete the consent row or change `given_at`. The record of what was agreed, and when, stays.
-- Don't change a bank submission's `status` to stop its link: `status` holds the bank's answer. Expire the link as above.
 - Don't tell the applicant their documents have been taken back from the banks.
 
 ---
@@ -699,7 +652,7 @@ returning target_id;
 
 **Where**
 
-`/admin/mortgages/banks` ("Partner banks", linked from C1's header for the Head and for admins on the team). The whole team can read it. The Head of mortgages, or an admin who has a mortgage role, can change it; an admin without a role can't reach it (SR-13). The list starts empty in production (D3): no file can go to a bank until the Head adds some.
+`/admin/mortgages/banks` ("Partner banks", linked from C1's header for the Head and for admins on the team). The whole team can read it, and the Head of mortgages can change it. An admin can change it too, with or without a mortgage role, at `/admin/settings/partner-banks` (Site settings → Partner banks; SR-13): the same list and the same dialog. The list starts empty in production (D3): no file can go to a bank until the Head adds some.
 
 **Adding a bank, or changing its inboxes**
 
@@ -716,9 +669,10 @@ Package links last `link_expiry_days` (7) days from sending. After that the bank
 - The bank gets a fresh link for another seven days, and the old one stops working. The row then reads "Reminder sent {time}".
 - At most one per bank every ten minutes ("A reminder went to {bank} a few minutes ago.").
 - Only while the file is With banks and that bank hasn't answered.
-- "Reminder sent to {bank}." shows even if the email failed. If the bank still has nothing, check the outbox for kind `bank_reminder` (§3).
+- The answer says how the email went: "Reminder sent to {bank}." only when every inbox got it. If it failed, or reached only some inboxes, the old link has already stopped, so send another after the ten minutes. The outbox has kind `bank_reminder` (§3).
+- Refused once the applicant has withdrawn their consent (§7).
 
-"This package isn't available" means the link was withdrawn (the file was decided while that bank was still deciding) or is incomplete.
+"This package isn't available" means the link was withdrawn (the file was decided while that bank was still deciding), the applicant withdrew their consent (§7), or the link is incomplete.
 
 ```sql
 -- Read-only: a file's bank links
@@ -849,7 +803,7 @@ At the time of writing, migrations `0138`–`0151` are not in production (PROGRE
 
 **1. Before anything**
 
-- The blockers are settled: the scanner (D6, SR-3); Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); the security-review fixes approved in Phase 7 step 2; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7.
+- The blockers are settled: the scanner (D6, SR-3); Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7.
 - Bazar has said who is on the mortgage team, and who is Head (D16).
 
 **2. Apply the migrations, only with Ayush's go-ahead**

@@ -18,7 +18,10 @@
  *   · references stay unique and gap-free under concurrent submits, and a
  *     retried submit makes one request;
  *   · the clock columns follow sla.ts through start, pause, resume and stop;
- *   · who sees and does what (SPEC §7): admins without a mortgage role see nothing.
+ *   · who sees and does what (SPEC §7): admins without a mortgage role see nothing;
+ *     signed-in staff move a request only through the actions (0152, SR-10) and
+ *     log only opens and downloads of its own files (SR-11); every mortgage
+ *     role change is audited (SR-14).
  */
 
 import { randomUUID } from "node:crypto";
@@ -543,32 +546,61 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       }
     });
 
+    /** A clean file on one of a pre-approval's documents, as the staff file route would open. */
+    async function fileOn(requestId: string): Promise<string> {
+      const { data: doc } = await service.from("mortgage_documents").select("id, kind").eq("request_id", requestId).limit(1).single();
+      const id = randomUUID();
+      const { error } = await service.from("mortgage_files").insert({
+        id,
+        document_id: doc!.id,
+        kind: doc!.kind,
+        state: "active",
+        storage_key: `f/${id}`,
+        original_name: "passport.pdf",
+        mime: "application/pdf",
+        size_bytes: 1000,
+        scan_status: "clean",
+      });
+      if (error) throw new Error(error.message);
+      return id;
+    }
+
     it("lets advisers act on their own requests and the Head of mortgages on any", async () => {
       const row = await ownedBy(people.adviserA);
-      const other = await transition(row, "contact_logged", "staff", {}, people.adviserB.client);
-      expect(other.error?.code).toBe("MR403");
-      const own = await transition(row, "contact_logged", "staff", {}, people.adviserA.client);
-      expect(own.error).toBeNull();
-      const head = await transition(row, "consultation_booked", "staff", {}, people.head.client);
-      expect(head.error).toBeNull();
-      expect((head.data as Row).status).toBe("consultation_booked");
+      const contact = (who: Person) =>
+        who.client.rpc("mortgage_log_contact", { p_request_id: row.id, p_channel: "call", p_outcome: "no_answer" });
+      expect((await contact(people.adviserB)).error?.code).toBe("MR403");
+      expect((await contact(people.admin)).error?.code).toBe("MR403");
+      expect((await contact(people.adviserA)).error).toBeNull();
+      expect((await contact(people.head)).error).toBeNull();
+      const { data } = await service.from("mortgage_requests").select("status").eq("id", row.id).single();
+      expect(data!.status).toBe("contacted");
     });
 
-    it("keeps applicant and system events away from signed-in staff", async () => {
+    it("gives signed-in staff no direct way to move a request: only the actions do (SR-10)", async () => {
       const row = await ownedBy(people.adviserA, "pre_approval");
-      const system = await transition(row, "first_document_opened", "system", {}, people.adviserA.client);
-      expect(system.error?.code).toBe("MR403");
-      const applicant = await transition(row, "reupload_fulfilled", "applicant", {}, people.head.client);
-      expect(applicant.error?.code).toBe("MR403");
+      const calls = [
+        ["first_document_opened", "staff", people.adviserA],
+        ["first_document_opened", "system", people.adviserA],
+        ["reupload_fulfilled", "applicant", people.head],
+        ["declined", "staff", people.head],
+      ] as const;
+      for (const [event, actor, who] of calls) {
+        const { error } = await transition(row, event, actor, {}, who.client);
+        expect(error?.code, `${event} as ${actor}`).toBe("42501");
+      }
+      const { data } = await service.from("mortgage_requests").select("status").eq("id", row.id).single();
+      expect(data!.status).toBe("new");
     });
 
     it("records the signed-in caller and the database's time, whatever the call claims", async () => {
-      const row = await ownedBy(people.adviserA);
+      const row = await ownedBy(people.adviserA, "pre_approval");
+      const fileId = await fileOn(row.id);
       const before = Date.now();
       const { data: eventId, error } = await people.adviserA.client.rpc("mortgage_log_event", {
         p_request_id: row.id,
         p_type: "document.viewed",
-        p_data: { kind: "passport" },
+        p_data: { file_id: fileId, kind: "passport" },
         p_actor_kind: "staff",
         p_actor_id: people.head.id,
         p_at: "2020-01-01T00:00:00Z",
@@ -577,9 +609,69 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       const { data: logged } = await service.from("mortgage_events").select("actor_id, created_at").eq("id", eventId).single();
       expect(logged!.actor_id).toBe(people.adviserA.id);
       expect(new Date(logged!.created_at).getTime()).toBeGreaterThanOrEqual(before - 5_000);
+    });
 
-      const moved = await transition(row, "contact_logged", "staff", { at: new Date("2020-01-01T00:00:00Z") }, people.adviserA.client);
-      expect(new Date((moved.data as Row).first_contact_at!).getTime()).toBeGreaterThanOrEqual(before - 5_000);
+    it("lets signed-in staff log only an open or a download of that request's own file (SR-11)", async () => {
+      const row = await ownedBy(people.adviserA, "pre_approval");
+      const elsewhere = await ownedBy(people.adviserA, "pre_approval");
+      const mine = await fileOn(row.id);
+      const theirs = await fileOn(elsewhere.id);
+      const log = (type: string, data: Record<string, unknown>, who: Person = people.adviserA) =>
+        who.client.rpc("mortgage_log_event", { p_request_id: row.id, p_type: type, p_data: data, p_actor_kind: "staff" });
+
+      expect((await log("document.downloaded", { file_id: mine, kind: "passport" })).error).toBeNull();
+      for (const [type, data] of [
+        ["decision.pre_approved", { file_id: mine }],
+        ["consent.withdrawn", { file_id: mine }],
+        ["document.viewed", { file_id: theirs }],
+        ["document.viewed", {}],
+        ["document.viewed", { file_id: "not-a-uuid" }],
+      ] as const) {
+        expect((await log(type, data)).error?.code, `${type} ${JSON.stringify(data)}`).toBe("MR403");
+      }
+      // Staff only, and never as anyone else.
+      expect((await log("document.viewed", { file_id: mine }, people.admin)).error?.code).toBe("MR403");
+      const asApplicant = await people.adviserA.client.rpc("mortgage_log_event", {
+        p_request_id: row.id,
+        p_type: "document.viewed",
+        p_data: { file_id: mine },
+        p_actor_kind: "applicant",
+      });
+      expect(asApplicant.error?.code).toBe("MR403");
+    });
+
+    it("audits every change to a mortgage role, naming who and why when the SQL says (SR-14)", async () => {
+      const someone = await person("support", null);
+      const audit = async () => {
+        const { data } = await service
+          .from("audit_log")
+          .select("actor_id, actor_kind, before, after")
+          .eq("action", "staff.mortgage_role_change")
+          .eq("target_id", someone.id)
+          .order("at");
+        return (data ?? []) as { actor_id: string | null; actor_kind: string; before: Record<string, unknown>; after: Record<string, unknown> }[];
+      };
+      expect(await audit()).toEqual([]);
+
+      // Break-glass, as the runbook does it: who and why, in the same transaction.
+      psql(
+        `select set_config('mortgage.audit_actor', '${people.head.id}', true), set_config('mortgage.audit_note', 'Cover for leave · agreed by the Head', true);` +
+          ` update public.staff set mortgage_role = 'adviser' where user_id = '${someone.id}';`,
+      );
+      // Without them it's still recorded, as the system's.
+      await service.from("staff").update({ mortgage_role: null }).eq("user_id", someone.id);
+      // An edit that leaves the role alone isn't a role change.
+      await service.from("staff").update({ display_name: "Renamed Test" }).eq("user_id", someone.id);
+
+      expect(await audit()).toEqual([
+        {
+          actor_id: people.head.id,
+          actor_kind: "user",
+          before: { mortgage_role: null },
+          after: { mortgage_role: "adviser", via: "sql", note: "Cover for leave · agreed by the Head" },
+        },
+        { actor_id: null, actor_kind: "system", before: { mortgage_role: "adviser" }, after: { via: "sql" } },
+      ]);
     });
 
     it("gives signed-in staff no direct writes and no way to create requests", async () => {

@@ -18,9 +18,11 @@ export function mortgageDeps(): DraftDeps {
 
 /**
  * Which scanner runs (decision D6). A configured ClamAV daemon wins. The dev
- * scanner runs locally by default, and on preview or staging deployments
- * when MORTGAGE_SCANNER=dev asks for it — never on the production deployment,
- * where no scanner means files wait, unopenable (fail closed).
+ * scanner runs only off Vercel — locally, or in CI's `next start` when
+ * MORTGAGE_SCANNER=dev asks — and never on a Vercel deployment, Production or
+ * Preview: Preview reads the production database (D8), where a file it passed
+ * would open for staff unscanned (SECURITY-REVIEW SR-24). With no scanner,
+ * files wait, unopenable (fail closed).
  */
 export function scannerFromEnv(
   e: Pick<typeof env, "MORTGAGE_SCANNER" | "MORTGAGE_CLAMD_HOST" | "MORTGAGE_CLAMD_PORT" | "NODE_ENV" | "VERCEL_ENV"> = env,
@@ -28,7 +30,7 @@ export function scannerFromEnv(
   if (e.MORTGAGE_SCANNER === "clamd" && e.MORTGAGE_CLAMD_HOST) {
     return clamdScanner({ host: e.MORTGAGE_CLAMD_HOST, port: Number(e.MORTGAGE_CLAMD_PORT ?? "3310") });
   }
-  if (e.VERCEL_ENV === "production") return null;
+  if (e.VERCEL_ENV === "production" || e.VERCEL_ENV === "preview") return null;
   if (e.MORTGAGE_SCANNER === "dev" || e.NODE_ENV !== "production") return devScanner;
   return null;
 }

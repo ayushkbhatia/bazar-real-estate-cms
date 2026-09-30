@@ -24,9 +24,15 @@ describe("which scanner runs (decision D6)", () => {
     expect(scannerFromEnv({ ...base })).toBeNull();
   });
 
-  it("allows the dev scanner locally, and on preview or staging when asked for", () => {
+  it("allows the dev scanner locally, and off Vercel when asked for", () => {
     expect(scannerFromEnv({ ...base, NODE_ENV: "development" })?.name).toBe("dev");
-    expect(scannerFromEnv({ ...base, VERCEL_ENV: "preview", MORTGAGE_SCANNER: "dev" })?.name).toBe("dev");
+    expect(scannerFromEnv({ ...base, MORTGAGE_SCANNER: "dev" })?.name).toBe("dev");
+  });
+
+  it("refuses it on a Preview deployment, which reads the production database (SR-24)", () => {
+    expect(scannerFromEnv({ ...base, VERCEL_ENV: "preview", MORTGAGE_SCANNER: "dev" })).toBeNull();
     expect(scannerFromEnv({ ...base, VERCEL_ENV: "preview" })).toBeNull();
+    // A configured daemon still runs there.
+    expect(scannerFromEnv({ ...base, VERCEL_ENV: "preview", MORTGAGE_SCANNER: "clamd", MORTGAGE_CLAMD_HOST: "clamav.internal" })?.name).toBe("clamd");
   });
 });

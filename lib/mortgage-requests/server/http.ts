@@ -38,6 +38,12 @@ export async function handle(source: string, run: () => Promise<Response>): Prom
 }
 
 export async function readJson<T>(req: Request, schema: z.ZodType<T>): Promise<T> {
+  // Only a real JSON request: a cross-site form can post text/plain, never
+  // application/json without a preflight (SECURITY-REVIEW SR-16).
+  const type = req.headers.get("content-type") ?? "";
+  if (!/^application\/json\b/i.test(type.trim())) {
+    throw new MortgageApiError(415, "invalid", "body must be application/json");
+  }
   let body: unknown;
   try {
     body = await req.json();

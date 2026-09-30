@@ -21,6 +21,7 @@ import {
 import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
 import { loadMortgageSettings } from "@/lib/mortgage-requests/server/settings";
 import { hashToken } from "@/lib/mortgage-requests/server/tokens";
+import { sendOutcome, type SendStatus } from "@/lib/mortgage-requests/sends";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -109,6 +110,8 @@ const sendInput = targetSchema.extend({
  * accepted, consent on file and at least one bank), then each bank's email.
  * The emails carry the links, so they go from here and are recorded, never
  * queued; a failed one is fixed with a reminder, which sends a fresh link.
+ * A bank counts as reached only when every one of its inboxes was, and a
+ * skipped send (email switched off) is said as such (SECURITY-REVIEW SR-25).
  */
 export async function acceptApplicationAndSend(input: z.input<typeof sendInput>): Promise<MortgageActionResult> {
   const parsed = sendInput.safeParse(input);
@@ -146,7 +149,7 @@ export async function acceptApplicationAndSend(input: z.input<typeof sendInput>)
     .select("id, bank_id")
     .eq("request_id", b.requestId);
   const submissionOf = new Map(((subs ?? []) as { id: string; bank_id: string }[]).map((x) => [x.bank_id, x.id]));
-  const failed: string[] = [];
+  const missed: Record<"failed" | "partial" | "skipped", string[]> = { failed: [], partial: [], skipped: [] };
   for (const link of links) {
     const bank = banks.find((x) => x.id === link.bankId)!;
     const email = await mortgageBankPackageEmail({
@@ -157,31 +160,43 @@ export async function acceptApplicationAndSend(input: z.input<typeof sendInput>)
       expiresAt: link.expiresAt,
       documentCount: kinds.length,
     });
-    let delivered = false;
+    const statuses: SendStatus[] = [];
     for (const [i, to] of bank.package_emails.entries()) {
-      const status = await sendLinkEmail(admin, {
-        requestId: b.requestId,
-        kind: "bank_package",
-        dedupe: `${submissionOf.get(bank.id) ?? bank.id}:${i}`,
-        to,
-        replyTo: s.user.email,
-        email,
-        whatsapp: false,
-        source: "mortgage.cms.send",
-      });
-      delivered ||= status !== "failed";
+      statuses.push(
+        await sendLinkEmail(admin, {
+          requestId: b.requestId,
+          kind: "bank_package",
+          dedupe: `${submissionOf.get(bank.id) ?? bank.id}:${i}`,
+          to,
+          replyTo: s.user.email,
+          email,
+          whatsapp: false,
+          source: "mortgage.cms.send",
+        }),
+      );
     }
-    if (!delivered) failed.push(bankLabel(bank));
+    const outcome = sendOutcome(statuses);
+    if (outcome !== "sent") missed[outcome].push(bankLabel(bank));
   }
 
   refreshMortgagePaths(b.reference);
-  if (failed.length) return { ok: true, message: t("c2.send.emailFailed", { bank: listJoin(failed) }) };
+  const warnings = [
+    missed.failed.length ? t("c2.send.emailFailed", { bank: listJoin(missed.failed) }) : null,
+    missed.partial.length ? t("c2.send.emailPartial", { bank: listJoin(missed.partial) }) : null,
+    missed.skipped.length ? t("c2.send.emailSkipped", { bank: listJoin(missed.skipped) }) : null,
+  ].filter((w): w is string => w !== null);
+  if (warnings.length) return { ok: true, warning: true, message: warnings.join(" ") };
   return { ok: true, message: t("c2.send.done", { banks: listJoin(banks.map(bankLabel)) }) };
 }
 
 const submissionTarget = targetSchema.extend({ submissionId: z.string().uuid() });
 
-/** "Send a reminder" (C5): a fresh package link, the old one never having been stored. */
+/**
+ * "Send a reminder" (C5): a fresh package link, the old one never having been
+ * stored — so the old link stops, and the answer says whether the new one
+ * reached the bank (SECURITY-REVIEW SR-25). Refused once the applicant has
+ * withdrawn their consent (SR-22).
+ */
 export async function sendBankReminder(input: z.input<typeof submissionTarget>): Promise<MortgageActionResult> {
   const parsed = submissionTarget.safeParse(input);
   if (!parsed.success) return INVALID;
@@ -212,6 +227,9 @@ export async function sendBankReminder(input: z.input<typeof submissionTarget>):
     if (error.code === "MR409" && error.message.includes("reminded_recently")) {
       return { ok: false, code: "conflict", message: t("c5.reminder.recent", { bank: bankLabel(bank) }) };
     }
+    if (error.code === "MR422" && error.message.includes("no_consent")) {
+      return { ok: false, code: "invalid", message: t("c5.reminder.noConsent", { bank: bankLabel(bank) }) };
+    }
     return refused(error, "mortgage.cms.reminder");
   }
 
@@ -224,20 +242,63 @@ export async function sendBankReminder(input: z.input<typeof submissionTarget>):
     sentAt: submission.sent_at,
   });
   const stamp = new Date().toISOString();
+  const statuses: SendStatus[] = [];
   for (const [i, to] of bank.package_emails.entries()) {
-    await sendLinkEmail(admin, {
-      requestId: b.requestId,
-      kind: "bank_reminder",
-      dedupe: `${submission.id}:${stamp}:${i}`,
-      to,
-      replyTo: s.user.email,
-      email,
-      whatsapp: false,
-      source: "mortgage.cms.reminder",
-    });
+    statuses.push(
+      await sendLinkEmail(admin, {
+        requestId: b.requestId,
+        kind: "bank_reminder",
+        dedupe: `${submission.id}:${stamp}:${i}`,
+        to,
+        replyTo: s.user.email,
+        email,
+        whatsapp: false,
+        source: "mortgage.cms.reminder",
+      }),
+    );
   }
   refreshMortgagePaths(b.reference);
-  return { ok: true, message: t("c5.reminder.sent", { bank: bankLabel(bank) }) };
+  const label = bankLabel(bank);
+  switch (sendOutcome(statuses)) {
+    case "sent":
+      return { ok: true, message: t("c5.reminder.sent", { bank: label }) };
+    case "partial":
+      return { ok: true, warning: true, message: t("c5.reminder.partial", { bank: label }) };
+    case "skipped":
+      return { ok: true, warning: true, message: t("c5.reminder.emailSkipped", { bank: label }) };
+    case "failed":
+      return { ok: false, code: "failed", message: t("c5.reminder.emailFailed", { bank: label }) };
+  }
+}
+
+const withdrawInput = targetSchema.extend({ firstName: z.string().max(80) });
+
+/**
+ * "Record a withdrawal" (C2's Consent card; not designed — SECURITY-REVIEW
+ * SR-17): the applicant asked Bazar to stop sharing their documents with
+ * partner banks. The database records it (the owner or the Head), withdraws
+ * the banks still deciding and stops every package link on the file; the
+ * reminder, the package page and its downloads check consent from then on
+ * (SR-22). It can't be undone here.
+ */
+export async function withdrawConsent(input: z.input<typeof withdrawInput>): Promise<MortgageActionResult> {
+  const parsed = withdrawInput.safeParse(input);
+  if (!parsed.success) return INVALID;
+  const s = await teamSession();
+  if (!s) return NOT_ALLOWED;
+  const b = parsed.data;
+  const { error } = await s.supabase.rpc("mortgage_withdraw_consent", {
+    p_request_id: b.requestId,
+    p_expected_updated_at: b.updatedAt,
+  });
+  if (error) {
+    if (error.code === "MR409" && error.message.includes("no consent")) {
+      return { ok: false, code: "conflict", message: t("c2.consent.withdraw.none") };
+    }
+    return refused(error, "mortgage.cms.consent");
+  }
+  refreshMortgagePaths(b.reference);
+  return { ok: true, message: t("c2.consent.withdraw.done", { firstName: b.firstName }) };
 }
 
 const responseInput = submissionTarget.extend({

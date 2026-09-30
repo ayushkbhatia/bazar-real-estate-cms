@@ -191,7 +191,10 @@ test("Priya: In review → With banks → Pre-approved, with the lead bank's let
     if (!(await box.isDisabled())) await box.setChecked(seeded.test(name));
   }
   await send.getByRole("button", { name: "Send to 3 banks" }).click();
-  await expect(page.getByText("Sent to FAB, ADCB and Mashreq.")).toBeVisible();
+  // The local stack sends no email (EMAIL_DRY_RUN): the answer says so rather than "Sent" (SR-25).
+  await expect(
+    page.getByText("The file is with the banks, but this site isn't sending email, so nothing went to FAB, ADCB and Mashreq."),
+  ).toBeVisible();
   await expect(page.getByText("Package sent to FAB, ADCB and Mashreq").first()).toBeVisible();
 
   // C5: every bank waiting; two answer with offers and letters.
@@ -245,6 +248,20 @@ test("Priya: In review → With banks → Pre-approved, with the lead bank's let
     sql(`select s.status from public.mortgage_bank_submissions s join public.mortgage_requests r on r.id = s.request_id
           join public.mortgage_partner_banks b on b.id = s.bank_id where r.reference = '${reference}' and b.code = 'MSQ'`),
   ).toBe("withdrawn");
+
+  // Later, Priya withdraws her consent (SR-17): recorded from C2's Consent card, and every bank's link stops (SR-22).
+  await page.goto(`/admin/mortgages/${reference}`);
+  const consent = page.getByTestId("consent-card");
+  await consent.getByRole("button", { name: "Record a withdrawal" }).click();
+  await page.getByRole("dialog", { name: "Record a withdrawal of consent?" }).getByRole("button", { name: "Record withdrawal" }).click();
+  await expect(page.getByText("Priya's withdrawal is recorded. The banks' links have stopped.")).toBeVisible();
+  await expect(consent.getByText(/^Withdrawn /)).toBeVisible();
+  await expect(consent.getByRole("button", { name: "Record a withdrawal" })).toHaveCount(0);
+  await expect(page.getByText("Yasmin recorded Priya's withdrawal of consent").first()).toBeVisible();
+  expect(
+    sql(`select count(*) from public.mortgage_bank_submissions s join public.mortgage_requests r on r.id = s.request_id
+          where r.reference = '${reference}' and s.package_expires_at > now()`),
+  ).toBe("0");
 
   // C5 is read-only now, and C1 files the request under Closed.
   await page.goto(`/admin/mortgages/${reference}/decision`);

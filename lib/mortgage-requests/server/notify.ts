@@ -93,6 +93,7 @@ export async function deliverNotifications(
   opts: { requestId?: string; limit?: number } = {},
 ): Promise<DeliveryReport> {
   const now = deps.now?.() ?? new Date();
+  await giveUpStuckFinalAttempts(deps, now, opts.requestId);
   const { data, error } = await deps.db.rpc("mortgage_claim_notifications", {
     p_limit: opts.limit ?? 20,
     p_request_id: opts.requestId ?? null,
@@ -112,6 +113,45 @@ export async function deliverNotifications(
     report[outcome.status] += 1;
   }
   return report;
+}
+
+/**
+ * A row claimed for its fifth attempt whose sender died mid-send stays in
+ * `sending`: the claim takes a stale `sending` row back only while it has
+ * attempts left. Ten minutes on (the claim's own staleness window), it has
+ * failed for good: recorded, logged and reported like any fifth failure
+ * (SECURITY-REVIEW SR-23).
+ */
+async function giveUpStuckFinalAttempts(deps: NotifyDeps, now: Date, requestId?: string): Promise<void> {
+  let stuck = deps.db
+    .from("mortgage_notifications")
+    .update({ status: "failed", last_error: "the fifth attempt never finished" })
+    .eq("status", "sending")
+    .gte("attempts", MAX_ATTEMPTS)
+    .lt("claimed_at", new Date(now.getTime() - 10 * 60_000).toISOString());
+  if (requestId) stuck = stuck.eq("request_id", requestId);
+  const { data, error } = await stuck.select("id, request_id, kind, channel");
+  if (error) {
+    await reportError(error, { source: "mortgage.notify.stuck" });
+    return;
+  }
+  const rows = (data ?? []) as { id: string; request_id: string; kind: string; channel: string }[];
+  if (!rows.length) return;
+  await deps.db.from("mortgage_events").insert(
+    rows.map((row) => ({
+      request_id: row.request_id,
+      actor_kind: "system",
+      type: "notification.failed",
+      data: { kind: row.kind, channel: row.channel },
+      created_at: now.toISOString(),
+    })),
+  );
+  for (const row of rows) {
+    await reportError(new Error("mortgage notification gave up after five attempts"), {
+      source: "mortgage.notify",
+      context: { notificationId: row.id, requestId: row.request_id, kind: row.kind },
+    });
+  }
 }
 
 async function deliver(deps: NotifyDeps, row: Claimed): Promise<Outcome> {

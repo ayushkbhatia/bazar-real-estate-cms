@@ -17,7 +17,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * downloaded through a logged route. Opening the page is itself written to
  * the activity log, as the bank, before anything about the applicant is
  * rendered; a withdrawn, expired or unknown link shows nothing of them.
- * The token is the URL, so the page sends no referrer and stays out of search.
+ * The token is the URL, so the page sends no referrer and stays out of search,
+ * and it shows an applicant's details, so PostHog's autocapture never records a
+ * click on it (`ph-no-capture`, SECURITY-REVIEW SR-7).
  */
 
 // Every open is logged, so it renders every time; the (mortgage) layout says so too.
@@ -40,7 +42,7 @@ export default async function PackagePage({ params }: { params: Promise<{ locale
   if (!db || !found || state !== "open") {
     const key = state === "expired" ? "expired" : "unavailable";
     return (
-      <main className="flex-1 px-4 pt-[30px] pb-16 md:px-6 lg:px-12">
+      <main className="ph-no-capture flex-1 px-4 pt-[30px] pb-16 md:px-6 lg:px-12">
         <div className="mx-auto max-w-[760px]">
           <h1 className="serif text-[40px] leading-[1.05] tracking-[-0.02em]">{t(`pkg.state.${key}.title`)}</h1>
           <p className="mt-4 text-[16px] leading-[1.6] text-bz-ink-2">{t(`pkg.state.${key}.body`)}</p>
@@ -72,7 +74,7 @@ export default async function PackagePage({ params }: { params: Promise<{ locale
   ];
 
   return (
-    <main className="flex-1 px-4 pt-[30px] pb-16 md:px-6 lg:px-12">
+    <main className="ph-no-capture flex-1 px-4 pt-[30px] pb-16 md:px-6 lg:px-12">
       <div className="mx-auto max-w-[760px]">
         <div className="eyebrow">{t("pkg.eyebrow", { reference: view.reference })}</div>
         <h1 className="serif mt-3 text-[40px] leading-[1.05] tracking-[-0.02em] md:text-[48px]">{t("pkg.title")}</h1>

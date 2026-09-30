@@ -249,6 +249,16 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       };
     case "link.locked":
       return { ...base, text: t("activity.linkLocked"), tone: "danger" };
+    case "consent.withdrawn": {
+      // Recorded from C2 (SR-17); the banks' links stopped with it (SR-22).
+      const stopped = typeof e.data.links_stopped === "number" ? e.data.links_stopped : 0;
+      return {
+        ...base,
+        text: t("activity.consentWithdrawn.title", { actor, firstName: firstNameOf(ctx.applicantName) }),
+        sub: stopped > 0 ? t("activity.consentWithdrawn.sub", { count: stopped }) : undefined,
+        tone: "danger",
+      };
+    }
     case "files.purged":
       return typeof e.data.files === "number" ? { ...base, text: t("activity.filesPurged", { count: e.data.files }) } : null;
     case "dsr.exported":

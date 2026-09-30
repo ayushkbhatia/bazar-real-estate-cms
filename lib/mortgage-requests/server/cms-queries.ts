@@ -390,6 +390,8 @@ export type RequestFile = {
     wordingVersion: string;
     pendingCompliance: boolean;
     withdrawn: boolean;
+    /** "Withdrawn 30 Sep, 14:05", once recorded (SR-17). */
+    withdrawnLine: string | null;
   } | null;
   activity: ActivityLine[];
   consultation: ConsultationView | null;
@@ -406,7 +408,11 @@ export type RequestFile = {
   } | null;
   team: TeamMember[];
   me: { id: string; role: TeamRole };
-  can: { act: boolean; reassign: boolean; claim: boolean };
+  /**
+   * `withdrawConsent` isn't `act`: an applicant can withdraw after a decision
+   * too, and the banks' links are still live then (SR-17, SR-22).
+   */
+  can: { act: boolean; reassign: boolean; claim: boolean; withdrawConsent: boolean };
 };
 
 type RequestDbRow = SlaFields & {
@@ -606,6 +612,7 @@ export async function getRequestFile(
           wordingVersion: c.wording_version,
           pendingCompliance: !isConsentVersion(c.wording_version) || PENDING_COMPLIANCE.has(c.wording_version),
           withdrawn: !!c.withdrawn_at,
+          withdrawnLine: c.withdrawn_at ? t("c2.consent.withdrawn", { when: formatDayTime(c.withdrawn_at) }) : null,
         };
       })()
     : null;
@@ -686,6 +693,7 @@ export async function getRequestFile(
       act: !closed && (role === "head" || isOwner),
       reassign: role === "head" && !closed,
       claim: !closed && r.owner_staff_id === null,
+      withdrawConsent: role === "head" || isOwner,
     },
   };
 }
