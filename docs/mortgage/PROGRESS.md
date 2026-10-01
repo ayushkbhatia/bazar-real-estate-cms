@@ -528,6 +528,8 @@ Phase 4" in DECISIONS.md, every string of them in `PENDING_CMS_COPY`.
 - The audit target for settings is the nil UUID: `audit_log.target_id` is a
   uuid. The site-settings audits' `"1"` fails the same way today, silently —
   a follow-up task is filed.
+  *(Resolved 1 Oct 2026 by `0153`: `target_id` is text, the settings audit
+  names row `"1"` and a holiday audit names its day.)*
 
 **Open**
 - **Not applied to production:** `0138`–`0144`. Apply them at the batch merge;

@@ -318,13 +318,6 @@ export async function sendPreapprovalInvite(input: Target): Promise<MortgageActi
 
 // ── Settings (the Head of mortgages) ─────────────────────────────
 
-/**
- * `audit_log.target_id` is a uuid, and the settings row and the holidays have
- * none: the nil UUID stands for "the module's settings", with what changed in
- * `after`. (A non-uuid id fails the insert, which logAudit swallows.)
- */
-const SINGLETON = "00000000-0000-0000-0000-000000000000";
-
 const settingsInput = z.object({
   flag: z.enum(["off", "staff", "public"]),
   assignmentMode: z.enum(["round_robin", "claim"]),
@@ -348,7 +341,8 @@ export async function updateMortgageSettings(input: z.input<typeof settingsInput
   await logAudit({
     action: "mortgage.settings.update",
     target_kind: "mortgage_settings",
-    target_id: SINGLETON,
+    // The singleton row's own id (`mortgage_settings.id`, always 1).
+    target_id: "1",
     before: { flag: before.flag, assignment_mode: before.assignment_mode, ltv_national_pct: before.ltv_national_pct, ltv_expat_pct: before.ltv_expat_pct },
     after: { flag: parsed.data.flag, assignment_mode: parsed.data.assignmentMode, ltv_national_pct: parsed.data.ltvNational, ltv_expat_pct: parsed.data.ltvExpat },
   });
@@ -383,7 +377,8 @@ export async function setMortgageHoliday(input: z.input<typeof holidayInput>): P
   await logAudit({
     action: parsed.data.remove ? "mortgage.holiday.remove" : "mortgage.holiday.set",
     target_kind: "mortgage_holidays",
-    target_id: SINGLETON,
+    // A holiday's key is its day.
+    target_id: parsed.data.day,
     after: { day: parsed.data.day, ...(parsed.data.remove ? {} : { name: parsed.data.name }) },
   });
   revalidatePath("/admin/mortgages", "layout");

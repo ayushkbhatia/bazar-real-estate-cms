@@ -116,7 +116,7 @@ export async function inviteStaff(
   await logAudit({
     action: "staff.invite",
     target_kind: "staff_invitation",
-    target_id: insertResult?.id ?? "",
+    target_id: insertResult?.id ?? null,
     before: null,
     after: {
       email: parsed.data.email,
