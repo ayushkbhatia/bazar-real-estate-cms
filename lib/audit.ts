@@ -6,19 +6,25 @@ import { isSupabaseConfigured } from "@/lib/env";
 export type AuditEntry = {
   action: string;
   target_kind: string;
-  target_id: string;
+  /**
+   * What the action touched: a row's uuid, or the key a singleton, form, code,
+   * slug or data subject is known by ("1", "rail", a form key, an email). The
+   * column is text since 0153; while it was a uuid, every non-uuid id here
+   * failed the insert and the row was lost. Null when there is no one target.
+   */
+  target_id: string | null;
   before?: Record<string, unknown> | null;
   after?: Record<string, unknown> | null;
 };
 
 /**
- * Append a row to `audit_log`. Best-effort: failures are reported to
- * Sentry and swallowed so a failed audit write never blocks the
- * user-visible operation.
+ * Append a row to `audit_log`. Best-effort: failures are reported and
+ * swallowed so a failed audit write never blocks the user-visible operation.
  *
  * The audit log is our PDPL/AML compliance evidence — silent drops are
- * unacceptable, so we route insert failures through Sentry with a
- * dedicated tag for filtering and alerting.
+ * unacceptable, so insert failures go through `reportError` with source
+ * "audit": stored in `error_events` (/admin/settings/health) and forwarded
+ * to Sentry when a DSN is set.
  */
 export async function logAudit(entry: AuditEntry): Promise<void> {
   if (!isSupabaseConfigured) return;

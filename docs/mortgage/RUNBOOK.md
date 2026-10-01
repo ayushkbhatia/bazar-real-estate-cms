@@ -933,7 +933,7 @@ with changed as (
 )
 insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
 select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'mortgage.settings.retention',
-       'mortgage_settings', '00000000-0000-0000-0000-000000000000',
+       'mortgage_settings', '1',
        jsonb_build_object('retention_months', c.was),
        jsonb_build_object('retention_months', c.now_months, 'decided_by', '<compliance decision>', 'agreed_by', '<name>')
   from changed c
