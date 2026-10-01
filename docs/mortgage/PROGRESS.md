@@ -1041,3 +1041,43 @@ differs from `db/types.ts` only by formatting and the known `meta_*` drift.
 - The new copy (consent withdrawal, the send warnings) is pending in
   `cms-strings.ts` until Bazar reads it.
 
+## Sample data in production for the client's walkthrough · 1 Oct 2026
+
+Ayush: "populate some seed / sample mortgage requests in the tab so that the
+client (Omar) can see through the backend / admin panel flow end to end".
+Before that, the module was invisible to him: nobody had a mortgage role, and
+an admin without one gets no menu item and a 404 (D10). Ayush and "Omar Hasan
+- Personal" were made Head first (audited; RUNBOOK §6).
+
+**Built**
+- **A demo mode of the local seed** (`MORTGAGE_SEED_MODE=demo`,
+  `scripts/db-local/seed-mortgage.ts`): the designs' eleven requests as sample
+  data for a deployed stack. No logins (the files belong to existing team
+  members); references `BZM-26-9xxx`, beyond the counter, which isn't touched;
+  applicants at `@example.com`; the team's "new request" alerts marked
+  skipped and every clock counted as already alerted, so nothing is emailed;
+  random bearer tokens, the bank package links written to a manifest. Local
+  mode is unchanged apart from banks being looked up by code.
+- **`scripts/mortgage-demo/`:** `upload-files.ts` (placeholders for the
+  sample's files only, never overwriting) and `clear.ts` (erases every sample
+  through the DSR erasure functions, objects first, then the sample banks),
+  with a README.
+
+**Verified**
+- Locally: a reset with the changed seed (109 DB tests pass); the demo seed
+  on top (11 samples, 60 files, all 32 queued alerts skipped,
+  `mortgage_flag_sla` raising nothing for a sample but still for a normal
+  request); C1, a sample's C3 viewer and a bank package page in the browser;
+  then the clear script (requests, files and objects gone, the local seed
+  untouched).
+- **Production, 1 Oct:** 11 samples (3 New, 3 In review, 1 Awaiting
+  applicant, 2 With banks, 1 Contacted, 1 Consultation booked), all 44
+  queued alerts skipped, every clock pre-alerted, 60 files with their objects,
+  FAB/ADCB/Mashreq with `@example.com` inboxes; the flag still `off` and the
+  counter untouched. A bank package link renders on the live site.
+
+**Open**
+- Erase the sample before the flag goes public (RUNBOOK §11).
+- What the team does to a sample is real: decisions, re-upload requests,
+  invites, sends and reminders email `@example.com` addresses, which bounce.
+
