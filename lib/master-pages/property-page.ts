@@ -336,8 +336,10 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
         {
           q: `Is ${REFERENCE} mortgageable?`,
           q_ar: `هل يمكن شراء العقار ${REFERENCE} بتمويل عقاري؟`,
-          a: "Most Abu Dhabi banks lend on freehold residential property at up to 80% LTV for residents (60% for non-residents). Bazar's mortgage desk can run a pre-approval before viewings so you know your envelope.",
-          a_ar: "تقدّم معظم البنوك في أبوظبي تمويلاً عقارياً للعقارات السكنية بنظام التملك الحر بنسبة تصل إلى 80% من قيمة العقار للمقيمين (و60% لغير المقيمين). ويمكن لمكتب التمويل العقاري لدى بازار استخراج موافقة مبدئية قبل المعاينات لتعرف ميزانيتك مسبقاً.",
+          // The Central Bank's caps on a first home, as the mortgage application
+          // and the calculator use them (docs/mortgage DECISIONS D23).
+          a: "On a first home under AED 5 million, Abu Dhabi banks lend on freehold residential property at up to 85% of its value for UAE nationals and 80% for residents; most lend non-residents up to 50%. Bazar's mortgage desk can run a pre-approval before viewings so you know your envelope.",
+          a_ar: "عند شراء المسكن الأول بقيمة تقل عن 5 ملايين درهم، تقدّم البنوك في أبوظبي تمويلاً عقارياً للعقارات السكنية بنظام التملك الحر بنسبة تصل إلى 85% من قيمة العقار للمواطنين الإماراتيين و80% للمقيمين، فيما تموّل معظمها غير المقيمين بنسبة تصل إلى 50%. ويمكن لمكتب التمويل العقاري لدى بازار استخراج موافقة مبدئية قبل المعاينات لتعرف ميزانيتك مسبقاً.",
         },
       ],
     },

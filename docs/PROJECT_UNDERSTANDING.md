@@ -76,7 +76,7 @@ The full ERD is in [handoff docs/06-data-model.md](/Users/ayushkbhatia/Downloads
 - **Identity:** `auth.users` (Supabase) + `accounts` (marketplace users) + `staff` (internal employees, incl. agents with BRN licenses).
 - **Catalogue:** `areas` (tree: emirate → area → sub-community → building), `developers`, `developments` (off-plan), `properties` (THE central entity — reference like `BAZ-AD-04891`, lifecycle `draft → in_review → published → off_market → archived`), `media_assets` + `property_media` (typed roles: hero, gallery, floor_plan, brochure, video, virtual_tour).
 - **Engagement:** `saved_properties`, `saved_searches`, `enquiries`, `conversations`, `messages`, `viewings`, `offers`, `deals`, `documents` (KYC docs).
-- **Tools:** `valuation_requests`, `mortgage_inquiries`, `comparisons`, `concierge_sessions`.
+- **Tools:** `valuation_requests`, `comparisons`, `concierge_sessions`. (The unused `mortgage_inquiries` went in 0154; mortgage requests live in the mortgage module, `mortgage_*`.)
 - **Content:** `articles`, `pages` (block-based), `reviews`, `floor_plans`.
 - **Operational:** `audit_log` (append-only), `notifications`, `integrations`, `webhooks`, `api_keys`.
 

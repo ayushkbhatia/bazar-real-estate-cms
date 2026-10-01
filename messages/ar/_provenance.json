@@ -1161,6 +1161,12 @@
     "sourceHash": "55bb6056fae5",
     "reviewed": false
   },
+  "tools.mortgage.statusUaeNational": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "93b66fb902a8",
+    "reviewed": false
+  },
   "tools.mortgage.statusUaeResident": {
     "by": "machine",
     "model": "claude-opus-5",

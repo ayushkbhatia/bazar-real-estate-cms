@@ -199,14 +199,21 @@ describe("minDownPaymentPct", () => {
     expect(minDownPaymentPct("non_resident", 10_000_000)).toBe(0.5);
   });
 
-  it("uses 25% for UAE residents under AED 5M, 35% at or above", () => {
-    expect(minDownPaymentPct("uae_resident", 4_999_999)).toBe(0.25);
-    expect(minDownPaymentPct("uae_resident", 5_000_000)).toBe(0.35);
+  // The Central Bank's caps on a first home, which the mortgage application's
+  // "Up to 85% / 80% LTV" also follows (docs/mortgage DECISIONS D23).
+  it("uses 20% for UAE residents under AED 5M, 30% at or above (80% / 70% LTV)", () => {
+    expect(minDownPaymentPct("uae_resident", 4_999_999)).toBe(0.2);
+    expect(minDownPaymentPct("uae_resident", 5_000_000)).toBe(0.3);
+  });
+
+  it("uses 15% for UAE nationals under AED 5M, 25% at or above (85% / 75% LTV)", () => {
+    expect(minDownPaymentPct("uae_national", 4_999_999)).toBe(0.15);
+    expect(minDownPaymentPct("uae_national", 5_000_000)).toBe(0.25);
   });
 
   it("treats GCC nationals like UAE residents", () => {
-    expect(minDownPaymentPct("gcc_national", 4_999_999)).toBe(0.25);
-    expect(minDownPaymentPct("gcc_national", 7_000_000)).toBe(0.35);
+    expect(minDownPaymentPct("gcc_national", 4_999_999)).toBe(0.2);
+    expect(minDownPaymentPct("gcc_national", 7_000_000)).toBe(0.3);
   });
 });
 
@@ -292,8 +299,9 @@ describe("editable assumptions", () => {
   it("moves the LTV tier threshold", () => {
     const a = bump({ ltvHighTierPriceAed: 3_000_000 });
     // 4M is below the built-in 5M threshold and above the edited 3M one.
-    expect(minDownPaymentPct("uae_resident", 4_000_000)).toBe(0.25);
-    expect(minDownPaymentPct("uae_resident", 4_000_000, a)).toBe(0.35);
+    expect(minDownPaymentPct("uae_resident", 4_000_000)).toBe(0.2);
+    expect(minDownPaymentPct("uae_resident", 4_000_000, a)).toBe(0.3);
+    expect(minDownPaymentPct("uae_national", 4_000_000, a)).toBe(0.25);
   });
 
   it("moves each LTV tier's own figure", () => {

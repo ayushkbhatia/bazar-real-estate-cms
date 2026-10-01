@@ -1083,3 +1083,44 @@ an admin without one gets no menu item and a 404 (D10). Ayush and "Omar Hasan
 - What the team does to a sample is real: decisions, re-upload requests,
   invites, sends and reminders email `@example.com` addresses, which bounce.
 
+## D23, D24, D26 — the calculator's figures, who can apply, and the old table · 1 Oct 2026
+
+Ayush: "do D26 and the calculator fixes".
+
+**Built**
+- **D23, one set of LTV figures.** The calculator (`lib/mortgage.ts`) now
+  follows the Central Bank's caps on a first home, as the application's "Up to
+  85% / 80% LTV" does: a new **UAE national** buyer status (first in the list,
+  as W2 orders it) at a 15% minimum deposit below AED 5M and 25% at or above;
+  residents and GCC nationals at 20% / 30% (were 25% / 35%, stricter than the
+  caps); non-residents still 50%. The national tiers are two new fields under
+  Settings → Mortgage (`min_down_national_pct`, `min_down_national_high_pct`),
+  merged over settings saved before they existed; the PDF route and its label
+  take the new status. The property FAQ's shared answer
+  (`lib/master-pages/property-page.ts`) says 85% / 80% for a first home under
+  AED 5M and 50% for non-residents, in both languages (production has no
+  override of it).
+- **D24, who can apply online.** A `flow_note` field in the calculator's
+  pre-approval band (Pages & blocks → Mortgage calculator), under the buttons
+  only while the application is open: online applications are for UAE
+  nationals and residents; people living abroad should contact Bazar. Shipped
+  with its Arabic; production's stored band has no value for it, so the
+  default shows.
+- **D26, the old table.** The DSR subject lookup no longer counts
+  `mortgage_inquiries` (the only reader), and it's gone from the i18n domains
+  registry and `db/types.ts`. `0154_drop_mortgage_inquiries.sql` refuses to run
+  if the table has a row, rebuilds `anonymise_by_email()` without it (as 0083
+  did for `tour_requests`), then drops the table and its three enums.
+
+**Verified**
+- Unit tests, with the deposit tests on the new figures, the national tier, and
+  the national tiers filled into settings saved before them.
+- `npm run db:local:reset` applies `0154` in order; the table and enums are
+  gone, `anonymise_by_email()` runs without them; DB suite 119/119.
+- On the local stack: four buyer statuses; at an 18% deposit a resident and a
+  GCC national read "Below the 20% minimum", a UAE national nothing; the note
+  under the buttons in English and Arabic.
+
+**Order:** the code goes out first; `0154` is applied after the deploy, since
+the old code still counts the table (harmlessly: a failed read is 0).
+
