@@ -659,6 +659,7 @@ select c.given_at, c.withdrawn_at, r.reference, r.status,
 - "Add bank", or "Edit" on a row. Fill in Code (2–12 capital letters or digits, as the team says it: FAB), Name, Colour, Order, Package inboxes (one address per line, up to five; each gets the package) and "Offer this bank when sending a file". Then "Save bank".
 - An active bank needs at least one inbox. Codes are unique ("Another bank already uses that code.").
 - Each save writes an audit row (`mortgage.bank.create` or `mortgage.bank.update`) with the before and after.
+- While the sample data exists (§11), FAB, ADCB and Mashreq are sample banks with `@example.com` inboxes. Don't give them real inboxes until the sample is erased: a send from a sample file would put a working package link in a real bank's inbox. The clear script deletes them once nothing points at them.
 - A bank is never deleted, because its submissions point at it. Switch it off instead; C2's send dialog then greys it out.
 - New inboxes apply to what's sent next. Packages already sent stay in the old inbox, and their links work until they expire. A reminder goes to the inboxes on file at that moment, so "Send a reminder" (below) puts a fresh link in the new inbox and stops the old one.
 
@@ -805,6 +806,7 @@ Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.m
 
 - The blockers are settled: the scanner (D6, SR-3); Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7.
 - Bazar has said who is on the mortgage team, and who is Head (D16).
+- The sample data is gone. Production has held sample requests since 1 Oct 2026 for the client's walkthrough (references `BZM-26-9xxx`, applicants at `@example.com`), with three sample banks: erase them with `scripts/mortgage-demo/clear.ts --yes` ([its README](../../scripts/mortgage-demo/README.md)), and check C1 is empty.
 
 **2. Apply the migrations, only with Ayush's go-ahead**
 

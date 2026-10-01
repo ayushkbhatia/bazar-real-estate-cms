@@ -21,9 +21,26 @@
  * Docker database; this script connects to nothing itself, so it can't reach
  * production. The staff accounts' password is LOCAL_PASSWORD below — local
  * test credentials only.
+ *
+ * DEMO mode (`MORTGAGE_SEED_MODE=demo`, scripts/mortgage-demo/README.md) writes
+ * the same requests as SAMPLE data for a deployed stack — production included
+ * — so the client can walk the team's CMS end to end. It differs wherever a
+ * live database needs it to:
+ *   · no logins: the files belong to existing team members, named in
+ *     MORTGAGE_DEMO_OWNERS; nobody's role or hours, and not the settings or
+ *     the flag, change;
+ *   · references are BZM-26-9xxx, beyond anything the counter will reach, so
+ *     the counter isn't touched and the samples are easy to find and erase;
+ *   · nothing is sent: every notification queued for a sample is marked
+ *     skipped, and each 24-hour clock counts as already alerted, so the SLA
+ *     tick emails nobody about a sample;
+ *   · every bearer token is random. The bank package links go to the manifest
+ *     (MORTGAGE_DEMO_MANIFEST), with the files whose bytes upload-files.ts puts
+ *     in the bucket.
  */
 
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { writeFileSync } from "node:fs";
 import { DOCUMENT_SETS, requiredStatementMonths, type DocKind } from "../../lib/mortgage-requests/documents";
 import { CHECKLISTS } from "../../lib/mortgage-requests/checklists";
 import { dubaiInstant, dubaiParts, DAY_MS } from "../../lib/mortgage-requests/dubai-time";
@@ -35,6 +52,14 @@ import {
 } from "../../lib/mortgage-requests/sla";
 
 const LOCAL_PASSWORD = "local-only-mortgage-seed";
+
+const DEMO = process.env.MORTGAGE_SEED_MODE === "demo";
+const SITE_URL = (process.env.MORTGAGE_DEMO_SITE_URL ?? "https://www.bazarrealestate.ae").replace(/\/$/, "");
+/** The designs' reference, or its sample twin in demo mode: BZM-26-0412 → BZM-26-9412. */
+const ref = (designed: string) => (DEMO ? designed.replace(/-0(\d{3})$/, "-9$1") : designed);
+const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
+/** A bearer token like the app's: never stored, only its hash. */
+const freshToken = () => randomBytes(32).toString("base64url");
 
 const NOW = new Date();
 const POLICY = slaPolicy({ sla_budget_minutes: 1440, sla_risk_minutes: 240, working_hours: DEFAULT_WORKING_HOURS });
@@ -102,6 +127,7 @@ function lastDay(ym: string): string {
 // ── The team ────────────────────────────────────────────────────
 
 type StaffKey = "yasmin" | "rashid" | "leena" | "mariam";
+type OwnerKey = Exclude<StaffKey, "mariam">;
 const STAFF: Record<StaffKey, { id: string; name: string; slug: string; title: string; role: string; mortgageRole: "head" | "adviser" | null; email: string }> = {
   yasmin: { id: "5eed0000-0000-4000-8000-000000000001", name: "Yasmin Abdalla", slug: "yasmin-abdalla", title: "Head of mortgages", role: "support", mortgageRole: "head", email: "yasmin.abdalla@example.com" },
   rashid: { id: "5eed0000-0000-4000-8000-000000000002", name: "Rashid Khan", slug: "rashid-khan", title: "Mortgage adviser", role: "support", mortgageRole: "adviser", email: "rashid.khan@example.com" },
@@ -110,7 +136,26 @@ const STAFF: Record<StaffKey, { id: string; name: string; slug: string; title: s
   mariam: { id: "5eed0000-0000-4000-8000-000000000004", name: "Mariam Al-Hashimi", slug: "mariam-al-hashimi", title: "Admin", role: "admin", mortgageRole: null, email: "mariam.alhashimi@example.com" },
 };
 
-insert(
+/**
+ * Who owns and acts on the seeded files. Locally, the seed's own team; in demo
+ * mode, existing team members (`MORTGAGE_DEMO_OWNERS`: {"yasmin": {"id",
+ * "name"}, "rashid": …, "leena": …}), so no login is created.
+ */
+function demoOwners(): Record<OwnerKey, { id: string; name: string }> {
+  const parsed = JSON.parse(process.env.MORTGAGE_DEMO_OWNERS ?? "null") as Record<string, { id?: unknown; name?: unknown }> | null;
+  const owners = {} as Record<OwnerKey, { id: string; name: string }>;
+  for (const key of ["yasmin", "rashid", "leena"] as const) {
+    const o = parsed?.[key];
+    if (!o || typeof o.id !== "string" || !/^[0-9a-f-]{36}$/i.test(o.id) || typeof o.name !== "string" || !o.name.trim()) {
+      throw new Error(`MORTGAGE_DEMO_OWNERS needs ${key}: {"id": "<staff user id>", "name": "<display name>"}`);
+    }
+    owners[key] = { id: o.id, name: o.name.trim() };
+  }
+  return owners;
+}
+const OWNERS: Record<OwnerKey, { id: string; name: string }> = DEMO ? demoOwners() : STAFF;
+
+if (!DEMO) insert(
   "auth.users",
   Object.values(STAFF).map((s) => ({
     instance_id: "00000000-0000-0000-0000-000000000000",
@@ -130,7 +175,7 @@ insert(
     email_change_token_new: "",
   })),
 );
-insert(
+if (!DEMO) insert(
   "auth.identities",
   Object.values(STAFF).map((s) => ({
     id: randomUUID(),
@@ -143,7 +188,7 @@ insert(
     updated_at: NOW,
   })),
 );
-insert(
+if (!DEMO) insert(
   "public.staff",
   Object.values(STAFF).map((s) => ({
     user_id: s.id,
@@ -155,7 +200,7 @@ insert(
     mortgage_role: s.mortgageRole,
   })),
 );
-insert(
+if (!DEMO) insert(
   "public.mortgage_adviser_hours",
   (["yasmin", "rashid", "leena"] as const).flatMap((key) =>
     Object.entries(DEFAULT_WORKING_HOURS).flatMap(([weekday, windows]) =>
@@ -167,10 +212,12 @@ insert(
 // ── Partner banks (C5) ──────────────────────────────────────────
 
 const BANKS = {
-  FAB: { id: randomUUID(), name: "First Abu Dhabi Bank", color: "oklch(0.42 0.06 250)" },
-  ADCB: { id: randomUUID(), name: "Abu Dhabi Commercial Bank", color: "oklch(0.45 0.09 25)" },
-  MSQ: { id: randomUUID(), name: "Mashreq", color: "oklch(0.45 0.08 320)" },
+  FAB: { name: "First Abu Dhabi Bank", color: "oklch(0.42 0.06 250)" },
+  ADCB: { name: "Abu Dhabi Commercial Bank", color: "oklch(0.45 0.09 25)" },
+  MSQ: { name: "Mashreq", color: "oklch(0.45 0.08 320)" },
 };
+/** A bank's row by its code: one the stack already has is reused, inboxes and all. */
+const bankId = (code: string) => raw(`(select id from public.mortgage_partner_banks where code = ${lit(code)})`);
 /** As the activity log names a bank: "Mashreq", but "FAB" (bankLabel, 0149). */
 function bankLabelOf(code: string): string {
   const name = BANKS[code as keyof typeof BANKS].name;
@@ -180,7 +227,6 @@ function bankLabelOf(code: string): string {
 insert(
   "public.mortgage_partner_banks",
   Object.entries(BANKS).map(([code, bank], i) => ({
-    id: bank.id,
     code,
     name: bank.name,
     brand_color: bank.color,
@@ -189,6 +235,7 @@ insert(
     sort_order: i,
   })),
 );
+out[out.length - 1] = out[out.length - 1]!.replace(/;$/, "\non conflict (code) do nothing;");
 
 // ── Requests (C1) ───────────────────────────────────────────────
 
@@ -200,9 +247,26 @@ type PreSeed = {
   residency: "uae_national" | "uae_resident_expat"; employment: "salaried" | "business_owner";
   status: "new" | "in_review" | "awaiting_applicant" | "with_banks";
   docs: [DocMark, DocMark, DocMark, DocMark];
-  remaining: number; paused?: boolean; owner: StaffKey | null;
+  remaining: number; paused?: boolean; owner: OwnerKey | null;
   entry: string;
 };
+
+/**
+ * A bank's package link. Locally its token is derived from the reference, so
+ * /mortgages/p/BZM-26-0398-FAB-package opens it; a sample's is random, and
+ * the link goes to the manifest for the demo.
+ */
+function packageToken(designedRef: string, code: string, sentAt: Date): string {
+  if (!DEMO) return `${designedRef}-${code}-package`;
+  const token = freshToken();
+  packageLinks.push({
+    reference: ref(designedRef),
+    bank: code,
+    url: `${SITE_URL}/mortgages/p/${token}`,
+    expiresAt: new Date(sentAt.getTime() + 7 * DAY_MS).toISOString(),
+  });
+  return token;
+}
 
 const PRE_APPROVALS: PreSeed[] = [
   { ref: "BZM-26-0406", name: "Mariam Al Kaabi", mobile: "+971504813321", email: "mariam.alkaabi@example.com", dob: "1984-06-02", residency: "uae_national", employment: "business_owner", status: "in_review", docs: ["accepted", "accepted", "review", "review"], remaining: H + 48 * MIN, owner: "leena", entry: "home" },
@@ -303,9 +367,11 @@ function seedFiles(documentId: string, kind: DocKind, submittedAt: Date, who: Pr
   }
 }
 
+const packageLinks: { reference: string; bank: string; url: string; expiresAt: string }[] = [];
+
 for (const seed of PRE_APPROVALS) {
   const requestId = randomUUID();
-  const owner = seed.owner ? STAFF[seed.owner] : null;
+  const owner = seed.owner ? OWNERS[seed.owner] : null;
 
   // Clocks: running requests fall due `remaining` of working time from now;
   // Karim's froze at 9h 13m when the re-upload went out, 4h 40m of working time ago (W8: 11:52 vs 16:32).
@@ -324,7 +390,7 @@ for (const seed of PRE_APPROVALS) {
 
   requests.push({
     id: requestId,
-    reference: seed.ref,
+    reference: ref(seed.ref),
     service: "pre_approval",
     status: seed.status,
     full_name: seed.name,
@@ -341,6 +407,9 @@ for (const seed of PRE_APPROVALS) {
     sla_due_at: dueAt,
     sla_paused_at: pausedAt,
     sla_remaining_seconds: seed.paused ? seed.remaining : null,
+    // A sample's clock counts as already alerted, so the SLA tick emails nobody about it.
+    sla_risk_notified_at: DEMO ? submittedAt : null,
+    sla_breach_notified_at: DEMO ? submittedAt : null,
     created_at: submittedAt,
   });
 
@@ -412,7 +481,8 @@ for (const seed of PRE_APPROVALS) {
         purpose: "reupload",
         document_id: documentId,
         // Local test link: /mortgages/r/karim-local-reupload, stored as its SHA-256 like every link token.
-        token_hash: createHash("sha256").update("karim-local-reupload").digest("hex"),
+        // A sample's is random and kept nowhere: its code would go to an @example.com inbox anyway.
+        token_hash: sha256(DEMO ? freshToken() : "karim-local-reupload"),
         expires_at: new Date(pausedAt.getTime() + 7 * DAY_MS),
         created_by: owner.id,
         created_at: pausedAt,
@@ -443,7 +513,7 @@ for (const seed of PRE_APPROVALS) {
   if (seed.status === "with_banks" && owner) {
     const sentAt = plusMinutes(submittedAt, 51);
     const isArjun = seed.ref === "BZM-26-0398";
-    for (const [code, bank] of Object.entries(BANKS)) {
+    for (const code of Object.keys(BANKS)) {
       const submissionId = randomUUID();
       const offer =
         isArjun && code === "FAB"
@@ -455,12 +525,12 @@ for (const seed of PRE_APPROVALS) {
       submissions.push({
         id: submissionId,
         request_id: requestId,
-        bank_id: bank.id,
+        bank_id: bankId(code),
         status: offer ? "pre_approved" : "sent",
         sent_at: notAfterNow(sentAt),
         sent_by: owner.id,
         package_manifest: { documents: kinds, summary: true },
-        package_token_hash: createHash("sha256").update(`${seed.ref}-${code}-package`).digest("hex"),
+        package_token_hash: sha256(packageToken(seed.ref, code, sentAt)),
         package_expires_at: new Date(sentAt.getTime() + 7 * DAY_MS),
         responded_at: respondedAt,
         recorded_by: offer ? owner.id : null,
@@ -471,7 +541,7 @@ for (const seed of PRE_APPROVALS) {
         valid_until: offer ? new Date(NOW.getTime() + 60 * DAY_MS).toISOString().slice(0, 10) : null,
       });
       // A pre-approval is recorded with its letter (0149), so each offer has one.
-      const letter = offer ? `${code}-pre-approval-${seed.ref}.pdf` : null;
+      const letter = offer ? `${code}-pre-approval-${ref(seed.ref)}.pdf` : null;
       if (letter) {
         fileRow(null, null, letter, 0.3 * MB, 2, "application/pdf", respondedAt ?? NOW, undefined, submissionId);
       }
@@ -502,7 +572,7 @@ for (const seed of PRE_APPROVALS) {
 type ConsultSeed = {
   ref: string; name: string; mobile: string; email: string; dob: string;
   residency: "uae_national" | "uae_resident_expat"; employment: "salaried" | "business_owner";
-  status: "new" | "contacted" | "consultation_booked"; owner: StaffKey | null; entry: string; receivedMinutesAgo: number;
+  status: "new" | "contacted" | "consultation_booked"; owner: OwnerKey | null; entry: string; receivedMinutesAgo: number;
 };
 
 const CONSULTATIONS: ConsultSeed[] = [
@@ -513,13 +583,13 @@ const CONSULTATIONS: ConsultSeed[] = [
 
 for (const seed of CONSULTATIONS) {
   const requestId = randomUUID();
-  const owner = seed.owner ? STAFF[seed.owner] : null;
+  const owner = seed.owner ? OWNERS[seed.owner] : null;
   const receivedAt = minutesAgo(seed.receivedMinutesAgo);
   const firstContactAt = seed.status === "new" ? null : plusMinutes(receivedAt, 65);
 
   requests.push({
     id: requestId,
-    reference: seed.ref,
+    reference: ref(seed.ref),
     service: "consultancy",
     status: seed.status,
     full_name: seed.name,
@@ -557,7 +627,8 @@ for (const seed of CONSULTATIONS) {
   }
 
   if (seed.status === "consultation_booked" && owner) {
-    const startsAt = nextWorkingDayAt(11, 30);
+    // A sample's slot is in the afternoon, clear of the morning bookings the designs show.
+    const startsAt = DEMO ? nextWorkingDayAt(14, 30) : nextWorkingDayAt(11, 30);
     consultations.push({
       request_id: requestId,
       adviser_staff_id: owner.id,
@@ -588,17 +659,41 @@ insert("public.mortgage_events", events);
 
 out.push("select set_config('mortgage.transition', 'off', true);");
 
-// The next reference after the designs' last one, BZM-26-0418.
-out.push(
-  "insert into public.mortgage_reference_counters (yy, last_number) values (26, 418) " +
-    "on conflict (yy) do update set last_number = greatest(public.mortgage_reference_counters.last_number, 418);",
-);
-// The flow open to anyone, as the local e2e specs expect (playwright.mortgage.config.ts);
-// production's flag is the team's to set in the CMS.
-out.push(
-  `update public.mortgage_settings set round_robin_last_staff_id = ${lit(STAFF.leena.id)}, flag = 'public' where id = 1;`,
-);
+if (DEMO) {
+  // The team's "new request" alerts the insert trigger queued (0143): a sample is no news.
+  out.push(
+    `update public.mortgage_notifications set status = 'skipped', last_error = 'sample data: not sent'\n` +
+      ` where request_id in (${requests.map((r) => lit(r.id)).join(", ")});`,
+  );
+  const manifest = process.env.MORTGAGE_DEMO_MANIFEST;
+  if (!manifest) throw new Error("MORTGAGE_DEMO_MANIFEST: where to write the sample's files and package links");
+  writeFileSync(
+    manifest,
+    JSON.stringify(
+      {
+        generatedAt: NOW.toISOString(),
+        siteUrl: SITE_URL,
+        requests: requests.map((r) => ({ id: r.id, reference: r.reference, service: r.service, status: r.status, name: r.full_name })),
+        files: files.map((f) => ({ storage_key: f.storage_key, mime: f.mime, page_count: f.page_count, original_name: f.original_name, kind: f.kind })),
+        packageLinks,
+      },
+      null,
+      2,
+    ),
+  );
+} else {
+  // The next reference after the designs' last one, BZM-26-0418.
+  out.push(
+    "insert into public.mortgage_reference_counters (yy, last_number) values (26, 418) " +
+      "on conflict (yy) do update set last_number = greatest(public.mortgage_reference_counters.last_number, 418);",
+  );
+  // The flow open to anyone, as the local e2e specs expect (playwright.mortgage.config.ts);
+  // production's flag is the team's to set in the CMS.
+  out.push(
+    `update public.mortgage_settings set round_robin_last_staff_id = ${lit(STAFF.leena.id)}, flag = 'public' where id = 1;`,
+  );
+}
 
 process.stdout.write(
-  `-- Generated by scripts/db-local/seed-mortgage.ts at ${NOW.toISOString()} — local only.\nbegin;\n${out.join("\n\n")}\ncommit;\n`,
+  `-- Generated by scripts/db-local/seed-mortgage.ts at ${NOW.toISOString()} — ${DEMO ? "SAMPLE data (demo mode)" : "local only"}.\nbegin;\n${out.join("\n\n")}\ncommit;\n`,
 );
