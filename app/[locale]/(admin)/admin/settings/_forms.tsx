@@ -387,9 +387,21 @@ const MORTGAGE_GROUPS: {
   {
     title: "Minimum deposit (Central Bank LTV)",
     blurb:
-      "What the page warns a buyer they will need down. Two tiers either side of a price threshold, plus the non-resident figure most lenders hold to.",
+      "What the page warns a buyer they will need down on a first home. Two tiers either side of a price threshold, for UAE nationals and for residents, plus the non-resident figure most lenders hold to. The mortgage application promises UAE nationals up to 85% and residents up to 80% (Mortgage requests → Settings), so keep the figures below the threshold at 15% and 20% to match.",
     fields: [
       { key: "ltv_high_tier_price_aed", label: "Higher-tier threshold", suffix: "AED" },
+      {
+        key: "min_down_national_pct",
+        label: "UAE national — below threshold",
+        suffix: "%",
+        step: "0.5",
+      },
+      {
+        key: "min_down_national_high_pct",
+        label: "UAE national — at or above",
+        suffix: "%",
+        step: "0.5",
+      },
       {
         key: "min_down_resident_pct",
         label: "Resident / GCC — below threshold",

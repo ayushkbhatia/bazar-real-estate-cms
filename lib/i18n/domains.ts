@@ -892,12 +892,6 @@ export const DOMAINS: Domain[] = [
     excluded:
       "The public tool inserts and reads back only the id; the on-screen estimate comes from the action result. The PDF route is RLS-gated to authenticated staff.",
   },
-  {
-    table: "mortgage_inquiries",
-    columns: [],
-    excluded:
-      "Dead table — nothing writes it. The save-scenario button still carries an unwired 'Sprint 9 wires this' comment.",
-  },
   // The mortgage module (docs/mortgage, migrations 0138 and 0141). Applicants' financial
   // data and the mortgage team's working state: RLS gives visitors nothing, and
   // the website's copy for these screens lives in the message catalogue.

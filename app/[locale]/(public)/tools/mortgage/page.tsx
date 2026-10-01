@@ -108,6 +108,7 @@ export default async function MortgagePage({
           advisorCtaLabel: str(bandV, "advisor_cta_label"),
           advisorCtaHref: advisorHref(str(bandV, "advisor_cta_href"), flowOpen),
           flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.calculatorPreApproval : null,
+          flowNote: str(bandV, "flow_note"),
           whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
           fallbackCtaLabel: str(bandV, "fallback_cta_label"),
           jumpCtaLabel: str(bandV, "jump_cta_label"),

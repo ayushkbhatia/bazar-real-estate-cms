@@ -201,6 +201,8 @@ export const mortgageSettingsSchema = z
 
     // ── Central Bank LTV tiers ──
     ltv_high_tier_price_aed: money(500_000_000),
+    min_down_national_pct: percent(100),
+    min_down_national_high_pct: percent(100),
     min_down_resident_pct: percent(100),
     min_down_resident_high_pct: percent(100),
     min_down_non_resident_pct: percent(100),
@@ -222,6 +224,10 @@ export const mortgageSettingsSchema = z
   .refine((v) => v.min_down_resident_pct <= v.min_down_resident_high_pct, {
     message: "The higher tier must ask for at least as much as the standard one",
     path: ["min_down_resident_high_pct"],
+  })
+  .refine((v) => v.min_down_national_pct <= v.min_down_national_high_pct, {
+    message: "The higher tier must ask for at least as much as the standard one",
+    path: ["min_down_national_high_pct"],
   });
 
 export type MortgageSettings = z.infer<typeof mortgageSettingsSchema>;
@@ -252,8 +258,10 @@ export const MORTGAGE_SETTINGS_DEFAULTS: MortgageSettings = {
   noc_misc_fee_aed: 5_800,
 
   ltv_high_tier_price_aed: 5_000_000,
-  min_down_resident_pct: 25,
-  min_down_resident_high_pct: 35,
+  min_down_national_pct: 15,
+  min_down_national_high_pct: 25,
+  min_down_resident_pct: 20,
+  min_down_resident_high_pct: 30,
   min_down_non_resident_pct: 50,
 
   dbr_comfortable_pct: 40,

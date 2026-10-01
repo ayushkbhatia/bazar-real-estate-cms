@@ -3134,81 +3134,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mortgage_inquiries: {
-        Row: {
-          account_id: string | null
-          annual_income_aed: number | null
-          applicant_email: string
-          applicant_name: string
-          applicant_phone: string | null
-          assigned_advisor_id: string | null
-          buyer_status: Database["public"]["Enums"]["mortgage_buyer_status"]
-          created_at: string
-          down_payment_aed: number
-          id: string
-          interest_rate_pct: number
-          mortgage_type: Database["public"]["Enums"]["mortgage_loan_type"]
-          notes: string | null
-          property_price_aed: number
-          status: Database["public"]["Enums"]["mortgage_inquiry_status"]
-          term_years: number
-          updated_at: string
-        }
-        Insert: {
-          account_id?: string | null
-          annual_income_aed?: number | null
-          applicant_email: string
-          applicant_name: string
-          applicant_phone?: string | null
-          assigned_advisor_id?: string | null
-          buyer_status: Database["public"]["Enums"]["mortgage_buyer_status"]
-          created_at?: string
-          down_payment_aed: number
-          id?: string
-          interest_rate_pct: number
-          mortgage_type: Database["public"]["Enums"]["mortgage_loan_type"]
-          notes?: string | null
-          property_price_aed: number
-          status?: Database["public"]["Enums"]["mortgage_inquiry_status"]
-          term_years: number
-          updated_at?: string
-        }
-        Update: {
-          account_id?: string | null
-          annual_income_aed?: number | null
-          applicant_email?: string
-          applicant_name?: string
-          applicant_phone?: string | null
-          assigned_advisor_id?: string | null
-          buyer_status?: Database["public"]["Enums"]["mortgage_buyer_status"]
-          created_at?: string
-          down_payment_aed?: number
-          id?: string
-          interest_rate_pct?: number
-          mortgage_type?: Database["public"]["Enums"]["mortgage_loan_type"]
-          notes?: string | null
-          property_price_aed?: number
-          status?: Database["public"]["Enums"]["mortgage_inquiry_status"]
-          term_years?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mortgage_inquiries_account_id_fkey"
-            columns: ["account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "mortgage_inquiries_assigned_advisor_id_fkey"
-            columns: ["assigned_advisor_id"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       mortgage_notifications: {
         Row: {
           attempts: number
@@ -6337,7 +6262,6 @@ export type Database = {
         | "pre_approved"
         | "declined"
         | "withdrawn"
-      mortgage_buyer_status: "uae_resident" | "non_resident" | "gcc_national"
       mortgage_consult_format: "phone" | "video" | "office"
       mortgage_consult_status: "booked" | "held" | "no_show" | "cancelled"
       mortgage_contact_channel: "call" | "whatsapp" | "email"
@@ -6376,14 +6300,7 @@ export type Database = {
         | "direct"
       mortgage_file_state: "pending" | "active" | "removed"
       mortgage_flag: "off" | "staff" | "public"
-      mortgage_inquiry_status:
-        | "new"
-        | "contacted"
-        | "in_progress"
-        | "pre_approved"
-        | "closed"
       mortgage_link_purpose: "reupload" | "preapproval_invite"
-      mortgage_loan_type: "fixed" | "variable" | "hybrid"
       mortgage_rate_type: "fixed" | "variable"
       mortgage_residency: "uae_national" | "uae_resident_expat"
       mortgage_reupload_reason:
@@ -6750,7 +6667,6 @@ export const Constants = {
         "declined",
         "withdrawn",
       ],
-      mortgage_buyer_status: ["uae_resident", "non_resident", "gcc_national"],
       mortgage_consult_format: ["phone", "video", "office"],
       mortgage_consult_status: ["booked", "held", "no_show", "cancelled"],
       mortgage_contact_channel: ["call", "whatsapp", "email"],
@@ -6793,15 +6709,7 @@ export const Constants = {
       ],
       mortgage_file_state: ["pending", "active", "removed"],
       mortgage_flag: ["off", "staff", "public"],
-      mortgage_inquiry_status: [
-        "new",
-        "contacted",
-        "in_progress",
-        "pre_approved",
-        "closed",
-      ],
       mortgage_link_purpose: ["reupload", "preapproval_invite"],
-      mortgage_loan_type: ["fixed", "variable", "hybrid"],
       mortgage_rate_type: ["fixed", "variable"],
       mortgage_residency: ["uae_national", "uae_resident_expat"],
       mortgage_reupload_reason: [

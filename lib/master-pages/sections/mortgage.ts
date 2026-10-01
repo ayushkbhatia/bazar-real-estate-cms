@@ -222,6 +222,12 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           max: 60,
           help: "Scrolls back up to the form rather than opening anything.",
         }),
+        // Who can apply online (docs/mortgage DECISIONS D24): the application
+        // takes UAE nationals and residents only, and the calculator also
+        // prices for non-residents.
+        area("flow_note", "Note under the buttons · while the online application is open", {
+          max: 240,
+        }),
       ],
       defaults: {
         eyebrow: "Ready to make it real?",
@@ -247,6 +253,10 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         fallback_cta_label_ar: "ابدأ الموافقة المبدئية",
         jump_cta_label: "Start your pre-approval",
         jump_cta_label_ar: "ابدأ موافقتك المبدئية",
+        flow_note:
+          "Online applications are for UAE nationals and residents of the UAE. Living abroad? Contact us and an advisor will help.",
+        flow_note_ar:
+          "طلبات التمويل عبر الإنترنت متاحة للمواطنين الإماراتيين والمقيمين في دولة الإمارات. تقيم خارج الدولة؟ تواصل معنا وسيساعدك أحد مستشارينا.",
       },
     },
   ],

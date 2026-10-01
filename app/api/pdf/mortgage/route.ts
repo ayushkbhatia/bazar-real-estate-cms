@@ -25,7 +25,7 @@ const InputSchema = z.object({
     rate_pct: z.number().min(0).max(20),
     term_years: z.number().int().min(1).max(40),
     loan_type: z.enum(["fixed", "variable", "hybrid"]),
-    buyer_status: z.enum(["uae_resident", "non_resident", "gcc_national"]),
+    buyer_status: z.enum(["uae_national", "uae_resident", "non_resident", "gcc_national"]),
   }),
   result: z.object({
     loan_amount_aed: z.number().nonnegative(),

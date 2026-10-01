@@ -111,6 +111,8 @@ export function toMortgageAssumptions(
     bankArrangementPct: frac(settings.bank_arrangement_pct),
     bazarAdvisoryPct: frac(settings.advisory_pct),
     ltvHighTierPriceAed: settings.ltv_high_tier_price_aed,
+    minDownNationalPct: frac(settings.min_down_national_pct),
+    minDownNationalHighPct: frac(settings.min_down_national_high_pct),
     minDownResidentPct: frac(settings.min_down_resident_pct),
     minDownResidentHighPct: frac(settings.min_down_resident_high_pct),
     minDownNonResidentPct: frac(settings.min_down_non_resident_pct),

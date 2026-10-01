@@ -135,7 +135,7 @@ function MortgagePdfDownload({
     rate_pct: number;
     term_years: number;
     loan_type: "fixed" | "variable" | "hybrid";
-    buyer_status: "uae_resident" | "non_resident" | "gcc_national";
+    buyer_status: BuyerStatus;
   };
   result: {
     loan_amount_aed: number;

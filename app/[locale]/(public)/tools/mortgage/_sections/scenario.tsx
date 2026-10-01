@@ -48,6 +48,9 @@ export const MORTGAGE_TYPES: {
 ];
 
 export const BUYER_STATUSES: { value: BuyerStatus; key: string }[] = [
+  // First, as the mortgage application lists it (W2): the Central Bank lets a
+  // UAE national borrow more than a resident (D23).
+  { value: "uae_national", key: "statusUaeNational" },
   { value: "uae_resident", key: "statusUaeResident" },
   { value: "non_resident", key: "statusNonResident" },
   { value: "gcc_national", key: "statusGccNational" },
@@ -290,8 +293,10 @@ export function ScenarioSection(props: Props) {
 
           <fieldset className="mt-5">
             <Label>{t("mortgage.buyerStatus")}</Label>
+            {/* Two by two: four statuses in one row left "GCC national" in
+                Arabic spilling out of its box at every width. */}
             <div
-              className="flex gap-1 mt-1.5"
+              className="grid grid-cols-2 gap-1 mt-1.5"
               role="radiogroup"
               aria-label={t("mortgage.buyerStatus")}
             >
