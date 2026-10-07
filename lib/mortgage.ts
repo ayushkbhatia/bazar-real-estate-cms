@@ -17,7 +17,7 @@
  */
 
 export type MortgageType = "fixed" | "variable" | "hybrid";
-export type BuyerStatus = "uae_resident" | "non_resident" | "gcc_national";
+export type BuyerStatus = "uae_national" | "uae_resident" | "non_resident" | "gcc_national";
 
 export type MortgageInputs = {
   /** Property price in AED. */
@@ -197,6 +197,10 @@ export type MortgageAssumptions = {
   bazarAdvisoryPct: number;
   /** Price at or above which the higher Central Bank LTV tier applies. */
   ltvHighTierPriceAed: number;
+  /** Minimum deposit for a UAE national, below the tier. */
+  minDownNationalPct: number;
+  /** …and at or above it. */
+  minDownNationalHighPct: number;
   /** Minimum deposit for a resident or GCC national, below the tier. */
   minDownResidentPct: number;
   /** …and at or above it. */
@@ -227,14 +231,22 @@ export const DEFAULT_MORTGAGE_ASSUMPTIONS: MortgageAssumptions = {
   bankArrangementPct: 0.01,
   // Bazar advisory — capped 1.5%.
   bazarAdvisoryPct: 0.015,
-  // CB UAE rules (paraphrased):
-  //   · UAE expat (resident), first < 5M:    25%
-  //   · UAE expat (resident), first ≥ 5M:    35%
-  //   · Non-resident:                        50% (per most lenders)
+  // The Central Bank's caps on a first home (maximum loan-to-value, so the
+  // deposit is what's left), which the mortgage application's "Up to 85% /
+  // 80% LTV" also follows (docs/mortgage DECISIONS D23):
+  //   · UAE national, first < 5M:           15% (85% LTV)
+  //   · UAE national, first ≥ 5M:           25% (75% LTV)
+  //   · UAE expat (resident), first < 5M:   20% (80% LTV)
+  //   · UAE expat (resident), first ≥ 5M:   30% (70% LTV)
+  //   · Non-resident:                       50% (per most lenders)
   //   · GCC national: same as UAE resident expat.
+  // Shipped as 25% / 35% for residents until 1 Oct 2026, stricter than the
+  // caps and than what the application promised.
   ltvHighTierPriceAed: 5_000_000,
-  minDownResidentPct: 0.25,
-  minDownResidentHighPct: 0.35,
+  minDownNationalPct: 0.15,
+  minDownNationalHighPct: 0.25,
+  minDownResidentPct: 0.2,
+  minDownResidentHighPct: 0.3,
   minDownNonResidentPct: 0.5,
   dbrComfortablePct: 0.4,
   dbrMaxPct: 0.5,
@@ -250,6 +262,10 @@ export function minDownPaymentPct(
   switch (status) {
     case "non_resident":
       return assumptions.minDownNonResidentPct;
+    case "uae_national":
+      return highTier
+        ? assumptions.minDownNationalHighPct
+        : assumptions.minDownNationalPct;
     case "uae_resident":
     case "gcc_national":
       return highTier

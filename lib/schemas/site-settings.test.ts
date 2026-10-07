@@ -289,6 +289,20 @@ describe("mortgageSettingsSchema", () => {
       min_down_resident_high_pct: 35,
     });
     expect(r.success).toBe(false);
+    const national = mortgageSettingsSchema.safeParse({
+      ...MORTGAGE_SETTINGS_DEFAULTS,
+      min_down_national_pct: 30,
+      min_down_national_high_pct: 25,
+    });
+    expect(national.success).toBe(false);
+  });
+
+  it("fills the UAE-national tiers into settings saved before they existed", () => {
+    const { min_down_national_pct: _n, min_down_national_high_pct: _h, ...older } = MORTGAGE_SETTINGS_DEFAULTS;
+    const parsed = parseMortgageSettings({ ...older, min_down_resident_pct: 22 });
+    expect(parsed.min_down_national_pct).toBe(15);
+    expect(parsed.min_down_national_high_pct).toBe(25);
+    expect(parsed.min_down_resident_pct).toBe(22);
   });
 });
 

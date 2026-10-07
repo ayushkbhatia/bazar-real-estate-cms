@@ -1083,6 +1083,12 @@ export type RunOptions = {
    *  Salesforce. What an admin's approve / hide / mapping does. */
   onlyStored?: string[];
   revalidate?: Revalidator;
+  /**
+   * The run's clock: every expiry, publish date and retry window is judged
+   * against it. The jobs and actions leave it to `new Date()`; tests pin it, so
+   * a fixture's dates don't start failing once the calendar passes them.
+   */
+  now?: Date;
 };
 
 export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
@@ -1138,7 +1144,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
     const state = await loadState(admin, effectiveOrg);
     const ctx: Ctx = {
       admin,
-      now: new Date(),
+      now: opts.now ?? new Date(),
       startedAt: Date.now(),
       orgHost: effectiveOrg,
       sandbox: summary.sandbox,

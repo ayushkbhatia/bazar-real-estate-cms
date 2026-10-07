@@ -16,7 +16,7 @@ export type MortgageScenarioInput = {
   rate_pct: number;
   term_years: number;
   loan_type: "fixed" | "variable" | "hybrid";
-  buyer_status: "uae_resident" | "non_resident" | "gcc_national";
+  buyer_status: "uae_national" | "uae_resident" | "non_resident" | "gcc_national";
 };
 
 export type MortgageScenarioResult = {
@@ -41,6 +41,7 @@ const BUYER_STATUS_LABEL: Record<
   MortgageScenarioInput["buyer_status"],
   string
 > = {
+  uae_national: "UAE national",
   uae_resident: "UAE resident",
   non_resident: "Non-resident",
   gcc_national: "GCC national",
