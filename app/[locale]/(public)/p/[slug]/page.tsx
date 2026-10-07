@@ -157,6 +157,7 @@ import { MapEmbed } from "./_components/map-embed";
 import { PropertyActionRow } from "./_components/action-row";
 import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
+import { descriptionHtml } from "@/lib/rich-text";
 import { SpecificationTable, type SpecRow } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
 import { TokenText } from "./_components/token-text";
@@ -418,7 +419,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     tokens: copy.tokens,
   };
 
-  const advisorNoteCopy = property.short_description ?? property.description;
+  // The summary only. The description has its own band below, and quoting it
+  // here as well printed it twice — as stored markup, too.
+  const advisorNoteCopy = property.short_description;
+  const descriptionMarkup = descriptionHtml(property.description);
 
   // Everything the listing stores that the key-facts tiles above don't
   // already show. Empty values are dropped, not rendered as em-dashes.
@@ -671,12 +675,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             />
           ) : null}
 
-          {property.description ? (
+          {descriptionMarkup ? (
             <div>
               <Eyebrow>{copy.text("description", "eyebrow")}</Eyebrow>
-              <p className="mt-3 text-[16.5px] leading-[1.7] text-bz-ink whitespace-pre-line max-w-[64ch]">
-                {property.description}
-              </p>
+              {/* Stored as HTML (the CMS editor, the Salesforce sync) and
+                  sanitised again here, as the article page is. */}
+              <div
+                className="mt-3 text-[16.5px] leading-[1.7] text-bz-ink max-w-[64ch] [&_p+p]:mt-4 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:ps-5 [&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:ps-5 [&_a]:text-bz-accent [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: descriptionMarkup }}
+              />
             </div>
           ) : null}
 

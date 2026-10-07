@@ -139,11 +139,15 @@ quick grep can show "what's outstanding in my area."
   URLs, so nothing renders them. Needs a decision on embedding third-party
   players on the listing page before any wiring.
 
-- [salesforce] Off-plan detail the CRM has and the listing page does not use.
-  `Handover_Date__c`, `Payment_Plan__c`, `Project_Name__c` (→ a
-  `developments` link) are in Salesforce. The sync leaves `development_id` to
-  editors today; matching `Project_Name__c` to a development would need the
-  same mapping screen as locations, with a new `salesforce_mapping_kind`.
+- [salesforce] A Salesforce project with no exact project page stays unlinked.
+  Since guide v1.3 the sync links `Project__r.Name` to a development by exact
+  name or slug, and `Handover_Date__c` gives an off-plan listing its year. A
+  Project named differently from its page is only noted (`unmapped_project`
+  on the Salesforce listings screen). Done looks like: a `project` value in
+  `salesforce_mapping_kind` and a fourth mapping form on that screen, the way
+  areas, developers and agents are answered once. Wait until a real listing
+  needs it; v1.1 asked Levarus to name Project records as the pages are.
+  `Payment_Plan__c` is still not in the feed.
 
 - [salesforce] English changes in the CRM do not retire a website-written
   Arabic twin.

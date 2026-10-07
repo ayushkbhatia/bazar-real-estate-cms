@@ -38,11 +38,18 @@ export type SalesforceListingRow = {
   property: { id: string; slug: string; reference: string; status: string } | null;
 };
 
+/** The snapshot keys the screens show. Optional throughout: a row written by
+ *  an older version of the sync has a different set (v2 had `propertyPrice`
+ *  and a free-text `location`; v3, from guide v1.3, has `area`/`subArea`). */
 type Snap = {
   title?: string | null;
+  area?: string | null;
+  subArea?: string | null;
   location?: string | null;
   listingPrice?: number | null;
+  yearlyRent?: number | null;
   propertyPrice?: number | null;
+  propertyText?: string | null;
   offering?: string | null;
 };
 
@@ -57,10 +64,11 @@ function toRow(r: Record<string, unknown>): SalesforceListingRow {
     sfListingId: r.sf_listing_id as string,
     orgHost: r.org_host as string,
     name: (r.sf_listing_name as string | null) ?? null,
-    reference: (r.sf_reference as string | null) ?? null,
+    reference:
+      [(r.sf_reference as string | null) ?? null, snap.propertyText ?? null].filter(Boolean).join(" · ") || null,
     title: snap.title ?? null,
-    location: snap.location ?? null,
-    price: snap.listingPrice ?? snap.propertyPrice ?? null,
+    location: [snap.subArea, snap.area].filter(Boolean).join(", ") || snap.location || null,
+    price: snap.listingPrice ?? snap.yearlyRent ?? snap.propertyPrice ?? null,
     offering: snap.offering ?? null,
     state: r.state as ListingState,
     holds: (r.holds as Hold[] | null) ?? [],

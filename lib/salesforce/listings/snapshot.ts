@@ -14,7 +14,7 @@ import type { SfListingRecord, SfPropertyRecord, SfUser } from "./fields";
  * `v` is the snapshot's own schema version. Bump it when the shape changes;
  * every stored hash then differs and each listing is re-applied once.
  */
-export const SNAPSHOT_VERSION = 2;
+export const SNAPSHOT_VERSION = 3;
 
 export type ImageRef =
   /** A Salesforce File version — `068…`, downloaded through the REST API. */
@@ -24,28 +24,36 @@ export type ImageRef =
   /** Anywhere else on the web. */
   | { kind: "url"; url: string };
 
+/**
+ * v3 follows the guide's v1.3 field list. Snapshots stored by v2 (before
+ * 7 Oct 2026) lack most of these keys; `upgradeSnapshot` fills them in as
+ * blank, so a re-apply from an old row plans it as Salesforce would send it
+ * today without the fields it never had.
+ */
 export type ListingSnapshot = {
   v: number;
   listingId: string;
   listingName: string | null;
   propertyId: string | null;
+  /** `Listing__c.Name` — the CRM's property id, "P-0030". */
   propertyName: string | null;
-  reference: string | null;
-  portalListingId: string | null;
+  /** `PropertyText__c` — the property's name as the CRM team writes it. */
+  propertyText: string | null;
   websiteStatus: string | null;
-  /** What the website last wrote back (guide v1.2, step 5) — read so a
+  /** What the website last wrote back (guide v1.3, step 5) — read so a
    *  write-back is only sent when it would change something. */
   websiteUrl: string | null;
   websiteError: string | null;
   listingStatus: string | null;
   propertyStatus: string | null;
-  /** Listing `Sale_Rent__c`, else the property's `OfferingType__c`, else
-   *  `Purpose__c`. Three fields for one fact; the listing's is the offer. */
+  /** `Sale_Rent__c` on the listing. */
   offering: "Sale" | "Rent" | null;
   listingPrice: number | null;
-  propertyPrice: number | null;
   yearlyRent: number | null;
   rentFrequency: string | null;
+  /** `Published_Platform__c`, split. Salesforce's own record of where the
+   *  listing is advertised; the feed itself is `Website_Status__c`. */
+  platforms: string[];
   /** `Expired_Date__c`, YYYY-MM-DD — when the LISTING ends. */
   expiresOn: string | null;
   /** `Permit_Expiry_Date_c__c` — when the advertising PERMIT ends. */
@@ -53,21 +61,23 @@ export type ListingSnapshot = {
   publishedOn: string | null;
   title: string | null;
   titleAr: string | null;
+  shortDescription: string | null;
+  shortDescriptionAr: string | null;
   description: string | null;
   descriptionAr: string | null;
-  /** `Location__c` — the guide calls it "Area". */
+  /** `Area__c` and `Sub_Area__c` — the website's own area names. */
+  area: string | null;
+  subArea: string | null;
+  /** `Location__c` — free text, for the admin screen only. Placement uses
+   *  `area` and `subArea`. */
   location: string | null;
-  community: string | null;
-  subCommunity: string | null;
   emirate: string | null;
   category: string | null;
-  /** `Property_Type__c` — the website-shaped type field added in v1.2. */
+  /** `Property_Type__c` — the restricted website type picklist. */
   websiteType: string | null;
-  crmType: string | null;
-  bayutType: string | null;
   projectStatus: string | null;
-  projectType: string | null;
-  projectName: string | null;
+  /** `Project__c` and the Project's `Name`. */
+  project: { id: string | null; name: string | null } | null;
   developer: string | null;
   /** "Studio" is 0. */
   beds: number | null;
@@ -77,16 +87,32 @@ export type ListingSnapshot = {
   furnishing: string | null;
   parking: number | null;
   floor: number | null;
+  handoverOn: string | null;
+  yearBuilt: number | null;
+  tenure: string | null;
+  view: string | null;
+  viewAr: string | null;
+  orientation: string | null;
+  orientationAr: string | null;
+  serviceChargeSqft: number | null;
   lat: number | null;
   lng: number | null;
   permitNumber: string | null;
   permitType: string | null;
+  /** `Amenities__c` — the portal vocabulary. */
   amenities: string[];
+  /** `Website_Amenities__c` — the website's own extra features. */
+  websiteAmenities: string[];
+  /** Checkboxes. Null only when the org hides the field — a hidden field
+   *  must never read as "unticked". */
+  exclusive: boolean | null;
+  vacantOnTransfer: boolean | null;
   cover: ImageRef | null;
   gallery: ImageRef[];
   floorPlan: ImageRef | null;
   videoUrl: string | null;
   tourUrl: string | null;
+  /** The Property's Assigned Agent (`Agent_Name__c`). */
   agent: { id: string | null; name: string | null; email: string | null } | null;
   lastModifiedAt: string | null;
 };
@@ -120,11 +146,20 @@ export function parseRooms(v: unknown): number | null {
   return /^\d{1,3}$/.test(t) ? Number(t) : null;
 }
 
-/** "12" is a floor. "G+2" is a building's height, not a floor number, and is
- *  dropped rather than guessed at. */
-function parseFloor(v: unknown): number | null {
+/** "12" is a floor, and so is "G" — Ground is 0, per the guide. "G+2" is a
+ *  building's height, not a floor number, and is dropped rather than guessed
+ *  at. */
+export function parseFloor(v: unknown): number | null {
   const t = text(v);
-  return t && /^-?\d{1,3}$/.test(t) ? Number(t) : null;
+  if (!t) return null;
+  if (/^(g|ground)$/i.test(t)) return 0;
+  return /^-?\d{1,3}$/.test(t) ? Number(t) : null;
+}
+
+/** A checkbox. Anything but a real boolean — the field hidden, a value the
+ *  API should never send — is "unknown", never "unticked". */
+function checkbox(v: unknown): boolean | null {
+  return typeof v === "boolean" ? v : null;
 }
 
 /**
@@ -267,17 +302,18 @@ function dedupe(refs: ImageRef[], propertyId: string | null, skip: Set<string>):
   return out;
 }
 
-function agentOf(listingAgent: SfUser | undefined, listingAgentId: unknown, propertyAgent: SfUser | undefined) {
-  const pick = listingAgent && (listingAgent.Email || listingAgent.Name) ? listingAgent : propertyAgent;
-  if (!pick) return null;
-  const email = text(pick.Email)?.toLowerCase() ?? null;
-  const name = text(pick.Name);
-  if (!email && !name) return null;
-  return {
-    id: pick === listingAgent ? text(listingAgentId) : null,
-    name,
-    email,
-  };
+/**
+ * The advisor: the Property's Assigned Agent (`Agent_Name__c`), the only
+ * source since v1.3. The User's id comes along so an admin can map a CRM user
+ * whose email the integration user cannot read — the v1.3 samples show
+ * exactly that, a name with a null email.
+ */
+function agentOf(user: SfUser | undefined, userId: unknown) {
+  const id = text(userId);
+  const email = text(user?.Email)?.toLowerCase() ?? null;
+  const name = text(user?.Name);
+  if (!email && !name && !id) return null;
+  return { id, name, email };
 }
 
 /** Salesforce multi-select picklists are `;`-joined. */
@@ -312,6 +348,8 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
   );
   const floorPlan = imagesInField(text(p.Floor_Plans__c), "Floor_Plans__c")[0] ?? null;
   const coords = parseCoordinates(p.Latitude__c, p.Longitude__c);
+  const projectId = text(p.Project__c);
+  const projectName = text(p.Project__r?.Name);
 
   return {
     v: SNAPSHOT_VERSION,
@@ -319,39 +357,34 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
     listingName: text(rec.Name),
     propertyId,
     propertyName: text(p.Name),
-    reference: text(p.Reference__c),
-    portalListingId: text(p.Listing_ID__c),
+    propertyText: text(p.PropertyText__c),
     websiteStatus: text(rec.Website_Status__c),
-    websiteUrl: text(rec.Website_URL__c),
+    websiteUrl: text(rec.Website_Listing_URL__c),
     websiteError: text(rec.Website_Error__c),
     listingStatus: text(rec.Listing_Status__c),
     propertyStatus: text(p.Property_Status__c),
-    offering:
-      offeringOf(rec.Sale_Rent__c) ??
-      offeringOf(p.OfferingType__c) ??
-      offeringOf(p.Purpose__c),
+    offering: offeringOf(rec.Sale_Rent__c),
     listingPrice: amount(rec.Price__c),
-    propertyPrice: amount(p.PropertyPrice__c),
     yearlyRent: amount(p.Yearly__c),
     rentFrequency: text(p.Rent_Frequency__c),
+    platforms: multiPicklist(rec.Published_Platform__c),
     expiresOn: isoDate(rec.Expired_Date__c),
     permitExpiresOn: isoDate(p.Permit_Expiry_Date_c__c),
-    publishedOn: isoDate(rec.Website_Published_Date__c) ?? isoDate(rec.Published_Date__c),
+    publishedOn: isoDate(rec.Website_Published_Date__c),
     title: text(p.Title__c),
     titleAr: text(p.Title_Arabic__c),
+    shortDescription: text(p.Short_Description__c),
+    shortDescriptionAr: text(p.Short_Description_Arabic__c),
     description: text(p.Description__c),
     descriptionAr: text(p.Description_Arabic__c),
+    area: text(p.Area__c),
+    subArea: text(p.Sub_Area__c),
     location: text(p.Location__c),
-    community: text(p.Community__c),
-    subCommunity: text(p.Sub_Community__c),
     emirate: text(p.Emirate__c),
     category: text(p.Category__c),
     websiteType: text(p.Property_Type__c),
-    crmType: text(p.PropertyType__c),
-    bayutType: text(p.Property_Type_Bayut_Picklist__c),
     projectStatus: text(p.ProjectStatus__c),
-    projectType: text(p.Project_Type__c),
-    projectName: text(p.Project_Name__c),
+    project: projectId || projectName ? { id: projectId, name: projectName } : null,
     developer: text(p.Developer__c),
     beds: parseRooms(p.Rooms__c),
     baths: parseRooms(p.Bathrooms__c),
@@ -360,19 +393,113 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
     furnishing: text(p.FurnishingType__c),
     parking: num(p.NoOfParkingSpaces__c),
     floor: parseFloor(p.FloorNumber__c),
+    handoverOn: isoDate(p.Handover_Date__c),
+    yearBuilt: num(p.Year_Built__c),
+    tenure: text(p.Tenure__c),
+    view: text(p.View__c),
+    viewAr: text(p.View_Arabic__c),
+    orientation: text(p.Orientation__c),
+    orientationAr: text(p.Orientation_Arabic__c),
+    serviceChargeSqft: num(p.Service_Charge_Sqft__c),
     lat: coords?.lat ?? null,
     lng: coords?.lng ?? null,
     permitNumber: text(p.RERAPermitNumber__c),
     permitType: text(p.PermitType__c),
     amenities: multiPicklist(p.Amenities__c),
+    websiteAmenities: multiPicklist(p.Website_Amenities__c),
+    exclusive: checkbox(p.Exclusive__c),
+    vacantOnTransfer: checkbox(p.Vacant_On_Transfer__c),
     cover,
     gallery,
     floorPlan,
     videoUrl: text(p.VideoTourURL__c),
     tourUrl: text(p.URLLink360__c),
-    agent: agentOf(rec.Assigned_Agent__r, rec.Assigned_Agent__c, p.Agent_Name__r),
+    agent: agentOf(p.Agent_Name__r, p.Agent_Name__c),
     lastModifiedAt: laterOf(text(rec.LastModifiedDate), text(p.LastModifiedDate)),
   };
+}
+
+/** Every key a v3 snapshot has, blank. What an older stored snapshot is
+ *  missing is exactly what its Salesforce record did not send then. */
+const BLANK: Omit<ListingSnapshot, "v" | "listingId"> = {
+  listingName: null,
+  propertyId: null,
+  propertyName: null,
+  propertyText: null,
+  websiteStatus: null,
+  websiteUrl: null,
+  websiteError: null,
+  listingStatus: null,
+  propertyStatus: null,
+  offering: null,
+  listingPrice: null,
+  yearlyRent: null,
+  rentFrequency: null,
+  platforms: [],
+  expiresOn: null,
+  permitExpiresOn: null,
+  publishedOn: null,
+  title: null,
+  titleAr: null,
+  shortDescription: null,
+  shortDescriptionAr: null,
+  description: null,
+  descriptionAr: null,
+  area: null,
+  subArea: null,
+  location: null,
+  emirate: null,
+  category: null,
+  websiteType: null,
+  projectStatus: null,
+  project: null,
+  developer: null,
+  beds: null,
+  baths: null,
+  sizeSqft: null,
+  plotSqft: null,
+  furnishing: null,
+  parking: null,
+  floor: null,
+  handoverOn: null,
+  yearBuilt: null,
+  tenure: null,
+  view: null,
+  viewAr: null,
+  orientation: null,
+  orientationAr: null,
+  serviceChargeSqft: null,
+  lat: null,
+  lng: null,
+  permitNumber: null,
+  permitType: null,
+  amenities: [],
+  websiteAmenities: [],
+  exclusive: null,
+  vacantOnTransfer: null,
+  cover: null,
+  gallery: [],
+  floorPlan: null,
+  videoUrl: null,
+  tourUrl: null,
+  agent: null,
+  lastModifiedAt: null,
+};
+
+/**
+ * A stored snapshot, in today's shape. Re-applying (an admin's approval or
+ * mapping) plans from the mirror row without calling Salesforce, and a row
+ * written by an older version has fewer keys. Keys this version no longer
+ * reads are dropped, so the hash a re-apply stores is the hash the next sweep
+ * computes.
+ */
+export function upgradeSnapshot(stored: unknown): ListingSnapshot {
+  const s = (stored ?? {}) as Partial<ListingSnapshot> & Record<string, unknown>;
+  const out = { ...BLANK, v: SNAPSHOT_VERSION, listingId: String(s.listingId ?? "") } as ListingSnapshot;
+  for (const k of Object.keys(BLANK) as (keyof typeof BLANK)[]) {
+    if (s[k] !== undefined) (out as Record<string, unknown>)[k] = s[k];
+  }
+  return out;
 }
 
 /** Canonical JSON: keys sorted at every level, so the hash of equal content

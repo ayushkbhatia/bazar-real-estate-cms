@@ -22,9 +22,11 @@ import { explainAbsences, fetchPublishedListings } from "./fetch";
 import { downloadImage, storeImage } from "./images";
 import { allRows } from "./paginate";
 import {
+  applyCardFlags,
   decideState,
   planListing,
   targetStatus,
+  type CardFlags,
   type Hold,
   type ListingState,
   type Lookups,
@@ -36,6 +38,7 @@ import {
   imageKey,
   snapshotHash,
   toSnapshot,
+  upgradeSnapshot,
   type ImageRef,
   type ListingSnapshot,
 } from "./snapshot";
@@ -81,7 +84,20 @@ const FAILURE_RETRY_MS = 24 * 60 * 60 * 1000;
 const LEASE_SECONDS = 120;
 
 const SYNC_COLUMNS =
-  "id, status, slug, reference, published_at, i18n, title, description, mode, segment, type, property_form, beds, baths, built_up_ft2, plot_ft2, furnishing, parking_bays, floor, geo, price_aed, area_id, sub_community_id, building_id, developer_id, amenities, listing_permit_no, listing_permit_expires_at, title_ar, description_ar, assigned_agent_id, salesforce_listing_id";
+  "id, status, slug, reference, published_at, i18n, flags, title, short_description, description, mode, segment, type, property_form, beds, baths, built_up_ft2, plot_ft2, furnishing, parking_bays, floor, year_built, tenure, view, orientation, service_charge_per_ft2, geo, price_aed, area_id, sub_community_id, building_id, address_line, address_line_ar, development_id, developer_id, amenities, listing_permit_no, listing_permit_expires_at, title_ar, short_description_ar, description_ar, view_ar, orientation_ar, assigned_agent_id, salesforce_listing_id";
+
+/**
+ * Each Arabic twin the CRM can write, and the English it is a translation of.
+ * Arabic the CRM wrote is human, and tied to the English it came with, so the
+ * CMS can tell when the English moves on without it.
+ */
+const TWIN_OF = {
+  title_ar: "title",
+  short_description_ar: "short_description",
+  description_ar: "description",
+  view_ar: "view",
+  orientation_ar: "orientation",
+} as const satisfies Partial<Record<keyof SyncedFields, keyof SyncedFields>>;
 
 type PropertyRow = {
   id: string;
@@ -173,9 +189,10 @@ type Ctx = {
 // ── loading ─────────────────────────────────────────────────────────────
 
 async function loadLookups(admin: Admin): Promise<Lookups> {
-  const [areas, developers, staff, amenities, mappings] = await Promise.all([
-    admin.from("areas").select("id, name, slug, kind, parent_id"),
+  const [areas, developers, developments, staff, amenities, mappings] = await Promise.all([
+    admin.from("areas").select("id, name, name_ar, slug, kind, parent_id"),
     admin.from("developers").select("id, name"),
+    admin.from("developments").select("id, name, name_ar, slug"),
     admin.from("staff").select("user_id, status, public_email"),
     admin.from("amenities_taxonomy").select("label, active, sort_order").order("sort_order"),
     allRows<{ kind: string; source_key: string; target_id: string }>((from, to) =>
@@ -187,7 +204,7 @@ async function loadLookups(admin: Admin): Promise<Lookups> {
         .range(from, to),
     ),
   ]);
-  for (const r of [areas, developers, staff, amenities]) {
+  for (const r of [areas, developers, developments, staff, amenities]) {
     if (r.error) throw new Error(`lookup load failed: ${r.error.message}`);
   }
 
@@ -219,6 +236,7 @@ async function loadLookups(admin: Admin): Promise<Lookups> {
   return {
     areas: areas.data ?? [],
     developers: developers.data ?? [],
+    developments: developments.data ?? [],
     staffByEmail,
     amenityLabels: (amenities.data ?? []).filter((a) => a.active).map((a) => a.label),
     mappings: {
@@ -373,6 +391,7 @@ type Planned = {
   notes: Note[];
   unresolved: Unresolved;
   fields: SyncedFields | null;
+  cardFlags: CardFlags;
   property: PropertyRow | null;
   imagesTotal: number;
   imagesReady: number;
@@ -388,7 +407,9 @@ async function ensureMirror(ctx: Ctx, p: Planned): Promise<void> {
     org_host: ctx.orgHost,
     sf_listing_name: p.snapshot.listingName,
     sf_property_id: p.snapshot.propertyId,
-    sf_reference: p.snapshot.reference,
+    // The CRM's Property ID ("P-0030"). v1.3 of the guide dropped
+    // `Reference__c` from the feed; this is the reference it kept.
+    sf_reference: p.snapshot.propertyName,
     sf_last_modified_at: p.snapshot.lastModifiedAt,
     state: "held" as const,
     holds: p.holds as unknown as Json,
@@ -409,12 +430,7 @@ async function ensureMirror(ctx: Ctx, p: Planned): Promise<void> {
 async function createProperty(ctx: Ctx, p: Planned, fields: SyncedFields): Promise<PropertyRow | null> {
   const slug = slugFor(p.snapshot, fields.title);
   const code = EMIRATE_CODES[(p.snapshot.emirate ?? "abu dhabi").toLowerCase()] ?? "AD";
-  const i18n: Record<string, unknown> = {};
-  const at = ctx.now.toISOString();
-  if (fields.title_ar) i18n.title_ar = { source: "human", at, src_hash: hashSource(fields.title) };
-  if (fields.description_ar && fields.description) {
-    i18n.description_ar = { source: "human", at, src_hash: hashSource(fields.description) };
-  }
+  const i18n = withProvenance({}, fields, Object.keys(TWIN_OF), ctx.now);
 
   for (let attempt = 0; attempt < 6; attempt++) {
     const { data, error } = await ctx.admin
@@ -424,7 +440,7 @@ async function createProperty(ctx: Ctx, p: Planned, fields: SyncedFields): Promi
         reference: generatePropertyReference(code),
         slug,
         status: "draft",
-        flags: {},
+        flags: (applyCardFlags({}, p.cardFlags) ?? {}) as Json,
         compliance: {},
         seo: { slug },
         i18n: i18n as Json,
@@ -460,20 +476,42 @@ async function createProperty(ctx: Ctx, p: Planned, fields: SyncedFields): Promi
   throw new Error("could not allocate a unique reference");
 }
 
+/**
+ * `i18n` with provenance for every Arabic twin whose value or English is in
+ * `changed`: human and tied to its English when the CRM wrote it, and gone
+ * when the twin was cleared with its English. An English edit the CRM made
+ * with its Arabic left as it was re-ties the Arabic too — the CRM sent both,
+ * so the Arabic is current, not stale.
+ */
+function withProvenance(
+  current: Json | null | undefined,
+  fields: SyncedFields,
+  changed: readonly string[],
+  now: Date,
+): Record<string, unknown> {
+  const i18n = { ...((current as Record<string, unknown> | null) ?? {}) };
+  const at = now.toISOString();
+  for (const [twin, english] of Object.entries(TWIN_OF) as [keyof typeof TWIN_OF, keyof SyncedFields][]) {
+    if (!changed.includes(twin) && !changed.includes(english)) continue;
+    const value = fields[twin];
+    const source = fields[english];
+    if (typeof value === "string" && value && typeof source === "string" && source) {
+      i18n[twin] = { source: "human", at, src_hash: hashSource(source) };
+    } else if (value === null) {
+      delete i18n[twin];
+    }
+  }
+  return i18n;
+}
+
 async function updateFields(ctx: Ctx, p: Planned, property: PropertyRow, fields: SyncedFields): Promise<void> {
   const patch = driftOf(fields, property) as Record<string, unknown>;
+  const flags = applyCardFlags(property.flags, p.cardFlags);
+  if (flags) patch.flags = flags;
   if (Object.keys(patch).length === 0) return;
 
-  // Provenance for Arabic the CRM wrote: human, and tied to the English it
-  // came with, so the CMS can tell when the English moves on without it.
-  if ("title_ar" in patch || "description_ar" in patch) {
-    const i18n = { ...((property.i18n as Record<string, unknown> | null) ?? {}) };
-    const at = ctx.now.toISOString();
-    if ("title_ar" in patch) i18n.title_ar = { source: "human", at, src_hash: hashSource(fields.title) };
-    if ("description_ar" in patch && fields.description) {
-      i18n.description_ar = { source: "human", at, src_hash: hashSource(fields.description) };
-    }
-    patch.i18n = i18n;
+  if (Object.entries(TWIN_OF).some(([twin, english]) => twin in patch || english in patch)) {
+    patch.i18n = withProvenance(property.i18n, fields, Object.keys(patch), ctx.now);
   }
 
   const { data, error } = await ctx.admin
@@ -669,6 +707,7 @@ async function contentPhase(ctx: Ctx, snapshot: ListingSnapshot, seen: boolean):
     notes: plan.notes,
     unresolved: plan.unresolved,
     fields: plan.fields,
+    cardFlags: plan.cardFlags,
     property: ctx.properties.get(snapshot.listingId) ?? null,
     imagesTotal: wantedImages(snapshot).length,
     imagesReady: 0,
@@ -835,7 +874,7 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
       org_host: ctx.orgHost,
       sf_listing_name: p.snapshot.listingName,
       sf_property_id: p.snapshot.propertyId,
-      sf_reference: p.snapshot.reference,
+      sf_reference: p.snapshot.propertyName,
       sf_last_modified_at: p.snapshot.lastModifiedAt,
       state,
       holds: holds as unknown as Json,
@@ -868,16 +907,18 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
 
 // ── phase three: tell Salesforce ────────────────────────────────────────
 
+/** Step 5 of the guide. v1.3 corrected the URL field's name: it is
+ *  `Website_Listing_URL__c`, not the `Website_URL__c` of v1.2. */
 export type WriteBack = {
   Website_Status__c?: "Published" | "Deactivated";
-  Website_URL__c?: string | null;
+  Website_Listing_URL__c?: string | null;
   Website_Error__c?: string | null;
 };
 
 const WEBSITE_ERROR_MAX = 32_000;
 
 /**
- * What the CRM team should see on the listing, per guide v1.2 step 5.
+ * What the CRM team should see on the listing, per the guide's step 5.
  *
  * Their contract: Published with the URL on success; Deactivated with the
  * reason on failure, which takes the listing out of the published set until
@@ -891,16 +932,16 @@ const WEBSITE_ERROR_MAX = 32_000;
 export function writeBackFor(state: ListingState, holds: readonly Hold[], liveUrl: string | null): WriteBack | null {
   switch (state) {
     case "live":
-      return { Website_Status__c: "Published", Website_URL__c: liveUrl, Website_Error__c: null };
+      return { Website_Status__c: "Published", Website_Listing_URL__c: liveUrl, Website_Error__c: null };
     case "hidden":
       return {
         Website_Status__c: "Deactivated",
-        Website_URL__c: null,
+        Website_Listing_URL__c: null,
         Website_Error__c: "Taken off the website by the Bazar team. Speak to them before publishing it again.",
       };
     case "awaiting_approval":
       return {
-        Website_URL__c: null,
+        Website_Listing_URL__c: null,
         Website_Error__c: "Complete. Waiting for the Bazar team to approve its first appearance on the website.",
       };
     case "held": {
@@ -908,12 +949,12 @@ export function writeBackFor(state: ListingState, holds: readonly Hold[], liveUr
       if (theirs.length) {
         return {
           Website_Status__c: "Deactivated",
-          Website_URL__c: null,
+          Website_Listing_URL__c: null,
           Website_Error__c: theirs.map((h) => h.message).join("\n").slice(0, WEBSITE_ERROR_MAX),
         };
       }
       const lines = holds.map((h) => (h.fix === "wait" ? `In progress: ${h.message}` : `Waiting on the Bazar website team: ${h.message}`));
-      return { Website_URL__c: null, Website_Error__c: lines.join("\n").slice(0, WEBSITE_ERROR_MAX) || null };
+      return { Website_Listing_URL__c: null, Website_Error__c: lines.join("\n").slice(0, WEBSITE_ERROR_MAX) || null };
     }
     default:
       return null;
@@ -934,8 +975,11 @@ export function writeBackDelta(
         : current.websiteStatus === want.Website_Status__c;
     if (!same) delta.Website_Status__c = want.Website_Status__c;
   }
-  if (want.Website_URL__c !== undefined && (want.Website_URL__c ?? null) !== (current.websiteUrl ?? null)) {
-    delta.Website_URL__c = want.Website_URL__c;
+  if (
+    want.Website_Listing_URL__c !== undefined &&
+    (want.Website_Listing_URL__c ?? null) !== (current.websiteUrl ?? null)
+  ) {
+    delta.Website_Listing_URL__c = want.Website_Listing_URL__c;
   }
   if (
     want.Website_Error__c !== undefined &&
@@ -1114,7 +1158,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
       const wanted = new Set(opts.onlyStored);
       snapshots = [...ctx.mirror.values()]
         .filter((m) => wanted.has(m.sf_listing_id) && m.state !== "withdrawn")
-        .map((m) => ({ snapshot: m.snapshot as unknown as ListingSnapshot, seen: false }));
+        .map((m) => ({ snapshot: upgradeSnapshot(m.snapshot), seen: false }));
     } else {
       // A sandbox's rows are test data. When the org changes, the old org's
       // mirror-only rows go; anything that reached `properties` stays linked.
