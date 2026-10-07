@@ -5,6 +5,7 @@ import {
   IDS,
   RENT_UNMAPPED,
   SPARSE_PUBLISHED,
+  NOW,
 } from "./test-fixtures";
 
 const h = vi.hoisted(() => ({
@@ -73,8 +74,10 @@ const { imageKey, toSnapshot } = await import("./snapshot");
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0]);
 const revalidated: { propertyUrls: string[]; lists: boolean }[] = [];
+// On the fixtures' clock, not the calendar's: RENT_UNMAPPED's listing expires on
+// 1 Oct 2026, and with the real date every run after that held it as expired.
 const run = (extra: Partial<Parameters<typeof runListingSync>[0]> = {}) =>
-  runListingSync({ trigger: "cron", revalidate: (p) => revalidated.push(p), ...extra });
+  runListingSync({ trigger: "cron", revalidate: (p) => revalidated.push(p), now: NOW, ...extra });
 
 function seedLookups(db: FakeDb) {
   db.seed(
