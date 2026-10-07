@@ -856,8 +856,15 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <article className="bg-bz-bg pb-24 md:pb-0">
-      {/* Hero */}
-      <section className="relative h-[640px] text-white overflow-hidden">
+      {/*
+        Hero. On a phone it is as tall as its copy and buttons (with a floor
+        so the render still reads), not a fixed 640px: the stats row is
+        desktop-only, and keeping the old height would just leave the space
+        it freed as empty photo above the name. The facts it quoted are all
+        further down the page — price and plan in the payment-plan section,
+        bedrooms and units in the units table.
+      */}
+      <section className="relative flex flex-col min-h-[440px] md:h-[640px] text-white overflow-hidden">
         {hero.url ? (
           <Image
             src={hero.url}
@@ -881,7 +888,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               "linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.62) 100%)",
           }}
         />
-        <div className="relative h-full flex flex-col px-4 md:px-12 pt-12 pb-12">
+        <div className="relative flex-1 flex flex-col px-4 md:px-12 pt-8 pb-8 md:pt-12 md:pb-12">
           <div className="flex gap-2 flex-wrap">
             {development.tagline ? (
               <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-bz-accent text-white">
@@ -897,7 +904,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </span>
             ) : null}
           </div>
-          <div className="mt-auto">
+          <div className="mt-auto pt-10 md:pt-0">
             <div className="eyebrow" style={{ color: "rgba(255,255,255,.72)" }}>
               {development.developer?.name ?? tc("developerFallback")} ·{" "}
               {development.area?.name ?? tc("areaFallback")}
@@ -917,7 +924,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </p>
             ) : null}
             <div
-              className="mt-9 pt-7 flex gap-9 flex-wrap items-end"
+              className="mt-6 pt-5 md:mt-9 md:pt-7 flex gap-9 flex-wrap items-end"
               style={{ borderTop: "1px solid rgba(255,255,255,.2)" }}
             >
               <HeroStat
@@ -1061,9 +1068,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   );
 }
 
+/** Desktop-only: on a phone the hero drops its stats row to stay short. */
 function HeroStat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="serif text-[28px]" style={{ letterSpacing: "-0.015em" }}>
         {value}
       </div>
