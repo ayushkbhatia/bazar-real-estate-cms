@@ -1,24 +1,29 @@
 import { describe, expect, it } from "vitest";
 import {
+  SNAPSHOT_VERSION,
   imageKey,
   imagesInField,
   imagesInRichText,
   imagesInUrlList,
   parseCoordinates,
+  parseFloor,
   parseImageAddress,
   parseRooms,
   snapshotHash,
   stableStringify,
   toSnapshot,
+  upgradeSnapshot,
 } from "./snapshot";
 import {
   COMPLETE_SALE,
   EXPIRED_OFF_PLAN_VILLA,
+  GUIDE_V13_PRODUCTION_SAMPLE,
   RENT_UNMAPPED,
   SPARSE_PUBLISHED,
 } from "./test-fixtures";
 import {
   NEVER_READ,
+  NOT_IN_WEBSITE_FEED,
   deletedSoql,
   selectList,
   statusSoql,
@@ -36,6 +41,28 @@ describe("fields", () => {
     expect(sweepSoql()).not.toMatch(/FIELDS\(/i);
   });
 
+  it("reads the v1.3 feed and nothing the guide took out of it", () => {
+    // Community__c stays in Salesforce for the portals; the advisor comes
+    // only from the Property's Assigned Agent; the URL field was renamed.
+    const select = selectList().split(", ");
+    for (const f of NOT_IN_WEBSITE_FEED) {
+      expect(select.some((c) => c === f || c.endsWith(`.${f}`) || c.startsWith(`${f.replace(/__c$/, "__r")}.`))).toBe(false);
+    }
+    for (const f of [
+      "Website_Listing_URL__c",
+      "Published_Platform__c",
+      "Property__r.Area__c",
+      "Property__r.Sub_Area__c",
+      "Property__r.Tenure__c",
+      "Property__r.Website_Amenities__c",
+      "Property__r.Project__r.Name",
+      "Property__r.Agent_Name__c",
+      "Property__r.Agent_Name__r.Email",
+    ]) {
+      expect(select).toContain(f);
+    }
+  });
+
   it("reads only what a describe says is visible, when narrowed", () => {
     const select = selectList({
       listing: new Set(["Id", "Name", "Website_Status__c", "Property__c"]),
@@ -43,7 +70,9 @@ describe("fields", () => {
     });
     expect(select).toContain("Property__r.Title__c");
     expect(select).not.toContain("Property__r.Description__c");
-    expect(select).not.toContain("Assigned_Agent__r");
+    // A relationship is read only when its lookup is visible.
+    expect(select).not.toContain("Agent_Name__r");
+    expect(select).not.toContain("Project__r");
   });
 
   it("sweeps Republished as well as Published", () => {
@@ -130,27 +159,62 @@ describe("toSnapshot", () => {
   it("normalises the sparse published listing without inventing anything", () => {
     const s = toSnapshot(SPARSE_PUBLISHED);
     expect(s.title).toBeNull();
-    expect(s.location).toBeNull();
+    expect(s.area).toBeNull();
     expect(s.listingPrice).toBeNull();
-    expect(s.propertyPrice).toBe(1_000_000);
     expect(s.offering).toBe("Sale");
     expect(s.beds).toBe(6);
     expect(s.baths).toBe(3);
     expect(s.gallery).toHaveLength(2);
     expect(s.cover).toBeNull();
+    expect(s.platforms).toEqual(["Bayut", "Website"]);
     expect(s.agent).toEqual({ id: "005iy000000A9ozAAC", name: "Agent One", email: "agent.one@crm.example" });
     expect(s.lastModifiedAt).toBe("2026-09-24T05:09:47.000+0000");
   });
 
-  it("takes the listing's own offer over the property's", () => {
-    // LST-00002 in the sandbox says Rent on the listing and Sale on the
-    // property. The listing is the offer.
-    const s = toSnapshot({ ...COMPLETE_SALE, Sale_Rent__c: "Rent" });
-    expect(s.offering).toBe("Rent");
+  it("reads the offer from the listing alone", () => {
+    expect(toSnapshot({ ...COMPLETE_SALE, Sale_Rent__c: "Rent" }).offering).toBe("Rent");
     expect(toSnapshot({ ...COMPLETE_SALE, Sale_Rent__c: null }).offering).toBe(null);
-    expect(
-      toSnapshot({ ...RENT_UNMAPPED, Sale_Rent__c: null }).offering,
-    ).toBe("Rent");
+  });
+
+  it("reads the guide's production sample as it is", () => {
+    const s = toSnapshot(GUIDE_V13_PRODUCTION_SAMPLE);
+    expect(s).toMatchObject({
+      propertyName: "P-0030",
+      propertyText: "Bashayer Residences",
+      area: "ADGM",
+      subArea: null,
+      handoverOn: "2026-10-19",
+      yearBuilt: 2030,
+      tenure: "Freehold",
+      view: "Sea View",
+      orientation: "E",
+      orientationAr: "شرقي",
+      exclusive: false,
+      vacantOnTransfer: false,
+      project: { id: "a05iy000000Q2cdAAC", name: "Al Hamra Bloom Living" },
+      websiteUrl: null,
+      lastModifiedAt: null,
+    });
+    expect(s.websiteAmenities).toHaveLength(7);
+    // An advisor whose email the integration user cannot read keeps their id,
+    // which is what an admin's mapping is keyed on.
+    expect(s.agent).toEqual({ id: "005iy000000B7xyAAC", name: "Agent Three", email: null });
+  });
+
+  it("never reads a hidden checkbox as unticked", () => {
+    const { Exclusive__c: _e, Vacant_On_Transfer__c: _v, ...rest } = COMPLETE_SALE.Property__r!;
+    void _e;
+    void _v;
+    const s = toSnapshot({ ...COMPLETE_SALE, Property__r: rest });
+    expect(s.exclusive).toBeNull();
+    expect(s.vacantOnTransfer).toBeNull();
+  });
+
+  it("reads Ground as floor 0 and drops a building's height", () => {
+    expect(parseFloor("G")).toBe(0);
+    expect(parseFloor("ground")).toBe(0);
+    expect(parseFloor("4")).toBe(4);
+    expect(parseFloor("G+1")).toBeNull();
   });
 
   it("uses the cover once, not twice", () => {
@@ -170,18 +234,46 @@ describe("toSnapshot", () => {
     expect(s.cover).toEqual({ kind: "url", url: "https://example.com/properties/property-3-main.jpg" });
   });
 
-  it("reads the off-plan villa's two type fields as they are", () => {
+  it("reads the off-plan villa's type and dates as they are", () => {
     const s = toSnapshot(EXPIRED_OFF_PLAN_VILLA);
-    expect(s.crmType).toBe("Duplex");
-    expect(s.bayutType).toBe("Villa");
+    expect(s.websiteType).toBe("Villa");
     expect(s.expiresOn).toBe("2026-09-18");
+    expect(s.handoverOn).toBe("2028-06-30");
+  });
+});
+
+describe("upgradeSnapshot", () => {
+  it("brings a v2 snapshot to today's shape, blank where v2 had nothing", () => {
+    // What a mirror row written before 7 Oct 2026 holds.
+    const v2 = {
+      v: 2,
+      listingId: "a03iy000000XI30AAG",
+      listingName: "LST-00002",
+      title: "4BR Villa on Yas Island",
+      community: "Yas Island",
+      bayutType: "Villa",
+      propertyPrice: 1_850_000,
+      amenities: ["Balcony"],
+    };
+    const s = upgradeSnapshot(v2);
+    expect(s.v).toBe(SNAPSHOT_VERSION);
+    expect(s).toMatchObject({ listingId: "a03iy000000XI30AAG", title: "4BR Villa on Yas Island", area: null, websiteAmenities: [] });
+    expect(s.amenities).toEqual(["Balcony"]);
+    expect(s).not.toHaveProperty("community");
+    expect(s).not.toHaveProperty("bayutType");
+  });
+
+  it("is a no-op on a current snapshot, so a re-apply stores the sweep's own hash", () => {
+    const s = toSnapshot(COMPLETE_SALE);
+    expect(upgradeSnapshot(JSON.parse(JSON.stringify(s)))).toEqual(s);
+    expect(snapshotHash(upgradeSnapshot(JSON.parse(JSON.stringify(s))))).toBe(snapshotHash(s));
   });
 });
 
 describe("snapshotHash", () => {
   it("ignores our own write-back when it is read back", () => {
     const a = toSnapshot(COMPLETE_SALE);
-    const b = toSnapshot({ ...COMPLETE_SALE, Website_URL__c: "https://www.bazarrealestate.ae/p/x", Website_Error__c: "x" });
+    const b = toSnapshot({ ...COMPLETE_SALE, Website_Listing_URL__c: "https://www.bazarrealestate.ae/p/x", Website_Error__c: "x" });
     expect(snapshotHash(a)).toBe(snapshotHash(b));
   });
 

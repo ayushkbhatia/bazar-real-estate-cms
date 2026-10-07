@@ -153,9 +153,12 @@ export default async function SalesforceListingsPage() {
           <p className="mt-3 text-[14px] text-bz-muted leading-relaxed">
             Every fifteen minutes the website reads each listing marked Published for the website in
             Salesforce. A complete one becomes a listing here; an incomplete one waits below with the
-            reason. Title, description, price, rooms, location, permit and photos come from Salesforce
-            and are overwritten on every sync — change them there. The slug, the SEO fields, card
-            labels and the short description are the website&rsquo;s own.
+            reason. Everything the listing page says about the property — title, summary and
+            description in English and Arabic, price, rooms, area, project, tenure, year built, view,
+            orientation, service charge, amenities, the Exclusive and Vacant on transfer labels,
+            permit and photos — comes from Salesforce and is overwritten on every sync: change it
+            there. The slug, the SEO fields, the advisor note and any other card labels are the
+            website&rsquo;s own.
           </p>
         </header>
 

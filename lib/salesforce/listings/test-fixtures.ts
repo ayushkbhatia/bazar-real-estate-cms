@@ -2,16 +2,17 @@ import type { SfListingRecord } from "./fields";
 import type { Lookups } from "./plan";
 
 /**
- * Listings shaped exactly like the sandbox returned them on 24 Sept 2026 —
- * the quirks are the point: rooms as strings, coordinates as strings, photo
- * URLs comma-separated, uploads as `/sfc/servlet.shepherd` links inside
- * rich text, a villa filed as "Duplex" in one type field and "Villa" in the
- * other. The CRM users' names and emails are replaced.
+ * Listings shaped exactly as v1.3 of the Published Listings guide returns them
+ * (Levarus, 5 Oct 2026) — the quirks are the point: rooms as strings,
+ * coordinates as strings, photo URLs comma-separated, uploads as
+ * `/sfc/servlet.shepherd` links inside rich text, the orientation as a
+ * compass letter, an advisor whose email the integration user cannot read.
+ * The CRM users' names and emails are replaced.
  */
 
-export const NOW = new Date("2026-09-24T09:00:00Z");
+export const NOW = new Date("2026-10-07T09:00:00Z");
 
-/** The sandbox's only published listing: almost nothing filled in. */
+/** The kind of record the sandbox started with: almost nothing filled in. */
 export const SPARSE_PUBLISHED: SfListingRecord = {
   Id: "a03iy000000R7rpAAC",
   Name: "LST-00000",
@@ -22,31 +23,31 @@ export const SPARSE_PUBLISHED: SfListingRecord = {
   Price__c: null,
   Expired_Date__c: "2026-11-05",
   Website_Published_Date__c: "2026-09-15",
+  Published_Platform__c: "Bayut;Website",
   Property__c: "a01iy000000WjEyAAK",
-  Assigned_Agent__c: "005iy000000A9ozAAC",
-  Assigned_Agent__r: { Name: "Agent One", Email: "agent.one@crm.example" },
   Property__r: {
     Id: "a01iy000000WjEyAAK",
-    Name: "Property 1",
+    Name: "P-0001",
     LastModifiedDate: "2026-09-22T08:18:34.000+0000",
     Amenities__c:
-      "Shared Pool;Children's Pool;Children's Play Area;Location URL;Maids Room;Balcony;Concierge Service;Pets Allowed;Study;Private Garden;Private Pool;Private Gym;Private Jacuzzi;Built in Kitchen;Appliances;Maid Service",
+      "Shared Pool;Children's Pool;Children's Play Area;Maids Room;Balcony;Concierge Service;Pets Allowed;Study;Private Garden;Private Pool;Private Gym;Private Jacuzzi;Built in Kitchen;Appliances;Maid Service",
     Bathrooms__c: "3",
     Rooms__c: "6",
     Latitude__c: "25.1168",
     Longitude__c: "55.2550",
-    PropertyPrice__c: 1000000,
     PropertySizeSqft__c: 2000,
     Plot_Size__c: 3000,
-    Purpose__c: "Sale",
     Property_Status__c: "Available",
+    Exclusive__c: false,
+    Vacant_On_Transfer__c: false,
     Listing_Images__c:
       '<img src="/sfc/servlet.shepherd/version/download/068iy0000002GlRAAU" alt="Image"></img><br><img src="/sfc/servlet.shepherd/version/download/068iy0000002Gn3AAE" alt="Image"></img><br>',
-    Agent_Name__r: { Name: "Agent Two", Email: "agent.two@crm.example" },
+    Agent_Name__c: "005iy000000A9ozAAC",
+    Agent_Name__r: { Name: "Agent One", Email: "agent.one@crm.example" },
   },
 };
 
-/** A rental in a location the website has no area for. */
+/** A rental in an Area the website does not have yet. */
 export const RENT_UNMAPPED: SfListingRecord = {
   Id: "a03iy000000XHoUAAW",
   Name: "LST-00003",
@@ -55,27 +56,24 @@ export const RENT_UNMAPPED: SfListingRecord = {
   Listing_Status__c: "Active",
   Sale_Rent__c: "Rent",
   Price__c: 145000,
-  Published_Date__c: "2026-09-17",
-  Expired_Date__c: "2026-10-01",
+  Expired_Date__c: "2026-12-01",
+  Published_Platform__c: "Website",
   Property__c: "a01iy000000aUfWAAU",
-  Assigned_Agent__c: "005iy000000A9ozAAC",
-  Assigned_Agent__r: { Name: "Agent One", Email: "agent.one@crm.example" },
   Property__r: {
     Id: "a01iy000000aUfWAAU",
     Name: "P-0005",
-    Title__c: "Property 3 - 3BR Apt Sobha City",
-    Title_Arabic__c: "شقة عصرية 3 غرف في شوبا سيتي",
+    PropertyText__c: "Sobha Residences",
+    Title__c: "Property 3 - 3BR Apt Masdar",
+    Title_Arabic__c: "شقة عصرية 3 غرف في مصدر",
     Description__c:
       "Bright 3-bedroom apartment with balcony, shared pool access, gym, and covered parking. Ready to move in.",
     Description_Arabic__c: "شقة مشرقة من 3 غرف نوم مع شرفة ومسبح مشترك وصالة رياضية وموقف سيارات مغطى.",
-    Location__c: "Sobha City, Abu Dhabi",
+    Location__c: "Masdar, Abu Dhabi",
+    Area__c: "Masdar City",
     Emirate__c: "Abu Dhabi",
     Category__c: "Residential",
-    PropertyType__c: "Apartment",
-    Property_Type_Bayut_Picklist__c: "Apartments",
-    OfferingType__c: "Rent",
+    Property_Type__c: "Apartment",
     ProjectStatus__c: "Primary - Ready to move",
-    Project_Type__c: "Secondary",
     Developer__c: "Sobha Realty",
     Rooms__c: "3",
     Bathrooms__c: "3",
@@ -85,16 +83,15 @@ export const RENT_UNMAPPED: SfListingRecord = {
     FloorNumber__c: "12",
     Latitude__c: "24.4539",
     Longitude__c: "54.3773",
-    PropertyPrice__c: 145000,
     Yearly__c: 145000,
     Rent_Frequency__c: "Yearly",
     Property_Status__c: "Available",
     RERAPermitNumber__c: "RERA-2026-1003",
     Permit_Expiry_Date_c__c: "2026-12-01",
-    Reference__c: "BZR-PROP-003",
-    Listing_ID__c: "BYT-10003",
     Amenities__c: "Central A/C;Shared Pool;Covered Parking;Balcony",
     Main_Image_URL__c: "https://example.com/properties/property-3-main.jpg",
+    Agent_Name__c: "005iy000000A9ozAAC",
+    Agent_Name__r: { Name: "Agent One", Email: "agent.one@crm.example" },
   },
 };
 
@@ -112,11 +109,11 @@ export const EXPIRED_OFF_PLAN_VILLA: SfListingRecord = {
     Id: "a01iy000000aUfXAAU",
     Name: "P-0006",
     Title__c: "Property 4 - 5BR Villa Hudayriyat",
-    Location__c: "Hudayriyat Island, Abu Dhabi",
+    Area__c: "Hudayriyat Island",
     Emirate__c: "Abu Dhabi",
-    PropertyType__c: "Duplex",
-    Property_Type_Bayut_Picklist__c: "Villa",
+    Property_Type__c: "Villa",
     ProjectStatus__c: "Primary - Off-Plan",
+    Handover_Date__c: "2028-06-30",
     Developer__c: "Modon",
     Rooms__c: "5",
     Bathrooms__c: "6",
@@ -138,20 +135,26 @@ export const COMPLETE_SALE: SfListingRecord = {
   Price__c: 1850000,
   Website_Published_Date__c: "2026-09-17",
   Expired_Date__c: "2026-12-31",
+  Published_Platform__c: "Bayut;Property Finder;Website",
   Property__c: "a01iy000000aUfVAAU",
-  Assigned_Agent__c: "005iy000000AE3JAAW",
-  Assigned_Agent__r: { Name: "Staff Advisor", Email: "Advisor@Bazar.ae" },
   Property__r: {
     Id: "a01iy000000aUfVAAU",
     Name: "P-0004",
+    PropertyText__c: "Yas Acres Villa 12",
     Title__c: "4BR Villa on Yas Island",
+    Title_Arabic__c: "فيلا من 4 غرف في جزيرة ياس",
+    Short_Description__c: "A garden villa a short walk from the golf course.",
+    Short_Description_Arabic__c: "فيلا بحديقة على بعد خطوات من ملعب الغولف.",
     Description__c: "Fully furnished 4-bedroom villa.\n\nPrivate garden & maid's room.",
-    Location__c: "Yas Island, Abu Dhabi",
+    Description_Arabic__c: "فيلا مفروشة بالكامل من 4 غرف نوم.\n\nحديقة خاصة وغرفة خادمة.",
+    Area__c: "Yas Island",
+    Sub_Area__c: "Yas Acres",
     Emirate__c: "Abu Dhabi",
     Category__c: "Residential",
-    PropertyType__c: "Duplex",
-    Property_Type_Bayut_Picklist__c: "Villa",
+    Property_Type__c: "Villa",
     ProjectStatus__c: "Resale - Ready to move",
+    Project__c: "a05iy000000Q1abAAC",
+    Project__r: { Name: "Yas Acres" },
     Developer__c: "Aldar Properties",
     Rooms__c: "4",
     Bathrooms__c: "4",
@@ -159,13 +162,23 @@ export const COMPLETE_SALE: SfListingRecord = {
     Plot_Size__c: 4500,
     FurnishingType__c: "Fully Furnished",
     NoOfParkingSpaces__c: 2,
+    FloorNumber__c: "G",
+    Year_Built__c: 2019,
+    Tenure__c: "Freehold",
+    View__c: "Garden View",
+    View_Arabic__c: "إطلالة على الحدائق",
+    Orientation__c: "E",
+    Orientation_Arabic__c: "شرقي",
+    Service_Charge_Sqft__c: 18.5,
+    Exclusive__c: true,
+    Vacant_On_Transfer__c: false,
     Latitude__c: "24.4980",
     Longitude__c: "54.6050",
     RERAPermitNumber__c: "ADREC-2026-0042",
     PermitType__c: "ADREC",
     Permit_Expiry_Date_c__c: "2026-12-31",
-    Reference__c: "BZR-PROP-002",
     Amenities__c: "Central A/C;Private Garden;Maids Room;Priya testing",
+    Website_Amenities__c: "Majlis;Driver's Room",
     Cover_Page_Image__c:
       '<p><img src="https://bazarrealestate--sand.sandbox.file.force.com/sfc/servlet.shepherd/version/download/068iy0000002S53AAE" alt="cover"></p>',
     Listing_Images__c:
@@ -173,6 +186,90 @@ export const COMPLETE_SALE: SfListingRecord = {
     Listing_Image_URLs__c: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200",
     Floor_Plans__c:
       '<img src="https://bazarrealestate--sand.sandbox.file.force.com/servlet/rtaImage?eid=a01iy000000aUfV&amp;feoid=00Niy000001&amp;refid=0EMiy0000000XyZ">',
+    Agent_Name__c: "005iy000000AE3JAAW",
+    Agent_Name__r: { Name: "Staff Advisor", Email: "Advisor@Bazar.ae" },
+  },
+};
+
+/**
+ * The production sample in v1.3 of the guide, field for field: a resale
+ * off-plan apartment in ADGM, the advisor's email unreadable, no photos.
+ * Ids replace the guide's placeholders.
+ */
+export const GUIDE_V13_PRODUCTION_SAMPLE: SfListingRecord = {
+  Id: "a03iy000000Z9qRAAS",
+  Name: "LST-00030",
+  Website_Status__c: "Published",
+  Website_Listing_URL__c: null,
+  Website_Error__c: null,
+  Website_Published_Date__c: null,
+  Listing_Status__c: null,
+  Sale_Rent__c: "Sale",
+  Price__c: 3100000,
+  Expired_Date__c: null,
+  Published_Platform__c: "Website",
+  LastModifiedDate: null,
+  Property__c: "a01iy000000bX30AAE",
+  Property__r: {
+    Name: "P-0030",
+    PropertyText__c: "Bashayer Residences",
+    Title__c: "Bashayer Residences",
+    Title_Arabic__c: "الخضراء",
+    Bathrooms__c: "3",
+    Rooms__c: "2",
+    Emirate__c: "Abu Dhabi",
+    Location__c: null,
+    Area__c: "ADGM",
+    Sub_Area__c: null,
+    Category__c: "Residential",
+    Property_Type__c: "Apartment",
+    PropertySizeSqft__c: 1586,
+    Plot_Size__c: 3000,
+    FurnishingType__c: "Unfurnished",
+    Handover_Date__c: "2026-10-19",
+    Short_Description__c:
+      "A generous three-bedroom residence designed for family living, with spacious interiors, refined finishes, outdoor areas, and a premium waterfront setting.",
+    Short_Description_Arabic__c:
+      "مصمم خصيصاً لحياة العائلة، يتميز بتصميمات داخلية واسعة، وتشطيبات راقية، ومساحات خارجية، وموقع متميز على الواجهة المائية.",
+    Description__c:
+      "A generous three-bedroom residence designed for family living, with spacious interiors, refined finishes, outdoor areas, and a premium waterfront setting.",
+    Description_Arabic__c:
+      "مصمم خصيصاً لحياة العائلة، يتميز بتصميمات داخلية واسعة، وتشطيبات راقية، ومساحات خارجية، وموقع متميز على الواجهة المائية.",
+    Tenure__c: "Freehold",
+    Year_Built__c: 2030,
+    Rent_Frequency__c: null,
+    Yearly__c: 85000,
+    Property_Status__c: "Available",
+    NoOfParkingSpaces__c: 2,
+    FloorNumber__c: "4",
+    View__c: "Sea View",
+    View_Arabic__c: "إطلالة على البحر",
+    Orientation__c: "E",
+    Orientation_Arabic__c: "شرقي",
+    Service_Charge_Sqft__c: null,
+    Amenities__c: null,
+    Website_Amenities__c:
+      "Driver's Room;Guest Bedroom;Home Office;Laundry Room;Majlis;En-Suite Bathrooms;Guest Bathroom",
+    Exclusive__c: false,
+    Vacant_On_Transfer__c: false,
+    Project__c: "a05iy000000Q2cdAAC",
+    Project__r: { Name: "Al Hamra Bloom Living" },
+    ProjectStatus__c: "Resale - Off-plan",
+    Developer__c: "Bloom Holding",
+    PermitType__c: "RERA",
+    RERAPermitNumber__c: "RAK-2026-1009",
+    Permit_Expiry_Date_c__c: "2031-11-03",
+    Latitude__c: "24.4136",
+    Longitude__c: "54.3536",
+    Main_Image_URL__c: null,
+    Cover_Page_Image__c: null,
+    Listing_Images__c: null,
+    Listing_Image_URLs__c: null,
+    Floor_Plans__c: null,
+    URLLink360__c: null,
+    VideoTourURL__c: null,
+    Agent_Name__c: "005iy000000B7xyAAC",
+    Agent_Name__r: { Name: "Agent Three", Email: null },
   },
 };
 
@@ -183,26 +280,38 @@ export const IDS = {
   saadiyat: "00000000-0000-4000-8000-000000000004",
   lagoons: "00000000-0000-4000-8000-000000000005",
   reem: "00000000-0000-4000-8000-000000000006",
+  yasAcres: "00000000-0000-4000-8000-000000000007",
+  adgm: "00000000-0000-4000-8000-000000000008",
   aldar: "00000000-0000-4000-8000-000000000011",
   modon: "00000000-0000-4000-8000-000000000012",
   sobha: "00000000-0000-4000-8000-000000000013",
+  bloom: "00000000-0000-4000-8000-000000000014",
   advisor: "00000000-0000-4000-8000-000000000021",
+  yasAcresProject: "00000000-0000-4000-8000-000000000031",
+  hamraProject: "00000000-0000-4000-8000-000000000032",
 };
 
 export function lookups(overrides: Partial<Lookups> = {}): Lookups {
   return {
     areas: [
-      { id: IDS.abuDhabi, name: "Abu Dhabi", slug: "abu-dhabi", kind: "emirate", parent_id: null },
-      { id: IDS.yas, name: "Yas Island", slug: "yas-island", kind: "area", parent_id: IDS.abuDhabi },
-      { id: IDS.hudayriyat, name: "Hudayriyat Island", slug: "hudayriyat-island", kind: "area", parent_id: IDS.abuDhabi },
-      { id: IDS.saadiyat, name: "Saadiyat Island", slug: "saadiyat-island", kind: "area", parent_id: IDS.abuDhabi },
-      { id: IDS.lagoons, name: "Saadiyat Lagoons", slug: "saadiyat-lagoons", kind: "sub_community", parent_id: IDS.saadiyat },
-      { id: IDS.reem, name: "Al Reem Island", slug: "al-reem-island", kind: "area", parent_id: IDS.abuDhabi },
+      { id: IDS.abuDhabi, name: "Abu Dhabi", name_ar: "أبوظبي", slug: "abu-dhabi", kind: "emirate", parent_id: null },
+      { id: IDS.yas, name: "Yas Island", name_ar: "جزيرة ياس", slug: "yas-island", kind: "area", parent_id: IDS.abuDhabi },
+      { id: IDS.yasAcres, name: "Yas Acres", name_ar: "ياس ايكرز", slug: "yas-acres", kind: "sub_community", parent_id: IDS.yas },
+      { id: IDS.hudayriyat, name: "Hudayriyat Island", name_ar: "جزيرة الحديريات", slug: "hudayriyat-island", kind: "area", parent_id: IDS.abuDhabi },
+      { id: IDS.saadiyat, name: "Saadiyat Island", name_ar: "جزيرة السعديات", slug: "saadiyat-island", kind: "area", parent_id: IDS.abuDhabi },
+      { id: IDS.lagoons, name: "Saadiyat Lagoons", name_ar: "السعديات لاغونز", slug: "saadiyat-lagoons", kind: "sub_community", parent_id: IDS.saadiyat },
+      { id: IDS.reem, name: "Al Reem Island", name_ar: "جزيرة الريم", slug: "al-reem-island", kind: "area", parent_id: IDS.abuDhabi },
+      { id: IDS.adgm, name: "ADGM", name_ar: "سوق أبوظبي العالمي", slug: "adgm", kind: "area", parent_id: IDS.abuDhabi },
     ],
     developers: [
       { id: IDS.aldar, name: "ALDAR Properties" },
       { id: IDS.modon, name: "MODON Properties" },
       { id: IDS.sobha, name: "Sobha Realty" },
+      { id: IDS.bloom, name: "Bloom Holding" },
+    ],
+    developments: [
+      { id: IDS.yasAcresProject, name: "Yas Acres", name_ar: "ياس ايكرز", slug: "yas-acres" },
+      { id: IDS.hamraProject, name: "Al Hamra Bloom Living", name_ar: "الحمراء بلوم ليفينغ", slug: "al-hamra" },
     ],
     staffByEmail: new Map([["advisor@bazar.ae", IDS.advisor]]),
     amenityLabels: [
@@ -221,6 +330,16 @@ export function lookups(overrides: Partial<Lookups> = {}): Lookups {
       "Jacuzzi",
       "Fully Fitted Kitchen",
       "Kitchen Appliances",
+      "Majlis",
+      "Driver’s Room",
+      "Guest Bedroom",
+      "Home Office",
+      "Laundry Room",
+      "En-Suite Bathrooms",
+      "Guest Bathroom",
+      "Garden Views",
+      "Sea View",
+      "Abu Dhabi Skyline Views",
     ],
     mappings: { location: new Map(), developer: new Map(), agent: new Map() },
     ...overrides,

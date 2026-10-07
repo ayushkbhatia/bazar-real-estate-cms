@@ -14,7 +14,11 @@ import { logAudit } from "@/lib/audit";
 import { sanitizeArticleHtml } from "@/lib/article-html";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
-import { SALESFORCE_OWNED_COLUMNS } from "@/lib/salesforce/listings/plan";
+import {
+  SALESFORCE_OWNED_COLUMNS,
+  salesforceTwinColumns,
+} from "@/lib/salesforce/listings/plan";
+import { upgradeSnapshot } from "@/lib/salesforce/listings/snapshot";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -68,15 +72,19 @@ function sameStoredValue(col: string, posted: unknown, stored: unknown): boolean
 /**
  * What Salesforce owns on this listing, or null when it is the CMS's own.
  *
- * The fixed columns are always the sync's. The Arabic twins and the advisor
- * are the sync's only when Salesforce supplies them — an Arabic title in
- * `Title_Arabic__c`, an assigned agent that maps to a staff member — so an
- * editor's own Arabic or advisor on a listing whose CRM record has none is
+ * The fixed columns are always the sync's. The Arabic twins, the advisor and
+ * the two built-in card labels are the sync's only some of the time — an
+ * Arabic title in `Title_Arabic__c` (or an English one left blank, which the
+ * sync clears its twin with), an assigned agent that maps to a staff member,
+ * an Exclusive checkbox the integration user can read — so an editor's own
+ * Arabic, advisor or label on a listing whose CRM record says nothing is
  * never overwritten, and never refused here either.
  */
 async function salesforceOwnership(propertyId: string): Promise<{
   columns: string[];
   agent: boolean;
+  /** Built-in card label id → Salesforce's checkbox. */
+  labels: Map<string, boolean>;
 } | null> {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
@@ -90,15 +98,15 @@ async function salesforceOwnership(propertyId: string): Promise<{
     .select("snapshot, unresolved")
     .eq("sf_listing_id", data.salesforce_listing_id)
     .maybeSingle();
-  const snap = (m?.snapshot ?? {}) as { titleAr?: string | null; descriptionAr?: string | null; agent?: unknown };
+  const snap = upgradeSnapshot(m?.snapshot);
   const unresolved = (m?.unresolved ?? {}) as { agent?: unknown };
+  const labels = new Map<string, boolean>();
+  if (snap.exclusive != null) labels.set("exclusive", snap.exclusive);
+  if (snap.vacantOnTransfer != null) labels.set("vacant_on_transfer", snap.vacantOnTransfer);
   return {
-    columns: [
-      ...SALESFORCE_OWNED_COLUMNS,
-      ...(snap.titleAr ? ["title_ar"] : []),
-      ...(snap.descriptionAr ? ["description_ar"] : []),
-    ],
+    columns: [...SALESFORCE_OWNED_COLUMNS, ...salesforceTwinColumns(snap)],
     agent: !!snap.agent && !unresolved.agent,
+    labels,
   };
 }
 
@@ -1101,6 +1109,18 @@ export async function setPropertyCardLabels(
       ),
     ),
   ].slice(0, 40);
+
+  // Salesforce's two checkboxes are the CRM's to tick on a listing it
+  // publishes; the sync would put a change back within fifteen minutes.
+  const owned = await salesforceOwnership(propertyId);
+  for (const [id, on] of owned?.labels ?? []) {
+    if (clean.includes(id) !== on) {
+      return {
+        status: "error",
+        message: `${id === "exclusive" ? "Exclusive" : "Vacant on transfer"} comes from Salesforce on this listing. ${on ? "Untick" : "Tick"} it there; the website follows on the next sync.`,
+      };
+    }
+  }
 
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase

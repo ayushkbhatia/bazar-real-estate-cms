@@ -1,102 +1,120 @@
 /**
  * What the listing sync reads from Salesforce, and nothing else.
  *
- * An explicit allowlist, never `FIELDS(ALL)` and never the doc's step 4
+ * An explicit allowlist, never `FIELDS(ALL)` and never the guide's step 4
  * (`GET /sobjects/Listing__c/<id>`), which returns every field the integration
  * user can see — including `OwnerName__c` and `Owner_Contact__c`, the seller's
  * name and phone number. The website has no use for either, and a copy of
  * them here would make this database a processor of personal data it never
  * needed. They are listed below only so a test can prove they stay out.
  *
- * Field names are from a live `describe` of the sandbox (24 Sept 2026), not
- * from the integration guide, which is wrong in several places: `Rooms__c` and
- * `Bathrooms__c` are string picklists ("Studio", "1"…), not numbers;
- * `Latitude__c`/`Longitude__c` are strings; `Listing_Image_URLs__c` arrives
- * comma-separated, not semicolon-separated; and the photos CRM users actually
- * upload live in the rich-text `Listing_Images__c`, which the guide omits.
+ * Since version 1.3 of the guide (Levarus, 5 Oct 2026) the list IS the
+ * guide's step-2 query, field for field — the feed Salesforce committed to,
+ * built from Bazar's v1.1 requirements. Three things it settled:
  *
- * Version 1.2 of the guide (25 Sept) added the fields the website asked for:
- * a real permit expiry (`Permit_Expiry_Date_c__c` — the doubled suffix is the
- * org's, not a typo here), community and sub-community, a website-shaped
- * `Property_Type__c`, and three write-back fields on the listing. It also
- * dropped several of ours from its sample query — the Arabic, the uploaded
- * photos, the agent — which still exist and are still read.
+ *  - Placement is `Area__c` / `Sub_Area__c`, restricted picklists holding the
+ *    website's own area names. `Community__c` and `Sub_Community__c` stay in
+ *    Salesforce for the portals and are not part of this feed.
+ *  - The advisor comes only from the Property's Assigned Agent, whose API
+ *    name is `Agent_Name__c`. The listing's own `Assigned_Agent__c` is not
+ *    the source.
+ *  - The write-back URL field is `Website_Listing_URL__c`; earlier guides
+ *    called it `Website_URL__c`.
+ *
+ * The fallbacks the sync read before v1.3 (`PropertyType__c`, the Bayut type,
+ * `OfferingType__c`, `Purpose__c`, `Project_Type__c`, `PropertyPrice__c`,
+ * `Published_Date__c`) are gone with them: each stood in for a field that is
+ * now required or restricted in Salesforce, and reading a field outside the
+ * contract only means a health-page alarm the day its access is tidied away.
+ *
+ * Quirks the guide does document, and the sync relies on: `Rooms__c` and
+ * `Bathrooms__c` are string picklists ("Studio", "1"…), `Latitude__c` /
+ * `Longitude__c` are strings, `Listing_Image_URLs__c` is comma-separated and
+ * the photos CRM users upload live in the rich-text `Listing_Images__c`. The
+ * permit expiry's doubled suffix (`Permit_Expiry_Date_c__c`) is the org's.
  */
 
-/** `Property_Listing__c` — the listing: the offer, its status and its agent. */
+/** `Property_Listing__c` — the listing: the offer and its status. */
 export const LISTING_FIELDS = [
   "Id",
   "Name",
   "LastModifiedDate",
   "Website_Status__c",
-  "Website_URL__c",
+  "Website_Listing_URL__c",
   "Website_Error__c",
+  "Website_Published_Date__c",
   "Listing_Status__c",
   "Sale_Rent__c",
   "Price__c",
-  "Published_Date__c",
-  "Website_Published_Date__c",
   "Expired_Date__c",
+  "Published_Platform__c",
   "Property__c",
-  "Assigned_Agent__c",
 ] as const;
-
-/** Fields read through `Assigned_Agent__r` (a User). */
-export const LISTING_AGENT_FIELDS = ["Name", "Email"] as const;
 
 /** `Listing__c` — the property, read through `Property__r`. */
 export const PROPERTY_FIELDS = [
   "Id",
   "Name",
   "LastModifiedDate",
+  "PropertyText__c",
   "Title__c",
   "Title_Arabic__c",
-  "Description__c",
-  "Description_Arabic__c",
-  "Location__c",
-  "Community__c",
-  "Sub_Community__c",
+  "Bathrooms__c",
+  "Rooms__c",
   "Emirate__c",
+  "Location__c",
+  "Area__c",
+  "Sub_Area__c",
   "Category__c",
   "Property_Type__c",
-  "PropertyType__c",
-  "Property_Type_Bayut_Picklist__c",
-  "OfferingType__c",
-  "Purpose__c",
-  "ProjectStatus__c",
-  "Project_Type__c",
-  "Project_Name__c",
-  "Developer__c",
-  "Rooms__c",
-  "Bathrooms__c",
   "PropertySizeSqft__c",
   "Plot_Size__c",
   "FurnishingType__c",
+  "Handover_Date__c",
+  "Short_Description__c",
+  "Short_Description_Arabic__c",
+  "Description__c",
+  "Description_Arabic__c",
+  "Tenure__c",
+  "Year_Built__c",
+  "Rent_Frequency__c",
+  "Yearly__c",
+  "Property_Status__c",
   "NoOfParkingSpaces__c",
   "FloorNumber__c",
-  "Latitude__c",
-  "Longitude__c",
-  "PropertyPrice__c",
-  "Yearly__c",
-  "Rent_Frequency__c",
-  "Property_Status__c",
+  "View__c",
+  "View_Arabic__c",
+  "Orientation__c",
+  "Orientation_Arabic__c",
+  "Service_Charge_Sqft__c",
+  "Amenities__c",
+  "Website_Amenities__c",
+  "Exclusive__c",
+  "Vacant_On_Transfer__c",
+  "Project__c",
+  "ProjectStatus__c",
+  "Developer__c",
+  "PermitType__c",
   "RERAPermitNumber__c",
   "Permit_Expiry_Date_c__c",
-  "PermitType__c",
-  "Reference__c",
-  "Listing_ID__c",
-  "Amenities__c",
+  "Latitude__c",
+  "Longitude__c",
   "Main_Image_URL__c",
-  "Listing_Image_URLs__c",
-  "Listing_Images__c",
   "Cover_Page_Image__c",
+  "Listing_Images__c",
+  "Listing_Image_URLs__c",
   "Floor_Plans__c",
-  "VideoTourURL__c",
   "URLLink360__c",
+  "VideoTourURL__c",
+  // The Assigned Agent lookup itself: the User's id, which is what an admin's
+  // mapping is keyed on when the User's email is not readable.
+  "Agent_Name__c",
 ] as const;
 
-/** Fields read through `Property__r.Agent_Name__r` (a User) — the fallback
- *  agent when the listing has none of its own. */
+/** Read through `Property__r.Project__r` (the Project record). */
+export const PROPERTY_PROJECT_FIELDS = ["Name"] as const;
+
+/** Read through `Property__r.Agent_Name__r` (a User) — the advisor. */
 export const PROPERTY_AGENT_FIELDS = ["Name", "Email"] as const;
 
 /**
@@ -104,6 +122,18 @@ export const PROPERTY_AGENT_FIELDS = ["Name", "Email"] as const;
  * person who wonders why the owner is not on the admin screen.
  */
 export const NEVER_READ = ["OwnerName__c", "Owner_Contact__c", "UnitNumber__c", "LandNumber__c", "Comments__c"] as const;
+
+/**
+ * Fields Salesforce still has that v1.3 of the guide takes out of the website
+ * feed. Not read, so a test can hold the line: the portals' communities and
+ * the listing-level agent must never creep back in as a second source.
+ */
+export const NOT_IN_WEBSITE_FEED = [
+  "Community__c",
+  "Sub_Community__c",
+  "Assigned_Agent__c",
+  "Website_URL__c",
+] as const;
 
 /**
  * Without these the sweep means nothing, so a describe that hides one of them
@@ -129,27 +159,26 @@ export type FieldVisibility = {
  */
 export function selectList(visible?: FieldVisibility): string {
   const listing = LISTING_FIELDS.filter((f) => !visible || visible.listing.has(f));
-  const agent =
-    !visible || visible.listing.has("Assigned_Agent__c")
-      ? LISTING_AGENT_FIELDS.map((f) => `Assigned_Agent__r.${f}`)
-      : [];
   const property = PROPERTY_FIELDS.filter(
     (f) => !visible || visible.property.has(f),
   ).map((f) => `Property__r.${f}`);
-  const propertyAgent =
+  const project =
+    !visible || visible.property.has("Project__c")
+      ? PROPERTY_PROJECT_FIELDS.map((f) => `Property__r.Project__r.${f}`)
+      : [];
+  const agent =
     !visible || visible.property.has("Agent_Name__c")
       ? PROPERTY_AGENT_FIELDS.map((f) => `Property__r.Agent_Name__r.${f}`)
       : [];
-  return [...listing, ...agent, ...property, ...propertyAgent].join(", ");
+  return [...listing, ...property, ...project, ...agent].join(", ");
 }
 
 /**
  * The `Website_Status__c` values that mean "on the website".
  *
- * The guide filters on Published alone, but the picklist also has
- * Republished, and a listing moved from one to the other must not read as
- * withdrawn: absence from the sweep is half the evidence for taking a listing
- * down. Deactivated and Deleted are the two that mean off.
+ * Absence from the sweep is half the evidence for taking a listing down, so a
+ * listing moved from Published to Republished must not read as withdrawn.
+ * Deactivated and Deleted are the two that mean off.
  */
 export const LIVE_WEBSITE_STATUSES = ["Published", "Republished"] as const;
 
@@ -157,8 +186,13 @@ export function isLiveWebsiteStatus(v: string | null | undefined): boolean {
   return !!v && (LIVE_WEBSITE_STATUSES as readonly string[]).includes(v);
 }
 
-/** Every listing live on the website, per the CRM, in a stable order so the
- *  pages of a large sweep never overlap. */
+/**
+ * Every listing live on the website, per the CRM.
+ *
+ * Ordered by Id, not by the guide's `LastModifiedDate DESC`: a sweep that
+ * runs to several pages must not see a record twice, or miss one, because it
+ * was edited between two pages. Recency means nothing to a full sweep.
+ */
 export function sweepSoql(visible?: FieldVisibility): string {
   const statuses = LIVE_WEBSITE_STATUSES.map((v) => `'${v}'`).join(", ");
   return `SELECT ${selectList(visible)} FROM Property_Listing__c WHERE Website_Status__c IN (${statuses}) ORDER BY Id`;
@@ -197,50 +231,58 @@ export type SfPropertyRecord = {
   Id?: string | null;
   Name?: string | null;
   LastModifiedDate?: string | null;
+  PropertyText__c?: string | null;
   Title__c?: string | null;
   Title_Arabic__c?: string | null;
-  Description__c?: string | null;
-  Description_Arabic__c?: string | null;
-  Location__c?: string | null;
-  Community__c?: string | null;
-  Sub_Community__c?: string | null;
+  Bathrooms__c?: string | null;
+  Rooms__c?: string | null;
   Emirate__c?: string | null;
+  Location__c?: string | null;
+  Area__c?: string | null;
+  Sub_Area__c?: string | null;
   Category__c?: string | null;
   Property_Type__c?: string | null;
-  PropertyType__c?: string | null;
-  Property_Type_Bayut_Picklist__c?: string | null;
-  OfferingType__c?: string | null;
-  Purpose__c?: string | null;
-  ProjectStatus__c?: string | null;
-  Project_Type__c?: string | null;
-  Project_Name__c?: string | null;
-  Developer__c?: string | null;
-  Rooms__c?: string | null;
-  Bathrooms__c?: string | null;
   PropertySizeSqft__c?: number | null;
   Plot_Size__c?: number | null;
   FurnishingType__c?: string | null;
+  Handover_Date__c?: string | null;
+  Short_Description__c?: string | null;
+  Short_Description_Arabic__c?: string | null;
+  Description__c?: string | null;
+  Description_Arabic__c?: string | null;
+  Tenure__c?: string | null;
+  Year_Built__c?: number | string | null;
+  Rent_Frequency__c?: string | null;
+  Yearly__c?: number | null;
+  Property_Status__c?: string | null;
   NoOfParkingSpaces__c?: number | null;
   FloorNumber__c?: string | null;
-  Latitude__c?: string | null;
-  Longitude__c?: string | null;
-  PropertyPrice__c?: number | null;
-  Yearly__c?: number | null;
-  Rent_Frequency__c?: string | null;
-  Property_Status__c?: string | null;
+  View__c?: string | null;
+  View_Arabic__c?: string | null;
+  Orientation__c?: string | null;
+  Orientation_Arabic__c?: string | null;
+  Service_Charge_Sqft__c?: number | null;
+  Amenities__c?: string | null;
+  Website_Amenities__c?: string | null;
+  Exclusive__c?: boolean | null;
+  Vacant_On_Transfer__c?: boolean | null;
+  Project__c?: string | null;
+  Project__r?: { Name?: string | null } | null;
+  ProjectStatus__c?: string | null;
+  Developer__c?: string | null;
+  PermitType__c?: string | null;
   RERAPermitNumber__c?: string | null;
   Permit_Expiry_Date_c__c?: string | null;
-  PermitType__c?: string | null;
-  Reference__c?: string | null;
-  Listing_ID__c?: string | null;
-  Amenities__c?: string | null;
+  Latitude__c?: string | null;
+  Longitude__c?: string | null;
   Main_Image_URL__c?: string | null;
-  Listing_Image_URLs__c?: string | null;
-  Listing_Images__c?: string | null;
   Cover_Page_Image__c?: string | null;
+  Listing_Images__c?: string | null;
+  Listing_Image_URLs__c?: string | null;
   Floor_Plans__c?: string | null;
-  VideoTourURL__c?: string | null;
   URLLink360__c?: string | null;
+  VideoTourURL__c?: string | null;
+  Agent_Name__c?: string | null;
   Agent_Name__r?: SfUser;
 };
 
@@ -249,16 +291,14 @@ export type SfListingRecord = {
   Name?: string | null;
   LastModifiedDate?: string | null;
   Website_Status__c?: string | null;
-  Website_URL__c?: string | null;
+  Website_Listing_URL__c?: string | null;
   Website_Error__c?: string | null;
+  Website_Published_Date__c?: string | null;
   Listing_Status__c?: string | null;
   Sale_Rent__c?: string | null;
   Price__c?: number | null;
-  Published_Date__c?: string | null;
-  Website_Published_Date__c?: string | null;
   Expired_Date__c?: string | null;
+  Published_Platform__c?: string | null;
   Property__c?: string | null;
-  Assigned_Agent__c?: string | null;
-  Assigned_Agent__r?: SfUser;
   Property__r?: SfPropertyRecord | null;
 };

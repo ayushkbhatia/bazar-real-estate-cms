@@ -82,11 +82,13 @@ const run = (extra: Partial<Parameters<typeof runListingSync>[0]> = {}) =>
 function seedLookups(db: FakeDb) {
   db.seed(
     "areas",
-    { id: IDS.abuDhabi, name: "Abu Dhabi", slug: "abu-dhabi", kind: "emirate", parent_id: null },
-    { id: IDS.yas, name: "Yas Island", slug: "yas-island", kind: "area", parent_id: IDS.abuDhabi },
-    { id: IDS.reem, name: "Al Reem Island", slug: "al-reem-island", kind: "area", parent_id: IDS.abuDhabi },
+    { id: IDS.abuDhabi, name: "Abu Dhabi", name_ar: "أبوظبي", slug: "abu-dhabi", kind: "emirate", parent_id: null },
+    { id: IDS.yas, name: "Yas Island", name_ar: "جزيرة ياس", slug: "yas-island", kind: "area", parent_id: IDS.abuDhabi },
+    { id: IDS.yasAcres, name: "Yas Acres", name_ar: "ياس ايكرز", slug: "yas-acres", kind: "sub_community", parent_id: IDS.yas },
+    { id: IDS.reem, name: "Al Reem Island", name_ar: "جزيرة الريم", slug: "al-reem-island", kind: "area", parent_id: IDS.abuDhabi },
   );
   db.seed("developers", { id: IDS.aldar, name: "ALDAR Properties" }, { id: IDS.sobha, name: "Sobha Realty" });
+  db.seed("developments", { id: IDS.yasAcresProject, name: "Yas Acres", name_ar: "ياس ايكرز", slug: "yas-acres" });
   db.seed("staff", { user_id: IDS.advisor, status: "active", public_email: null });
   db.users.push({ id: IDS.advisor, email: "advisor@bazar.ae" });
   db.seed(
@@ -252,9 +254,67 @@ describe("a production org", () => {
     await run();
     const p = property(h.db, COMPLETE_SALE.Id)!;
     p.slug = "an-editors-slug";
-    p.short_description = "Written by an editor.";
+    p.advisor_note = "Written by an editor.";
+    p.flags = { ...(p.flags as object), labels: ["new_launch"], feature_on_homepage: true };
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)).toMatchObject({ slug: "an-editors-slug", short_description: "Written by an editor." });
+    expect(property(h.db, COMPLETE_SALE.Id)).toMatchObject({
+      slug: "an-editors-slug",
+      advisor_note: "Written by an editor.",
+      flags: { labels: ["new_launch"], feature_on_homepage: true, exclusive: true, vacant_on_transfer: false },
+    });
+  });
+
+  it("writes every fact v1.3 added, and records the Arabic as the CRM's own", async () => {
+    await run();
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    expect(p).toMatchObject({
+      short_description: "A garden villa a short walk from the golf course.",
+      tenure: "freehold",
+      year_built: 2019,
+      view: "Garden View",
+      orientation: "East",
+      service_charge_per_ft2: 18.5,
+      sub_community_id: IDS.yasAcres,
+      development_id: IDS.yasAcresProject,
+      address_line: "Yas Acres, Yas Island",
+      address_line_ar: "ياس ايكرز، جزيرة ياس",
+      short_description_ar: "فيلا بحديقة على بعد خطوات من ملعب الغولف.",
+      view_ar: "إطلالة على الحدائق",
+      orientation_ar: "شرقي",
+      flags: { exclusive: true, vacant_on_transfer: false },
+    });
+    const i18n = p.i18n as Record<string, { source: string }>;
+    for (const twin of ["title_ar", "short_description_ar", "description_ar", "view_ar", "orientation_ar"]) {
+      expect(i18n[twin]?.source).toBe("human");
+    }
+  });
+
+  it("takes an editor's tick off a card label Salesforce says no to", async () => {
+    await run();
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    p.flags = { exclusive: true, vacant_on_transfer: false, labels: ["vacant_on_transfer", "new_launch"] };
+    const s = await run();
+    expect(s.updated).toBe(1);
+    expect(property(h.db, COMPLETE_SALE.Id)?.flags).toEqual({ exclusive: true, vacant_on_transfer: false, labels: ["new_launch"] });
+  });
+
+  it("keeps the CRM's Arabic current when only its English moved", async () => {
+    await run();
+    const before = (property(h.db, COMPLETE_SALE.Id)!.i18n as Record<string, { src_hash: string }>).title_ar.src_hash;
+    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Title__c: "Four-bedroom villa on Yas Island" } }];
+    await run();
+    const after = (property(h.db, COMPLETE_SALE.Id)!.i18n as Record<string, { src_hash: string; source: string }>).title_ar;
+    expect(after.source).toBe("human");
+    expect(after.src_hash).not.toBe(before);
+  });
+
+  it("clears an Arabic twin when Salesforce clears its English", async () => {
+    await run();
+    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, View__c: null, View_Arabic__c: null } }];
+    await run();
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    expect(p).toMatchObject({ view: null, view_ar: null });
+    expect((p.i18n as Record<string, unknown>).view_ar).toBeUndefined();
   });
 
   it("takes a live listing down when an editor hides it, and keeps it down", async () => {
@@ -320,10 +380,41 @@ describe("held listings", () => {
     expect(mirror(h.db, RENT_UNMAPPED.Id)?.state).toBe("held");
     expect(property(h.db, RENT_UNMAPPED.Id)?.status).toBe("draft");
 
-    h.db.seed("salesforce_mappings", { kind: "location", source_key: "sobha city abu dhabi", target_id: IDS.reem });
+    h.db.seed("salesforce_mappings", { kind: "location", source_key: "masdar city", target_id: IDS.reem });
     await run({ trigger: "reapply", onlyStored: [RENT_UNMAPPED.Id] });
     expect(mirror(h.db, RENT_UNMAPPED.Id)?.state).toBe("live");
     expect(property(h.db, RENT_UNMAPPED.Id)).toMatchObject({ status: "published", area_id: IDS.reem, mode: "rent", property_form: null });
+  });
+
+  it("re-applies a row stored before guide v1.3 from today's shape", async () => {
+    // A mirror row written by the v2 sync: a community instead of an Area, a
+    // Bayut type instead of Property_Type__c.
+    h.db.seed("salesforce_listings", {
+      sf_listing_id: COMPLETE_SALE.Id,
+      org_host: "bazarrealestate.my.salesforce.com",
+      sf_listing_name: "LST-00002",
+      state: "held",
+      snapshot: {
+        v: 2,
+        listingId: COMPLETE_SALE.Id,
+        listingName: "LST-00002",
+        title: "4BR Villa on Yas Island",
+        offering: "Sale",
+        listingPrice: 1_850_000,
+        community: "Yas Island",
+        bayutType: "Villa",
+        amenities: [],
+        gallery: [],
+      },
+      snapshot_hash: "old",
+    });
+    const s = await run({ trigger: "reapply", onlyStored: [COMPLETE_SALE.Id] });
+    expect(s.ok).toBe(true);
+    const m = mirror(h.db, COMPLETE_SALE.Id)!;
+    expect(m.state).toBe("held");
+    expect((m.holds as { code: string }[]).map((x) => x.code)).toEqual(expect.arrayContaining(["no_location", "no_type"]));
+    expect((m.snapshot as { v: number; community?: string }).v).toBe(3);
+    expect(m.snapshot).not.toHaveProperty("community");
   });
 
   it("keeps a listing it cannot even name off the website entirely", async () => {
@@ -370,13 +461,13 @@ describe("writeBackFor — what the CRM team sees", () => {
   const ours = { code: "unmapped_location" as const, fix: "website" as const, message: '"Sobha City" does not match an area.' };
 
   it("publishes with the URL and clears the error on success", () => {
-    expect(writeBackFor("live", [], url)).toEqual({ Website_Status__c: "Published", Website_URL__c: url, Website_Error__c: null });
+    expect(writeBackFor("live", [], url)).toEqual({ Website_Status__c: "Published", Website_Listing_URL__c: url, Website_Error__c: null });
   });
 
   it("deactivates only for what the CRM team can fix", () => {
     expect(writeBackFor("held", [theirs, ours], null)).toEqual({
       Website_Status__c: "Deactivated",
-      Website_URL__c: null,
+      Website_Listing_URL__c: null,
       Website_Error__c: theirs.message,
     });
     // Waiting on us: stays in the published set, says why, goes live when done.
@@ -395,7 +486,7 @@ describe("writeBackFor — what the CRM team sees", () => {
     const want = writeBackFor("live", [], url)!;
     expect(writeBackDelta(want, { websiteStatus: "Republished", websiteUrl: url, websiteError: null })).toEqual({});
     expect(writeBackDelta(want, { websiteStatus: "Published", websiteUrl: null, websiteError: "old" })).toEqual({
-      Website_URL__c: url,
+      Website_Listing_URL__c: url,
       Website_Error__c: null,
     });
   });
@@ -425,12 +516,12 @@ describe("write-back in a run", () => {
         // Already Published in Salesforce, and no error to clear: only the
         // URL is news.
         body: {
-          Website_URL__c: expect.stringMatching(new RegExp(`/p/4br-villa-on-yas-island-${String(p.reference).toLowerCase()}$`)),
+          Website_Listing_URL__c: expect.stringMatching(new RegExp(`/p/4br-villa-on-yas-island-${String(p.reference).toLowerCase()}$`)),
         },
       },
     ]);
     // Next sweep reads our values back; nothing to send.
-    h.sweep = [{ ...COMPLETE_SALE, Website_URL__c: h.patches[0].body.Website_URL__c as string, Website_Error__c: null }];
+    h.sweep = [{ ...COMPLETE_SALE, Website_Listing_URL__c: h.patches[0].body.Website_Listing_URL__c as string, Website_Error__c: null }];
     h.patches = [];
     await run();
     expect(h.patches).toEqual([]);
@@ -440,7 +531,7 @@ describe("write-back in a run", () => {
     setWriteBack(true);
     h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Permit_Expiry_Date_c__c: null } }];
     await run();
-    // No Website_URL__c: it was never live, so there is none to clear.
+    // No Website_Listing_URL__c: it was never live, so there is none to clear.
     expect(h.patches[0].body).toEqual({
       Website_Status__c: "Deactivated",
       Website_Error__c: "Permit_Expiry_Date_c__c on the Property is blank.",
@@ -454,7 +545,7 @@ describe("write-back in a run", () => {
     await run();
     expect(h.patches).toHaveLength(1);
     expect(h.patches[0].body).not.toHaveProperty("Website_Status__c");
-    expect(String(h.patches[0].body.Website_Error__c)).toMatch(/^Waiting on the Bazar website team: "Sobha City, Abu Dhabi"/);
+    expect(String(h.patches[0].body.Website_Error__c)).toMatch(/^Waiting on the Bazar website team: "Masdar City"/);
   });
 
   it("never writes to a sandbox", async () => {

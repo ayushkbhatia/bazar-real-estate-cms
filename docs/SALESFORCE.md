@@ -9,15 +9,16 @@ Two directions, one Connected App, one integration user.
 
 Vendor documents: *Lead Creation API* (18 Sept 2026), *Web to Lead Creation*
 (23 Sept), the production edition of the same (24 Sept) and *Published
-Listings — API Integration Guide* (24 Sept). The listings guide uses the
-**same Connected App and secret** as the lead documents — verified by
-comparing them, not assumed — so both directions share
-`SALESFORCE_INSTANCE_URL` / `SALESFORCE_CLIENT_ID` / `SALESFORCE_CLIENT_SECRET`
-and there is nothing new to configure.
+Listings — API Integration Guide* — v1.2 (25 Sept) and **v1.3 (5 Oct)**, a
+production and a sandbox edition with the same field list. The listings guide
+uses the **same Connected App** as the lead documents, so both directions
+share `SALESFORCE_INSTANCE_URL` / `SALESFORCE_CLIENT_ID` /
+`SALESFORCE_CLIENT_SECRET` and there is nothing new to configure.
 
-Production, as of 25 Sept: the Run As user is fixed, so **leads can go live**
-(`Lead__c` is createable). **Listings cannot yet** — the production
-integration user sees no listing objects at all; see
+Production, as of 7 Oct: **leads are live** (since 25 Sept). **Listings are
+connected** — the production sweep has run every fifteen minutes since 1 Oct
+— and nothing has been published yet: the only listings the CRM had published
+were sandbox test records, which Levarus deleted on 5 Oct. See
 [Production status](#production-status).
 
 Setup, env vars and triage queries: [INTEGRATIONS.md](INTEGRATIONS.md#salesforce).
@@ -273,38 +274,55 @@ Leaving the record pseudonymised with its commercial facts intact —
 `lib/salesforce/listings/`; the admin screen is **/admin/properties/salesforce**
 (linked from the Properties header and the Salesforce integration card).
 
-### The objects, as they really are
+### The contract: guide v1.3
 
-The guide's names are inverted and its samples are optimistic, so this is from
-a `describe` of both objects and a read of every sandbox record (24 Sept):
+v1.3 of the guide (5 Oct 2026) is Salesforce's answer to Bazar's v1.1
+requirements — every fact the listing page shows has a Salesforce field, in
+values the website recognises — and `fields.ts` reads exactly its step-2
+field list, plus `Id`, `LastModifiedDate` and the `Agent_Name__c` lookup
+itself. What v1.3 settled, and the sync now follows:
 
-- **`Property_Listing__c`** is the *listing* — the offer: `Sale_Rent__c`,
-  `Price__c`, `Listing_Status__c`, `Expired_Date__c`, the assigned agent, and
-  `Website_Status__c` (`Published` / `Failed`; blank when never published).
-- **`Listing__c`** is the *property* — 104 fields, read through
-  `Property__r`. The guide lists fifteen. Among the ones it leaves out:
-  `Title_Arabic__c` and `Description_Arabic__c` (so listings arrive bilingual),
-  `Listing_Images__c` (the rich-text field CRM users actually upload photos
-  into), `Property_Type_Bayut_Picklist__c` (the only type field with villas
-  and townhouses), `ProjectStatus__c`, `Developer__c`, `RERAPermitNumber__c`,
-  and `OwnerName__c` / `Owner_Contact__c`, which we must never read.
+- **Placement is `Area__c` / `Sub_Area__c`**: restricted picklists holding the
+  website's own area names (v1.1 Appendix A), `Sub_Area__c` dependent on
+  `Area__c`, `Area__c` dependent on `Emirate__c`. `Community__c` and
+  `Sub_Community__c` stay in Salesforce for the portals and are **not** read;
+  `Location__c` is read for the admin screen only.
+- **The advisor is the Property's Assigned Agent** (`Agent_Name__c`) only.
+  The listing's own `Assigned_Agent__c` is not read.
+- **The write-back URL field is `Website_Listing_URL__c`** — v1.2 called it
+  `Website_URL__c`.
+- **New property fields**: `PropertyText__c`, `Short_Description__c` (+
+  Arabic), `Tenure__c`, `Year_Built__c`, `Handover_Date__c`, `View__c` /
+  `Orientation__c` with formula Arabic twins, `Service_Charge_Sqft__c`,
+  `Website_Amenities__c`, `Exclusive__c`, `Vacant_On_Transfer__c`,
+  `Project__c` + `Project__r.Name`; on the listing, `Published_Platform__c`.
+- `Property_Type__c` is restricted and includes Hotel Apartment and Commercial
+  Villa; `Rent_Frequency__c` is required for a website rental.
 
-Where the guide is wrong: `Rooms__c` and `Bathrooms__c` are **string**
-picklists (`"Studio"`, `"1"`…), not numbers; `Latitude__c` / `Longitude__c`
-are **strings**; `Listing_Image_URLs__c` arrives **comma**-separated; its
-sample furnishing value `"Furnished"` is not in the picklist
-(`Unfurnished / Partly Furnished / Fully Furnished`).
+The fallbacks the sync read before v1.3 — `PropertyType__c`, the Bayut type,
+`OfferingType__c`, `Purpose__c`, `Project_Type__c`, `PropertyPrice__c`,
+`Published_Date__c`, `Reference__c`, `Listing_ID__c` — are dropped with them:
+each stood in for a field that is now required or restricted, and reading a
+field outside the contract only means a health-page alarm the day its access
+is tidied away. A test (`NOT_IN_WEBSITE_FEED`) keeps the communities and the
+listing-level agent out.
 
-The sandbox's single published listing, `LST-00000`, has no title, no price on
-the listing, no location, no type, no developer and no permit — and its photos
-are `/sfc/servlet.shepherd/…` links that need a Salesforce session. It is held
-with six reasons, each naming the Salesforce field to fill.
+Still true from the earlier guides: `Property_Listing__c` is the *listing*
+(the offer) and `Listing__c` the *property*, read through `Property__r`;
+`Rooms__c` / `Bathrooms__c` are string picklists (`"Studio"`, `"1"`…);
+coordinates are strings; `Listing_Image_URLs__c` is comma-separated; uploads
+live in the rich-text `Listing_Images__c`. v1.3's samples add two quirks:
+`Orientation__c` holds compass **letters** (`"E"`), and the Assigned Agent's
+`Email` can come back **null** (the advisor is then matched by an admin's
+mapping, keyed on the User id).
 
 ### How a run works
 
 1. **Sweep.** One SOQL query: every `Property_Listing__c` with
-   `Website_Status__c = 'Published'`, joined to `Property__r`, through an
-   explicit field **allowlist** (`fields.ts`). Never the guide's step 4
+   `Website_Status__c` Published or Republished, joined to `Property__r`,
+   through the explicit field **allowlist** (`fields.ts`), ordered by `Id` (not
+   the guide's `LastModifiedDate DESC`, so a multi-page sweep cannot skip or
+   repeat a record edited mid-sweep). Never the guide's step 4
    (`GET /sobjects/Listing__c/{id}`), which returns every field — owner's
    name and phone included. If the org hides one of our fields, the query
    fails whole with `INVALID_FIELD`; the run then describes both objects,
@@ -328,20 +346,31 @@ stamp, and absence from a full sweep is the first half of the withdrawal
 evidence. At this org's size that is one query. Revisit past a few thousand
 published listings.
 
+Stored snapshots carry a schema version (`v`, now 3). A re-apply — an
+admin's approval or mapping — plans from the stored snapshot without calling
+Salesforce, through `upgradeSnapshot`, so a row written before v1.3 plans as
+Salesforce would send it today, minus the fields it never had.
+
 ### Who owns what
 
 | Salesforce owns (overwritten every run) | The website owns (never touched after creation) |
 |---|---|
-| title, description, mode, segment, type, completion form, beds, baths, sizes, furnishing, parking, floor, map pin, price, area / sub-community, developer, amenities, permit number and expiry, photos from Salesforce | slug, reference, SEO, short description, card labels, featured flags, advisor note, view, orientation, photos an editor added |
-| `title_ar` / `description_ar` **when** the CRM wrote Arabic | the Arabic twins when it did not |
+| title, summary, description, mode, segment, type, completion form, beds, baths, sizes, furnishing, parking, floor, year built, tenure, view, orientation, service charge, map pin, price, area / sub-area, address line (both languages), project link, developer, amenities, permit number and expiry, photos from Salesforce | slug, reference, SEO, advisor note, featured flags, card labels other than the two below, photos an editor added |
+| the **Exclusive** and **Vacant on transfer** labels, when the checkbox is readable | every other card label |
+| an Arabic twin (title, summary, description, view, orientation) **when** the CRM wrote it — and cleared **when** the CRM leaves its English blank | the Arabic twin when the CRM wrote only the English |
 | the advisor **when** the CRM's agent maps to a staff member | the advisor when it does not |
 
 Ownership is enforced by comparing each synced field with the row every run
 (so an editor's change to a Salesforce field is put back) and, before that
 can surprise anyone, by the editor itself: saving a Salesforce listing keeps
 Salesforce's values for those fields and says so; the map-pin, developer and
-advisor controls refuse with a pointer to Salesforce. The editor's publish
-card is replaced by a Salesforce card, because the sync owns the status.
+advisor controls refuse with a pointer to Salesforce, and so does ticking one
+of the two Salesforce labels. `salesforceTwinColumns` (plan.ts) is the one
+answer to "whose is this Arabic twin?", asked by both the sync and the
+editor. The editor's publish card is replaced by a Salesforce card, because
+the sync owns the status. Synced text is clipped to the editor's own limits
+(`lib/schemas/property.ts`), so saving a synced listing can never fail
+validation.
 
 Status changes an editor makes anywhere else — the bulk bar, a CSV import —
 are caught by a trigger (`properties_salesforce_editor_status_tr`, 0136):
@@ -353,33 +382,48 @@ sync's own writes, as the service role, do not.
 
 | Salesforce | Website |
 |---|---|
-| `Sale_Rent__c` (else `OfferingType__c`, else `Purpose__c`) | `mode`: `rent`, or `buy` / `off_plan` by completion |
-| `ProjectStatus__c` (else `Project_Type__c`) | `property_form`: Resale → `resale`, Primary ready → `ready_new`, any Off-plan → `off_plan` |
-| `Property_Type__c` (v1.2), else `Property_Type_Bayut_Picklist__c`, else `PropertyType__c` | `type` + `segment`. No honest equivalent ("Other", Residential Floor, Villa Compound, Bulk Units, Full/Half Floor) → held |
+| `Sale_Rent__c` | `mode`: `rent`, or `buy` / `off_plan` by completion |
+| `ProjectStatus__c` | `property_form`: Resale → `resale`, Primary ready → `ready_new`, any Off-plan → `off_plan`; blank on a sale → held |
+| `Property_Type__c` | `type` + `segment`, Hotel Apartment and Commercial Villa included. "Other", or a value the website has never seen → held |
 | `Category__c` | `segment` |
-| `Price__c` (sale; else `PropertyPrice__c`, noted) | `price_aed` |
-| Rent: `Price__c`/`Yearly__c`, by `Rent_Frequency__c` | yearly rent; a monthly rent with no `Yearly__c` is held, never multiplied |
-| `Sub_Community__c`, `Community__c`, `Location__c` (v1.2) + `Emirate__c` | area / sub-community by exact name or slug, most specific first; ambiguous or another emirate → held for an admin to map |
+| `Price__c` | `price_aed` (sale) |
+| Rent: `Price__c` / `Yearly__c`, by `Rent_Frequency__c` | yearly rent. Frequency blank → held (required by v1.3); monthly with no `Yearly__c` → held, never multiplied; yearly with `Price__c` ≠ `Yearly__c` → held (the 1 Oct sweep found a sale price in `Price__c` on a rental) |
+| `Area__c`, `Sub_Area__c`, checked against `Emirate__c` | area by exact name or slug (an admin's mapping first); the sub-area only among **that** area's sub-communities. Area blank → held; not on the website → held for an admin to map; a sub-area the website lacks → placed in the area and noted |
+| `Project__r.Name` | `development_id`, by the project page's exact name or slug; unmatched → noted, not linked |
+| project (or sub-area) + area | `address_line` / `address_line_ar` in the live listings' house style — "Yas Riva Reserve, Yas Island" — from the website's own Arabic names |
 | `Developer__c` | developer, ignoring "Properties", "Realty", "PJSC"…; else held for mapping |
-| `Assigned_Agent__r.Email` (else the property's `Agent_Name__r`) | advisor, by staff email; else noted for mapping |
-| `RERAPermitNumber__c`, `Permit_Expiry_Date_c__c` (v1.2) | permit number and expiry; missing or past → held. `Expired_Date__c` ends the *listing* and holds it when past |
-| `FurnishingType__c` | `Unfurnished` / `SemiFurnished` (v1.2's spelling) / `Fully Furnished` |
-| `Amenities__c` | the amenity taxonomy, through apostrophes and hyphens plus a small alias table; unmatched values are noted, never added |
-| `Cover_Page_Image__c` / `Main_Image_URL__c`, `Listing_Images__c` + `Listing_Image_URLs__c`, `Floor_Plans__c` | hero, gallery in the CRM's order, floor plan. Cover and floor plan are rich-text fields that v1.2 fills with bare URLs; both forms are read |
+| `Agent_Name__r.Email`, else an admin's mapping of the `Agent_Name__c` User | advisor; unmatched → noted |
+| `RERAPermitNumber__c`, `Permit_Expiry_Date_c__c` | permit number and expiry; missing or past → held. `Expired_Date__c` ends the *listing* and holds it when past |
+| `Short_Description__c`, `Description__c` (+ Arabic) | `short_description`, `description` (plain text → escaped paragraphs) |
+| `Tenure__c` | `freehold` / `leasehold` / `usufruct`; anything else noted, not shown |
+| `Year_Built__c`, `Handover_Date__c` | `year_built`: off-plan takes the handover year (the expected completion), a completed home its year built, else a past handover year; outside 1900–2100 noted, not shown |
+| `View__c`, `Orientation__c` (+ formula Arabic) | `view`, `orientation` — compass letters written out ("E" → East) — and their twins; the view's amenity ("Garden View" → "Garden Views") is added to the amenities |
+| `Service_Charge_Sqft__c` | `service_charge_per_ft2`, 0–1,000 AED/sq ft/yr; else noted |
+| `FurnishingType__c` | `Unfurnished` / `Semi Furnished` (with or without the space) / `Fully Furnished` |
+| `Amenities__c` + `Website_Amenities__c` | the amenity taxonomy, through apostrophes and hyphens plus a small alias table; unmatched values are noted, never added |
+| `Exclusive__c`, `Vacant_On_Transfer__c` | the two built-in card labels (`flags.exclusive` / `flags.vacant_on_transfer`) |
+| `FloorNumber__c` | a whole number; "G" / "Ground" is 0; "G+1" is dropped |
+| `Published_Platform__c` | not used; noted when it lacks Website on a listing published for the website |
+| `Cover_Page_Image__c` / `Main_Image_URL__c`, `Listing_Images__c` + `Listing_Image_URLs__c`, `Floor_Plans__c` | hero, gallery in the CRM's order, floor plan. Cover and floor plan are rich-text fields that may hold bare URLs; both forms are read |
 
-### Write-back (guide v1.2, step 5)
+`VideoTourURL__c` and `URLLink360__c` are read into the snapshot and not yet
+shown (docs/FOLLOWUPS.md).
 
-The sync PATCHes `Website_Status__c`, `Website_URL__c` and `Website_Error__c`
-on each listing, so the CRM team sees in Salesforce what happened — **once an
-admin turns write-back on** (`salesforce_listing_sync.write_back`, 0137; off by
-default, because on a first production run every listing held for a missing
-field would be deactivated at once).
+### Write-back (guide v1.3, step 5)
+
+The sync PATCHes `Website_Status__c`, `Website_Listing_URL__c` and
+`Website_Error__c` on each listing, so the CRM team sees in Salesforce what
+happened — **once an admin turns write-back on**
+(`salesforce_listing_sync.write_back`, 0137; off by default, because on a
+first production run every listing held for a missing field would be
+deactivated at once). v1.2 named the URL field `Website_URL__c`; the column
+comment in 0137 still does.
 
 | Website state | Written |
 |---|---|
 | live | `Published`, the listing's URL, error cleared |
 | held for something **Salesforce** must fix | `Deactivated`, the reasons — their contract: it leaves the published set until the CRM team fixes it and publishes it again |
-| held for something **we** must fix (a location to map), photos copying, awaiting approval | status untouched, so it stays in the sweep; the error field says what it is waiting for |
+| held for something **we** must fix (an area to map), photos copying, awaiting approval | status untouched, so it stays in the sweep; the error field says what it is waiting for |
 | hidden by an editor | `Deactivated`, "taken off the website by the Bazar team" |
 | withdrawn by the CRM, or a sandbox | nothing |
 
@@ -419,21 +463,24 @@ gallery. Placeholder `example.com` URLs in the sandbox 404 and are reported.
 
 ## Production status
 
-Checked 25 Sept, after v1.2 of the listings guide:
-
 | | Sandbox | Production |
 |---|---|---|
-| Token (Run As user) | ✅ | ✅ — fixed |
-| `Lead__c` create | ✅ | ✅ |
-| `Country_Code__c` has `+7` | ✅ (207 values) | ✅ (207, added 25 Sept) |
-| `Property_Listing__c`, `Listing__c` visible | ✅ | ❌ — the integration user sees only `Lead__c`; a listing query answers `sObject type 'Property_Listing__c' is not supported` |
-| Write-back fields editable | ✅ (proven with a no-op PATCH) | ❌ (objects not visible) |
+| Token (Run As user) | ✅ | ✅ |
+| `Lead__c` create | ✅ | ✅ — live since 25 Sept |
+| `Property_Listing__c`, `Listing__c` visible | ✅ | ✅ — fixed 25 Sept; first sweep 1 Oct |
+| Write-back fields editable | ✅ (proven with a no-op PATCH, v1.2 names) | not yet tried — write-back is off |
 
-So leads can go live now; listings wait for the objects, their fields and the
-integration user's access to be deployed to production. Setting the three
-`SALESFORCE_*` variables in Vercel turns both on; until the listing objects
-exist in production, the listing sync reports a failure on the health page
-every run, which is accurate.
+The production sweep was unpaused on 1 Oct and has run every fifteen minutes
+since. Its first run found one listing, `LST-00001` — a sandbox test record
+copied into production — and held it (an area not on the website, an expired
+permit, a sale price in `Price__c` on a rental). Levarus deleted the test
+records on 5 Oct; both website drafts were withdrawn, neither was ever
+published, and the published set has been empty since.
+
+v1.3's new fields are read from the first sweep after this change deploys. If
+production does not have one of them yet, that sweep narrows the query, keeps
+syncing and lists the field under hidden fields on the health page and the
+Salesforce listings screen — check there after the deploy.
 
 ## Open questions for Levarus
 
@@ -442,26 +489,32 @@ rest are outstanding, and two new ones have been added by that revision.
 
 ### Listings — Salesforce to website
 
-v1.2 (25 Sept) answered L1, L3–L8: a complete published sandbox listing
-(`LST-00002`), `Permit_Expiry_Date_c__c`, ADREC in `PermitType__c`, a
-website `Property_Type__c`, the amenity picklist cleaned (bar "Location URL"),
-AED confirmed, and write-back fields. Still open:
+v1.3 (5 Oct) answered the production listing access (P1) and most of
+Bazar's v1.1 requirements: all fourteen new fields (N1–N14), the restricted
+developer and property-type picklists, the project, the handover date, the
+whole-number floor and the Arabic field lengths. Still open:
 
-- **P1. Production listing objects — still failing.** Levarus reported the
-  access done on 25 Sept. Rechecked the same day with a fresh token: the
-  production Run As user, `leadcreation@bazar.com` (`005i1000000iydBAAQ`),
-  still sees only `Lead__c`; `SELECT COUNT() FROM Property_Listing__c`
-  answers `INVALID_TYPE`. The same username in the sandbox sees four
-  listings. Either the permission set went to another user, or the objects
-  are not deployed to production.
-- ~~P2. `+7` in production.~~ **Done** 25 Sept, and allowed in our code.
-- **P3. Rotate the sandbox secret.** Still the original one; five documents.
-- ~~P4. `Project__c`.~~ **Answered**: it exists; our user lacks field access,
-  which is fine — we do not read it.
+- **Publishing rules.** v1.3 does not say whether Salesforce now refuses to
+  mark an incomplete listing Published (v1.1 rules P1–P21, F1–F7). The
+  website holds such a listing either way; the rules would let the CRM team
+  see why at the moment they click.
+- **Coordinates are still text** (`Latitude__c` / `Longitude__c`), not the
+  numbers v1.1 C7 asked for. The website parses and range-checks them, so
+  this costs nothing but typos.
+
+- **Write-back field access in production.** The integration user needs Edit
+  on `Website_Status__c`, `Website_Listing_URL__c` and `Website_Error__c`;
+  untested until write-back is switched on after the first clean real listing.
+- **Rotate the Connected App secrets.** Both editions of v1.3 print the
+  client id and secret in the document again, as v1.2 did.
+- **Agent email.** The v1.3 samples return the Assigned Agent's `Email` as
+  null. If the integration user cannot read User emails, every advisor has to
+  be mapped by hand on the Salesforce listings screen; with read access they
+  match by email.
+- ~~P4. `Project__c`.~~ **Answered in v1.3**: the feed now carries
+  `Project__c` and `Project__r.Name`.
 - ~~P5. `Republished`.~~ **Answered**: a listing published again after expiry
   or deactivation. Live, as we treat it.
-- ~~P6.~~ **Answered**: `LST-00002` is sandbox test data only. "Location URL"
-  is gone from the amenity picklist.
 
 ### Leads — website to Salesforce
 

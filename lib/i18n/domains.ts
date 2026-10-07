@@ -75,6 +75,7 @@ export const DOMAINS: Domain[] = [
         column: "short_description",
         strategy: "machine",
         evidence: "p/[slug]/page.tsx:201",
+        note: "On a Salesforce listing, from `Short_Description_Arabic__c` when the CRM team wrote one (guide v1.3) — human, so the translator skips it.",
       },
       {
         column: "description",
@@ -88,11 +89,17 @@ export const DOMAINS: Domain[] = [
         evidence: "p/[slug]/page.tsx:586",
         note: "Place-name heavy; a machine pass mangles Abu Dhabi street naming.",
       },
-      { column: "view", strategy: "hand", evidence: "p/[slug]/page.tsx:344" },
+      {
+        column: "view",
+        strategy: "hand",
+        evidence: "p/[slug]/page.tsx:344",
+        note: "On a Salesforce listing, `View_Arabic__c` — a formula field in Salesforce, so the CRM team never types it.",
+      },
       {
         column: "orientation",
         strategy: "hand",
         evidence: "p/[slug]/page.tsx:346",
+        note: "On a Salesforce listing, `Orientation_Arabic__c` — a formula field, like the view's.",
       },
       {
         column: "reference",
