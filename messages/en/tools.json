@@ -21,6 +21,7 @@
     "typeVariableInline": "variable",
     "typeHybridInline": "hybrid",
     "buyerStatus": "Buyer status",
+    "statusUaeNational": "UAE national",
     "statusUaeResident": "UAE resident",
     "statusNonResident": "Non-resident",
     "statusGccNational": "GCC national",

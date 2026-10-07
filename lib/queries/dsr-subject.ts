@@ -8,8 +8,8 @@ import { findMortgageRequests, mortgageExport } from "@/lib/mortgage-requests/se
  *
  * With customer accounts removed, everything Bazar holds about a person hangs
  * off their email address rather than an `accounts` row: enquiries and their
- * message threads, valuation requests, mortgage enquiries, the newsletter
- * list, and the mortgage module's requests — which can also be found by a UAE
+ * message threads, valuation requests, the newsletter list, and the mortgage
+ * module's requests — which can also be found by a UAE
  * mobile, since an applicant may have used another address
  * (lib/mortgage-requests/server/dsr.ts).
  *
@@ -22,7 +22,6 @@ export type SubjectTally = {
   enquiries: number;
   messages: number;
   valuation_requests: number;
-  mortgage_inquiries: number;
   /** Fast Pre-Approval and Mortgage Consultancy requests, by email or the mobile given. */
   mortgage_requests: number;
   newsletter: number;
@@ -41,7 +40,6 @@ const EMPTY: SubjectTally = {
   enquiries: 0,
   messages: 0,
   valuation_requests: 0,
-  mortgage_inquiries: 0,
   mortgage_requests: 0,
   newsletter: 0,
 };
@@ -64,7 +62,7 @@ export async function getSubjectByEmail(
   if (!admin) return null;
 
   try {
-    const [enquiries, valuations, mortgages, newsletter, mortgageRequests] = await Promise.all([
+    const [enquiries, valuations, newsletter, mortgageRequests] = await Promise.all([
       admin
         .from("enquiries")
         .select(
@@ -72,10 +70,6 @@ export async function getSubjectByEmail(
         )
         .ilike("email", email),
       admin.from("valuation_requests").select("*").ilike("owner_email", email),
-      admin
-        .from("mortgage_inquiries")
-        .select("*")
-        .ilike("applicant_email", email),
       admin
         .from("newsletter_subscribers")
         .select("*")
@@ -118,7 +112,6 @@ export async function getSubjectByEmail(
       enquiries: enquiryRows.length,
       messages: messageRows.length,
       valuation_requests: (valuations.data ?? []).length,
-      mortgage_inquiries: (mortgages.data ?? []).length,
       mortgage_requests: mortgageRequestIds.length,
       newsletter: newsletter.data ? 1 : 0,
     };

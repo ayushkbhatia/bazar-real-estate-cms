@@ -35,6 +35,12 @@ export type PreApprovalCopy = {
    * button goes there, under the "Start pre-approval" label.
    */
   flowHref?: string | null;
+  /**
+   * Who can apply online, under the buttons while the application is open
+   * (D24): UAE nationals and residents only, though the calculator above also
+   * prices for non-residents.
+   */
+  flowNote?: string | null;
 };
 
 type Props = {
@@ -219,6 +225,11 @@ export function PreApprovalSection({
               </Button>
             )}
           </div>
+          {copy.flowHref && copy.flowNote ? (
+            <p className="mt-3 max-w-[52ch] text-[12.5px] leading-[1.55] text-bz-ink-2" data-testid="pre-approval-flow-note">
+              {copy.flowNote}
+            </p>
+          ) : null}
         </div>
 
         {showForm ? (

@@ -611,6 +611,7 @@ fact rather than imply it.
    and whether new requests also reach Enquiries or Salesforce, are D25 and D13.
 7. **`mortgage_inquiries`** (`0008_tools.sql:156-187`) is dormant: nothing
    writes to it. Leave it, and count its production rows before deciding (D26, G2).
+   *Resolved 1 Oct: 0 rows, dropped by `0154`.*
 8. **Three loan-to-value answers on one site.**
    - W2 and C2 say UAE National up to 85% and expat up to 80%, matching the
      Central Bank caps for a first home under AED 5M.
@@ -618,10 +619,12 @@ fact rather than imply it.
    - The property FAQ (`lib/master-pages/property-page.ts:337-340`) says 80% and 60%.
 
    The recommendation is to fill `{ltv}` from settings, with the design's values
-   as defaults, and align the calculator (D23).
+   as defaults, and align the calculator (D23). *Resolved 1 Oct: the calculator
+   and the FAQ follow the Central Bank caps, with a UAE-national buyer status.*
 9. **Non-residents.** W2 offers only UAE National or UAE Resident/Expat, and
    its mobile field accepts only UAE mobiles. The calculator supports
-   non-residents (D24).
+   non-residents (D24). *Resolved 1 Oct: the calculator's band says who can
+   apply online.*
 10. **Protected files.** `components/brand/cms-shell.tsx` (G1) and `lib/env.ts` (G3).
 11. **Admin end-to-end tests** aren't possible in CI today (§1.14).
 12. **Binary email attachments** aren't supported yet (§1.9).
