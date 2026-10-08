@@ -7,9 +7,9 @@
  * stack's real storage (`npm run db:local:reset && npm run test:db`):
  *
  *   · files go straight from the browser to the private bucket through a
- *     signed URL, are re-checked on completion, and are scanned;
+ *     signed URL and are re-checked on completion (no malware scan, D6);
  *   · oversize, wrong-type and password-protected files are refused and their
- *     objects deleted; infected files too;
+ *     objects deleted;
  *   · expired drafts are purged with their objects; a draft's clean files
  *     attach to a request;
  *   · only the mortgage team gets a document — an admin without a mortgage
@@ -27,12 +27,10 @@ import {
   fileStatus,
   presignFile,
   purgeExpiredDrafts,
-  scanPending,
   type DraftDeps,
 } from "./server/drafts";
 import { MortgageApiError } from "./server/errors";
 import { openStaffFile, staffFileResponse, type FileAccessDeps, type StaffCaller } from "./server/files";
-import { devScanner, eicarTestBytes } from "./server/scan";
 import { MORTGAGE_BUCKET, supabaseStorage, type MortgageStorage } from "./server/storage";
 import { sha256Hex } from "./server/verify";
 import { buildPdf, jpegBytes, pngBytes } from "./testing/fixtures";
@@ -53,7 +51,7 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
   beforeAll(() => {
     service = client(local, local.serviceRoleKey);
     storage = supabaseStorage(service);
-    deps = { db: service, storage, scanner: devScanner };
+    deps = { db: service, storage };
   });
 
   afterAll(() => retireTestStaff(service));
@@ -91,7 +89,7 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
 
   // ── Uploading ───────────────────────────────────────────────
 
-  it("takes a file straight to private storage, checks it and scans it clean", async () => {
+  it("takes a file straight to private storage, checks it and marks it ready, unscanned (D6)", async () => {
     const draft = await newDraft();
     const photo = jpegBytes(Math.round(1.2 * MB));
     const { fileId, putStatus } = await upload(draft, "emirates_id", photo);
@@ -164,38 +162,6 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
 
     const restricted = await upload(draft, "bank_statements_3m", buildPdf({ pages: 2, ownerPassword: "hr" }));
     expect(await complete(draft, restricted.fileId)).toMatchObject({ status: "ready", pageCount: 2 });
-  });
-
-  it("deletes an infected file and reports it", async () => {
-    const draft = await newDraft();
-    const infected = jpegBytes(4096);
-    infected.set(eicarTestBytes(), 64);
-    const { fileId } = await upload(draft, "passport", infected);
-    await rejects(complete(draft, fileId), 422, "infected");
-    expect(await row(fileId)).toMatchObject({ state: "removed", scan_status: "infected" });
-    expect(await storage.read(`f/${fileId}`)).toBeNull();
-    expect(await fileStatus(deps, { draftId: draft.draftId, token: draft.draftToken, fileId })).toEqual({
-      status: "failed",
-      code: "infected",
-    });
-  });
-
-  it("keeps a file pending, unopenable, until a scanner has seen it", async () => {
-    const noScanner: DraftDeps = { ...deps, scanner: null };
-    const draft = await newDraft(noScanner);
-    const { fileId } = await upload(draft, "passport", buildPdf(), { d: noScanner });
-    expect(await complete(draft, fileId, noScanner)).toEqual({ status: "scanning" });
-    expect(await row(fileId)).toMatchObject({ state: "active", scan_status: "pending" });
-
-    // The worker picks it up once a scanner is there.
-    let seen = 0;
-    for (let i = 0; i < 20 && seen === 0; i++) {
-      await scanPending(deps, { limit: 50 });
-      seen = (await row(fileId)).scan_status === "clean" ? 1 : 0;
-    }
-    expect(await fileStatus(deps, { draftId: draft.draftId, token: draft.draftToken, fileId })).toMatchObject({
-      status: "ready",
-    });
   });
 
   it("can't be tricked past the bucket's 40 MB cap by a small declared size", async () => {
@@ -299,12 +265,10 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
     expect(again.error?.code).toBe("MR409");
   });
 
-  it("won't attach a draft with a file still scanning, or one missing a document", async () => {
+  it("won't attach a draft with a file still uploading, or one missing a document", async () => {
     const request = await preApproval();
-    const noScanner: DraftDeps = { ...deps, scanner: null };
-    const draft = await newDraft(noScanner);
-    const pending = await upload(draft, "passport", buildPdf(), { d: noScanner });
-    await complete(draft, pending.fileId, noScanner);
+    const draft = await newDraft();
+    await upload(draft, "passport", buildPdf());
     const unready = await service.rpc("mortgage_attach_draft", { p_request_id: request.id, p_draft_id: draft.draftId });
     expect(unready.error).toMatchObject({ code: "MR422", message: "files_not_ready" });
 
@@ -441,7 +405,7 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
       expect(read).not.toHaveBeenCalled();
     });
 
-    it("serves only files on a request, clean and present", async () => {
+    it("serves only files on a request, finished and present", async () => {
       const { files } = await attachedRequest(owner.id);
       const caller = callerOf(owner, "adviser");
       const draft = await newDraft();
@@ -449,8 +413,8 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
       await complete(draft, loose.fileId);
       await expect(openStaffFile(accessDeps(owner), { caller, fileId: loose.fileId, download: false })).rejects.toMatchObject({ status: 404 });
 
-      await service.from("mortgage_files").update({ scan_status: "pending" }).eq("id", files.passport.fileId);
-      await expect(openStaffFile(accessDeps(owner), { caller, fileId: files.passport.fileId, download: false })).rejects.toMatchObject({ status: 409, code: "not_scanned" });
+      await service.from("mortgage_files").update({ state: "pending" }).eq("id", files.passport.fileId);
+      await expect(openStaffFile(accessDeps(owner), { caller, fileId: files.passport.fileId, download: false })).rejects.toMatchObject({ status: 404 });
 
       await expect(openStaffFile(accessDeps(owner), { caller, fileId: crypto.randomUUID(), download: false })).rejects.toMatchObject({ status: 404 });
       await expect(openStaffFile(accessDeps(owner), { caller, fileId: "../../etc/passwd", download: false })).rejects.toMatchObject({ status: 404 });

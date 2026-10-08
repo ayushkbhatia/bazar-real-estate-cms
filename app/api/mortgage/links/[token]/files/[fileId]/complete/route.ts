@@ -6,10 +6,10 @@ import { completeLinkFile } from "@/lib/mortgage-requests/server/links";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Reads up to 40 MB, parses PDFs and scans them.
+// Reads up to 40 MB and parses PDFs.
 export const maxDuration = 60;
 
-/** POST — check the uploaded bytes and scan them, as for a draft (SPEC §4.2). */
+/** POST — check the uploaded bytes, as for a draft (SPEC §4.2). */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ token: string; fileId: string }> }) {
   return handle("mortgage.links.complete", async () => {
     const { token, fileId } = await ctx.params;

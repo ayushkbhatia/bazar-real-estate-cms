@@ -259,7 +259,7 @@ export function DocumentReview({
   const cache = useFileCache();
   const files = data.doc.files;
   const [fileId, setFileId] = useState(
-    () => files.find((f) => f.id === initialFileId && !f.scanning)?.id ?? files.find((f) => !f.scanning)?.id ?? null,
+    () => files.find((f) => f.id === initialFileId)?.id ?? files[0]?.id ?? null,
   );
   const file = files.find((f) => f.id === fileId) ?? null;
   const [zoom, setZoom] = useState(1);
@@ -292,9 +292,8 @@ export function DocumentReview({
       else if (e.key === "-") zoomBy(-1);
       else if (e.key === "r" || e.key === "R") setRotation((r) => (r + 90) % 360);
       else if ((e.key === "[" || e.key === "]") && files.length > 1) {
-        const open = files.filter((f) => !f.scanning);
-        const at = open.findIndex((f) => f.id === fileId);
-        const next = open[(at + (e.key === "]" ? 1 : -1) + open.length) % open.length];
+        const at = files.findIndex((f) => f.id === fileId);
+        const next = files[(at + (e.key === "]" ? 1 : -1) + files.length) % files.length];
         if (next) setFileId(next.id);
       }
     };
@@ -354,14 +353,12 @@ export function DocumentReview({
                   <button
                     key={f.id}
                     type="button"
-                    disabled={f.scanning}
                     aria-pressed={on}
-                    title={f.scanning ? t("viewer.scanning") : f.name}
+                    title={f.name}
                     onClick={() => setFileId(f.id)}
                     className={cn(
                       "inline-flex h-[30px] max-w-[220px] items-center gap-2 rounded-md px-3 text-[12px]",
                       on ? "bg-bz-ink text-bz-bg" : "bg-bz-surface-2 text-bz-ink hover:bg-bz-surface-3",
-                      f.scanning && "opacity-50",
                     )}
                   >
                     <span className={cn("mono text-[9px] font-semibold", on ? "" : "text-[oklch(0.5_0.15_28)]")}>
@@ -436,7 +433,7 @@ export function DocumentReview({
                 onPage={onPage}
               />
             ) : (
-              <p className="py-24 text-center text-[12.5px] text-bz-ink-2">{files.length ? t("viewer.scanning") : t("viewer.noFiles")}</p>
+              <p className="py-24 text-center text-[12.5px] text-bz-ink-2">{t("viewer.noFiles")}</p>
             )}
           </div>
           {file ? (
@@ -510,7 +507,7 @@ function ReviewPanel({
   // Statements' coverage check is drawn from the months, and saved from them as the document is accepted.
   const allTicked = list.checks.every((c) => (isStatement && cov && c.key === "covers_period" ? cov.complete : checks[c.key] === true));
   const fieldsIn = list.recorded.every((f) => recorded[f.key] !== undefined && recorded[f.key] !== "");
-  const canAccept = reviewable && allTicked && fieldsIn && data.doc.files.some((f) => !f.scanning);
+  const canAccept = reviewable && allTicked && fieldsIn && data.doc.files.length > 0;
 
   const nextDoc = useMemo(() => {
     const order = data.documents;

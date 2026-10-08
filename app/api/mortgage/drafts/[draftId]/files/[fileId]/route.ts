@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ draftId: string; fileId: string }> };
 
-/** GET — where a file stands, for polling while its scan finishes. */
+/** GET — where a file stands, for polling while another request completes it. */
 export async function GET(req: NextRequest, ctx: Params) {
   return handle("mortgage.files.status", async () => {
     const { draftId, fileId } = await ctx.params;

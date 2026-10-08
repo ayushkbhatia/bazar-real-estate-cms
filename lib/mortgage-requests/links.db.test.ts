@@ -45,7 +45,6 @@ import {
   type LinkDeps,
   type LinkRow,
 } from "./server/links";
-import { devScanner } from "./server/scan";
 import { loadMortgageSettings } from "./server/settings";
 import { supabaseStorage } from "./server/storage";
 import { submitBodySchema, submitRequest } from "./server/submit";
@@ -86,7 +85,7 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
 
   beforeAll(async () => {
     service = client(local, local.serviceRoleKey);
-    deps = { db: service, storage: supabaseStorage(service), scanner: devScanner };
+    deps = { db: service, storage: supabaseStorage(service) };
     policy = (await loadMortgageSettings(service)).policy;
     [head, adviserA, adviserB] = await Promise.all([
       createTestStaff(local, service, "support", "head"),

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ token: string; fileId: string }> };
 
-/** GET — where an upload stands (a scan still running). */
+/** GET — where an upload stands. */
 export async function GET(req: NextRequest, ctx: Params) {
   return handle("mortgage.links.status", async () => {
     const { token, fileId } = await ctx.params;

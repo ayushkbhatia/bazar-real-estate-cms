@@ -62,7 +62,7 @@ function fakeTransport() {
     },
     async status(fileId) {
       calls.push(`status ${fileId}`);
-      return statuses.shift() ?? { status: "scanning" };
+      return statuses.shift() ?? { status: "uploading" };
     },
     async remove(fileId) {
       calls.push(`remove ${fileId}`);
@@ -123,15 +123,15 @@ describe("the upload queue", () => {
     expect(t.calls).toEqual(["presign passport.pdf → srv-1", "put srv-1", "complete srv-1"]);
   });
 
-  it("keeps showing Uploading while the scan finishes, polling until ready", async () => {
+  it("keeps showing Uploading while another request completes the file, polling until ready", async () => {
     const t = fakeTransport();
     const { q, items } = queue(t);
-    t.statuses.push({ status: "scanning" }, { status: "ready", sizeBytes: MB, pageCount: 1 });
+    t.statuses.push({ status: "uploading" }, { status: "ready", sizeBytes: MB, pageCount: 1 });
     q.add("passport", [file("p.pdf", MB)]);
     await flush();
     t.puts.get("srv-1")!.d.resolve();
     await flush();
-    t.completes.get("srv-1")!.resolve({ status: "scanning" });
+    t.completes.get("srv-1")!.resolve({ status: "uploading" });
     await flush();
     await flush();
     expect(items()[0]!.stage).toBe("ready");

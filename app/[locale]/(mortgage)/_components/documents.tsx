@@ -184,10 +184,6 @@ export function useUploadErrorMessage() {
         return t("upload.error.encryptedPdf");
       case "unreadable":
         return t("upload.error.unreadable");
-      case "infected":
-        return t("upload.error.infected");
-      case "scan_failed":
-        return t("upload.error.scanFailed");
       case "network":
         return t("upload.error.network");
       case "draft_expired":

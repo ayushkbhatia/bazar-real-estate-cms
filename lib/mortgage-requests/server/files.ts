@@ -57,19 +57,17 @@ export async function openStaffFile(
 
   const { data: file, error } = await deps.db
     .from("mortgage_files")
-    .select("id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes, scan_status")
+    .select("id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes")
     .eq("id", input.fileId)
     .maybeSingle();
   if (error) throw new Error(`file read failed: ${error.message}`);
   const row = file as Pick<
     FileRow,
-    "id" | "document_id" | "bank_submission_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes" | "scan_status"
+    "id" | "document_id" | "bank_submission_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes"
   > | null;
-  // Draft files aren't on a request yet, and removed ones are gone.
-  if (!row || row.state === "removed" || (!row.document_id && !row.bank_submission_id)) throw notFound();
-  if (row.state !== "active" || row.scan_status !== "clean") {
-    throw new MortgageApiError(409, "not_scanned");
-  }
+  // Draft files aren't on a request yet, removed ones are gone, and a pending
+  // one never finished uploading.
+  if (!row || row.state !== "active" || (!row.document_id && !row.bank_submission_id)) throw notFound();
 
   const request = await requestOf(deps, row);
   if (!request) throw notFound();

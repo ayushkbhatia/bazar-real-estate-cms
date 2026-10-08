@@ -2,7 +2,6 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DraftDeps, FileRow } from "./drafts";
 import { MortgageApiError, notFound } from "./errors";
-import type { ScanVerdict } from "./scan";
 import { inspectPdf, sha256Hex, sniffMime } from "./verify";
 
 /**
@@ -12,12 +11,12 @@ import { inspectPdf, sha256Hex, sniffMime } from "./verify";
  * made through the adviser's own session (`mortgage_letter_presign()`, 0149:
  * owner or Head, file with the banks), the bytes go straight to storage, and
  * nothing can use it until they are checked — a real PDF, at most 10 MB, no
- * password — and scanned clean.
+ * password. There is no malware scan (decision D6).
  */
 
 export const LETTER_MAX_BYTES = 10 * 1_048_576;
 
-export type LetterStatus = { status: "ready"; fileId: string; name: string; sizeBytes: number } | { status: "scanning"; fileId: string };
+export type LetterStatus = { status: "ready"; fileId: string; name: string; sizeBytes: number };
 
 /** Make the letter's row and a signed upload URL for its bytes. */
 export async function presignLetter(
@@ -45,24 +44,20 @@ export async function presignLetter(
   return { fileId: row.id, uploadUrl: url, headers };
 }
 
-/** Check and scan an uploaded letter. Throws the upload error for one that can't be used; its bytes are gone. */
+/** Check an uploaded letter. Throws the upload error for one that can't be used; its bytes are gone. */
 export async function completeLetter(deps: DraftDeps, fileId: string): Promise<LetterStatus> {
   const { data } = await deps.db
     .from("mortgage_files")
-    .select("id, bank_submission_id, state, storage_key, original_name, size_bytes, scan_status")
+    .select("id, bank_submission_id, state, storage_key, original_name, size_bytes")
     .eq("id", fileId)
     .maybeSingle();
-  const file = data as Pick<FileRow, "id" | "bank_submission_id" | "state" | "storage_key" | "original_name" | "size_bytes" | "scan_status"> | null;
+  const file = data as Pick<FileRow, "id" | "bank_submission_id" | "state" | "storage_key" | "original_name" | "size_bytes"> | null;
   if (!file || !file.bank_submission_id || file.state === "removed") throw notFound();
-  if (file.state === "active") {
-    if (file.scan_status === "clean") return { status: "ready", fileId, name: file.original_name, sizeBytes: Number(file.size_bytes) };
-    if (file.scan_status === "pending") return { status: "scanning", fileId };
-    throw new MortgageApiError(422, "scan_failed");
-  }
+  if (file.state === "active") return { status: "ready", fileId, name: file.original_name, sizeBytes: Number(file.size_bytes) };
 
   const bytes = await deps.storage.read(file.storage_key);
   if (!bytes) throw new MortgageApiError(409, "upload_missing");
-  const fail = async (code: "bad_type" | "too_large" | "encrypted_pdf" | "unreadable" | "infected" | "scan_failed") => {
+  const fail = async (code: "bad_type" | "too_large" | "encrypted_pdf" | "unreadable") => {
     await discard(deps, file);
     return new MortgageApiError(422, code);
   };
@@ -71,32 +66,17 @@ export async function completeLetter(deps: DraftDeps, fileId: string): Promise<L
   const pdf = await inspectPdf(bytes);
   if (!pdf.ok) throw await fail(pdf.reason);
 
+  // `clean` is what the database's gates read as "passed its checks" (decision D6).
   const { error } = await deps.db
     .from("mortgage_files")
-    .update({ state: "active", size_bytes: bytes.length, page_count: pdf.pageCount, sha256: sha256Hex(bytes) })
+    .update({ state: "active", scan_status: "clean", size_bytes: bytes.length, page_count: pdf.pageCount, sha256: sha256Hex(bytes) })
     .eq("id", file.id)
     .eq("state", "pending");
   if (error) throw new Error(`letter update failed: ${error.message}`);
-
-  if (!deps.scanner) return { status: "scanning", fileId };
-  let verdict: ScanVerdict;
-  try {
-    verdict = await deps.scanner.scan(bytes);
-  } catch {
-    verdict = "unavailable";
-  }
-  if (verdict === "unavailable") return { status: "scanning", fileId };
-  if (verdict !== "clean") throw await fail(verdict === "infected" ? "infected" : "scan_failed");
-  const { error: cleanError } = await deps.db
-    .from("mortgage_files")
-    .update({ scan_status: "clean" })
-    .eq("id", file.id)
-    .eq("scan_status", "pending");
-  if (cleanError) throw new Error(`letter update failed: ${cleanError.message}`);
   return { status: "ready", fileId, name: file.original_name, sizeBytes: bytes.length };
 }
 
 async function discard(deps: Pick<DraftDeps, "db" | "storage">, file: { id: string; storage_key: string }) {
   await deps.storage.remove([file.storage_key]).catch(() => undefined);
-  await deps.db.from("mortgage_files").update({ state: "removed", scan_status: "failed" }).eq("id", file.id);
+  await deps.db.from("mortgage_files").update({ state: "removed" }).eq("id", file.id);
 }

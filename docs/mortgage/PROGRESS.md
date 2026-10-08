@@ -1124,3 +1124,42 @@ Ayush: "do D26 and the calculator fixes".
 **Order:** the code goes out first; `0154` is applied after the deploy, since
 the old code still counts the table (harmlessly: a failed read is 0).
 
+
+## D6 — no malware scanner · 8 Oct 2026
+
+Ayush: "Skip the scanner; and remove any restrictions to there being a
+scanner. We are not building a scanner. We are ok to accept any and all
+documents."
+
+**Built**
+- **A file is ready once it's checked.** `…/complete` (drafts, secure links
+  and the banks' letters) still reads the real type from the bytes, the size
+  and the document's total, refuses a password-protected PDF and counts
+  pages; a file that passes is marked `scan_status = 'clean'` in the same
+  update and answers `ready`. Nothing waits for a scan.
+- **Removed:** `server/scan.ts` (the clamd and dev scanners) and its tests,
+  the `scanner` dependency and `scannerFromEnv()`, `MORTGAGE_SCANNER` and
+  `MORTGAGE_CLAMD_HOST`/`PORT` (`lib/env.ts`, `.env.example`), the worker's
+  `scanPending` step (its heartbeat detail now starts at "purged"), the
+  `scanning` and `failed` file statuses, the `infected`, `scan_failed` and
+  `not_scanned` error codes, the applicant's two scan messages (EN, AR,
+  provenance), C2's "Checking" tag, the viewer's "still being checked" state
+  and C5's "The letter is still being checked".
+- **No migration.** The SQL gates (`mortgage_attach_draft`, the review,
+  decision and bank functions) still read `scan_status = 'clean'`, which now
+  means "passed the checks"; redefining six functions to drop a check every
+  file passes would change nothing. Production had no file waiting (60
+  sample files, all `clean`).
+- Docs: DECISIONS D6 (decided), SECURITY-REVIEW SR-3 (accepted risk, with
+  its mitigations), SR-24 (moot), §6; RUNBOOK §2 rewritten ("Uploads, and no
+  malware scan"), §1, §11; IMPLEMENTATION.
+
+**Verified**
+- Typecheck, lint, unit tests (358 files); DB suite 117/117 after a fresh
+  `db:local:reset` (two scanner tests removed); every mortgage e2e spec
+  (20/20) against the local stack, uploads, W8 re-upload and the banks'
+  letters included.
+
+**Open**
+- The `mortgage_scan_status` enum and the column stay as they are; a later
+  migration could rename `clean` if it ever confuses anyone.

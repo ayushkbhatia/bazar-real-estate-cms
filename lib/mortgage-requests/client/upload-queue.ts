@@ -38,8 +38,6 @@ export type UploadErrorCode =
   | "too_many_files"
   | "encrypted_pdf"
   | "unreadable"
-  | "infected"
-  | "scan_failed"
   | "network"
   | "draft_expired"
   | "generic";
@@ -92,7 +90,7 @@ type Options = {
   onChange: (items: readonly UploadItem[]) => void;
   onEvent?: (event: QueueEvent) => void;
   concurrency?: number;
-  /** Delays between scan polls, in ms; the last repeats. */
+  /** Delays between status polls (another request still completing the file), in ms; the last repeats. */
   pollDelays?: readonly number[];
   /** Files already on the server (restored after a reload): ready, no bytes held. */
   initial?: readonly UploadItem[];
@@ -117,8 +115,6 @@ function errorFrom(e: unknown): UploadError {
       case "too_many_files":
       case "encrypted_pdf":
       case "unreadable":
-      case "infected":
-      case "scan_failed":
       case "network":
       case "draft_expired":
         return { code: e.code, sizeBytes: d.sizeBytes, limitBytes: d.limitBytes, totalBytes: d.totalBytes, limit: d.limit };
@@ -339,7 +335,7 @@ export class UploadQueue {
       this.patch(localId, { stage: "verifying", loaded: start.sizeBytes });
 
       let status = await this.o.transport.complete(presigned.fileId);
-      for (let attempt = 0; status.status === "scanning" || status.status === "uploading"; attempt++) {
+      for (let attempt = 0; status.status === "uploading"; attempt++) {
         const delays = this.o.pollDelays;
         await this.o.sleep(delays[Math.min(attempt, delays.length - 1)]!);
         if (gone()) return;
@@ -353,7 +349,7 @@ export class UploadQueue {
         if (item) this.o.onEvent?.({ type: "added", item });
         this.settleReplace(item?.replaceBatch);
       } else {
-        this.fail(localId, { code: status.status === "failed" ? status.code : "generic" });
+        this.fail(localId, { code: "generic" });
       }
     } catch (e) {
       if (gone()) return;

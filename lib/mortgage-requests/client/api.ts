@@ -14,9 +14,7 @@ export type DraftHandle = { draftId: string; draftToken: string; expiresAt: stri
 
 export type FileStatus =
   | { status: "uploading" }
-  | { status: "scanning" }
   | { status: "ready"; sizeBytes: number; pageCount: number | null }
-  | { status: "failed"; code: "infected" | "scan_failed" }
   | { status: "removed" };
 
 export type Presigned = { fileId: string; uploadUrl: string; headers: Record<string, string> };

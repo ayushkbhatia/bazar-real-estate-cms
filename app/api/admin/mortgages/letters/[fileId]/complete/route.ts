@@ -10,9 +10,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * POST /api/admin/mortgages/letters/:fileId/complete — check and scan an
- * uploaded bank letter: a real PDF of at most 10 MB, without a password, and
- * clean. A member of the mortgage team only; the letter is only used through
+ * POST /api/admin/mortgages/letters/:fileId/complete — check an uploaded
+ * bank letter: a real PDF of at most 10 MB, without a password. A member of the mortgage team only; the letter is only used through
  * `mortgage_record_bank_response()`, which checks who may.
  */
 export async function POST(_req: NextRequest, ctx: { params: Promise<{ fileId: string }> }) {

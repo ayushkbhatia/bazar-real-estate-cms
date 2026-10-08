@@ -6,10 +6,10 @@ import { bearerToken } from "@/lib/mortgage-requests/server/tokens";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Reads up to 40 MB, parses PDFs and scans them.
+// Reads up to 40 MB and parses PDFs.
 export const maxDuration = 60;
 
-/** POST — check the uploaded bytes and scan them (SPEC §4.2). */
+/** POST — check the uploaded bytes (SPEC §4.2; no malware scan, decision D6). */
 export async function POST(req: NextRequest, ctx: { params: Promise<{ draftId: string; fileId: string }> }) {
   return handle("mortgage.files.complete", async () => {
     const { draftId, fileId } = await ctx.params;

@@ -7164,22 +7164,10 @@
     "sourceHash": "26b64861d803",
     "reviewed": false
   },
-  "mortgage.upload.error.infected": {
-    "by": "machine",
-    "model": "claude-opus-5-5",
-    "sourceHash": "8abd942335ca",
-    "reviewed": false
-  },
   "mortgage.upload.error.network": {
     "by": "machine",
     "model": "claude-opus-5-5",
     "sourceHash": "76fb28a339b9",
-    "reviewed": false
-  },
-  "mortgage.upload.error.scanFailed": {
-    "by": "machine",
-    "model": "claude-opus-5-5",
-    "sourceHash": "af07b6a6d877",
     "reviewed": false
   },
   "mortgage.upload.error.tooLarge": {

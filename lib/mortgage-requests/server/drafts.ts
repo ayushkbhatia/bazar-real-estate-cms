@@ -7,8 +7,9 @@
  *              counting files still uploading → a signed PUT URL;
  *   PUT      → straight to storage, never through our functions;
  *   complete → the same rules again on the stored bytes' real size and type,
- *              then password-protected PDFs, page count, SHA-256, and a
- *              malware scan. A file that fails is deleted and marked removed.
+ *              then password-protected PDFs, page count and SHA-256. A
+ *              file that fails is deleted and marked removed; one that
+ *              passes is ready. There is no malware scan (decision D6).
  * Drafts expire after 24 hours; the mortgage-worker cron purges them.
  *
  * Nothing here knows about HTTP or Next.js: route handlers wrap it, and the
@@ -29,7 +30,6 @@ import {
   type FileRuleError,
 } from "../documents";
 import { MortgageApiError, notFound } from "./errors";
-import type { Scanner, ScanVerdict } from "./scan";
 import { fileKey, type MortgageStorage } from "./storage";
 import { hashToken, newToken, tokenMatches } from "./tokens";
 import { inspectPdf, sha256Hex, sniffMime } from "./verify";
@@ -43,8 +43,6 @@ export type DraftDeps = {
   /** Service-role client. */
   db: SupabaseClient;
   storage: MortgageStorage;
-  /** Null when no scanner is configured: files wait, unopenable, for one. */
-  scanner: Scanner | null;
   now?: () => Date;
 };
 
@@ -180,7 +178,7 @@ export type PresignInput = {
   /**
    * Ready files of the same kind this upload replaces (W5/W6 "Replace"). They
    * aren't counted against the kind's limits, and they're retired when this
-   * file comes out of its scan clean — so a failed replace keeps the old file.
+   * file passes its checks — so a failed replace keeps the old file.
    */
   replaces?: readonly string[];
 };
@@ -263,25 +261,17 @@ export async function presignIntoDraft(
 
 export type FileStatus =
   | { status: "uploading" }
-  | { status: "scanning" }
   | { status: "ready"; sizeBytes: number; pageCount: number | null }
-  | { status: "failed"; code: "infected" | "scan_failed" }
   | { status: "removed" };
 
-export function statusOf(file: Pick<FileRow, "state" | "scan_status" | "size_bytes" | "page_count">): FileStatus {
+export function statusOf(file: Pick<FileRow, "state" | "size_bytes" | "page_count">): FileStatus {
   if (file.state === "pending") return { status: "uploading" };
-  if (file.state === "active") {
-    return file.scan_status === "clean"
-      ? { status: "ready", sizeBytes: Number(file.size_bytes), pageCount: file.page_count }
-      : { status: "scanning" };
-  }
-  if (file.scan_status === "infected") return { status: "failed", code: "infected" };
-  if (file.scan_status === "failed") return { status: "failed", code: "scan_failed" };
+  if (file.state === "active") return { status: "ready", sizeBytes: Number(file.size_bytes), pageCount: file.page_count };
   return { status: "removed" };
 }
 
 /**
- * A clean replacement retires the files it replaces (Replace on W5/W6). Only
+ * A ready replacement retires the files it replaces (Replace on W5/W6). Only
  * draft files still active are touched: anything already attached to a
  * request is out of a draft's reach.
  */
@@ -304,16 +294,9 @@ export async function retireFiles(deps: Pick<DraftDeps, "db" | "storage">, files
 }
 
 /** Delete a file's object and mark its row removed, keeping the row as the record. */
-async function discard(
-  deps: Pick<DraftDeps, "db" | "storage">,
-  file: FileRow,
-  scanStatus?: "infected" | "failed",
-): Promise<void> {
+async function discard(deps: Pick<DraftDeps, "db" | "storage">, file: FileRow): Promise<void> {
   await deps.storage.remove([file.storage_key]);
-  const { error } = await deps.db
-    .from("mortgage_files")
-    .update({ state: "removed", ...(scanStatus ? { scan_status: scanStatus } : {}) })
-    .eq("id", file.id);
+  const { error } = await deps.db.from("mortgage_files").update({ state: "removed" }).eq("id", file.id);
   if (error) throw new Error(`file update failed: ${error.message}`);
 }
 
@@ -344,33 +327,6 @@ export async function checkStoredBytes(
     pageCount = pdf.pageCount;
   }
   return { ok: true, mime, sizeBytes: bytes.length, pageCount, sha256: sha256Hex(bytes) };
-}
-
-/**
- * Scan a checked file and record the verdict. Returns its status afterwards;
- * throws the upload error for infected or unscannable files, which are gone.
- */
-async function scanAndRecord(deps: DraftDeps, file: FileRow, bytes: Uint8Array): Promise<FileStatus> {
-  if (!deps.scanner) return { status: "scanning" };
-  let verdict: ScanVerdict;
-  try {
-    verdict = await deps.scanner.scan(bytes);
-  } catch {
-    verdict = "unavailable";
-  }
-  if (verdict === "unavailable") return { status: "scanning" };
-  if (verdict === "clean") {
-    const { error } = await deps.db
-      .from("mortgage_files")
-      .update({ scan_status: "clean" })
-      .eq("id", file.id)
-      .eq("scan_status", "pending");
-    if (error) throw new Error(`file update failed: ${error.message}`);
-    await retireReplaced(deps, file);
-    return { status: "ready", sizeBytes: Number(file.size_bytes), pageCount: file.page_count };
-  }
-  await discard(deps, file, verdict);
-  throw new MortgageApiError(422, verdict === "infected" ? "infected" : "scan_failed");
 }
 
 export async function completeFile(
@@ -418,6 +374,9 @@ export async function completeInDraft(
       size_bytes: checked.sizeBytes,
       page_count: checked.pageCount,
       sha256: checked.sha256,
+      // The database's gates read `clean` as "passed its checks": with no
+      // scanner (decision D6), the checks above are the whole of them.
+      scan_status: "clean",
     })
     .eq("id", file.id)
     .eq("state", "pending")
@@ -427,7 +386,8 @@ export async function completeInDraft(
   // Someone else completed it first: answer with that.
   if (!updated) return statusOf(await fileInDraft(deps, draft.id, file.id));
 
-  return scanAndRecord(deps, updated as FileRow, bytes);
+  await retireReplaced(deps, updated as FileRow);
+  return statusOf(updated as FileRow);
 }
 
 export async function fileStatus(
@@ -457,56 +417,6 @@ export async function deleteInDraft(deps: DraftDeps, draftId: string, fileId: st
 }
 
 // ── The worker (cron) ───────────────────────────────────────────
-
-/** Scan files still waiting for a verdict: the retry for scans that couldn't run inline. */
-export async function scanPending(
-  deps: DraftDeps,
-  opts: { limit?: number } = {},
-): Promise<{ clean: number; rejected: number; waiting: number }> {
-  const result = { clean: 0, rejected: 0, waiting: 0 };
-  const { data, error } = await deps.db
-    .from("mortgage_files")
-    .select(FILE_COLUMNS)
-    .eq("state", "active")
-    .eq("scan_status", "pending")
-    .order("uploaded_at", { ascending: true })
-    .limit(opts.limit ?? 10);
-  if (error) throw new Error(`file read failed: ${error.message}`);
-  if (!deps.scanner) {
-    result.waiting = data.length;
-    return result;
-  }
-  for (const file of data as FileRow[]) {
-    const bytes = await deps.storage.read(file.storage_key);
-    if (!bytes) {
-      await discard(deps, file, "failed");
-      result.rejected++;
-      continue;
-    }
-    try {
-      const status = await scanAndRecord(deps, file, bytes);
-      if (status.status === "ready") result.clean++;
-      else result.waiting++;
-    } catch (rejection) {
-      if (!(rejection instanceof MortgageApiError)) throw rejection;
-      result.rejected++;
-      if (file.document_id) await logRejectedAttachedFile(deps, file, rejection.code);
-    }
-  }
-  return result;
-}
-
-/** A file already on a request (a Phase 5 re-upload) that failed its scan goes on the request's log. */
-async function logRejectedAttachedFile(deps: DraftDeps, file: FileRow, code: string): Promise<void> {
-  const { data } = await deps.db.from("mortgage_documents").select("request_id").eq("id", file.document_id!).maybeSingle();
-  if (!data) return;
-  await deps.db.rpc("mortgage_log_event", {
-    p_request_id: data.request_id,
-    p_type: "file.scan_failed",
-    p_data: { file_id: file.id, kind: file.kind, code },
-    p_actor_kind: "system",
-  });
-}
 
 /**
  * Delete drafts nobody submitted within 24 hours, with their files and

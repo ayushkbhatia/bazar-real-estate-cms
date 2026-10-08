@@ -81,14 +81,6 @@ const serverSchema = z.object({
   // check on the application's public endpoints. Unset: outside production the
   // check is skipped; in production those endpoints answer 503.
   TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
-  // Malware scanner for applicants' documents (decision D6): "clamd" is a
-  // ClamAV daemon at MORTGAGE_CLAMD_HOST:MORTGAGE_CLAMD_PORT (default 3310);
-  // "dev" flags only the EICAR test string and is refused on the production
-  // deployment. Unset in production: no file is ever marked clean, so none
-  // can be opened — see lib/mortgage-requests/server/deps.ts.
-  MORTGAGE_SCANNER: z.enum(["clamd", "dev"]).optional(),
-  MORTGAGE_CLAMD_HOST: z.string().min(1).optional(),
-  MORTGAGE_CLAMD_PORT: z.string().regex(/^\d+$/).optional(),
   // Set by Vercel: "production" | "preview" | "development".
   VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
 });
@@ -175,9 +167,6 @@ const serverEnv =
         SALESFORCE_LEAD_EXTERNAL_ID_FIELD:
           process.env.SALESFORCE_LEAD_EXTERNAL_ID_FIELD,
         TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
-        MORTGAGE_SCANNER: process.env.MORTGAGE_SCANNER,
-        MORTGAGE_CLAMD_HOST: process.env.MORTGAGE_CLAMD_HOST,
-        MORTGAGE_CLAMD_PORT: process.env.MORTGAGE_CLAMD_PORT,
         VERCEL_ENV: process.env.VERCEL_ENV,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
