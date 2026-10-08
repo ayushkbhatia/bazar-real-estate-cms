@@ -19,7 +19,7 @@ import { localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { listAgents } from "@/lib/queries/agents";
-import { getPublicSiteSettings } from "@/lib/queries/site-settings";
+import { getLeadRoutingSettings } from "@/lib/queries/site-settings";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 export type LeadAreaOption = {
@@ -284,13 +284,12 @@ export async function matchAdvisor(opts: {
   areaSlug?: string | null;
   intent: "sell" | "rent_out";
 }): Promise<MatchedAdvisor | null> {
-  const [areas, candidates, settings] = await Promise.all([
+  const [areas, candidates, routing] = await Promise.all([
     listLeadAreaOptions(),
     listAdvisorCandidates(),
-    getPublicSiteSettings(),
+    getLeadRoutingSettings(),
   ]);
   const areaSlugs = resolveAreaSlugs(opts.location, areas, opts.areaSlug);
-  const routing = settings.lead_routing;
 
   const byUserId = (id: string | null | undefined) =>
     id ? (candidates.find((c) => c.userId === id) ?? null) : null;
