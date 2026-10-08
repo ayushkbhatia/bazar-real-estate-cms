@@ -1312,22 +1312,6 @@ shows the trail.)
   Bears on the interior/exterior split: record media stands in for exteriors
   only, because a role enum with no writer can never express "interior".
 
-- [settings] Under the anon key, `getPublicSiteSettings` still answers from
-  `DEFAULTS` rather than the row an admin edited. `site_settings` had no anon
-  policy at all until 0096, and 0096 opened only the branding and display
-  columns — the wide read also asks for `lead_routing` and `email_templates`,
-  which anon may not select, so the whole select is a permission error and the
-  catch falls through to the hardcoded defaults. Nothing errors visibly. Two
-  consequences worth confirming before anyone relies on either: the homepage
-  `hero_variant` / `accent_token` toggles at /admin/settings/hero have never
-  taken effect on the public site, and `matchAdvisor` (lib/queries/lead-routing.ts)
-  never sees the area→agent rules an admin wrote at /admin/settings/routing —
-  it falls straight through to the seed coverage roster. The fix is not another
-  grant: `lead_routing` carries staff user ids and has no business on an anon
-  key. Route the routing lookup through the service-role or cookie-aware client
-  (it runs inside a form submit, so it is already dynamic), and split the
-  display columns onto the narrow public read the way `getPublicBranding` does.
-
 - [page-builder] The `media-usage` sources are still `.limit(1000)` each, and
   the Page Builder adds a fourth document-shaped one. `pages` already holds one
   `subpage/` row per development, per area and per developer, so the ceiling is

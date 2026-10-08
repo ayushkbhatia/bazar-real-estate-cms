@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
@@ -165,9 +166,8 @@ const BRANDING_DEFAULTS: PublicBranding = {
  * wiring (`lead_routing` carries staff user ids), and RLS grants rows, not
  * columns — so the anon read is scoped by column grants instead, and asking
  * for an ungranted column is a permission error that fails the *whole* select.
- * This function therefore names only the granted columns. The wide read next
- * to it still asks for `lead_routing`, so under an anon key it still answers
- * from DEFAULTS, exactly as it has since 0010.
+ * This function therefore names only the granted columns, as
+ * `getPublicSiteSettings` does (`PUBLIC_SETTINGS_FIELDS`).
  */
 export async function getPublicBranding(
   /** Overridable for tests; defaults to the locale of the request. */
@@ -236,8 +236,19 @@ export function resolveSearchIcon(
     : picked;
 }
 
+/**
+ * The columns the anon key may read that `getPublicSiteSettings` needs. Every
+ * one must be in 0096/0097's grant list: an ungranted column fails the whole
+ * select, and the read then answers from DEFAULTS — which is what it did,
+ * silently, while this list also named `lead_routing`.
+ */
+const PUBLIC_SETTINGS_FIELDS =
+  "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token";
+
 /** Public read for the marketplace pages — uses the cookie-free public
- *  client so the homepage stays ISR-eligible. */
+ *  client so the homepage stays ISR-eligible. Its `lead_routing` is always
+ *  the default: routing carries staff user ids, so anon can't read it. Use
+ *  `getLeadRoutingSettings()` for that. */
 export async function getPublicSiteSettings(
   /** Overridable for tests; defaults to the locale of the request. */
   locale?: Locale,
@@ -247,9 +258,7 @@ export async function getPublicSiteSettings(
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("site_settings")
-      .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing",
-      )
+      .select(PUBLIC_SETTINGS_FIELDS)
       .eq("id", 1)
       .maybeSingle();
     if (!data) return shape(null);
@@ -265,12 +274,31 @@ export async function getPublicSiteSettings(
 }
 
 /**
+ * The area→advisor rules an admin keeps at /admin/settings/routing, for
+ * `matchAdvisor`. Read with the service-role client: the rules carry staff
+ * user ids, which the anon key must never see (so no grant), and the caller
+ * runs inside a form submit, where there is no staff session to read as.
+ * Server-only through `createAdminClient`. Any failure — no key, no row, a bag
+ * that fails validation — answers with no rules, which routes by coverage.
+ */
+export async function getLeadRoutingSettings(): Promise<SiteSettings["lead_routing"]> {
+  const db = createAdminClient();
+  if (!db) return DEFAULTS.lead_routing;
+  try {
+    const { data } = await db.from("site_settings").select("lead_routing").eq("id", 1).maybeSingle();
+    const parsed = leadRoutingSettingsSchema.safeParse(data?.lead_routing ?? DEFAULTS.lead_routing);
+    return parsed.success ? parsed.data : DEFAULTS.lead_routing;
+  } catch {
+    return DEFAULTS.lead_routing;
+  }
+}
+
+/**
  * The calculator's settings, for /tools/mortgage.
  *
- * Its own function rather than a field off `getPublicSiteSettings` for the
- * reason 0096 documents above: that read asks for `lead_routing`, which anon
- * may not see, so under the anon key it answers from DEFAULTS every time. This
- * one names only granted columns, so it actually returns what an admin saved.
+ * Its own function rather than a field off `getPublicSiteSettings`, so the
+ * calculator reads one jsonb column rather than the whole public set. It
+ * names only granted columns (0096), so it returns what an admin saved.
  *
  * Every failure — no env, no row, a revoked grant, a bag that fails validation
  * — lands on the figures the tool shipped with. A calculator that renders a
