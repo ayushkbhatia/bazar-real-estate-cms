@@ -1163,3 +1163,33 @@ documents."
 **Open**
 - The `mortgage_scan_status` enum and the column stay as they are; a later
   migration could rename `clean` if it ever confuses anyone.
+
+## D14 — no Turnstile · 9 Oct 2026
+
+Ayush: "We don't need the turnstile either -- it's simply complicating the
+workflow. We need a simple multi-step mortgage form on the front end … and a
+place to view the submissions on the backend."
+
+**Built**
+- **No bot check.** `POST /api/mortgage/drafts` and `POST /api/mortgage/requests`
+  no longer verify a Turnstile token, so production takes drafts and
+  submissions with no keys (it answered 503 to both until now). The drafts
+  route still reads its (now empty) JSON body, which keeps it JSON-only
+  (SR-16).
+- **Removed:** `lib/turnstile.ts` and its tests, the browser widget
+  (`lib/mortgage-requests/client/turnstile.ts`) and its calls in
+  `use-documents.ts` and `use-submit.ts`, `turnstileToken` from the API body
+  and schema, the `bot_check_failed` code and its message (EN, AR,
+  provenance), and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`
+  (`lib/env.ts`, `.env.example`).
+- Upstash is unchanged: optional, and without it the rate limits do nothing.
+- Docs: DECISIONS D14, SECURITY-REVIEW SR-2 (accepted risk) and §6, RUNBOOK
+  §11, IMPLEMENTATION.
+
+**Verified**
+- Typecheck, lint, unit tests (358 files); every mortgage e2e spec (20/20)
+  against a freshly reset local stack.
+
+**What's left to open the form:** the flag (`off` → `staff` → `public`, at
+/admin/mortgages/settings), and the sample requests cleared before the
+public sees the queue fill with real ones.

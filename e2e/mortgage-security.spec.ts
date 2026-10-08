@@ -56,7 +56,7 @@ test("SR-15: the CMS and the mortgage flow can't be framed by another site", asy
 test("SR-16: the mortgage API reads JSON only", async ({ request }) => {
   const plain = await request.post("/api/mortgage/drafts", {
     headers: { "content-type": "text/plain" },
-    data: JSON.stringify({ turnstileToken: "x" }),
+    data: JSON.stringify({}),
   });
   expect(plain.status()).toBe(415);
   expect(await plain.json()).toMatchObject({ code: "invalid" });

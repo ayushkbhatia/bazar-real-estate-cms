@@ -10,7 +10,6 @@ export type MortgageErrorCode =
   | "forbidden"
   | "not_found"
   | "not_configured"
-  | "bot_check_failed"
   | "rate_limited"
   | "invalid"
   // Drafts and files

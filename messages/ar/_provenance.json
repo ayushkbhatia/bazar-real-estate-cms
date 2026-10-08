@@ -6990,12 +6990,6 @@
     "sourceHash": "c0bcd4c0f8e7",
     "reviewed": false
   },
-  "mortgage.submit.error.botCheck": {
-    "by": "machine",
-    "model": "claude-opus-5-5",
-    "sourceHash": "2bae1fcb48b6",
-    "reviewed": false
-  },
   "mortgage.submit.error.details": {
     "by": "machine",
     "model": "claude-opus-5-5",

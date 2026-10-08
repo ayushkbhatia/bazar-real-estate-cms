@@ -25,7 +25,6 @@ export type SubmitBody =
       details: Details;
       entryPoint: EntryPoint;
       propertyRef?: string;
-      turnstileToken?: string;
     }
   | {
       service: "pre_approval";
@@ -36,7 +35,6 @@ export type SubmitBody =
       consent: { given: true; wordingVersion: string };
       entryPoint: EntryPoint;
       propertyRef?: string;
-      turnstileToken?: string;
     };
 
 export type SubmitResponse = {
@@ -89,10 +87,10 @@ export async function call<T>(path: string, init: RequestInit & { token?: string
 
 const files = (draftId: string) => `/api/mortgage/drafts/${encodeURIComponent(draftId)}/files`;
 
-export function createDraft(turnstileToken?: string): Promise<DraftHandle> {
+export function createDraft(): Promise<DraftHandle> {
   return call("/api/mortgage/drafts", {
     method: "POST",
-    body: JSON.stringify({ turnstileToken }),
+    body: JSON.stringify({}),
   });
 }
 

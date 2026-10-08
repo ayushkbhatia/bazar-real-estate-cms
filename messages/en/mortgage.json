@@ -137,7 +137,6 @@
   },
   "submit": {
     "error": {
-      "botCheck": "We couldn't verify this browser. Please reload the page and try again.",
       "details": "Please check your details and try again.",
       "draftExpired": "Your uploads expired after 24 hours. Please upload your documents again.",
       "filesNotReady": "Some documents are still being checked. Wait a moment, then try again.",

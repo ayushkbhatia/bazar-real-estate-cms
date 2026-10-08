@@ -9,13 +9,12 @@ import { ApiError, submitRequest, type SubmitBody } from "@/lib/mortgage-request
 import { afterSubmit, FLOW_PATHS, type ApplyState } from "@/lib/mortgage-requests/client/apply-state";
 import { setApplyState } from "@/lib/mortgage-requests/client/apply-store";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
-import { getTurnstileToken } from "@/lib/mortgage-requests/client/turnstile";
 
 export type SubmitFailure = { message: string; code: string };
 
 /**
  * Submitting, for W3 and W5/W6 (W3 "Submit"): the CTA disables while it runs,
- * a fresh Turnstile token goes with it, and the wizard's Idempotency-Key
+ * and the wizard's Idempotency-Key
  * makes a retry after a timeout land on the same application. On success the
  * tab keeps only the summary and the route is replaced, so Back can't
  * resubmit.
@@ -49,17 +48,10 @@ export function useSubmit() {
       setBusy(true);
       setFailure(null);
       try {
-        let turnstileToken: string | undefined;
-        try {
-          turnstileToken = await getTurnstileToken();
-        } catch {
-          throw new ApiError(403, "bot_check_failed");
-        }
         const common = {
           details,
           entryPoint: state.entryPoint,
           ...(state.propertyRef ? { propertyRef: state.propertyRef } : {}),
-          turnstileToken,
         };
         const body: SubmitBody =
           extra.service === "consultancy"
@@ -111,13 +103,11 @@ export function useSubmit() {
         const message =
           error.code === "rate_limited"
             ? t("submit.error.rateLimited")
-            : error.code === "bot_check_failed"
-              ? t("submit.error.botCheck")
-              : error.code === "files_not_ready"
-                ? t("submit.error.filesNotReady")
-                : error.code === "draft_expired"
-                  ? t("submit.error.draftExpired")
-                  : t("submit.error.generic");
+            : error.code === "files_not_ready"
+              ? t("submit.error.filesNotReady")
+              : error.code === "draft_expired"
+                ? t("submit.error.draftExpired")
+                : t("submit.error.generic");
         const f = { message, code: error.code };
         setFailure(f);
         return f;

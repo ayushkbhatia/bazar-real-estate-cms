@@ -455,6 +455,8 @@ them at their next revalidation.
 ### 1.12 Bot protection and rate limits
 
 - **Turnstile** (invisible) on draft creation and on submit (SPEC §4.2).
+  **Removed 9 Oct (D14: no bot check).** Built as below, then taken out with
+  its variables.
   - A new `lib/turnstile.ts` does the server-side verify, and the widget script
     loads only on flow pages.
   - Env: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` (G3, D14).
@@ -641,7 +643,7 @@ fact rather than imply it.
 | A non-production database | None; everything uses production | Phase 1 (local stack), Phase 3 (staging) | D8 |
 | Private file storage in the agreed region | Only the public `media` bucket in use; Tokyo region | Phase 2 | D4 |
 | Malware scanning | None, and none planned (D6, 8 Oct) | — | D6 |
-| Turnstile | None | Phase 2 | D14 |
+| Turnstile | None, and none planned (D14, 9 Oct) | — | D14 |
 | Rate limiting in production | Code exists; `UPSTASH_*` unset | Phase 2 | D14 |
 | WhatsApp Cloud API, templates, webhook | `wa.me` links only | Phase 4 (invites), Phase 5 (re-upload, codes) | D1 |
 | A code sent to a mobile | Email-only OTP | Phase 5 | D5 |
