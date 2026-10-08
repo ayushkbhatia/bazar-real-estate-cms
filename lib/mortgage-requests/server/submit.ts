@@ -42,7 +42,6 @@ export function submitBodySchema(now: () => Date = () => new Date()) {
       .string()
       .optional()
       .transform((v) => (v && PROPERTY_REF.test(v) ? v : undefined)),
-    turnstileToken: z.string().max(4096).optional(),
   };
   return z.discriminatedUnion("service", [
     z.object({ service: z.literal("consultancy"), ...common }),

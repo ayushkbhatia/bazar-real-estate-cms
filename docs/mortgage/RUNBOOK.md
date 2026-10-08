@@ -754,7 +754,7 @@ Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.m
 
 **1. Before anything**
 
-- The blockers are settled: Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7. There is no scanner to wait for (D6, decided 8 Oct: none).
+- The blockers are settled: Upstash (D14, SR-1; optional — without it the rate limits do nothing); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7. There is no scanner (D6, decided 8 Oct) and no Turnstile (D14, decided 9 Oct) to wait for.
 - Bazar has said who is on the mortgage team, and who is Head (D16).
 - The sample data is gone. Production has held sample requests since 1 Oct 2026 for the client's walkthrough (references `BZM-26-9xxx`, applicants at `@example.com`), with three sample banks: erase them with `scripts/mortgage-demo/clear.ts --yes` ([its README](../../scripts/mortgage-demo/README.md)), and check C1 is empty.
 
@@ -782,7 +782,7 @@ select flag, assignment_mode, link_expiry_days
 
 **4. Production checks**
 
-Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Turnstile, Upstash, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file and package headers, the gallery, and the flag still `off`.
+Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Upstash, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file and package headers, the gallery, and the flag still `off`.
 
 **5. UAT**
 
@@ -808,7 +808,6 @@ To go back, set the flag to `off` (§10). No deploy is needed, and secure links 
 
 - Don't apply a migration out of order, twice, or after editing one that has run.
 - Don't run `npm run db:seed` (it writes to the remote project, which is production), and don't load the local mortgage seed there.
-- Don't switch to `public` while the Turnstile keys are missing: every draft and submit answers 503, so no application can be made.
 
 ---
 

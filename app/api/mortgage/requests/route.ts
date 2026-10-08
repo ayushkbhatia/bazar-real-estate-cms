@@ -1,9 +1,7 @@
 import { after, type NextRequest } from "next/server";
 import { extractClientIp } from "@/lib/rate-limit";
 import { reportError } from "@/lib/observability";
-import { verifyTurnstile } from "@/lib/turnstile";
 import { mortgageDeps } from "@/lib/mortgage-requests/server/deps";
-import { MortgageApiError } from "@/lib/mortgage-requests/server/errors";
 import { handle, json, rateLimit, readJson, requireFlag } from "@/lib/mortgage-requests/server/http";
 import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
 import { submitBodySchema, submitRequest } from "@/lib/mortgage-requests/server/submit";
@@ -32,13 +30,6 @@ export async function POST(req: NextRequest) {
     const ip = extractClientIp(req.headers);
     await rateLimit("mortgage-submit", ip, 10, 3600);
     const body = await readJson(req, submitBodySchema());
-
-    const bot = await verifyTurnstile(body.turnstileToken, ip);
-    if (!bot.ok) {
-      throw bot.reason === "not_configured"
-        ? new MortgageApiError(503, "not_configured")
-        : new MortgageApiError(403, "bot_check_failed");
-    }
 
     const result = await submitRequest(deps, {
       body,

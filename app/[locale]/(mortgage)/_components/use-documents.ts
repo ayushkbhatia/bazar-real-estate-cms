@@ -14,7 +14,6 @@ import {
 } from "@/lib/mortgage-requests/client/api";
 import type { ApplyState, StoredFile } from "@/lib/mortgage-requests/client/apply-state";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
-import { getTurnstileToken } from "@/lib/mortgage-requests/client/turnstile";
 import { isInFlight, UploadQueue, type QueueEvent, type UploadItem } from "@/lib/mortgage-requests/client/upload-queue";
 
 type Update = (fn: (s: ApplyState) => ApplyState) => void;
@@ -86,7 +85,7 @@ export function useDocuments(state: ApplyState | null, update: Update, kinds: re
   const renewDraft = useCallback(
     async (reason: "new" | "expired") => {
       try {
-        const draft = await createDraft(await getTurnstileToken());
+        const draft = await createDraft();
         update((s) => ({ ...s, draft, files: {} }));
         if (reason === "expired") setExpired(true);
         setFailed(false);
@@ -104,8 +103,7 @@ export function useDocuments(state: ApplyState | null, update: Update, kinds: re
     if (draft && new Date(draft.expiresAt).getTime() > Date.now()) return;
     starting.current = true;
     const expiredDraft = !!draft;
-    getTurnstileToken()
-      .then(createDraft)
+    createDraft()
       .then(
         (fresh) => {
           update((s) => ({ ...s, draft: fresh, files: {} }));

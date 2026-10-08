@@ -77,10 +77,6 @@ const serverSchema = z.object({
   // Salesforce. Setting it switches the push from POST (create, at-least-once)
   // to PATCH (upsert, exactly-once). Unset until Levarus adds the field.
   SALESFORCE_LEAD_EXTERNAL_ID_FIELD: z.string().min(1).optional(),
-  // Mortgage module (docs/mortgage). Cloudflare Turnstile's secret for the bot
-  // check on the application's public endpoints. Unset: outside production the
-  // check is skipped; in production those endpoints answer 503.
-  TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
   // Set by Vercel: "production" | "preview" | "development".
   VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
 });
@@ -104,9 +100,6 @@ const clientSchema = z.object({
   // Static USD-per-AED rate (placeholder until Sprint 13 wires a daily
   // FX cron). Used to render USD equivalents on /p/[slug].
   NEXT_PUBLIC_FX_USD_PER_AED: z.string().optional(),
-  // Mortgage module: Cloudflare Turnstile's site key for the application's
-  // invisible bot check (pairs with TURNSTILE_SECRET_KEY).
-  NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1).optional(),
 });
 
 const clientEnv = clientSchema.parse({
@@ -125,7 +118,6 @@ const clientEnv = clientSchema.parse({
     process.env.NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY,
   NEXT_PUBLIC_MEILISEARCH_HOST: process.env.NEXT_PUBLIC_MEILISEARCH_HOST,
   NEXT_PUBLIC_FX_USD_PER_AED: process.env.NEXT_PUBLIC_FX_USD_PER_AED,
-  NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 });
 
 const serverEnv =
@@ -166,7 +158,6 @@ const serverEnv =
         SALESFORCE_LEAD_OBJECT: process.env.SALESFORCE_LEAD_OBJECT,
         SALESFORCE_LEAD_EXTERNAL_ID_FIELD:
           process.env.SALESFORCE_LEAD_EXTERNAL_ID_FIELD,
-        TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
         VERCEL_ENV: process.env.VERCEL_ENV,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
