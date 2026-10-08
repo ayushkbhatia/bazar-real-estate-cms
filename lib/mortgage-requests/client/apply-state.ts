@@ -23,6 +23,7 @@ import {
   type Residency,
   type Service,
 } from "../details";
+import { SITE_LOCALE_PARAM } from "@/lib/i18n/routing";
 import type { DraftHandle } from "./api";
 
 export const STORE_KEY = "bz.mortgage.apply.v1";
@@ -50,6 +51,8 @@ export type ApplyState = {
   service?: Service;
   entryPoint: EntryPoint;
   propertyRef?: string;
+  /** Which version of the site the applicant came from (0155 `site_locale`); unset reads as English. */
+  siteLocale?: SiteLocale;
   /** A path on this site the applicant came from: Exit and "Back to Bazar" return there. */
   returnTo?: string;
   details: DetailsDraft;
@@ -75,11 +78,17 @@ export function freshState(): ApplyState {
 
 const PROPERTY_REF = /^[A-Za-z0-9][A-Za-z0-9-]{1,39}$/;
 
-export type EntryParams = { service?: Service; entryPoint?: EntryPoint; propertyRef?: string };
+export type SiteLocale = "en" | "ar";
+
+export type EntryParams = { service?: Service; entryPoint?: EntryPoint; propertyRef?: string; siteLocale?: SiteLocale };
+
+/** The query keys an entry link may carry, for the page that reads them. */
+export const ENTRY_PARAM_KEYS = ["service", "from", "property", SITE_LOCALE_PARAM] as const;
 
 /**
- * `?service=`, `?from=` and `?property=` from an entry link. An invalid
- * service is ignored; an unknown `from` counts as a direct visit.
+ * `?service=`, `?from=`, `?property=` and `?site=` from an entry link. An
+ * invalid service is ignored; an unknown `from` counts as a direct visit; an
+ * unknown `site` is ignored.
  */
 export function parseEntryParams(params: URLSearchParams): EntryParams {
   const out: EntryParams = {};
@@ -91,12 +100,21 @@ export function parseEntryParams(params: URLSearchParams): EntryParams {
   }
   const property = params.get("property");
   if (property && PROPERTY_REF.test(property)) out.propertyRef = property;
+  const site = params.get(SITE_LOCALE_PARAM);
+  if (site === "en" || site === "ar") out.siteLocale = site;
   return out;
 }
 
-/** Fold an entry link into the state. The link wins over what the tab remembered. */
-export function applyEntry(state: ApplyState, entry: EntryParams, returnTo?: string): ApplyState {
+/**
+ * Fold an entry link into the state. The link wins over what the tab
+ * remembered. `referredFrom`, the site version of the page that sent the
+ * visitor here (`siteLocaleFromReferrer`), stands in when the link carries no
+ * `site`: a link the site didn't draw, or a bookmark opened from an /ar page.
+ */
+export function applyEntry(state: ApplyState, entry: EntryParams, returnTo?: string, referredFrom?: SiteLocale): ApplyState {
   const next: ApplyState = { ...state };
+  const site = entry.siteLocale ?? referredFrom;
+  if (site) next.siteLocale = site;
   if (entry.service) next.service = entry.service;
   if (entry.entryPoint) {
     next.entryPoint = entry.entryPoint;
@@ -106,6 +124,17 @@ export function applyEntry(state: ApplyState, entry: EntryParams, returnTo?: str
   }
   if (returnTo) next.returnTo = returnTo;
   return next;
+}
+
+/** `ar` when `document.referrer` is an /ar page on this site, `en` for any other page on it, else undefined. */
+export function siteLocaleFromReferrer(referrer: string, origin: string): SiteLocale | undefined {
+  try {
+    const url = new URL(referrer);
+    if (url.origin !== origin || url.pathname.startsWith("/mortgages")) return undefined;
+    return url.pathname === "/ar" || url.pathname.startsWith("/ar/") ? "ar" : "en";
+  } catch {
+    return undefined;
+  }
 }
 
 /** A same-site path from `document.referrer`, outside the flow, or undefined. */
@@ -152,5 +181,5 @@ export function guardRedirect(state: ApplyState, route: FlowRoute): string | nul
 
 /** After a successful submit: the summary and nothing else. */
 export function afterSubmit(state: ApplyState, submitted: SubmittedSummary): ApplyState {
-  return { ...freshState(), entryPoint: state.entryPoint, submitted };
+  return { ...freshState(), entryPoint: state.entryPoint, siteLocale: state.siteLocale, submitted };
 }

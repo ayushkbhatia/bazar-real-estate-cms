@@ -154,7 +154,15 @@ export const CMS_MESSAGES = {
       "received": "Received",
       "reference": "Reference",
       "request": "Request",
-      "status": "Status"
+      "status": "Status",
+      "website": "Website"
+    },
+    "website": {
+      "ar": "Arabic",
+      "arLabel": "Came from the Arabic website",
+      "en": "English",
+      "enLabel": "Came from the English website",
+      "unknown": "Not recorded"
     },
     "consult": {
       "booked": "{date} · {time}",
@@ -929,6 +937,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.breached",
   "c1.claim",
   "c1.closedFooter",
+  "c1.col.website",
   "c1.consult.called",
   "c1.consult.completed",
   "c1.consult.emailed",
@@ -943,6 +952,11 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.risk.more",
   "c1.risk.showAll",
   "c1.tabFooter",
+  "c1.website.ar",
+  "c1.website.arLabel",
+  "c1.website.en",
+  "c1.website.enLabel",
+  "c1.website.unknown",
   "c2.action.decision",
   "c2.action.decline",
   "c2.activity.showLatest",

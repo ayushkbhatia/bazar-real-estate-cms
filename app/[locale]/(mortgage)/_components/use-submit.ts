@@ -52,6 +52,7 @@ export function useSubmit() {
           details,
           entryPoint: state.entryPoint,
           ...(state.propertyRef ? { propertyRef: state.propertyRef } : {}),
+          siteLocale: state.siteLocale ?? "en",
         };
         const body: SubmitBody =
           extra.service === "consultancy"

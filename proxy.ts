@@ -5,6 +5,7 @@ import { isNonLocalisedPath } from "@/lib/i18n/non-localised";
 import { isEnglishOnlyPath } from "@/lib/i18n/english-only";
 import {
   SETLANG_PARAM,
+  SITE_LOCALE_PARAM,
   internalPath,
   localeFromPathname,
   stripLocalePrefix,
@@ -50,6 +51,10 @@ export async function proxy(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone();
     url.pathname = stripLocalePrefix(pathname);
+    // The flow records which site the visitor came from (0155).
+    if (url.pathname === "/mortgages" || url.pathname.startsWith("/mortgages/")) {
+      url.searchParams.set(SITE_LOCALE_PARAM, prefixed);
+    }
     return NextResponse.redirect(url, 307);
   }
 

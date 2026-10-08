@@ -1193,3 +1193,39 @@ place to view the submissions on the backend."
 **What's left to open the form:** the flag (`off` → `staff` → `public`, at
 /admin/mortgages/settings), and the sample requests cleared before the
 public sees the queue fill with real ones.
+
+## The queue's Website column · 9 Oct 2026
+
+Ayush: "In the admin mortgage dashboard, we need to add another column, which
+showcases whether an enquiry has come from the arabic version of the website,
+or the english version."
+
+**Built**
+- **`site_locale` on a request** (`0155_mortgage_site_locale.sql`, `en` /
+  `ar`, null = not recorded). Not `locale`: that one is the language every
+  email to the applicant is written in, and the flow stays English until its
+  Arabic is approved (D12), so a visitor from the Arabic site still gets
+  English emails.
+- **How it's known.** The flow is English only, so an Arabic visitor lands on
+  the English form. `localiseHref` (`lib/i18n/routing.ts`) adds `site=ar` to
+  every link into `/mortgages` drawn on an /ar page — the calculator, home,
+  listing and megamenu links all go through it — and the proxy adds it when
+  it sends `/ar/mortgages/...` to English. W1 reads `?site=`; without one, an
+  /ar referrer on this site counts (`siteLocaleFromReferrer`). The tab keeps
+  it, and submit sends it; the route writes it right after
+  `mortgage_create_request()` (best effort: a failed write leaves null).
+  Not `?lang=`: the proxy strips that, the old WordPress parameter.
+- **C1:** a Website column between Owner and Received: "English", "Arabic"
+  (accent pill), or "—" (not recorded: every request before this, and a
+  pre-approval made from an adviser's invite). The DSR export carries it as
+  `website`. Copy in `PENDING_CMS_COPY`.
+
+**Verified**
+- Unit tests (entry param, referrer, `localiseHref` and the proxy redirect);
+  DB suite 118/118 (a request from the Arabic site is stored `ar` with its
+  emails still `en`); every mortgage e2e spec (20/20) on a reset stack; in
+  the browser, /ar/tools/mortgage → consultancy → submitted → stored
+  `site_locale = ar`, and C1 shows "Arabic" on it.
+
+**Order:** apply `0155` before the deploy: the queue reads the column, so
+the code needs it, and the column changes nothing for the code before it.

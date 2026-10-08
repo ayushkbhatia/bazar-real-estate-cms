@@ -300,10 +300,10 @@ export function QueueView({
         </div>
 
         <div className="overflow-x-auto">
-          <table className={cn("w-full min-w-[1080px] border-collapse text-[13px]", loading && "opacity-60")} aria-busy={loading}>
+          <table className={cn("w-full min-w-[1160px] border-collapse text-[13px]", loading && "opacity-60")} aria-busy={loading}>
             <thead>
               <tr className="border-b border-bz-border text-start">
-                {(["reference", "applicant", "request", "documents", "status", "promise", "owner", "received"] as const).map((c) => (
+                {(["reference", "applicant", "request", "documents", "status", "promise", "owner", "website", "received"] as const).map((c) => (
                   <th
                     key={c}
                     scope="col"
@@ -317,13 +317,13 @@ export function QueueView({
             <tbody>
               {failed ? (
                 <tr>
-                  <td colSpan={8} className="px-3.5 py-10 text-center text-[13px] text-bz-muted">
+                  <td colSpan={9} className="px-3.5 py-10 text-center text-[13px] text-bz-muted">
                     {t("c1.error")}
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3.5 py-10 text-center text-[13px] text-bz-muted">
+                  <td colSpan={9} className="px-3.5 py-10 text-center text-[13px] text-bz-muted">
                     {searching ? t("c1.emptySearch") : t("c1.empty")}
                   </td>
                 </tr>
@@ -380,6 +380,9 @@ export function QueueView({
                       <td className="px-3.5 py-3 align-middle">
                         <OwnerAvatar owner={row.owner} />
                       </td>
+                      <td className="px-3.5 py-3 align-middle">
+                        <WebsiteCell website={row.website} />
+                      </td>
                       <td className="px-3.5 py-3 align-middle text-[12px] whitespace-nowrap text-bz-muted">{row.received}</td>
                     </tr>
                   );
@@ -416,5 +419,23 @@ export function QueueView({
         </div>
       </section>
     </div>
+  );
+}
+
+/** C1's Website column: which version of the site the request came from (0155). */
+function WebsiteCell({ website }: { website: QueueRow["website"] }) {
+  if (!website) {
+    return <span className="text-[12px] text-bz-muted" title={t("c1.website.unknown")}>—</span>;
+  }
+  return (
+    <span
+      title={t(website === "ar" ? "c1.website.arLabel" : "c1.website.enLabel")}
+      className={cn(
+        "inline-flex h-[22px] items-center rounded-full px-2 text-[11.5px] font-medium whitespace-nowrap",
+        website === "ar" ? "bg-bz-accent-soft text-bz-accent" : "bg-bz-surface-2 text-bz-ink-2",
+      )}
+    >
+      {t(website === "ar" ? "c1.website.ar" : "c1.website.en")}
+    </span>
   );
 }
