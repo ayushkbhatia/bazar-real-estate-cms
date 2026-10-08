@@ -25,7 +25,6 @@ import type { DocKind } from "./documents";
 import { clockDueFrom, slaPolicy } from "./sla";
 import { completeFile, createDraft, presignFile, type DraftDeps } from "./server/drafts";
 import { deliverNotifications, MAX_ATTEMPTS } from "./server/notify";
-import { devScanner } from "./server/scan";
 import { supabaseStorage } from "./server/storage";
 import { submitBodySchema, submitRequest, type SubmitBody } from "./server/submit";
 import { buildPdf, jpegBytes } from "./testing/fixtures";
@@ -44,7 +43,7 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
 
   beforeAll(async () => {
     service = client(local, local.serviceRoleKey);
-    deps = { db: service, storage: supabaseStorage(service), scanner: devScanner };
+    deps = { db: service, storage: supabaseStorage(service) };
     const { data } = await service.from("mortgage_settings").select("flag").eq("id", 1).single();
     flagBefore = (data as { flag: string }).flag;
   });

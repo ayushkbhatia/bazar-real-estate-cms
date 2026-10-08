@@ -292,7 +292,7 @@ function Figure({ label, value, mono, strong }: { label: string; value: string; 
 
 // ── Record response (CMS-2: not designed) ────────────────────────
 
-type LetterCheck = { status: "ready"; fileId: string } | { status: "scanning"; fileId: string };
+type LetterCheck = { status: "ready"; fileId: string };
 
 /**
  * The bank's answer, entered by the adviser: an offer's figures and its
@@ -309,7 +309,7 @@ function RecordResponseDialog({ row, target, onClose }: { row: BankRowView; targ
   const [years, setYears] = useState(o?.fixedYears ? String(o.fixedYears) : "");
   const [validUntil, setValidUntil] = useState(o?.validUntil ?? "");
   const [letter, setLetter] = useState(row.letter);
-  const [upload, setUpload] = useState<"idle" | "busy" | "failed" | "slow">("idle");
+  const [upload, setUpload] = useState<"idle" | "busy" | "failed">("idle");
   const [notes, setNotes] = useState(row.notes ?? "");
   const fileInput = useRef<HTMLInputElement>(null);
   const id = useId();
@@ -335,16 +335,7 @@ function RecordResponseDialog({ row, target, onClose }: { row: BankRowView; targ
         body: JSON.stringify({ submissionId: row.id, name: file.name, size: file.size }),
       });
       await putFile(presigned, file, () => undefined, new AbortController().signal);
-      const complete = () => call<LetterCheck>(`/api/admin/mortgages/letters/${presigned.fileId}/complete`, { method: "POST" });
-      let checked = await complete();
-      for (let i = 0; checked.status === "scanning" && i < 8; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        checked = await complete();
-      }
-      if (checked.status !== "ready") {
-        setUpload("slow");
-        return;
-      }
+      await call<LetterCheck>(`/api/admin/mortgages/letters/${presigned.fileId}/complete`, { method: "POST" });
       setLetter({ id: presigned.fileId, name: file.name });
       setUpload("idle");
     } catch {
@@ -510,8 +501,6 @@ function RecordResponseDialog({ row, target, onClose }: { row: BankRowView; targ
                     <span className="text-bz-muted">{t("c5.record.letterBusy")}</span>
                   ) : upload === "failed" ? (
                     <span className="text-[oklch(0.48_0.16_28)]">{t("c5.record.letterFailed")}</span>
-                  ) : upload === "slow" ? (
-                    <span className="text-bz-ink-2">{t("c5.record.letterSlow")}</span>
                   ) : null}
                 </p>
               </div>

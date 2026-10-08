@@ -280,8 +280,9 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       return key ? { ...base, text: t("activity.statusChanged", { status: t(key) }) } : null;
     }
     default:
-      // contact.logged comes from the attempts table; anything else (scanner
-      // plumbing, purges) isn't part of the story the team reads.
+      // contact.logged comes from the attempts table; anything else (purges,
+      // and the scan rejections logged before decision D6) isn't part of the
+      // story the team reads.
       return null;
   }
 }

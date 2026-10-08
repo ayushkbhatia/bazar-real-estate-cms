@@ -23,9 +23,6 @@ export type MortgageErrorCode =
   | "too_many_files"
   | "encrypted_pdf"
   | "unreadable"
-  | "infected"
-  | "scan_failed"
-  | "not_scanned"
   // Submitting (POST /api/mortgage/requests)
   | "files_not_ready"
   | "documents_incomplete"

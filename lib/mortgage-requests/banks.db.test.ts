@@ -30,7 +30,6 @@ import { clockDueFrom, slaStatus, type SlaFields, type SlaPolicy } from "./sla";
 import { bankLabel, findPackage, openPackageFile, packageLinks, packageState, packageView } from "./server/banks";
 import { deliverNotifications } from "./server/notify";
 import { completeLetter } from "./server/letters";
-import { devScanner } from "./server/scan";
 import { loadMortgageSettings } from "./server/settings";
 import type { MortgageStorage } from "./server/storage";
 import { hashToken } from "./server/tokens";
@@ -210,7 +209,7 @@ describe.skipIf(!stack)("partner banks and the decision (local Supabase)", () =>
     return data as Submission;
   }
 
-  /** A letter's row through the adviser's session, its bytes in memory, checked and scanned clean. */
+  /** A letter's row through the adviser's session, its bytes in memory, checked. */
   async function letter(as: TestStaff, submissionId: string, mem: ReturnType<typeof memoryStorage>, name = "bank-letter.pdf") {
     const { data, error } = await as.client.rpc("mortgage_letter_presign", {
       p_submission_id: submissionId,
@@ -220,7 +219,7 @@ describe.skipIf(!stack)("partner banks and the decision (local Supabase)", () =>
     if (error) throw new Error(`presign failed: ${error.code} ${error.message}`);
     const file = data as { id: string; storage_key: string };
     mem.objects.set(file.storage_key, buildPdf({ lines: () => ["Pre-approval letter", name] }));
-    const checked = await completeLetter({ db: service, storage: mem.storage, scanner: devScanner }, file.id);
+    const checked = await completeLetter({ db: service, storage: mem.storage }, file.id);
     expect(checked).toMatchObject({ status: "ready", fileId: file.id });
     return file;
   }

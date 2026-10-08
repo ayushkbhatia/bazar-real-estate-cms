@@ -170,7 +170,7 @@ resolves correctly but reads ambiguously.
 | `testing/local-stack.ts` | The local stack's address and keys for the database tests, read from the CLI | 1 |
 | `cms-strings.ts` | CMS copy, verbatim from `cms/**/strings.en.json` | 4 |
 | `server/queries.ts`, `server/actions.ts` | Page loaders and the server-action wrapper (authorise → validate → RPC → outbox) | 4 |
-| `server/storage.ts`, `server/verify.ts`, `server/scan.ts` | Storage adapter; magic bytes, encrypted-PDF detection, page count, sha256; scanner adapter | 2 |
+| `server/storage.ts`, `server/verify.ts` | Storage adapter; magic bytes, encrypted-PDF detection, page count, sha256. (`server/scan.ts`, the scanner adapter, was removed with D6's "no scanner", 8 Oct) | 2 |
 | `server/links.ts`, `server/link-http.ts` | Secure links and their codes (SPEC §8): lookup and state, the code, the session, uploads into the link's own draft, sending. Built as one module (no `otp.ts`): the code only exists for a link | 5 |
 | `server/review.ts`, `server/cms-kit.ts` | The viewer's data (C3/C4) and what every CMS action shares (session, refusals, paths, a link email's record) | 5 |
 | `server/notify.ts` | Email, WhatsApp and in-app delivery for the outbox | 3–6 |
@@ -227,8 +227,8 @@ already non-localised. Additions:
 
 | Path | Why |
 |---|---|
-| `GET /api/mortgage/drafts/:id/files/:fileId` | Poll a file that is still `pending` a scan (§1.8). Returns `{ status }` only |
-| `replaces` on presign | Replace keeps the old file until the new one is clean (frontend §7.2); the server retires it then (0141) |
+| `GET /api/mortgage/drafts/:id/files/:fileId` | Poll a file another request is still completing. Returns `{ status }` only. (Polled for a scan until D6 dropped the scanner) |
+| `replaces` on presign | Replace keeps the old file until the new one passes its checks (frontend §7.2); the server retires it then (0141) |
 | `fileIds` on submit | The files the applicant sees; anything else in the draft is retired before the attach, so nothing is attached unseen |
 | `M/mortgages/p/:token` (a page, not a route handler) | A bank's package: the expiring, logged link in its email (Phase 6). Opening it writes `bank.package_opened` before anything renders |
 | `GET /api/mortgage/packages/:token/files/:fileId` | One of the package's accepted files, as an attachment, logged as the bank first (Phase 6) |
@@ -292,8 +292,9 @@ One adapter, `lib/mortgage-requests/server/storage.ts` (built in Phase 2):
 
   An object that breaks a rule is deleted and its row marked `removed`. The
   API answers with the code (`too_large`, `total_exceeded`, `bad_type`,
-  `encrypted_pdf`, `unreadable`); rows keep `scan_status` for `infected`
-  and `failed`. The bucket cap refusing an oversize upload is covered by a test.
+  `encrypted_pdf`, `unreadable`). A file that passes is marked
+  `scan_status = 'clean'` at once: there is no malware scan (D6, 8 Oct), and
+  `clean` means "passed these checks" to the database's gates. The bucket cap refusing an oversize upload is covered by a test.
 - **CORS can't be limited here.** Supabase Storage accepts the signed PUT from
   any origin; the single-use signed token, valid for 2 hours, is the control.
   S3 (below) could add a CORS rule.
@@ -328,7 +329,7 @@ in project memory.
 | SPEC job | Here | Schedule |
 |---|---|---|
 | `request.submitted` | Owner assignment inside the submit function; emails and team alerts go to the outbox | — |
-| `file.scan` | **Inline on `…/complete`** when the scanner answers in time. `/api/cron/mortgage-worker` retries `scan_status = pending` (built in Phase 2) | every 5 minutes; every minute once the outbox joins it |
+| `file.scan` | **Not built: no scanner (D6, 8 Oct).** A file is ready when `…/complete` has checked it. (Phase 2's inline scan and the worker's retry were removed) | every 5 minutes; every minute once the outbox joins it |
 | `reupload.requested`, `reupload.fulfilled`, `decision.sent`, `consultation.booked` | Outbox rows written in the same database function as the change; first send attempted inline, retries in `mortgage-worker` | every minute |
 | `bank.package`, `bank.reminder` | Sent by the action itself, never queued: each email carries a package token that exists nowhere else. The outbox row is the record; a failed send is fixed with a reminder, which issues a fresh link (Phase 6) | — |
 | `sla.tick` | **Inside `mortgage-worker`** (`L/server/sla-tick.ts`, built in Phase 4), idempotent through `sla_*_notified_at` and `mortgage_flag_sla()`. One cron instead of two, so the alerts it queues go out in the same run | every 5 minutes, with the worker |
@@ -639,7 +640,7 @@ fact rather than imply it.
 |---|---|---|---|
 | A non-production database | None; everything uses production | Phase 1 (local stack), Phase 3 (staging) | D8 |
 | Private file storage in the agreed region | Only the public `media` bucket in use; Tokyo region | Phase 2 | D4 |
-| Malware scanning | None | Phase 2 | D6 |
+| Malware scanning | None, and none planned (D6, 8 Oct) | — | D6 |
 | Turnstile | None | Phase 2 | D14 |
 | Rate limiting in production | Code exists; `UPSTASH_*` unset | Phase 2 | D14 |
 | WhatsApp Cloud API, templates, webhook | `wa.me` links only | Phase 4 (invites), Phase 5 (re-upload, codes) | D1 |
@@ -709,9 +710,10 @@ batch rule in the global CLAUDE.md.
    and both have outside lead times. Decided 28 Sep: WhatsApp, by email until
    D1 lands. While codes go by email, W8's "verified with a code sent to
    {maskedMobile}" is filled with the masked address ("k•••@example.com").
-6. **Scan inline, retry by cron.** This deviates from SPEC's purely background
-   `file.scan`, so the applicant isn't left watching "Uploading" for a minute
-   waiting on a cron tick.
+6. **No malware scan (D6, 8 Oct).** SPEC §5/§8 asks for `file.scan` before
+   staff can open a file. Bazar decided against a scanner and accepts every
+   document that passes the format checks; SECURITY-REVIEW SR-3 records the
+   risk. (Built first as scan inline, retry by cron; removed.)
 7. **No Storybook, no MSW.** A staff-only state gallery covers the visual
    comparison, and the backend-first phase order makes mocks unnecessary.
 8. **Bank packages as links only (SPEC §8).** This is right for security, but

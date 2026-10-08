@@ -308,22 +308,16 @@ function PreApproval({
                         </p>
                       ) : null}
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {d.files.map((f) =>
-                          f.scanning ? (
-                            <span key={f.id} className={cn(FILE_TAG, "opacity-70")} title={t("c2.docs.scanning")}>
-                              <FileTagBody name={f.name} meta={t("c2.docs.scanning")} image={f.image} />
-                            </span>
-                          ) : (
-                            <Link
-                              key={f.id}
-                              href={`${viewer(d.kind)}?file=${f.id}`}
-                              prefetch={false}
-                              className={cn(FILE_TAG, "hover:border-bz-border-strong")}
-                            >
-                              <FileTagBody name={f.name} meta={f.meta} image={f.image} />
-                            </Link>
-                          ),
-                        )}
+                        {d.files.map((f) => (
+                          <Link
+                            key={f.id}
+                            href={`${viewer(d.kind)}?file=${f.id}`}
+                            prefetch={false}
+                            className={cn(FILE_TAG, "hover:border-bz-border-strong")}
+                          >
+                            <FileTagBody name={f.name} meta={f.meta} image={f.image} />
+                          </Link>
+                        ))}
                       </div>
                     </div>
                     <div className="flex gap-1.5">

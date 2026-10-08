@@ -5,7 +5,7 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 **Contents**
 
 1. [Where to look](#1-where-to-look)
-2. [Stuck scans](#2-stuck-scans)
+2. [Uploads, and no malware scan](#2-uploads-and-no-malware-scan)
 3. [Emails that didn't arrive or bounced](#3-emails-that-didnt-arrive-or-bounced)
 4. [WhatsApp templates (D1)](#4-whatsapp-templates-d1)
 5. [A disputed clock](#5-a-disputed-clock)
@@ -34,24 +34,21 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 
 Admins only; anyone else is sent back to /admin. If the Head of mortgages isn't an admin, ask one. The page has two lists: scheduled jobs and open errors.
 
-**The mortgage-worker line.** `/api/cron/mortgage-worker` runs every five minutes. Each run does four things, in this order: retries scans, purges expired upload drafts, checks the 24-hour promises, and sends what the outbox holds. The chip next to it reads:
+**The mortgage-worker line.** `/api/cron/mortgage-worker` runs every five minutes. Each run does three things, in this order: purges expired upload drafts, checks the 24-hour promises, and sends what the outbox holds. The chip next to it reads:
 
 - **ok**: the last run worked.
 - **late**: no run for 15 minutes (three missed runs).
-- **failing**: the last run failed. The detail reads `failed`, and the error is under "Open errors" with source `cron.mortgage-worker`. The four steps run in one go, so a failure in an early step also means no alarms and no emails went out in that run.
+- **failing**: the last run failed. The detail reads `failed`, and the error is under "Open errors" with source `cron.mortgage-worker`. The three steps run in one go, so a failure in an early step also means no alarms and no emails went out in that run.
 - **never run**: "No run recorded. Either the schedule has never fired, or CRON_SECRET is unset." Without `CRON_SECRET` the route answers 503.
 
 A good run's detail looks like this:
 
 ```
-scanned 2 clean, 0 rejected, 1 waiting; purged 3 drafts; promises 14 checked, 1 at risk, 0 missed; notified 6 sent, 2 skipped, 0 failed
+purged 3 drafts; promises 14 checked, 1 at risk, 0 missed; notified 6 sent, 2 skipped, 0 failed
 ```
 
 | Part | Meaning |
 |---|---|
-| `scanned N clean` | files that passed the malware scan in this run |
-| `N rejected` | files the scanner called infected or couldn't scan, or whose stored copy was missing. Each is deleted and marked removed |
-| `N waiting` | files still waiting after this run. The worker takes the 20 oldest each run, so with no scanner this reads up to 20, every run (§2) |
 | `purged N drafts` | upload drafts nobody submitted, past their expiry, deleted with their files (up to 100 a run) |
 | `promises N checked` | running Fast Pre-Approval clocks: not paused, not stopped, not already reported missed |
 | `N at risk`, `N missed` | alarms raised in this run. Each fires once; a clock that resumes after a pause can fire them again |
@@ -153,70 +150,23 @@ values (
 
 ---
 
-## 2. Stuck scans
+## 2. Uploads, and no malware scan
 
-**What you see**
+**There is no malware scanner (decision D6, 8 Oct 2026).** Bazar accepts every document that passes the format checks when its upload completes: the real type from the file's bytes (PDF, JPEG or PNG, as the document allows), its size and the document's total, a PDF that opens without a password, and its page count. A file that passes is ready at once: it can be attached, opened by the team and downloaded by banks. One that fails is deleted and the applicant is told why. `scan_status` still exists in the database, and `clean` there now means "passed those checks"; the database's gates read it.
 
-- The applicant, on W5/W6 or W8: a file never shows as ready, so "Get Fast Pre-Approval" (or "Send documents") stays disabled. A submit that gets through anyway answers "Some documents are still being checked. Wait a moment, then try again." After 24 hours W5/W6 says "Your uploads expired after 24 hours…" and they start again.
-- The team: C5's "Record response" stays on "Checking the letter…" or says "The letter is still being checked. Try again in a minute." A document that isn't clean shows "Checking" on C2 and "This file is still being checked. It opens once the check is done." in the viewer; the file route answers 409 `not_scanned`.
-- The health page: the worker is ok, but its detail reads `0 clean … N waiting`, run after run.
+**What that leaves to the team**
 
-**Why**
+- Files come from the public. Open them in the CMS viewer, which draws a PDF or image inside the page, rather than downloading one and opening it in a desktop reader.
+- Banks download the same files from the package page. They have their own scanning; say so if a bank asks.
 
-Nothing can be attached to a request, opened by staff or sent to a bank until its scan says clean (SPEC §8). The scan runs when the upload completes. If the scanner can't answer (none configured, down, or quiet for 30 seconds), the file stays `pending` and the worker tries it again on its next runs.
+**An upload that never becomes ready**
 
-Which scanner runs is decided by `scannerFromEnv()` in `lib/mortgage-requests/server/deps.ts`:
-
-- `MORTGAGE_SCANNER=clamd` with `MORTGAGE_CLAMD_HOST` set (and `MORTGAGE_CLAMD_PORT`, default 3310): the ClamAV daemon.
-- Anything else, on the production deployment: no scanner. Files wait for good and none can be opened. That's deliberate (fail closed), and it's where production stands until D6 is decided (SR-3).
-- `MORTGAGE_SCANNER=dev` passes everything except the EICAR test string. Production and Preview deployments refuse it (SR-24), since both read the production database (D8); it's for local development.
-
-A scanner that answers but can't scan a file (any reply but OK or FOUND) marks it `failed`: the file is deleted and the applicant sees "We couldn't check this file. Please upload it again." An infected file is deleted too, and the applicant sees "This file didn't pass our security check. Please upload a different copy."
-
-**Check**
-
-1. The worker line (§1).
-2. The variables: `vercel env ls production` for `MORTGAGE_SCANNER`, `MORTGAGE_CLAMD_HOST` and `MORTGAGE_CLAMD_PORT`.
-3. That clamd is running and reachable on that host and port, and that its own stream-size limit allows the largest file the bucket takes (40 MB).
-4. What is waiting, and where. "In a draft" is an applicant still uploading, or gone:
-
-```sql
--- Read-only
-select case
-         when f.bank_submission_id is not null then 'bank letter'
-         when f.document_id is not null then 'on a request'
-         else 'in a draft'
-       end as place,
-       count(*) as files,
-       min(f.uploaded_at) as oldest
-  from public.mortgage_files f
- where f.state = 'active' and f.scan_status = 'pending'
- group by 1
- order by 1;
-```
-
-5. What was rejected lately. A burst of `failed` points at the scanner, not at applicants:
-
-```sql
--- Read-only
-select scan_status, count(*) as files, max(uploaded_at) as latest
-  from public.mortgage_files
- where state = 'removed' and scan_status in ('infected', 'failed')
- group by scan_status;
-```
-
-**Do**
-
-- Fix the scanner, or its variables. A changed variable takes effect with the next production deployment.
-- Once clamd answers, the worker clears the backlog at 20 files every five minutes. Applicants still on the page see their files turn ready by themselves.
-- Drafts older than 24 hours are gone, so those applicants must upload again. They have no request yet, so the team can't contact them. A secure link's uploads last as long as the link.
-- A long outage means no Fast Pre-Approval can be submitted; consultancy requests still can. The Head can set the flow to staff (§10) until it's fixed.
+- The applicant, on W5/W6 or W8: a row stays on "Uploading". The bytes never reached the bucket, or the check failed on our side. They can cancel the row and upload again. A submit with a file still uploading answers "Some documents are still being checked. Wait a moment, then try again."
+- The team: C5's "Record response" says the letter failed; upload it again.
+- A draft's files that never finish are deleted with the draft after 24 hours (the worker's `purged N drafts`). A secure link's uploads last as long as the link.
 
 **Don't**
 
-- Don't set `scan_status` to `clean` by hand, or bring back an `infected` or `failed` file. A file marked clean without a scan can be attached, opened by staff and downloaded by banks.
-- Don't set `MORTGAGE_SCANNER=dev` on any deployment that uses the production database. Production and Preview refuse it, so their files would simply wait.
-- Don't choose a scanning service that shares uploads (never VirusTotal; D6).
 - Don't take documents by email or WhatsApp instead. Mortgage files live only in the private bucket, where every open is logged.
 
 ---
@@ -804,7 +754,7 @@ Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.m
 
 **1. Before anything**
 
-- The blockers are settled: the scanner (D6, SR-3); Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7.
+- The blockers are settled: Turnstile keys (D14, SR-2; without them production answers 503 to every draft and submit); Upstash (D14, SR-1); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7. There is no scanner to wait for (D6, decided 8 Oct: none).
 - Bazar has said who is on the mortgage team, and who is Head (D16).
 - The sample data is gone. Production has held sample requests since 1 Oct 2026 for the client's walkthrough (references `BZM-26-9xxx`, applicants at `@example.com`), with three sample banks: erase them with `scripts/mortgage-demo/clear.ts --yes` ([its README](../../scripts/mortgage-demo/README.md)), and check C1 is empty.
 
@@ -832,7 +782,7 @@ select flag, assignment_mode, link_expiry_days
 
 **4. Production checks**
 
-Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Turnstile, Upstash, the scanner, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file and package headers, the gallery, and the flag still `off`.
+Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Turnstile, Upstash, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file and package headers, the gallery, and the flag still `off`.
 
 **5. UAT**
 
@@ -858,7 +808,7 @@ To go back, set the flag to `off` (§10). No deploy is needed, and secure links 
 
 - Don't apply a migration out of order, twice, or after editing one that has run.
 - Don't run `npm run db:seed` (it writes to the remote project, which is production), and don't load the local mortgage seed there.
-- Don't switch to `public` while the scanner or the Turnstile keys are missing: no Fast Pre-Approval can be submitted, and without Turnstile every application answers 503.
+- Don't switch to `public` while the Turnstile keys are missing: every draft and submit answers 503, so no application can be made.
 
 ---
 

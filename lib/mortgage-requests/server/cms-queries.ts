@@ -334,7 +334,6 @@ export type FileView = {
   meta: string;
   image: boolean;
   /** Still being checked: can't be opened yet. */
-  scanning: boolean;
 };
 
 export type DocumentView = {
@@ -592,7 +591,6 @@ export async function getRequestFile(
           name: f.original_name,
           meta: fileMeta(f),
           image: f.mime !== "application/pdf",
-          scanning: f.scan_status !== "clean",
         })),
       reupload: (() => {
         const open = ((reuploads.data ?? []) as { id: string; document_id: string; reason: string; requested_at: string }[]).find(

@@ -20,7 +20,6 @@ export type ViewerFile = {
   sizeBytes: number;
   pageCount: number | null;
   /** Still being checked: can't be opened yet. */
-  scanning: boolean;
   periodFrom: string | null;
   periodTo: string | null;
   round: number;
@@ -151,7 +150,6 @@ export async function getViewer(
       mime: f.mime,
       sizeBytes: Number(f.size_bytes),
       pageCount: f.page_count,
-      scanning: f.scan_status !== "clean",
       periodFrom: f.period_from ? monthOf(f.period_from) : null,
       periodTo: f.period_to ? monthOf(f.period_to) : null,
       round: f.upload_round,

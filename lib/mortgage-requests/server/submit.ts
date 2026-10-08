@@ -12,7 +12,7 @@
  *   3. The promise's due time from sla.ts, and the consent's text by version.
  *   4. `mortgage_create_request()` creates the request, its documents and
  *      consent, attaches the draft's files and queues the confirmation email,
- *      all in one transaction (0141). A file still scanning refuses the whole
+ *      all in one transaction (0141). A file not yet checked refuses the whole
  *      thing, so nothing half-made is left behind.
  *   5. Objects of files the request didn't need (the applicant changed
  *      employment type after uploading) are deleted, best effort.
