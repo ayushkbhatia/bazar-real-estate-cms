@@ -80,10 +80,20 @@ const PROPERTY_REF = /^[A-Za-z0-9][A-Za-z0-9-]{1,39}$/;
 
 export type SiteLocale = "en" | "ar";
 
-export type EntryParams = { service?: Service; entryPoint?: EntryPoint; propertyRef?: string; siteLocale?: SiteLocale };
+export type EntryParams = {
+  service?: Service;
+  entryPoint?: EntryPoint;
+  propertyRef?: string;
+  siteLocale?: SiteLocale;
+  /**
+   * `?step=details`: the service was chosen before the flow (the mortgage
+   * page's application panel), so W1 records it and goes straight on to W2.
+   */
+  skipToDetails?: boolean;
+};
 
 /** The query keys an entry link may carry, for the page that reads them. */
-export const ENTRY_PARAM_KEYS = ["service", "from", "property", SITE_LOCALE_PARAM] as const;
+export const ENTRY_PARAM_KEYS = ["service", "from", "property", "step", SITE_LOCALE_PARAM] as const;
 
 /**
  * `?service=`, `?from=`, `?property=` and `?site=` from an entry link. An
@@ -102,6 +112,8 @@ export function parseEntryParams(params: URLSearchParams): EntryParams {
   if (property && PROPERTY_REF.test(property)) out.propertyRef = property;
   const site = params.get(SITE_LOCALE_PARAM);
   if (site === "en" || site === "ar") out.siteLocale = site;
+  // Only with a service: there is nothing to skip to without one.
+  if (params.get("step") === "details" && out.service) out.skipToDetails = true;
   return out;
 }
 

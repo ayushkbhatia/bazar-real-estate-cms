@@ -259,6 +259,12 @@ export type SectionDef = {
    */
   defaultEnabled?: boolean;
   /**
+   * Where this section goes in a document saved before it existed: right
+   * after the section with this key, instead of at the end. Only for that
+   * case — once an editor saves the page, its stored order is the order.
+   */
+  placeAfter?: string;
+  /**
    * Content the section pulls from elsewhere (listings, developments, areas),
    * named so the editor can say what is *not* editable here.
    */

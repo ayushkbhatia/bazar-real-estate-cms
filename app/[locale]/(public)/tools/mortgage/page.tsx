@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { getForm } from "@/lib/queries/forms";
 import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { img, str } from "@/lib/master-pages";
+import { img, list, str } from "@/lib/master-pages";
 import {
   getPublicMortgageSettings,
   toMortgageAssumptions,
@@ -32,7 +32,9 @@ export async function generateMetadata({
  * advisor").
  */
 function advisorHref(stored: string | null, flowOpen: boolean): string {
-  if (flowOpen && (!stored || stored === "/contact")) return MORTGAGE_ENTRY_LINKS.calculatorAdvisor;
+  if (flowOpen && (!stored || stored === "/contact" || stored === MORTGAGE_ENTRY_LINKS.calculatorAdvisor)) {
+    return MORTGAGE_ENTRY_LINKS.startConsultancy;
+  }
   return stored ?? "/contact";
 }
 
@@ -70,6 +72,9 @@ export default async function MortgagePage({
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
   const bandV = v("pre_approval");
+  const journeyV = v("journey");
+  const bridgeV = v("apply_bridge");
+  const faqV = v("faq");
   const heroImage = img(heroV, "image");
 
   return (
@@ -107,13 +112,55 @@ export default async function MortgagePage({
           talkLabel: str(bandV, "talk_label"),
           advisorCtaLabel: str(bandV, "advisor_cta_label"),
           advisorCtaHref: advisorHref(str(bandV, "advisor_cta_href"), flowOpen),
-          flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.calculatorPreApproval : null,
+          flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.startPreApproval : null,
           flowNote: str(bandV, "flow_note"),
           whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
           fallbackCtaLabel: str(bandV, "fallback_cta_label"),
           jumpCtaLabel: str(bandV, "jump_cta_label"),
         }}
         preApprovalForm={preApprovalForm}
+        apply={
+          flowOpen
+            ? {
+                hrefs: {
+                  preApproval: MORTGAGE_ENTRY_LINKS.startPreApproval,
+                  consultancy: MORTGAGE_ENTRY_LINKS.startConsultancy,
+                  start: MORTGAGE_ENTRY_LINKS.calculatorPreApproval,
+                },
+                panel: {
+                  step: str(heroV, "panel_step"),
+                  title: str(heroV, "panel_title"),
+                  sub: str(heroV, "panel_sub"),
+                  preApprovalTitle: str(heroV, "preapproval_title"),
+                  preApprovalDesc: str(heroV, "preapproval_desc"),
+                  consultancyTitle: str(heroV, "consultancy_title"),
+                  consultancyDesc: str(heroV, "consultancy_desc"),
+                  note: str(heroV, "panel_note"),
+                },
+                journey: {
+                  ...head(journeyV),
+                  steps: [1, 2, 3, 4].map((n) => ({
+                    title: str(journeyV, `step${n}_title`),
+                    body: str(journeyV, `step${n}_body`),
+                  })),
+                  ctaLabel: str(journeyV, "cta_label"),
+                },
+                bridge: {
+                  title: str(bridgeV, "title"),
+                  body: str(bridgeV, "body"),
+                  primaryLabel: str(bridgeV, "primary_label"),
+                  secondaryLabel: str(bridgeV, "secondary_label"),
+                },
+                startBar: { text: str(heroV, "sticky_text"), cta: str(heroV, "sticky_cta") },
+              }
+            : null
+        }
+        questions={{
+          ...head(faqV),
+          items: list(faqV, "items")
+            .filter((item) => str(item, "q") && str(item, "a"))
+            .map((item) => [str(item, "q")!, str(item, "a")!] as [string, string]),
+        }}
         assumptions={toMortgageAssumptions(mortgage)}
         opening={{
           priceAed: mortgage.default_price_aed,

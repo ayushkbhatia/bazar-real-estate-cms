@@ -33,7 +33,7 @@
  * editable, so an un-edited page reads as it always did.
  */
 import type { MasterPageDef } from "../types";
-import { area, eyebrow, heading, image, link, text, toggle } from "../fields";
+import { area, eyebrow, faqList, heading, image, link, text, toggle } from "../fields";
 
 /** Where the closing CTA jumps back to, and what the hero's form card anchors. */
 export const MORTGAGE_FORM_ANCHOR = "pre-approval";
@@ -72,6 +72,23 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "Show the pre-approval form here",
           "On: the form sits in the hero and the section at the foot of the page becomes a button that scrolls back up to it. Off: the hero is copy alone and the form renders at the foot. It is never drawn twice — two live copies of one form on one page is two sets of answers to reconcile.",
         ),
+        // While the online application is open (docs/mortgage), the hero's
+        // right-hand side is its first step instead of the old form: two
+        // choices that land the visitor on "Your details" with the service
+        // already chosen.
+        text("panel_step", "Application panel · step line", { max: 40 }),
+        text("panel_title", "Application panel · heading", { max: 80 }),
+        area("panel_sub", "Application panel · line under the heading", { max: 200 }),
+        text("preapproval_title", "Application panel · Fast Pre-Approval · name", { max: 60 }),
+        area("preapproval_desc", "Application panel · Fast Pre-Approval · description", { max: 200 }),
+        text("consultancy_title", "Application panel · Mortgage Consultancy · name", { max: 60 }),
+        area("consultancy_desc", "Application panel · Mortgage Consultancy · description", { max: 200 }),
+        area("panel_note", "Application panel · note under the choices", { max: 240 }),
+        text("sticky_text", "Start bar · line", {
+          max: 100,
+          help: "The bar that slides up from the foot of the screen once the visitor has scrolled past the hero.",
+        }),
+        text("sticky_cta", "Start bar · button", { max: 40 }),
       ],
       defaults: {
         eyebrow: "For buyers and investors",
@@ -85,6 +102,73 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "الرقم الذي تراه في الإعلان العقاري نادراً ما يكون الرقم الذي تدفعه. تشمل هذه الحاسبة كل شيء: رسوم نقل الملكية، وأتعاب الاستشارة، ورسوم تمويل عقاري، وكامل المبلغ النقدي اللازم لإتمام الصفقة.",
         image: { media_id: null, alt: null, label: null },
         show_form: true,
+        panel_step: "Step 1 of 3",
+        panel_step_ar: "الخطوة 1 من 3",
+        panel_title: "Start your application",
+        panel_title_ar: "ابدأ طلبك",
+        panel_sub: "Choose how we can help. You'll go straight on to your details.",
+        panel_sub_ar: "اختر كيف يمكننا مساعدتك، وستنتقل مباشرةً إلى بياناتك.",
+        preapproval_title: "Fast Pre-Approval",
+        preapproval_title_ar: "الموافقة المبدئية السريعة",
+        preapproval_desc: "Upload four documents and get a bank's answer within 24 working hours.",
+        preapproval_desc_ar: "حمّل أربعة مستندات واحصل على رد البنك خلال 24 ساعة عمل.",
+        consultancy_title: "Mortgage Consultancy",
+        consultancy_title_ar: "استشارة التمويل العقاري",
+        consultancy_desc: "No documents yet. A mortgage adviser calls you to talk it through.",
+        consultancy_desc_ar: "لا حاجة إلى مستندات الآن. سيتصل بك مستشار التمويل العقاري لمناقشة خياراتك.",
+        panel_note: "Online applications are for UAE nationals and residents.",
+        panel_note_ar: "الطلبات عبر الإنترنت متاحة للمواطنين الإماراتيين والمقيمين في الدولة.",
+        sticky_text: "Get a bank to confirm what you can borrow.",
+        sticky_text_ar: "دع البنك يؤكد المبلغ الذي يمكنك اقتراضه.",
+        sticky_cta: "Start pre-approval",
+        sticky_cta_ar: "ابدأ الموافقة المبدئية",
+      },
+    },
+    {
+      key: "journey",
+      label: "How it works",
+      description:
+        "The four stops from this page to a bank's answer, and a button to the first. Shows while the online application is open.",
+      placeAfter: "hero",
+      fields: [
+        eyebrow(),
+        heading({ key: "title", label: "Headline" }),
+        area("intro", "Intro", { max: 300 }),
+        text("step1_title", "Stop 1 · title", { max: 60 }),
+        area("step1_body", "Stop 1 · line", { max: 200 }),
+        text("step2_title", "Stop 2 · title", { max: 60 }),
+        area("step2_body", "Stop 2 · line", { max: 200 }),
+        text("step3_title", "Stop 3 · title", { max: 60 }),
+        area("step3_body", "Stop 3 · line", { max: 200 }),
+        text("step4_title", "Stop 4 · title", { max: 60 }),
+        area("step4_body", "Stop 4 · line", { max: 200 }),
+        text("cta_label", "Button", { max: 40 }),
+      ],
+      defaults: {
+        eyebrow: "How it works",
+        eyebrow_ar: "كيف تتم العملية",
+        title: "From this page to a bank's answer",
+        title_ar: "من هذه الصفحة إلى رد البنك",
+        intro: "Three short steps online. Then your adviser takes the file to our partner banks.",
+        intro_ar: "ثلاث خطوات قصيرة عبر الإنترنت، ثم يتولى مستشارك عرض ملفك على البنوك الشريكة.",
+        step1_title: "Choose a service",
+        step1_title_ar: "اختر الخدمة",
+        step1_body: "Fast Pre-Approval, or a consultation if you're still exploring.",
+        step1_body_ar: "الموافقة المبدئية السريعة، أو استشارة إذا كنت لا تزال تستكشف خياراتك.",
+        step2_title: "Tell us about you",
+        step2_title_ar: "عرّفنا بنفسك",
+        step2_body: "Residency, employment and how to reach you. Nothing is shared until you submit.",
+        step2_body_ar: "الإقامة والعمل ووسيلة التواصل معك. لا نشارك أي شيء قبل أن ترسل طلبك.",
+        step3_title: "Upload your documents",
+        step3_title_ar: "حمّل مستنداتك",
+        step3_body: "Emirates ID, passport and proof of income, as PDFs or photos.",
+        step3_body_ar: "الهوية الإماراتية وجواز السفر وما يثبت دخلك، بصيغة PDF أو صور.",
+        step4_title: "Hear back within 24 working hours",
+        step4_title_ar: "تلقَّ الرد خلال 24 ساعة عمل",
+        step4_body: "Your adviser reviews the file and comes back with the banks' answer.",
+        step4_body_ar: "يراجع مستشارك ملفك ويعود إليك برد البنوك.",
+        cta_label: "Start with step one",
+        cta_label_ar: "ابدأ بالخطوة الأولى",
       },
     },
     {
@@ -109,6 +193,33 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "Drag the price and the deposit, pick a term, and the monthly payment moves with them.",
         intro_ar:
           "حرّك السعر والدفعة المقدّمة، واختر مدة التمويل، وسيتغيّر المبلغ الشهري تبعاً لذلك.",
+      },
+    },
+    {
+      key: "apply_bridge",
+      label: "Estimate to pre-approval",
+      description:
+        "The step from the calculator's number to the application: the visitor's own monthly payment and loan amount, and the button that starts a pre-approval for it. Shows while the online application is open.",
+      placeAfter: "scenario",
+      fields: [
+        heading({ key: "title", label: "Headline" }),
+        area("body", "Line under the headline", {
+          max: 300,
+          help: "Write {monthly} and {loan} where the visitor's monthly payment and loan amount go.",
+          placeholder: "{monthly} a month on a {loan} loan…",
+        }),
+        text("primary_label", "Main button", { max: 40 }),
+        text("secondary_label", "Second button", { max: 40 }),
+      ],
+      defaults: {
+        title: "Turn this estimate into a pre-approval",
+        title_ar: "حوّل هذا التقدير إلى موافقة مبدئية",
+        body: "{monthly} a month on a {loan} loan is our estimate. A pre-approval is a bank confirming it.",
+        body_ar: "{monthly} شهريًا على تمويل بقيمة {loan} هو تقديرنا، أما الموافقة المبدئية فهي تأكيد البنك له.",
+        primary_label: "Get pre-approved",
+        primary_label_ar: "احصل على الموافقة المبدئية",
+        secondary_label: "Talk to an adviser",
+        secondary_label_ar: "تحدث إلى مستشار",
       },
     },
     {
@@ -189,6 +300,51 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         title: "What you actually wire",
         title_ar: "ما تحوّله فعلياً",
         intro: null,
+      },
+    },
+    {
+      key: "faq",
+      label: "Questions",
+      description: "What people ask before they apply.",
+      placeAfter: "affordability",
+      fields: [eyebrow(), heading({ key: "title", label: "Headline" }), faqList(8)],
+      defaults: {
+        eyebrow: "Questions",
+        eyebrow_ar: "أسئلة",
+        title: "Before you apply",
+        title_ar: "قبل أن تتقدم بطلبك",
+        items: [
+          {
+            q: "Who can apply online?",
+            q_ar: "من يمكنه التقديم عبر الإنترنت؟",
+            a: "UAE nationals and residents of the UAE. If you live abroad, contact us and an adviser will help you apply.",
+            a_ar: "المواطنون الإماراتيون والمقيمون في دولة الإمارات. إذا كنت تقيم خارج الدولة، تواصل معنا وسيساعدك أحد مستشارينا في التقديم.",
+          },
+          {
+            q: "How much can I borrow?",
+            q_ar: "ما المبلغ الذي يمكنني اقتراضه؟",
+            a: "On a first home under AED 5 million, banks lend up to 85% of the value to UAE nationals and 80% to residents. Your income sets the rest: monthly debt repayments are kept under half of your salary.",
+            a_ar: "على المسكن الأول الذي تقل قيمته عن 5 ملايين درهم، تموّل البنوك حتى 85% من القيمة للمواطنين الإماراتيين و80% للمقيمين. ويحدد دخلك الباقي، إذ يجب ألا تتجاوز أقساط ديونك الشهرية نصف راتبك.",
+          },
+          {
+            q: "Which documents will I need?",
+            q_ar: "ما المستندات التي سأحتاج إليها؟",
+            a: "Your Emirates ID and passport, plus a salary certificate and three months of bank statements if you're salaried, or a trade licence and a year of statements if you own a business. PDF, JPG or PNG.",
+            a_ar: "هويتك الإماراتية وجواز سفرك، بالإضافة إلى شهادة راتب وكشوف حساب لثلاثة أشهر إذا كنت موظفًا، أو رخصة تجارية وكشوف حساب لعام كامل إذا كنت صاحب عمل. بصيغة PDF أو JPG أو PNG.",
+          },
+          {
+            q: "How long does a pre-approval take?",
+            q_ar: "كم تستغرق الموافقة المبدئية؟",
+            a: "We come back within 24 working hours of receiving your documents. Working hours are Sunday to Thursday, 9:00 to 19:00, and Friday, 9:00 to 15:00.",
+            a_ar: "نعود إليك خلال 24 ساعة عمل من استلام مستنداتك. ساعات العمل من الأحد إلى الخميس من 9:00 إلى 19:00، ويوم الجمعة من 9:00 إلى 15:00.",
+          },
+          {
+            q: "Is a pre-approval a guarantee?",
+            q_ar: "هل الموافقة المبدئية ضمان للتمويل؟",
+            a: "No. It is the bank's answer in principle, based on your documents. The final approval follows the property's valuation and the bank's own checks.",
+            a_ar: "لا. إنها رد البنك المبدئي بناءً على مستنداتك، وتأتي الموافقة النهائية بعد تقييم العقار وإجراءات التحقق الخاصة بالبنك.",
+          },
+        ],
       },
     },
     {

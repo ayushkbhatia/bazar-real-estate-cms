@@ -73,6 +73,13 @@ describe("which website the applicant came from (0155)", () => {
   const parse = (q: string) => parseEntryParams(new URLSearchParams(q));
   const origin = "https://www.bazarrealestate.ae";
 
+  it("goes straight to the details when the service was chosen before the flow", () => {
+    expect(parse("service=pre_approval&from=calculator_preapproval&step=details")).toMatchObject({ service: "pre_approval", skipToDetails: true });
+    // Nothing to skip to without a service.
+    expect(parse("step=details").skipToDetails).toBeUndefined();
+    expect(parse("service=remortgage&step=details").skipToDetails).toBeUndefined();
+  });
+
   it("reads site=ar or site=en from the entry link, and ignores anything else", () => {
     expect(parse("service=pre_approval&from=home&site=ar")).toEqual({
       service: "pre_approval",

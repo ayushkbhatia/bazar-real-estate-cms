@@ -102,6 +102,11 @@ test("the pre-approval form is drawn once, and the closing CTA leads to it", asy
     const url = new URL(href!, "https://bazar.test");
     expect(url.searchParams.get("service")).toBe("pre_approval");
     expect(url.searchParams.get("from")).toBe("calculator_preapproval");
+    // The hero's panel is the application's first step: both choices go on to the details.
+    const panel = page.getByTestId("mortgage-start-panel");
+    await expect(panel).toBeVisible();
+    await expect(panel.getByTestId("start-preapproval")).toHaveAttribute("href", /service=pre_approval.*step=details/);
+    await expect(panel.getByTestId("start-consultancy")).toHaveAttribute("href", /service=consultancy.*step=details/);
     return;
   }
 
@@ -151,6 +156,10 @@ test("every section the editor arranged renders, in that order", async ({
     "amortization-section",
     "cash-to-close-section",
     "pre-approval-section",
+    // The way into the application (9 Oct 2026), drawn while it's open.
+    "mortgage-journey",
+    "mortgage-apply-bridge",
+    "mortgage-questions",
   ];
   expect(ids.length).toBeGreaterThan(0);
   for (const id of ids) expect(known, `unknown section ${id}`).toContain(id);

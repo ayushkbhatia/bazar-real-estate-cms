@@ -24,12 +24,36 @@ describe("mortgage master page", () => {
     expect(page.path).toBe("/tools/mortgage");
     expect(page.sections.map((s) => s.key)).toEqual([
       "hero",
+      "journey",
       "scenario",
+      "apply_bridge",
       "affordability",
       "compare",
       "amortization",
       "cash_to_close",
+      "faq",
       "pre_approval",
+    ]);
+  });
+
+  it("puts the 9 Oct sections where the redesign wants them in a page saved before they existed", () => {
+    // Production's document (9 Oct 2026): the four sections the client keeps on, then the three it switched off.
+    const saved = ["hero", "scenario", "affordability", "pre_approval", "compare", "amortization", "cash_to_close"].map((key) => ({
+      key,
+      enabled: true,
+      values: {},
+    }));
+    expect(resolveSections(page, saved).map((s) => s.key)).toEqual([
+      "hero",
+      "journey",
+      "scenario",
+      "apply_bridge",
+      "affordability",
+      "faq",
+      "pre_approval",
+      "compare",
+      "amortization",
+      "cash_to_close",
     ]);
   });
 
@@ -61,7 +85,7 @@ describe("mortgage master page", () => {
   });
 
   it("folds to Arabic rather than to the English default", () => {
-    const [hero, scenario] = resolveSections(page, null, "ar");
+    const [hero, , scenario] = resolveSections(page, null, "ar");
     expect(str(hero.values, "title")).toBe("ما الذي سيكلفك هذا العقار");
     expect(str(scenario.values, "eyebrow")).toBe("السيناريو");
     // The fold must never leak the storage shape to a renderer.
