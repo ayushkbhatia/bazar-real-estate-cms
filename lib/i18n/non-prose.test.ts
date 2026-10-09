@@ -1,6 +1,7 @@
 /**
  * @vitest-environment node
  */
+import { wizardSections } from "@/lib/master-pages/wizards";
 import { describe, it, expect } from "vitest";
 import { MASTER_PAGES } from "@/lib/master-pages/pages";
 import {
@@ -106,6 +107,9 @@ function everySlot(): Slot[] {
   }
   for (const s of AGENT_SECTIONS as SectionDef[]) {
     out.push(...collect(`agent·${s.key}`, s.fields, s.defaults));
+  }
+  for (const s of wizardSections()) {
+    out.push(...collect(`wizard·${s.key}`, s.fields, s.defaults));
   }
   return out;
 }

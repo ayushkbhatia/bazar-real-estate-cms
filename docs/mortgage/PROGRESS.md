@@ -1272,3 +1272,150 @@ kanban follow as phases 2–4.)
   Exit); every mortgage e2e spec (20/20) on a reset stack; in the browser, the
   calendar picking 14 March 1990 by mouse and the 15th by keyboard, and a JPG
   salary certificate and a PDF statement both reaching ready.
+
+## Client feedback, phase 2 — the queue's board view · 9 Oct 2026
+
+Bazar: "the master screen for mortgages (the mortgage dashboard) should also
+contain a kanban view. This view should allow the mortgage applicants to be
+dragged and dropped into the relevant state fields … (in addition to what
+exists)."
+
+**Built**
+- **A List | Board switch on C1** (`?view=board`, `QueueParams.view`). The
+  board keeps the list's service, owner and search filters; its columns
+  replace the tabs. One lane per service: Fast Pre-Approval (New, In review,
+  Awaiting applicant, With banks, Pre-approved, Declined) and Mortgage
+  Consultancy (New, Contacted, Consultation booked, Completed); "All" shows
+  both. Cards carry the list's row: reference, name, profile, document bar,
+  promise clock or consultation line, owner, website. Closed columns show
+  the newest 12 and link to the Closed tab. It polls every 30 s and on focus.
+- **A drop is an action, never a status write** (`lib/mortgage-requests/board.ts`,
+  `boardMove`), because status moves only through `mortgage_transition()`
+  and most moves need something from the team:
+  - run at once: New → In review (`startReview`);
+  - one question on the board: how a contact went (New → Contacted), mark a
+    consultation held, cancel an open re-upload (Awaiting → In review), and
+    the decline dialog (→ Declined, from any open stage), built from C2's own
+    `DeclineFields`;
+  - the screen built for it: which document needs a re-upload, then C4's
+    form (`…/documents/[kind]?reupload=1`); Accept application with the
+    banks (`?do=accept`, which opens it on C2); the decision (C5); the
+    booking card (`?do=book`, which scrolls C6 to it);
+  - refused with the reason, the card staying put: closed files, going
+    back a stage, skipping review or the banks, an open re-upload, booking
+    before contact, completing before booking.
+  A test checks every drop the board allows is a move the transition table
+  makes. Each card has a Move menu with the same moves, for the keyboard.
+- **"Start review"** has no SQL function of its own: the move is the
+  system's `first_document_opened` (what the owner's first open raises),
+  so `_board-actions.ts` checks the caller may act (owner or Head, SR-12) and
+  makes it with the service role, as the re-upload request already does,
+  then logs `review.started` with their name (activity: "… started the review
+  from the board"). No migration.
+- Only the owner or the Head can drag a card (`BoardCard.canAct`); the
+  database checks again on every action. dnd-kit's accessibility ids are
+  named (`useId`), or the board hydrated with a mismatch.
+
+**Verified**
+- Unit tests (every drop, and that each allowed one is a real transition);
+  `e2e/mortgage-board.spec.ts` on the local stack: drag New → In review
+  (status and `review.started` written), a refused drop to Pre-approved,
+  In review → With banks opening Accept application, Declined from the Move
+  menu opening the decline dialog, consultancy New → Contacted via "Reached".
+  Every mortgage e2e spec, 21/21.
+## Client feedback, phase 3 — Pages & blocks → Wizards → Mortgage application · 9 Oct 2026
+
+Bazar: "the mortgage wizard itself, from a content and form and flow
+standpoint, does not have an editability feature (like we have built for the
+various master pages in the pages and blocks section) … create a new section
+for 'Wizards'."
+
+**Built**
+- **A Wizards group on Pages & blocks** (`/admin/pages/wizards`), with one
+  wizard, the mortgage application (`/admin/pages/wizards/mortgage-application`),
+  edited in the master pages' own editor (`MasterPageEditor`): one locked
+  section per screen in the order an applicant meets them — header, footer
+  and steps; Step 1; Step 2; the consultancy review; the documents; sending;
+  request received; the secure link — and a Flow section.
+- **Built from the catalogue, not beside it** (`lib/master-pages/wizards.ts`).
+  Every message in `messages/{en,ar}/mortgage.json` is a field (266 of
+  them), its English and Arabic the defaults. Counted phrases (ICU plurals,
+  8) are not offered: their branches are easy to break and impossible to
+  check by eye. Labels are read off the key ("Date of birth · placeholder"),
+  and a field whose wording `copy-status.ts` still lists as owed is marked
+  "awaiting sign-off: D11a" and so on.
+- **A save stores only what differs from the catalogue** (`wizardStoredValues`),
+  so a wording fixed in code still reaches every field nobody edited. It
+  refuses a message that drops or invents a `{placeholder}`, changes its
+  `<b>`/`<ink>`/`<link>` marks, or that next-intl can't format (a stray
+  brace), in either language (`wizardCopyIssues`). Document:
+  `pages.slug = subpage/wizard/mortgage-application`, audited as
+  `page.wizard_update` / `page.wizard_reset`.
+- **The flow reads it per request** (`lib/queries/wizards.ts`): the
+  `(mortgage)` layout lays the edited messages over the `mortgage` namespace
+  (`RouteMessages` takes `overrides`), and the four server-side reads (the
+  shell, the page title, the secure link's messages) use
+  `getMortgageTranslator`. No screen changed to read its words.
+- **Flow switches**: which service Step 1 leads with, Step 1's side panel,
+  Step 1's contact line, Step 2's side panel (`WizardFlowProvider`). The
+  contact line's call and WhatsApp links now follow the numbers written in
+  the copy, so changing a number in the editor changes where it dials.
+  What the form asks for — the documents, formats, limits and the clock —
+  stays the server's rules and isn't set here.
+- Arabic edits are stored and checked, and render once the flow opens in
+  Arabic (D12). The shared field editor now names its text boxes
+  (`aria-label`), which every Pages & blocks editor lacked.
+
+**Verified**
+- `wizards.test.ts`: every catalogue message offered once (or a counted
+  phrase), the catalogue as defaults, the screen order, sign-off marks, the
+  save checks (placeholders, marks, stray braces, Arabic), diff-only storage,
+  and the overlay laying only edited messages. G-3 and G-16 now enumerate
+  the wizard (an email placeholder is data, with no twin).
+- `e2e/mortgage-wizard-editor.spec.ts` (local stack): edit Step 1's heading,
+  a dropped `{reference}` refused with nothing saved, lead with Fast
+  Pre-Approval and hide Step 1's panel, save — and `/mortgages/apply` shows
+  all three. Every mortgage e2e spec, 21/21.
+## Client feedback, phase 4 — the mortgage page leads into the application · 9 Oct 2026
+
+Bazar: "the mortgage wizard currently opens up on a short CTA towards the
+bottom of the master mortgage page. The master mortgage page needs to be
+redesigned such that it brings the user quite naturally to the mortgage
+wizard … exciting with multiple CTAs leading to the mortgage wizard."
+
+**Built** (all drawn only while the application is open; closed, the page is
+the calculator it was)
+- **The hero's panel is the wizard's first step** (`_sections/apply.tsx`,
+  `StartPanel`): the step track, then the same two services as W1, each a
+  link that lands on "Your details" with the service chosen and Step 1 done
+  (`?step=details`; W1 records the choice and moves on, `EntryParams.skipToDetails`).
+  The client's own hero copy and photograph stay on the left; on a phone
+  the headline now comes first (`ServiceHero formFirstOnMobile`).
+- **How it works** (`journey`): the four stops from the page to a bank's
+  answer, the last one the destination, and "Start with step one".
+- **Estimate to pre-approval** (`apply_bridge`): after the calculator, the
+  visitor's own monthly payment and loan amount (`{monthly}`, `{loan}`) and
+  "Get pre-approved" / "Talk to an adviser".
+- **Questions** (`faq`): who can apply, how much, which documents, how long,
+  whether it's a guarantee — in the site's own question list.
+- **The closing band** is the page's close on the brand navy, with the same
+  two doors, the client's copy kept.
+- **A start bar** slides up once the hero's panel has scrolled away and
+  steps aside on the closing band (a floating bar on a desktop, the site's
+  `StickyActionBar` on a phone).
+- **New sections land where the design puts them** even though the client
+  saved the page before they existed: a section may name `placeAfter`, and
+  `resolveSections` places it there in a stored document that lacks it (it
+  used to append them to the end). Production's order becomes hero, how it
+  works, scenario, the bridge, affordability, questions, the closing band,
+  then the three sections the client switched off. Every word is editable in
+  Pages & blocks → Mortgage calculator, with its Arabic.
+
+**Verified**
+- `placeAfter` and the mortgage registry against production's saved order
+  (unit); `e2e/mortgage-landing.spec.ts`: the hero's Fast Pre-Approval lands
+  on Personal details, every start on the page points into the application,
+  and the start bar's show/hide; `tools-mortgage.spec.ts` (CI) knows the new
+  sections and checks the panel's links; the 390px geometry gate passes;
+  RTL: arrows and the route mirror, links carry `site=ar`. Every mortgage e2e
+  spec, 22/22.

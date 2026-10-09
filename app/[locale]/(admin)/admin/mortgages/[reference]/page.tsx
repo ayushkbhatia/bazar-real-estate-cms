@@ -27,6 +27,7 @@ import {
   ActivityCard,
   BookingCard,
   BookScrollButton,
+  ScrollToBooking,
   CancelReuploadButton,
   ClaimButton,
   ContactAttemptBar,
@@ -72,8 +73,18 @@ export async function generateMetadata({ params }: { params: Promise<{ reference
 }
 
 /** C2 · Pre-approval file, or C6 · Consultancy request: the request's service decides. */
-export default async function MortgageRequestPage({ params }: { params: Promise<{ reference: string }> }) {
+export default async function MortgageRequestPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ reference: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { reference } = await params;
+  // The queue board sends a drop that needs this screen here with `?do=`:
+  // "accept" opens Accept application, "book" goes to the booking card.
+  const doParam = (await searchParams).do;
+  const intent = doParam === "accept" || doParam === "book" ? doParam : null;
   const { user, role, supabase } = await requireMortgageRole();
   const loaded = await loadMortgageSettings(supabase);
   const now = new Date();
@@ -94,7 +105,7 @@ export default async function MortgageRequestPage({ params }: { params: Promise<
 
   if (file.service === "consultancy") {
     const booking = await bookingData(supabase, file, loaded, now);
-    return <Consultancy file={file} target={target} breadcrumbs={breadcrumbs} booking={booking} now={now} />;
+    return <Consultancy file={file} target={target} breadcrumbs={breadcrumbs} booking={booking} now={now} startBooking={intent === "book"} />;
   }
   // The bank step (Phase 6) offers every bank; the ones that can't take a package show why.
   const banks: SendableBank[] =
@@ -109,7 +120,17 @@ export default async function MortgageRequestPage({ params }: { params: Promise<
         }))
       : [];
   const expires = formatDayMonth(new Date(now.getTime() + loaded.settings.link_expiry_days * 86_400_000));
-  return <PreApproval file={file} target={target} breadcrumbs={breadcrumbs} now={now} banks={banks} expires={expires} />;
+  return (
+    <PreApproval
+      file={file}
+      target={target}
+      breadcrumbs={breadcrumbs}
+      now={now}
+      banks={banks}
+      expires={expires}
+      startAccept={intent === "accept"}
+    />
+  );
 }
 
 // ── The decision ─────────────────────────────────────────────────
@@ -157,6 +178,7 @@ function PreApproval({
   now,
   banks,
   expires,
+  startAccept,
 }: {
   file: RequestFile;
   target: Target;
@@ -164,6 +186,8 @@ function PreApproval({
   now: Date;
   banks: SendableBank[];
   expires: string;
+  /** Opened from the queue board's In review → With banks drop: Accept application starts open. */
+  startAccept: boolean;
 }) {
   const accepted = file.documents.filter((d) => d.state === "accepted").length;
   const total = file.documents.length;
@@ -226,6 +250,7 @@ function PreApproval({
             consentGiven={file.consent?.given ?? null}
             banks={banks}
             canManageBanks={file.me.role === "head"}
+            defaultOpen={startAccept}
           />
         )
       }
@@ -511,12 +536,15 @@ function Consultancy({
   breadcrumbs,
   booking,
   now,
+  startBooking,
 }: {
   file: RequestFile;
   target: Target;
   breadcrumbs: React.ReactNode;
   booking: BookingData;
   now: Date;
+  /** Opened from the queue board's Contacted → Consultation booked drop: go to the booking card. */
+  startBooking: boolean;
 }) {
   const open = file.status === "new" || file.status === "contacted";
   const firstName = file.firstName;
@@ -531,6 +559,7 @@ function Consultancy({
       primary={open ? <BookScrollButton /> : null}
     >
       <FileRefresher />
+      {startBooking && open ? <ScrollToBooking /> : null}
       <FileHeader
         chips={[
           { label: t("service.consultancy"), tone: "accent" },

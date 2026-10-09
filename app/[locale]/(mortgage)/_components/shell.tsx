@@ -1,7 +1,7 @@
-import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import { Wordmark, type BrandLogo } from "@/components/brand/wordmark";
 import type { Locale } from "@/lib/i18n/locales";
+import { getMortgageTranslator } from "@/lib/queries/wizards";
 import { ExitLink } from "./exit-link";
 
 /**
@@ -17,7 +17,7 @@ export function telHref(display: string): string {
 }
 
 export async function FlowTopBar({ locale, logo }: { locale: Locale; logo: BrandLogo | null }) {
-  const t = await getTranslations({ locale, namespace: "mortgage" });
+  const t = await getMortgageTranslator(locale);
   return (
     <header className="shrink-0 border-b border-bz-border bg-bz-surface">
       <div className="flex h-[68px] items-center gap-[18px] px-4 md:px-6 lg:px-12">
@@ -38,7 +38,7 @@ export async function FlowTopBar({ locale, logo }: { locale: Locale; logo: Brand
 }
 
 export async function FlowFooter({ locale }: { locale: Locale }) {
-  const t = await getTranslations({ locale, namespace: "mortgage" });
+  const t = await getMortgageTranslator(locale);
   const phone = t("shell.footer.phone");
   return (
     <footer className="flex flex-col gap-3 border-t border-bz-border px-4 py-[18px] text-[11.5px] text-bz-muted md:flex-row md:justify-between md:px-6 lg:px-12">

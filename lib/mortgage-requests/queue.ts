@@ -51,9 +51,13 @@ export type QueueParams = {
   page: number;
   /** "Show only these": the at-risk files alone. */
   risk: boolean;
+  /** The list (C1 as designed) or the board, its columns the statuses (Bazar, 9 Oct 2026). */
+  view: QueueView;
 };
 
-export const DEFAULT_QUEUE_PARAMS: QueueParams = { tab: "open", service: "all", owner: "anyone", page: 1, risk: false };
+export type QueueView = "list" | "board";
+
+export const DEFAULT_QUEUE_PARAMS: QueueParams = { tab: "open", service: "all", owner: "anyone", page: 1, risk: false, view: "list" };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -73,6 +77,7 @@ export function parseQueueParams(sp: Record<string, string | string[] | undefine
     owner: owner === "me" || owner === "unassigned" || (owner && UUID.test(owner)) ? owner : "anyone",
     page: Number.isInteger(page) && page > 1 ? page : 1,
     risk: one("risk") === "1",
+    view: one("view") === "board" ? "board" : "list",
   };
 }
 
@@ -84,6 +89,7 @@ export function queueQuery(params: QueueParams): string {
   if (params.owner !== "anyone") out.set("owner", params.owner);
   if (params.risk) out.set("risk", "1");
   if (params.page > 1) out.set("page", String(params.page));
+  if (params.view === "board") out.set("view", "board");
   const s = out.toString();
   return s ? `?${s}` : "";
 }

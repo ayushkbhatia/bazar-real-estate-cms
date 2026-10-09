@@ -52,16 +52,25 @@ import {
 export async function RouteMessages({
   locale,
   namespaces,
+  overrides,
   children,
 }: {
   locale: Locale;
   namespaces: readonly RouteNamespace[];
+  /**
+   * Messages an editor changed, per namespace, laid over the catalogue key by
+   * key (the mortgage wizard's, from Pages & blocks → Wizards).
+   */
+  overrides?: Partial<Record<RouteNamespace, Record<string, unknown>>>;
   children: ReactNode;
 }) {
   const all = await getMessages({ locale });
   const messages: Record<string, unknown> = pickClientMessages(all);
   for (const ns of namespaces) {
-    if (ns in all) messages[ns] = (all as Record<string, unknown>)[ns];
+    if (ns in all) {
+      const base = (all as Record<string, unknown>)[ns];
+      messages[ns] = overrides?.[ns] ? deepOverlay(base, overrides[ns]) : base;
+    }
   }
 
   return (
@@ -69,4 +78,14 @@ export async function RouteMessages({
       {children}
     </NextIntlClientProvider>
   );
+}
+
+/** `base` with `overlay`'s leaves written over it; neither is mutated. */
+function deepOverlay(base: unknown, overlay: unknown): unknown {
+  if (!overlay || typeof overlay !== "object" || !base || typeof base !== "object") return overlay ?? base;
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const [k, v] of Object.entries(overlay as Record<string, unknown>)) {
+    out[k] = v && typeof v === "object" ? deepOverlay(out[k], v) : v;
+  }
+  return out;
 }

@@ -27,6 +27,7 @@ import { ServiceHero } from "../../services/_components/service-hero";
 import { MORTGAGE_FORM_ANCHOR } from "@/lib/master-pages/sections/mortgage";
 import {
   formatPct,
+  money,
   parseMoneyInput,
   type SectionCopy,
 } from "./_sections/shared";
@@ -44,6 +45,18 @@ import {
   PreApprovalSection,
   type PreApprovalCopy,
 } from "./_sections/pre-approval";
+import {
+  ApplyBridgeSection,
+  JourneySection,
+  QuestionsSection,
+  StartBar,
+  StartPanel,
+  type ApplyBridgeCopy,
+  type ApplyHrefs,
+  type JourneyCopy,
+  type QuestionsCopy,
+  type StartPanelCopy,
+} from "./_sections/apply";
 
 export type MortgageHeroCopy = {
   eyebrow: string | null;
@@ -78,6 +91,19 @@ type Props = {
   preApprovalForm: ResolvedForm;
   assumptions: MortgageAssumptions;
   opening: MortgageOpeningValues;
+  /**
+   * The online application's doors, while it's open; null with it closed,
+   * when the page is the calculator alone (the start panel, the route, the
+   * bridge and the start bar draw only with it open).
+   */
+  apply: {
+    hrefs: ApplyHrefs;
+    panel: StartPanelCopy;
+    journey: JourneyCopy;
+    bridge: ApplyBridgeCopy;
+    startBar: { text: string | null; cta: string | null };
+  } | null;
+  questions: QuestionsCopy;
 };
 
 /**
@@ -112,6 +138,8 @@ export function MortgageCalculator({
   preApprovalForm,
   assumptions,
   opening,
+  apply,
+  questions,
 }: Props) {
   const t = useTranslations("tools");
   const { prefs } = usePreferences();
@@ -345,16 +373,32 @@ export function MortgageCalculator({
         imageUrl={hero.imageUrl}
         imageAlt={hero.imageAlt}
         formAnchor={MORTGAGE_FORM_ANCHOR}
+        formFirstOnMobile={!apply}
         form={
           formInHero ? (
             <PreApprovalFormCard
               form={preApprovalForm}
               scenarioBrief={scenarioBrief}
             />
+          ) : apply ? (
+            <StartPanel copy={apply.panel} hrefs={apply.hrefs} />
           ) : null
         }
       />
     ),
+
+    journey: apply ? <JourneySection copy={apply.journey} href={apply.hrefs.start} /> : null,
+
+    apply_bridge: apply ? (
+      <ApplyBridgeSection
+        copy={apply.bridge}
+        monthly={money(summary.monthlyPaymentAed, prefs)}
+        loan={money(summary.principalAed, prefs)}
+        hrefs={apply.hrefs}
+      />
+    ) : null,
+
+    faq: <QuestionsSection copy={questions} />,
 
     scenario: (
       <ScenarioSection
@@ -449,6 +493,9 @@ export function MortgageCalculator({
       {order.map((key) => (
         <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
       ))}
+      {apply && !formInHero ? (
+        <StartBar text={apply.startBar.text} cta={apply.startBar.cta} href={apply.hrefs.preApproval} />
+      ) : null}
     </>
   );
 }

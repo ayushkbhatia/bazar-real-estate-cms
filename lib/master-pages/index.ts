@@ -88,8 +88,18 @@ export function resolveSections(
       const sectionDef = def.sections.find((d) => d.key === s.key);
       if (sectionDef) ordered.push(sectionDef);
     }
+    // Sections the stored document predates: at the end, or after the
+    // section they name (`placeAfter`), in registry order among themselves.
     for (const d of def.sections) {
-      if (!byKey.has(d.key)) ordered.push(d);
+      if (byKey.has(d.key)) continue;
+      const anchor = d.placeAfter ? ordered.findIndex((o) => o.key === d.placeAfter) : -1;
+      if (anchor === -1) {
+        ordered.push(d);
+        continue;
+      }
+      let at = anchor + 1;
+      while (at < ordered.length && !byKey.has(ordered[at]!.key) && ordered[at]!.placeAfter === d.placeAfter) at++;
+      ordered.splice(at, 0, d);
     }
   } else {
     ordered.push(...def.sections);

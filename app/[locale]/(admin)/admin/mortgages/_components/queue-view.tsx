@@ -3,15 +3,16 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent, type MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Calendar, Check, ChevronDown, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Columns3, List, Search } from "lucide-react";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { queueQuery, QUEUE_TABS, type QueueParams, type QueueTab, type ServiceFilter } from "@/lib/mortgage-requests/queue";
-import type { ConsultIcon, QueueResult, QueueRow, TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
+import type { BoardResult, QueueResult, QueueRow, TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
 import { cn } from "@/lib/utils";
 import { loadQueue } from "../_actions";
-import { DocumentBar, OwnerAvatar, PromiseClock, StatusPill } from "./ui";
+import { BoardView } from "./board-view";
+import { ConsultCell, DocumentBar, OwnerAvatar, PromiseClock, StatusPill, WebsiteCell } from "./ui";
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
 
@@ -59,23 +60,6 @@ function subscribeStorage(onChange: () => void) {
 const FIELD =
   "h-[34px] rounded-md border border-bz-border bg-bz-surface text-[13px] text-bz-ink outline-none focus-visible:border-bz-accent focus-visible:ring-2 focus-visible:ring-bz-accent/25";
 
-function ConsultCell({ icon, text }: { icon: ConsultIcon; text: string }) {
-  const glyph =
-    icon === "calendar" ? (
-      <Calendar size={14} strokeWidth={1.6} aria-hidden />
-    ) : icon === "tick" ? (
-      <Check size={14} strokeWidth={1.8} aria-hidden />
-    ) : (
-      <Glyph name={icon === "chat" ? "chat" : icon === "phone" ? "phone" : icon === "mail" ? "mail" : "clock"} size={14} />
-    );
-  return (
-    <span className="flex items-center gap-1.5 whitespace-nowrap text-[12px] text-bz-ink-2">
-      {glyph}
-      {text}
-    </span>
-  );
-}
-
 function RiskBanner({
   items,
   active,
@@ -108,10 +92,13 @@ function RiskBanner({
 
 export function QueueView({
   initial,
+  initialBoard,
   params,
   team,
 }: {
   initial: QueueResult | null;
+  /** The board's first render, when the view is the board. */
+  initialBoard: BoardResult | null;
   params: QueueParams;
   team: readonly TeamMember[];
 }) {
@@ -188,10 +175,13 @@ export function QueueView({
 
   const footerKey = params.tab === "closed" ? "c1.closedFooter" : params.tab === "open" ? "c1.footer" : "c1.tabFooter";
   const rows = result?.rows ?? [];
+  const board = params.view === "board";
+  // The service counts and the at-risk banner come from whichever view loaded.
+  const summary = board ? initialBoard : result;
 
   return (
     <div className="flex flex-col gap-4">
-      {result ? <RiskBanner items={result.atRisk} active={params.risk} onToggle={() => go({ risk: !params.risk })} /> : null}
+      {summary ? <RiskBanner items={summary.atRisk} active={params.risk} onToggle={() => go({ risk: !params.risk })} /> : null}
 
       <div className="flex flex-wrap items-center gap-2.5">
         <div role="radiogroup" aria-label={t("c1.aria.service")} className="flex gap-0.5 rounded-lg bg-bz-surface-2 p-[3px]">
@@ -211,7 +201,28 @@ export function QueueView({
               >
                 {t(SERVICE_KEY[s])}
                 {/* On the control's tint, muted text falls short of AA (4.2:1): the unselected counts are darker. */}
-                {result ? <span className={cn("mono text-[11px]", on ? "text-bz-muted" : "text-bz-ink-2")}>{result.counts.services[s]}</span> : null}
+                {summary ? <span className={cn("mono text-[11px]", on ? "text-bz-muted" : "text-bz-ink-2")}>{summary.counts.services[s]}</span> : null}
+              </button>
+            );
+          })}
+        </div>
+        <div role="radiogroup" aria-label={t("c1.view.label")} className="flex gap-0.5 rounded-lg bg-bz-surface-2 p-[3px]">
+          {(["list", "board"] as const).map((v) => {
+            const on = params.view === v;
+            return (
+              <button
+                key={v}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => go({ view: v })}
+                className={cn(
+                  "inline-flex h-[30px] items-center gap-1.5 rounded-md px-3 text-[12.5px]",
+                  on ? "bg-bz-surface font-medium text-bz-ink shadow-[0_1px_2px_rgba(0,0,0,.08)]" : "text-bz-ink-2 hover:text-bz-ink",
+                )}
+              >
+                {v === "list" ? <List size={14} strokeWidth={1.7} aria-hidden /> : <Columns3 size={14} strokeWidth={1.7} aria-hidden />}
+                {t(`c1.view.${v}`)}
               </button>
             );
           })}
@@ -250,7 +261,7 @@ export function QueueView({
           </select>
           <ChevronDown size={14} aria-hidden className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-bz-muted" />
         </label>
-        <label className="relative w-[170px]">
+        <label className={cn("relative w-[170px]", board && "hidden")}>
           <span className="sr-only">{t("c1.aria.sort")}</span>
           <select value="promise_due" onChange={() => undefined} className={cn(FIELD, "w-full appearance-none ps-2.5 pe-7")}>
             <option value="promise_due">{t("c1.sort.promiseDue")}</option>
@@ -259,6 +270,11 @@ export function QueueView({
         </label>
       </div>
 
+      {board ? (
+        <section className="rounded-[10px] border border-bz-border bg-bz-surface pt-3">
+          <BoardView initial={initialBoard} params={params} query={debounced} />
+        </section>
+      ) : (
       <section className="overflow-hidden rounded-[10px] border border-bz-border bg-bz-surface">
         <div
           role="tablist"
@@ -418,24 +434,7 @@ export function QueueView({
           </span>
         </div>
       </section>
-    </div>
-  );
-}
-
-/** C1's Website column: which version of the site the request came from (0155). */
-function WebsiteCell({ website }: { website: QueueRow["website"] }) {
-  if (!website) {
-    return <span className="text-[12px] text-bz-muted" title={t("c1.website.unknown")}>—</span>;
-  }
-  return (
-    <span
-      title={t(website === "ar" ? "c1.website.arLabel" : "c1.website.enLabel")}
-      className={cn(
-        "inline-flex h-[22px] items-center rounded-full px-2 text-[11.5px] font-medium whitespace-nowrap",
-        website === "ar" ? "bg-bz-accent-soft text-bz-accent" : "bg-bz-surface-2 text-bz-ink-2",
       )}
-    >
-      {t(website === "ar" ? "c1.website.ar" : "c1.website.en")}
-    </span>
+    </div>
   );
 }

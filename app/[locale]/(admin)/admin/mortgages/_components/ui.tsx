@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
-import { Check } from "lucide-react";
+import { Calendar, Check } from "lucide-react";
 import { Glyph, DOC_GLYPH } from "@/components/mortgage/glyphs";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 import { formatDayTime } from "@/lib/mortgage-requests/format";
 import type { RequestStatus } from "@/lib/mortgage-requests/queue";
+import type { ConsultIcon, QueueRow } from "@/lib/mortgage-requests/server/cms-queries";
 import { formatDuration, type SlaStatus } from "@/lib/mortgage-requests/sla";
 import { cn } from "@/lib/utils";
 
@@ -412,5 +413,41 @@ export function StageRail({ stages, at }: { stages: readonly string[]; at: numbe
         </li>
       ))}
     </ol>
+  );
+}
+
+/** The promise column of a consultancy row (C1): an icon and "Waiting 12m", "Wed 23 Sep · 11:30"… */
+export function ConsultCell({ icon, text }: { icon: ConsultIcon; text: string }) {
+  const glyph =
+    icon === "calendar" ? (
+      <Calendar size={14} strokeWidth={1.6} aria-hidden />
+    ) : icon === "tick" ? (
+      <Check size={14} strokeWidth={1.8} aria-hidden />
+    ) : (
+      <Glyph name={icon === "chat" ? "chat" : icon === "phone" ? "phone" : icon === "mail" ? "mail" : "clock"} size={14} />
+    );
+  return (
+    <span className="flex items-center gap-1.5 whitespace-nowrap text-[12px] text-bz-ink-2">
+      {glyph}
+      {text}
+    </span>
+  );
+}
+
+/** C1's Website column: which version of the site the request came from (0155). */
+export function WebsiteCell({ website }: { website: QueueRow["website"] }) {
+  if (!website) {
+    return <span className="text-[12px] text-bz-muted" title={t("c1.website.unknown")}>—</span>;
+  }
+  return (
+    <span
+      title={t(website === "ar" ? "c1.website.arLabel" : "c1.website.enLabel")}
+      className={cn(
+        "inline-flex h-[22px] items-center rounded-full px-2 text-[11.5px] font-medium whitespace-nowrap",
+        website === "ar" ? "bg-bz-accent-soft text-bz-accent" : "bg-bz-surface-2 text-bz-ink-2",
+      )}
+    >
+      {t(website === "ar" ? "c1.website.ar" : "c1.website.en")}
+    </span>
   );
 }

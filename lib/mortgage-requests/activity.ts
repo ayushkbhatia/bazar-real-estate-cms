@@ -213,6 +213,8 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
     }
     case "consultation.held":
       return { ...base, text: t("activity.held", { actor }), tone: "success" };
+    case "review.started":
+      return { ...base, text: t("activity.reviewStarted", { actor }) };
     case "invite.sent": {
       const expires = str(e.data.expires_at);
       return {

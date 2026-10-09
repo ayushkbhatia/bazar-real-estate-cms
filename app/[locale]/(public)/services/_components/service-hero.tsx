@@ -17,6 +17,12 @@ type Props = {
   formAnchor: string;
   /** The lead card. */
   form: React.ReactNode;
+  /**
+   * On a phone, the card before the pitch (the default, for the service
+   * landings) or after it (the mortgage page, whose card is a choice the
+   * headline explains).
+   */
+  formFirstOnMobile?: boolean;
 };
 
 /**
@@ -40,6 +46,7 @@ export function ServiceHero({
   imageAlt,
   formAnchor,
   form,
+  formFirstOnMobile = true,
 }: Props) {
   const lines = (title ?? "").split("\n");
 
@@ -84,7 +91,7 @@ export function ServiceHero({
             section it also cascades into the form card, whose surface stays
             white — leaving its labels and the visitor's typed input
             white-on-white. */}
-        <div className={cn("order-2 lg:order-1 lg:pt-2", imageUrl && "text-white")}>
+        <div className={cn(formFirstOnMobile ? "order-2" : "order-1", "lg:order-1 lg:pt-2", imageUrl && "text-white")}>
           {eyebrow ? (
             <Eyebrow className={imageUrl ? "text-white/80" : undefined}>
               {eyebrow}
@@ -133,7 +140,7 @@ export function ServiceHero({
           ) : null}
         </div>
 
-        <div id={formAnchor} className="order-1 lg:order-2 scroll-mt-24">
+        <div id={formAnchor} className={cn(formFirstOnMobile ? "order-1" : "order-2", "lg:order-2 scroll-mt-24")}>
           {form}
         </div>
       </div>
