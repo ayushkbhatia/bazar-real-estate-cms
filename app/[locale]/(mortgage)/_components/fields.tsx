@@ -17,10 +17,12 @@ export const TextField = forwardRef<
     hint?: ReactNode;
     error?: ReactNode;
     prefix?: string;
+    /** A control inside the field's far end, such as the date of birth's calendar button. */
+    suffix?: ReactNode;
     /** The accessible name when the prefix belongs in it ("Mobile number, +971"). */
     accessibleLabel?: string;
   }
->(function TextField({ label, hint, error, prefix, accessibleLabel, className, id, ...input }, ref) {
+>(function TextField({ label, hint, error, prefix, suffix, accessibleLabel, className, id, ...input }, ref) {
   const auto = useId();
   const inputId = id ?? auto;
   const noteId = `${inputId}-note`;
@@ -37,10 +39,19 @@ export const TextField = forwardRef<
         "placeholder:text-bz-muted-2 focus:border-bz-ink-2",
         prefix ? "rounded-e-[10px]" : "rounded-[10px]",
         invalid ? "border-[var(--mrq-badge-error)]" : "border-bz-border",
+        suffix && "pe-14",
         className,
       )}
       {...input}
     />
+  );
+  const control = suffix ? (
+    <div className="relative min-w-0 flex-1">
+      {field}
+      <div className="absolute inset-y-0 end-1.5 flex items-center">{suffix}</div>
+    </div>
+  ) : (
+    field
   );
   return (
     <div className="min-w-0">
@@ -58,10 +69,10 @@ export const TextField = forwardRef<
           >
             {prefix}
           </span>
-          {field}
+          {control}
         </div>
       ) : (
-        field
+        control
       )}
       {error ? (
         <p id={noteId} className="mt-1.5 flex gap-1.5 text-[12px] leading-[1.45] text-[var(--mrq-danger-fg)]">

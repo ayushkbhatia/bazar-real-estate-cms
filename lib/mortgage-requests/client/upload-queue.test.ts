@@ -162,11 +162,13 @@ describe("the upload queue", () => {
     expect(t.calls).toEqual([]);
   });
 
-  it("refuses a salary certificate that isn't a PDF", () => {
+  it("takes a salary certificate as a photo, and refuses a Word file", () => {
     const t = fakeTransport();
     const { q, items } = queue(t);
     q.add("salary_certificate", [file("cert.jpg", MB, "image/jpeg")]);
-    expect(items()[0]!.error?.code).toBe("bad_type");
+    expect(items()[0]!.error).toBeUndefined();
+    q.add("bank_statements_3m", [file("statement.doc", MB, "application/msword")]);
+    expect(items().find((i) => i.name === "statement.doc")!.error?.code).toBe("bad_type");
   });
 
   it("counts files still uploading against the statements' total", async () => {
@@ -250,7 +252,7 @@ describe("the upload queue", () => {
     q.add("salary_certificate", [file("cert.pdf", MB)]);
     await flush();
     await finish(t, "srv-1", MB);
-    q.add("salary_certificate", [file("cert.png", MB, "image/png")], { replace: true });
+    q.add("salary_certificate", [file("cert.gif", MB, "image/gif")], { replace: true });
     expect(items()[0]!.replacedBy).toBeUndefined();
     expect(rowView("salary_certificate", items()).state).toBe("attention");
   });

@@ -74,9 +74,13 @@ describe("verifyUpload", () => {
     expect(result.ok && result.sha256).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it("refuses an image where the kind is PDF only, whatever its name said", async () => {
-    expect(await verifyUpload("salary_certificate", jpegBytes())).toEqual({ ok: false, code: "bad_type" });
-    expect(await verifyUpload("bank_statements_12m", pngBytes())).toEqual({ ok: false, code: "bad_type" });
+  it("takes a photo of any document, statements and the salary certificate included", async () => {
+    expect(await verifyUpload("salary_certificate", jpegBytes())).toMatchObject({ ok: true, mime: "image/jpeg", pageCount: null });
+    expect(await verifyUpload("bank_statements_12m", pngBytes())).toMatchObject({ ok: true, mime: "image/png", pageCount: null });
+  });
+
+  it("refuses bytes that are none of PDF, JPEG or PNG, whatever the name said", async () => {
+    expect(await verifyUpload("salary_certificate", new TextEncoder().encode("GIF89a........"))).toEqual({ ok: false, code: "bad_type" });
   });
 
   it("takes an Emirates ID photo, with no page count", async () => {

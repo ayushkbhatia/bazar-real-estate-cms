@@ -22,6 +22,7 @@ import { formatDob } from "@/lib/mortgage-requests/format";
 import { FLOW_PATHS } from "@/lib/mortgage-requests/client/apply-state";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { ChoiceTile } from "../../../_components/choices";
+import { DobPicker } from "../../../_components/dob-picker";
 import { GroupError, TextField } from "../../../_components/fields";
 import { FlowActions } from "../../../_components/flow-actions";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
@@ -264,6 +265,22 @@ export function PersonalDetails({ ltv }: { ltv: { national: number; expat: numbe
             placeholder={t("w2.dateOfBirth.placeholder")}
             error={message("dateOfBirth")}
             value={d.dateOfBirth ?? ""}
+            suffix={
+              <DobPicker
+                value={parseDob(d.dateOfBirth ?? "")}
+                onPick={(iso) => {
+                  set({ dateOfBirth: formatDob(iso) });
+                  blur("dateOfBirth");
+                }}
+                labels={{
+                  open: t("w2.dateOfBirth.calendar"),
+                  month: t("w2.dateOfBirth.month"),
+                  year: t("w2.dateOfBirth.year"),
+                  previous: t("w2.dateOfBirth.previousMonth"),
+                  next: t("w2.dateOfBirth.nextMonth"),
+                }}
+              />
+            }
             onChange={(e) => {
               const raw = e.target.value;
               // Autofill can write an ISO date; show it the way the field does.

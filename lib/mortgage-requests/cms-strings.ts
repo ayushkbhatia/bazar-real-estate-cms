@@ -344,7 +344,7 @@ export const CMS_MESSAGES = {
       "title": "Record for pricing"
     },
     "required": {
-      "salaryCertificate": "Required: addressed to the bank · PDF · max 10 MB"
+      "salaryCertificate": "Required: addressed to the bank · PDF, JPG, PNG · max 10 MB"
     },
     "saved": "Saved"
   },
@@ -356,7 +356,7 @@ export const CMS_MESSAGES = {
       "issued": "Issued by the bank",
       "value": {
         "missing": "{months} missing",
-        "original": "Original PDFs, not scans"
+        "original": "The bank's own statement, not retyped"
       }
     },
     "coverage": {
@@ -386,7 +386,7 @@ export const CMS_MESSAGES = {
     },
     "reasonRequired": "Choose a reason.",
     "required": {
-      "bankStatements12m": "Required: several files · PDF · max 40 MB total"
+      "bankStatements12m": "Required: several files · PDF, JPG, PNG · max 40 MB total"
     },
     "send": "Send request to {firstName}",
     "sent": "Request sent to {firstName}.",
@@ -662,11 +662,11 @@ export const CMS_MESSAGES = {
     "tradeLicense": "Business trade licence"
   },
   "docHint": {
-    "bankStatements12m": "Several files · PDF · max 40 MB total",
-    "bankStatements3m": "Several files · PDF · max 25 MB total",
+    "bankStatements12m": "Several files · PDF, JPG, PNG · max 40 MB total",
+    "bankStatements3m": "Several files · PDF, JPG, PNG · max 25 MB total",
     "emiratesId": "Front and back · PDF, JPG, PNG · max 10 MB",
     "passport": "Photo page · PDF, JPG, PNG · max 10 MB",
-    "salaryCertificate": "Addressed to the bank · PDF · max 10 MB",
+    "salaryCertificate": "Addressed to the bank · PDF, JPG, PNG · max 10 MB",
     "tradeLicense": "Valid / current · PDF, JPG, PNG · max 10 MB"
   },
   "docShort": {

@@ -12,6 +12,7 @@
 
 import { createHash } from "node:crypto";
 import { DOCUMENT_RULES, type DocKind, type DocumentMime } from "../documents";
+import { ensureDomMatrix } from "./dom-matrix";
 
 const PDF = [0x25, 0x50, 0x44, 0x46, 0x2d]; // "%PDF-"
 const JPEG = [0xff, 0xd8, 0xff];
@@ -43,9 +44,12 @@ let pdfjsModule: Promise<PdfJs> | null = null;
  * pdf.js on the server. The worker module is imported first so pdf.js runs it
  * in-thread (its "fake worker") instead of resolving a worker file at runtime,
  * which a bundled server can't. next.config.ts keeps the package external.
+ * pdf.js needs a `DOMMatrix` to load at all; the deployed bundle has none
+ * (dom-matrix.ts).
  */
 function pdfjs(): Promise<PdfJs> {
   pdfjsModule ??= (async () => {
+    ensureDomMatrix();
     await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
     return import("pdfjs-dist/legacy/build/pdf.mjs");
   })();

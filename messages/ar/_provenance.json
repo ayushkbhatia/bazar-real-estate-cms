@@ -6591,7 +6591,7 @@
   "mortgage.doc.bankStatements12m.hint": {
     "by": "machine",
     "model": "claude-opus-5-5",
-    "sourceHash": "ba0046aa94fc",
+    "sourceHash": "9068b1f72e81",
     "reviewed": false
   },
   "mortgage.doc.bankStatements12m.name": {
@@ -6603,7 +6603,7 @@
   "mortgage.doc.bankStatements3m.hint": {
     "by": "machine",
     "model": "claude-opus-5-5",
-    "sourceHash": "05385195da3f",
+    "sourceHash": "572234ef1892",
     "reviewed": false
   },
   "mortgage.doc.bankStatements3m.name": {
@@ -6651,7 +6651,7 @@
   "mortgage.doc.salaryCertificate.hint": {
     "by": "machine",
     "model": "claude-opus-5-5",
-    "sourceHash": "6e7003da756f",
+    "sourceHash": "c512c5b71385",
     "reviewed": false
   },
   "mortgage.doc.salaryCertificate.name": {
@@ -7410,10 +7410,40 @@
     "sourceHash": "cdc863d7914d",
     "reviewed": false
   },
+  "mortgage.w2.dateOfBirth.calendar": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a1ad37d0c5e8",
+    "reviewed": false
+  },
+  "mortgage.w2.dateOfBirth.month": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "310ca503ef36",
+    "reviewed": false
+  },
+  "mortgage.w2.dateOfBirth.nextMonth": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "74e53211fef4",
+    "reviewed": false
+  },
   "mortgage.w2.dateOfBirth.placeholder": {
     "by": "machine",
     "model": "claude-opus-5-5",
     "sourceHash": "6287660fa0a0",
+    "reviewed": false
+  },
+  "mortgage.w2.dateOfBirth.previousMonth": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6a2769502a5d",
+    "reviewed": false
+  },
+  "mortgage.w2.dateOfBirth.year": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "89f6832560de",
     "reviewed": false
   },
   "mortgage.w2.email.placeholder": {

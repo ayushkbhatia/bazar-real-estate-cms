@@ -16,11 +16,11 @@
   },
   "doc": {
     "bankStatements12m": {
-      "hint": "Several files · PDF · max 40 MB total",
+      "hint": "Several files · PDF, JPG, PNG · max 40 MB total",
       "name": "Last 1 year's bank statements"
     },
     "bankStatements3m": {
-      "hint": "Several files · PDF · max 25 MB total",
+      "hint": "Several files · PDF, JPG, PNG · max 25 MB total",
       "name": "Last 3 months' bank statements"
     },
     "emiratesId": {
@@ -34,7 +34,7 @@
       "noun": "passport"
     },
     "salaryCertificate": {
-      "hint": "Addressed to the bank · PDF · max 10 MB",
+      "hint": "Addressed to the bank · PDF, JPG, PNG · max 10 MB",
       "name": "Salary certificate"
     },
     "state": {
@@ -235,7 +235,12 @@
       "preApproval": "Continue to documents"
     },
     "dateOfBirth": {
-      "placeholder": "DD / MM / YYYY"
+      "calendar": "Open calendar",
+      "month": "Month",
+      "nextMonth": "Next month",
+      "placeholder": "DD / MM / YYYY",
+      "previousMonth": "Previous month",
+      "year": "Year"
     },
     "email": {
       "placeholder": "you@email.com"
