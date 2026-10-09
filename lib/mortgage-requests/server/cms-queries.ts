@@ -103,6 +103,8 @@ export type QueueRow = {
   /** The promise column of a consultancy row: "Waiting 12m", "Replied on WhatsApp 11:20", "Wed 23 Sep · 11:30". */
   consult: { icon: ConsultIcon; text: string } | null;
   owner: { name: string; initials: string } | null;
+  /** The version of the website the request came from (0155); null before it was recorded. */
+  website: "en" | "ar" | null;
   received: string;
 };
 
@@ -135,6 +137,7 @@ type QueueDbRow = SlaFields & {
   owner_staff_id: string | null;
   submitted_at: string;
   closed_at: string | null;
+  site_locale: "en" | "ar" | null;
   owner: { display_name: string } | null;
   mortgage_documents: { kind: DocKind; state: "to_review" | "accepted" | "reupload_requested" }[];
   mortgage_contact_attempts: Pick<ContactInput, "channel" | "outcome" | "occurred_at">[];
@@ -143,7 +146,7 @@ type QueueDbRow = SlaFields & {
 
 const QUEUE_COLUMNS = `
   id, reference, service, status, full_name, mobile_e164, residency, employment_type,
-  owner_staff_id, submitted_at, closed_at,
+  owner_staff_id, submitted_at, closed_at, site_locale,
   sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at,
   owner:staff!mortgage_requests_owner_staff_id_fkey(display_name),
   mortgage_documents(kind, state),
@@ -226,6 +229,7 @@ function prepare(r: QueueDbRow, now: Date, policy: SlaPolicy): Prepared {
       sla,
       consult: consultSummary(r, now),
       owner: r.owner ? { name: r.owner.display_name, initials: initialsOf(r.owner.display_name) } : null,
+      website: r.site_locale,
       received: received(r.submitted_at, now),
     },
     mobileE164: r.mobile_e164,

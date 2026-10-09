@@ -109,10 +109,31 @@ export function localiseHref(href: string, locale: Locale): string {
 
   if (localeFromPathname(pathname)) return href;
   if (isNonLocalisedPath(pathname)) return href;
-  if (isEnglishOnlyPath(pathname)) return href;
+  if (isEnglishOnlyPath(pathname)) return withSiteLocale(href, pathname, locale);
   if (hasFileExtension(pathname)) return href;
 
   return `${withLocalePrefix(pathname, locale)}${tail}`;
+}
+
+/**
+ * Query param by which a link into the mortgage flow says which version of
+ * the site it was on. The flow is English only (D12), so a visitor on an /ar
+ * page lands on the English form, and this is what lets the team's queue say
+ * the request came from the Arabic site (0155 `site_locale`). Not `lang`:
+ * the proxy strips that one, the old WordPress site's parameter.
+ */
+export const SITE_LOCALE_PARAM = "site";
+
+/** An English-only link from a non-default-locale page: `/mortgages/...` gets `site=<locale>`; `/admin` stays as it is. */
+function withSiteLocale(href: string, pathname: string, locale: Locale): string {
+  if (pathname !== "/mortgages" && !pathname.startsWith("/mortgages/")) return href;
+  const hash = href.indexOf("#");
+  const beforeHash = hash === -1 ? href : href.slice(0, hash);
+  const after = hash === -1 ? "" : href.slice(hash);
+  const q = beforeHash.indexOf("?");
+  const params = new URLSearchParams(q === -1 ? "" : beforeHash.slice(q + 1));
+  params.set(SITE_LOCALE_PARAM, locale);
+  return `${pathname}?${params.toString()}${after}`;
 }
 
 /** `/x/report.pdf` -> true, `/areas/al-reem` -> false. */

@@ -4,12 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Service } from "@/lib/mortgage-requests/details";
-import {
-  applyEntry,
-  FLOW_PATHS,
-  returnPathFrom,
-  type EntryParams,
-} from "@/lib/mortgage-requests/client/apply-state";
+import { applyEntry, type EntryParams, FLOW_PATHS, returnPathFrom, siteLocaleFromReferrer } from "@/lib/mortgage-requests/client/apply-state";
 import { useApplyState } from "@/lib/mortgage-requests/client/apply-store";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { ServiceCard } from "../../../_components/choices";
@@ -39,7 +34,7 @@ export function ChooseService({ entry }: { entry: EntryParams }) {
     if (!state || applied.current) return;
     applied.current = true;
     const back = returnPathFrom(document.referrer, window.location.origin);
-    const next = applyEntry(state, entry, back ?? state.returnTo);
+    const next = applyEntry(state, entry, back ?? state.returnTo, siteLocaleFromReferrer(document.referrer, window.location.origin));
     update(() => next);
     trackMortgage("mortgage_apply_viewed", { step: "service", entry_point: next.entryPoint });
   }, [state, entry, update]);

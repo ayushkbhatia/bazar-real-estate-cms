@@ -42,6 +42,8 @@ export function submitBodySchema(now: () => Date = () => new Date()) {
       .string()
       .optional()
       .transform((v) => (v && PROPERTY_REF.test(v) ? v : undefined)),
+    // Which version of the site the applicant came from (0155); absent or unknown reads as English.
+    siteLocale: z.enum(["en", "ar"]).catch("en"),
   };
   return z.discriminatedUnion("service", [
     z.object({ service: z.literal("consultancy"), ...common }),
@@ -176,10 +178,27 @@ export async function submitRequest(
   // The same key racing itself: the other call made it, at its own time.
   const created = new Date(row.submitted_at).getTime() === now.getTime();
 
+  if (created) await recordSiteLocale(deps, row.id, body.siteLocale);
   if (body.service === "pre_approval" && created) {
     await removeOrphans(deps, body.draftId);
   }
   return resultOf(row, created);
+}
+
+/**
+ * Which version of the site the request came from (0155 `site_locale`, C1's
+ * Website column). Written right after the request is made rather than by
+ * mortgage_create_request(), whose `p_locale` is the language Bazar writes to
+ * the applicant in: English until the flow's Arabic is approved (D12). Best
+ * effort: a failed write leaves the column null, which the queue shows as
+ * unknown, and never fails a submission that has already been made.
+ */
+export async function recordSiteLocale(deps: SubmitDeps, requestId: string, siteLocale: "en" | "ar"): Promise<void> {
+  try {
+    await deps.db.from("mortgage_requests").update({ site_locale: siteLocale }).eq("id", requestId);
+  } catch {
+    // The column stays null.
+  }
 }
 
 /**

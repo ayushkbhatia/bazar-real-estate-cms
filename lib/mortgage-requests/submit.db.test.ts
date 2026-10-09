@@ -283,6 +283,22 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     expect(error?.code).toBe("MR422");
   });
 
+  it("records which website the request came from, without changing the language its emails go in (0155)", async () => {
+    const fromArabic = submitBodySchema().parse({ service: "consultancy", details, entryPoint: "home", siteLocale: "ar" });
+    const ar = await submitRequest(deps, { body: fromArabic, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null });
+    const plain = submitBodySchema().parse({ service: "consultancy", details, entryPoint: "home" });
+    expect(plain.siteLocale).toBe("en");
+    const en = await submitRequest(deps, { body: plain, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null });
+
+    const { data } = await service
+      .from("mortgage_requests")
+      .select("id, site_locale, locale")
+      .in("id", [ar.requestId, en.requestId]);
+    const byId = new Map((data ?? []).map((r) => [r.id, r]));
+    expect(byId.get(ar.requestId)).toMatchObject({ site_locale: "ar", locale: "en" });
+    expect(byId.get(en.requestId)).toMatchObject({ site_locale: "en", locale: "en" });
+  });
+
   it("validates details with W2's rules, naming the field", () => {
     const parsed = submitBodySchema().safeParse({
       service: "consultancy",

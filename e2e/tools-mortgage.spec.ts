@@ -87,16 +87,29 @@ test("the pre-approval form is drawn once, and the closing CTA leads to it", asy
 }) => {
   await page.goto("/tools/mortgage");
 
+  const cta = page.getByTestId("pre-approval-cta");
+  await expect(cta).toBeVisible();
+  const href = await cta.getAttribute("href");
+  expect(href).not.toBeNull();
+
+  // While the mortgage application is public (`mortgage_settings.flag`, the
+  // Head's switch, read live like the rest of the CMS), the calculator's old
+  // enquiry form is retired and its CTA opens the application instead
+  // (docs/mortgage DECISIONS D25). No copy of the old form may be left
+  // drawn, or one page would file leads two ways.
+  if (href!.startsWith("/mortgages/apply")) {
+    await expect(page.getByTestId("pre-approval-form")).toHaveCount(0);
+    const url = new URL(href!, "https://bazar.test");
+    expect(url.searchParams.get("service")).toBe("pre_approval");
+    expect(url.searchParams.get("from")).toBe("calculator_preapproval");
+    return;
+  }
+
   // Which of the two places the form sits in — the hero or the closing band —
   // is a switch in Pages & blocks. What must hold either way is that it is
   // drawn EXACTLY once: two live copies on one page is two sets of answers to
   // reconcile, and each would file its own lead.
   await expect(page.getByTestId("pre-approval-form")).toHaveCount(1);
-
-  const cta = page.getByTestId("pre-approval-cta");
-  await expect(cta).toBeVisible();
-  const href = await cta.getAttribute("href");
-  expect(href).not.toBeNull();
 
   if (href!.startsWith("#")) {
     // Form in the hero: the closing band scrolls back up to it.

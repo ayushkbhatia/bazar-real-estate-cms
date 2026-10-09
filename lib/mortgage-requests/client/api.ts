@@ -25,6 +25,7 @@ export type SubmitBody =
       details: Details;
       entryPoint: EntryPoint;
       propertyRef?: string;
+      siteLocale?: "en" | "ar";
     }
   | {
       service: "pre_approval";
@@ -35,6 +36,7 @@ export type SubmitBody =
       consent: { given: true; wordingVersion: string };
       entryPoint: EntryPoint;
       propertyRef?: string;
+      siteLocale?: "en" | "ar";
     };
 
 export type SubmitResponse = {

@@ -6,6 +6,7 @@ import {
   guardRedirect,
   parseEntryParams,
   returnPathFrom,
+  siteLocaleFromReferrer,
   STORE_KEY,
   type ApplyState,
 } from "./apply-state";
@@ -64,6 +65,39 @@ describe("entry links", () => {
     expect(returnPathFrom(`${origin}/mortgages/apply/details`, origin)).toBeUndefined();
     expect(returnPathFrom("https://elsewhere.test/page", origin)).toBeUndefined();
     expect(returnPathFrom("", origin)).toBeUndefined();
+  });
+});
+
+describe("which website the applicant came from (0155)", () => {
+  const parse = (q: string) => parseEntryParams(new URLSearchParams(q));
+  const origin = "https://www.bazarrealestate.ae";
+
+  it("reads site=ar or site=en from the entry link, and ignores anything else", () => {
+    expect(parse("service=pre_approval&from=home&site=ar")).toEqual({
+      service: "pre_approval",
+      entryPoint: "home",
+      siteLocale: "ar",
+    });
+    expect(parse("site=en")).toEqual({ siteLocale: "en" });
+    expect(parse("site=fr")).toEqual({});
+  });
+
+  it("reads an /ar referrer on this site as the Arabic site", () => {
+    expect(siteLocaleFromReferrer(`${origin}/ar/tools/mortgage`, origin)).toBe("ar");
+    expect(siteLocaleFromReferrer(`${origin}/ar`, origin)).toBe("ar");
+    expect(siteLocaleFromReferrer(`${origin}/areas/al-reem`, origin)).toBe("en");
+    expect(siteLocaleFromReferrer(`${origin}/tools/mortgage`, origin)).toBe("en");
+    expect(siteLocaleFromReferrer(`${origin}/mortgages/apply/details`, origin)).toBeUndefined();
+    expect(siteLocaleFromReferrer("https://www.google.com/", origin)).toBeUndefined();
+    expect(siteLocaleFromReferrer("", origin)).toBeUndefined();
+  });
+
+  it("lets the link's site win over the referrer, and keeps what the tab knew when neither says", () => {
+    const fresh = freshState();
+    expect(applyEntry(fresh, { siteLocale: "ar" }, undefined, "en").siteLocale).toBe("ar");
+    expect(applyEntry(fresh, {}, undefined, "ar").siteLocale).toBe("ar");
+    expect(applyEntry({ ...fresh, siteLocale: "ar" }, {}).siteLocale).toBe("ar");
+    expect(applyEntry(fresh, {}).siteLocale).toBeUndefined();
   });
 });
 
