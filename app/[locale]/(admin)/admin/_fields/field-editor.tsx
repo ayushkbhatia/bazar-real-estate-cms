@@ -545,6 +545,8 @@ export function ScalarField({
       {field.kind === "textarea" ? (
         <textarea
           className={cn(fieldCls, "resize-y min-h-[64px]")}
+          // The label above isn't a <label>: this is how a screen reader (and a test) names the box.
+          aria-label={simple.label}
           value={text}
           placeholder={simple.placeholder}
           onChange={(e) => onChange(e.target.value)}
@@ -552,6 +554,7 @@ export function ScalarField({
       ) : (
         <input
           className={fieldCls}
+          aria-label={simple.label}
           value={text}
           // A field's own placeholder wins over the link hint, which is a
           // format example rather than a fallback and is worth less.

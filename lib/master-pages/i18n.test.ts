@@ -1,3 +1,4 @@
+import { wizardSections } from "./wizards";
 import { describe, expect, it } from "vitest";
 import { MASTER_PAGES } from "./pages";
 import {
@@ -86,6 +87,11 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   // the same document shape and the same hand-declared Arabic, so the same
   // five assertions are what keep an editor able to save it.
   out.push({ origin: "header-cta:cta", def: HEADER_CTA_SECTION });
+  // The mortgage wizard (Pages & blocks → Wizards): built from the flow's
+  // message catalogue, its Arabic the catalogue's.
+  for (const section of wizardSections()) {
+    out.push({ origin: `wizard:${section.key}`, def: section });
+  }
   return out;
 }
 

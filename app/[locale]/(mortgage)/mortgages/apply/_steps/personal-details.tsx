@@ -24,6 +24,7 @@ import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { ChoiceTile } from "../../../_components/choices";
 import { DobPicker } from "../../../_components/dob-picker";
 import { GroupError, TextField } from "../../../_components/fields";
+import { useWizardFlow } from "../../../_components/wizard-flow";
 import { FlowActions } from "../../../_components/flow-actions";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
 import { Glyph } from "@/components/mortgage/glyphs";
@@ -60,6 +61,7 @@ function ruleFor(field: DetailField, draft: DetailsDraft): DetailRule | null {
  */
 export function PersonalDetails({ ltv }: { ltv: { national: number; expat: number } }) {
   const t = useTranslations("mortgage");
+  const flow = useWizardFlow();
   const router = useRouter();
   const [state, update] = useGuardedState("details");
   const [checked, setErrors] = useState<Errors>({});
@@ -153,7 +155,7 @@ export function PersonalDetails({ ltv }: { ltv: { national: number; expat: numbe
   );
 
   return (
-    <FlowPage step={1} last={preApproval ? "documents" : "submit"} rail={rail}>
+    <FlowPage step={1} last={preApproval ? "documents" : "submit"} rail={flow.show_w2_rail ? rail : undefined}>
       <SelectionSummary
         label={t("selections.label")}
         chips={[preApproval ? t("selections.service.preApproval") : t("selections.service.consultancy")]}
