@@ -49,18 +49,20 @@ export type DocumentRule = {
   statementMonths?: 3 | 12;
 };
 
+// Every document takes a PDF, a JPG/JPEG or a PNG (Bazar, 9 Oct 2026: statements
+// and the salary certificate were PDF only, and applicants with a photo or a
+// screenshot couldn't send one).
 const PDF_OR_IMAGE: readonly DocumentMime[] = ["application/pdf", "image/jpeg", "image/png"];
-const PDF_ONLY: readonly DocumentMime[] = ["application/pdf"];
 
 export const DOCUMENT_RULES: Record<DocKind, DocumentRule> = {
   // Front and back.
   emirates_id: { minFiles: 1, maxFiles: 2, mimes: PDF_OR_IMAGE, maxFileBytes: 10 * MB },
   passport: { minFiles: 1, maxFiles: 1, mimes: PDF_OR_IMAGE, maxFileBytes: 10 * MB },
-  salary_certificate: { minFiles: 1, maxFiles: 1, mimes: PDF_ONLY, maxFileBytes: 10 * MB },
+  salary_certificate: { minFiles: 1, maxFiles: 1, mimes: PDF_OR_IMAGE, maxFileBytes: 10 * MB },
   bank_statements_3m: {
     minFiles: 1,
     maxFiles: 12,
-    mimes: PDF_ONLY,
+    mimes: PDF_OR_IMAGE,
     maxFileBytes: 25 * MB,
     maxTotalBytes: 25 * MB,
     statementMonths: 3,
@@ -69,7 +71,7 @@ export const DOCUMENT_RULES: Record<DocKind, DocumentRule> = {
   bank_statements_12m: {
     minFiles: 1,
     maxFiles: 12,
-    mimes: PDF_ONLY,
+    mimes: PDF_OR_IMAGE,
     maxFileBytes: 40 * MB,
     maxTotalBytes: 40 * MB,
     statementMonths: 12,

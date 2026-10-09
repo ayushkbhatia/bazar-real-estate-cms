@@ -126,6 +126,15 @@ export function applyEntry(state: ApplyState, entry: EntryParams, returnTo?: str
   return next;
 }
 
+/**
+ * Where the flow's Exit leads: the mortgage page, in the version of the site
+ * the applicant came from. Bazar asked for this over "the page they came
+ * from" (9 Oct 2026), which was usually the home page.
+ */
+export function exitHref(siteLocale: SiteLocale | undefined): string {
+  return siteLocale === "ar" ? "/ar/tools/mortgage" : "/tools/mortgage";
+}
+
 /** `ar` when `document.referrer` is an /ar page on this site, `en` for any other page on it, else undefined. */
 export function siteLocaleFromReferrer(referrer: string, origin: string): SiteLocale | undefined {
   try {

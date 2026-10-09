@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { exitHref } from "@/lib/mortgage-requests/client/apply-state";
 import { useApplyState } from "@/lib/mortgage-requests/client/apply-store";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { FlowLinkButton } from "./primitives";
@@ -13,9 +14,9 @@ export function stepOf(pathname: string): string {
 }
 
 /**
- * Exit (00-foundations §4): back to the page the applicant came from, or the
- * home page. No confirmation — it isn't designed (FE-13), and nothing is
- * lost: the answers stay in this tab's storage for a return visit.
+ * Exit (00-foundations §4): back to the mortgage page. No confirmation — it
+ * isn't designed (FE-13), and nothing is lost: the answers stay in this
+ * tab's storage for a return visit.
  */
 export function ExitLink({ label }: { label: string }) {
   const [state] = useApplyState();
@@ -24,7 +25,7 @@ export function ExitLink({ label }: { label: string }) {
     <FlowLinkButton
       kind="ghost"
       size="sm"
-      href={state?.returnTo ?? "/"}
+      href={exitHref(state?.siteLocale)}
       onClick={() => trackMortgage("mortgage_apply_exit", { step: stepOf(pathname) })}
     >
       <X size={16} strokeWidth={1.6} aria-hidden />

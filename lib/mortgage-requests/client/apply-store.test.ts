@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   afterSubmit,
   applyEntry,
+  exitHref,
   freshState,
   guardRedirect,
   parseEntryParams,
@@ -98,6 +99,14 @@ describe("which website the applicant came from (0155)", () => {
     expect(applyEntry(fresh, {}, undefined, "ar").siteLocale).toBe("ar");
     expect(applyEntry({ ...fresh, siteLocale: "ar" }, {}).siteLocale).toBe("ar");
     expect(applyEntry(fresh, {}).siteLocale).toBeUndefined();
+  });
+});
+
+describe("Exit", () => {
+  it("leads to the mortgage page, in the site version the applicant came from", () => {
+    expect(exitHref(undefined)).toBe("/tools/mortgage");
+    expect(exitHref("en")).toBe("/tools/mortgage");
+    expect(exitHref("ar")).toBe("/ar/tools/mortgage");
   });
 });
 

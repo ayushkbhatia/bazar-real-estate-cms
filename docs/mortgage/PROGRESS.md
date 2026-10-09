@@ -1229,3 +1229,46 @@ or the english version."
 
 **Order:** apply `0155` before the deploy: the queue reads the column, so
 the code needs it, and the column changes nothing for the code before it.
+
+## Client feedback, phase 1 — PDF uploads, every format, Exit, the date-of-birth calendar · 9 Oct 2026
+
+Bazar's comments (Ayush, 9 Oct): "PDF uploads are not working. For all
+documents, enable upload and ingestion in a variety of formats — JPG, JPEG,
+PDF, PNG"; "the exit button … leads to the home page, it should lead to the
+mortgage master page"; "a calendar icon which opens up the date select
+feature in a calendar view". (The page redesign, the wizard editor and the
+kanban follow as phases 2–4.)
+
+**Built**
+- **PDF uploads were broken in production.** `error_events` had six
+  `mortgage.files.complete` failures: "Failed to load external module
+  pdfjs-dist … ReferenceError: DOMMatrix is not defined". pdf.js creates a
+  `DOMMatrix` at module load and, in Node, takes it from the optional
+  `@napi-rs/canvas`, which it loads through a runtime `require` that Vercel's
+  file tracing never sees: the deployed bundle has no such package. Local
+  development and CI install it, so neither showed it. `server/dom-matrix.ts`
+  gives the runtime a stand-in before pdf.js loads (we only count pages and
+  detect passwords; nothing is drawn). Reproduced locally by blocking
+  `@napi-rs/canvas`: the crash before, and after it a plain PDF counted, a
+  user-password PDF refused, an owner-password PDF accepted and garbage
+  refused, as before.
+- **Every document takes PDF, JPG/JPEG or PNG** (`documents.ts`): the salary
+  certificate and both statement kinds were PDF only. The hints say so (EN,
+  AR, the CMS's copies), the file inputs' `accept` follows the rules, and C4's
+  statement check reads "The bank's own statement, not retyped" instead of
+  "Original PDFs, not scans". The bucket already took all three types.
+- **Exit** goes to the mortgage page (`/tools/mortgage`, or `/ar/tools/mortgage`
+  for a visitor from the Arabic site; `exitHref`), not to the page they came
+  from, which was usually the home page.
+- **The date of birth has a calendar** (`dob-picker.tsx`, `calendar.ts`): a
+  button at the end of the field opens a month view with month and year
+  menus, opening at the typed date or January thirty years back; today and
+  later are disabled, as `dobRule` refuses them. One tab stop for the grid
+  (arrows, Page Up/Down, Home/End, Enter). Typing still works; both write the
+  same value.
+
+**Verified**
+- Unit tests (rules for every kind, the stand-in, the calendar's arithmetic,
+  Exit); every mortgage e2e spec (20/20) on a reset stack; in the browser, the
+  calendar picking 14 March 1990 by mouse and the 15th by keyboard, and a JPG
+  salary certificate and a PDF statement both reaching ready.

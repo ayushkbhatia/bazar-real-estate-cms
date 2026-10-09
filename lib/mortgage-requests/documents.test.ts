@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  DOC_KINDS,
   DOCUMENT_RULES,
   DOCUMENT_SETS,
   MAX_FILE_BYTES,
@@ -68,13 +69,14 @@ describe("per-kind file rules (SPEC §2.2)", () => {
     }
   });
 
-  it("refuses an image where a kind is PDF only", () => {
-    expect(checkFile("salary_certificate", jpg(1))).toEqual({ code: "bad_type" });
-    expect(checkFile("bank_statements_3m", jpg(1))).toEqual({ code: "bad_type" });
-    expect(checkFile("bank_statements_12m", { sizeBytes: MB, mime: "image/png" })).toEqual({
-      code: "bad_type",
-    });
-    expect(checkFile("trade_license", jpg(1))).toBeNull();
+  it("takes a PDF, a JPG/JPEG or a PNG for every document, and nothing else (Bazar, 9 Oct 2026)", () => {
+    for (const kind of DOC_KINDS) {
+      expect(checkFile(kind, pdf(1)), kind).toBeNull();
+      expect(checkFile(kind, jpg(1)), kind).toBeNull();
+      expect(checkFile(kind, { sizeBytes: MB, mime: "image/png" }), kind).toBeNull();
+      expect(checkFile(kind, { sizeBytes: MB, mime: "image/gif" }), kind).toEqual({ code: "bad_type" });
+      expect(checkFile(kind, { sizeBytes: MB, mime: "application/msword" }), kind).toEqual({ code: "bad_type" });
+    }
   });
 
   it("reproduces W6's oversize trade licence: 14.8 MB against 10 MB", () => {
@@ -146,7 +148,9 @@ describe("file types", () => {
   });
 
   it("builds each file input's accept attribute from the rules", () => {
-    expect(acceptAttribute("salary_certificate")).toBe(".pdf,application/pdf");
+    expect(acceptAttribute("salary_certificate")).toBe(
+      ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png",
+    );
     expect(acceptAttribute("passport")).toBe(
       ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png",
     );
