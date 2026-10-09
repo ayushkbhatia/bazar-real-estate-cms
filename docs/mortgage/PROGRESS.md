@@ -1376,3 +1376,46 @@ for 'Wizards'."
   a dropped `{reference}` refused with nothing saved, lead with Fast
   Pre-Approval and hide Step 1's panel, save — and `/mortgages/apply` shows
   all three. Every mortgage e2e spec, 21/21.
+## Client feedback, phase 4 — the mortgage page leads into the application · 9 Oct 2026
+
+Bazar: "the mortgage wizard currently opens up on a short CTA towards the
+bottom of the master mortgage page. The master mortgage page needs to be
+redesigned such that it brings the user quite naturally to the mortgage
+wizard … exciting with multiple CTAs leading to the mortgage wizard."
+
+**Built** (all drawn only while the application is open; closed, the page is
+the calculator it was)
+- **The hero's panel is the wizard's first step** (`_sections/apply.tsx`,
+  `StartPanel`): the step track, then the same two services as W1, each a
+  link that lands on "Your details" with the service chosen and Step 1 done
+  (`?step=details`; W1 records the choice and moves on, `EntryParams.skipToDetails`).
+  The client's own hero copy and photograph stay on the left; on a phone
+  the headline now comes first (`ServiceHero formFirstOnMobile`).
+- **How it works** (`journey`): the four stops from the page to a bank's
+  answer, the last one the destination, and "Start with step one".
+- **Estimate to pre-approval** (`apply_bridge`): after the calculator, the
+  visitor's own monthly payment and loan amount (`{monthly}`, `{loan}`) and
+  "Get pre-approved" / "Talk to an adviser".
+- **Questions** (`faq`): who can apply, how much, which documents, how long,
+  whether it's a guarantee — in the site's own question list.
+- **The closing band** is the page's close on the brand navy, with the same
+  two doors, the client's copy kept.
+- **A start bar** slides up once the hero's panel has scrolled away and
+  steps aside on the closing band (a floating bar on a desktop, the site's
+  `StickyActionBar` on a phone).
+- **New sections land where the design puts them** even though the client
+  saved the page before they existed: a section may name `placeAfter`, and
+  `resolveSections` places it there in a stored document that lacks it (it
+  used to append them to the end). Production's order becomes hero, how it
+  works, scenario, the bridge, affordability, questions, the closing band,
+  then the three sections the client switched off. Every word is editable in
+  Pages & blocks → Mortgage calculator, with its Arabic.
+
+**Verified**
+- `placeAfter` and the mortgage registry against production's saved order
+  (unit); `e2e/mortgage-landing.spec.ts`: the hero's Fast Pre-Approval lands
+  on Personal details, every start on the page points into the application,
+  and the start bar's show/hide; `tools-mortgage.spec.ts` (CI) knows the new
+  sections and checks the panel's links; the 390px geometry gate passes;
+  RTL: arrows and the route mirror, links carry `site=ar`. Every mortgage e2e
+  spec, 22/22.

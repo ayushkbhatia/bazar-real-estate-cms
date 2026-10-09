@@ -128,6 +128,39 @@ describe("resolveSections", () => {
   });
 });
 
+describe("resolveSections · placeAfter", () => {
+  const page = {
+    key: "buy",
+    label: "Test",
+    path: "/t",
+    description: "",
+    sections: [
+      { key: "a", label: "A", fields: [], defaults: {} },
+      { key: "b", label: "B", fields: [], defaults: {} },
+      { key: "c", label: "C", fields: [], defaults: {} },
+      { key: "new1", label: "N1", fields: [], defaults: {}, placeAfter: "a" },
+      { key: "new2", label: "N2", fields: [], defaults: {}, placeAfter: "a" },
+      { key: "tail", label: "T", fields: [], defaults: {} },
+      { key: "lost", label: "L", fields: [], defaults: {}, placeAfter: "gone" },
+    ],
+  } as unknown as Parameters<typeof resolveSections>[0];
+  const stored = (keys: string[]) => keys.map((key) => ({ key, enabled: true, values: {} }));
+
+  it("puts a section a saved document predates after the one it names, in registry order", () => {
+    expect(resolveSections(page, stored(["c", "a", "b"])).map((s) => s.key)).toEqual(["c", "a", "new1", "new2", "b", "tail", "lost"]);
+  });
+
+  it("leaves a saved arrangement alone once it includes the section", () => {
+    expect(resolveSections(page, stored(["new2", "c", "a", "b", "new1", "tail", "lost"])).map((s) => s.key)).toEqual([
+      "new2", "c", "a", "b", "new1", "tail", "lost",
+    ]);
+  });
+
+  it("uses the registry order for a page nobody saved", () => {
+    expect(resolveSections(page, null).map((s) => s.key)).toEqual(["a", "b", "c", "new1", "new2", "tail", "lost"]);
+  });
+});
+
 describe("validateSections", () => {
   it("trims, strips unknown fields, and keeps known ones", () => {
     const result = validateSections(buy, [

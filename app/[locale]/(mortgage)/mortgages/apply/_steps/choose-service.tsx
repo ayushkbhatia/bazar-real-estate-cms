@@ -39,7 +39,12 @@ export function ChooseService({ entry }: { entry: EntryParams }) {
     const next = applyEntry(state, entry, back ?? state.returnTo, siteLocaleFromReferrer(document.referrer, window.location.origin));
     update(() => next);
     trackMortgage("mortgage_apply_viewed", { step: "service", entry_point: next.entryPoint });
-  }, [state, entry, update]);
+    // Chosen on the mortgage page already: this step is done, go on to the details.
+    if (entry.skipToDetails && next.service) {
+      trackMortgage("mortgage_service_selected", { service: next.service, entry_point: next.entryPoint });
+      router.replace(FLOW_PATHS.details);
+    }
+  }, [state, entry, update, router]);
 
   if (!state) return <FlowPending />;
 

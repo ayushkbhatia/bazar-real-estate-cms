@@ -105,6 +105,51 @@ export function PreApprovalSection({
   const showForm = form.enabled && !formInHero;
   const showRecap = form.enabled;
 
+  // While the online application is open, the band is the page's close: the
+  // same two doors as the hero's panel, larger, on the brand's navy.
+  if (copy.flowHref) {
+    return (
+      <section className="bg-bz-navy px-4 py-14 text-white md:px-12 md:py-20" data-testid="pre-approval-section">
+        <div className="grid max-w-[1280px] items-end gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+          <div>
+            {copy.eyebrow ? <Eyebrow className="text-white/70">{copy.eyebrow}</Eyebrow> : null}
+            <h2
+              className="serif mt-3"
+              style={{ fontSize: "clamp(34px, 4.4vw, 56px)", letterSpacing: "-0.025em", lineHeight: 1.04 }}
+            >
+              {copy.title}
+            </h2>
+            {copy.sub ? <p className="mt-4 max-w-[52ch] text-[16px] leading-[1.55] text-white/80">{copy.sub}</p> : null}
+            {copy.flowNote ? (
+              <p className="mt-3 max-w-[52ch] text-[13px] leading-[1.55] text-white/65" data-testid="pre-approval-flow-note">
+                {copy.flowNote}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <Link
+              href={copy.flowHref}
+              data-testid="pre-approval-cta"
+              className="inline-flex h-12 items-center gap-2 rounded-lg bg-white px-6 text-[15px] font-medium text-bz-navy hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {copy.fallbackCtaLabel}
+              <ArrowRight size={16} strokeWidth={1.6}  />
+            </Link>
+            {copy.advisorCtaLabel ? (
+              <Link
+                href={copy.advisorCtaHref}
+                className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/35 px-6 text-[15px] text-white hover:border-white hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <Calendar size={16} strokeWidth={1.6} />
+                {copy.advisorCtaLabel}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border"

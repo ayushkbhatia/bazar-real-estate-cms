@@ -24,12 +24,15 @@ export const isMortgageFlowPublic = cache(async (): Promise<boolean> => {
   }
 });
 
-/** The five entry links, as SPEC §4.1 spells them. */
+/** The entry links: SPEC §4.1's five, and the mortgage page's start buttons. */
 export const MORTGAGE_ENTRY_LINKS = {
   home: "/mortgages/apply?service=pre_approval&from=home",
   calculatorPreApproval: "/mortgages/apply?service=pre_approval&from=calculator_preapproval",
   calculatorAdvisor: "/mortgages/apply?service=consultancy&from=calculator_advisor",
   servicesMenu: "/mortgages/apply?service=consultancy&from=services_menu",
+  /** The mortgage page's application panel and start buttons: the service is chosen there, so the flow opens on W2. */
+  startPreApproval: "/mortgages/apply?service=pre_approval&from=calculator_preapproval&step=details",
+  startConsultancy: "/mortgages/apply?service=consultancy&from=calculator_advisor&step=details",
   propertyDetail: (reference: string) =>
     `/mortgages/apply?service=pre_approval&from=property_detail&property=${encodeURIComponent(reference)}`,
 } as const;
