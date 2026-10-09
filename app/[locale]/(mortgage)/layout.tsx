@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { RouteMessages } from "@/lib/i18n/route-messages";
 import { asLocale, DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { getPublicBranding } from "@/lib/queries/site-settings";
+import { getMortgageTranslator, getMortgageWizardOverlay } from "@/lib/queries/wizards";
+import { WizardFlowProvider } from "./_components/wizard-flow";
 import { FlowFooter, FlowTopBar } from "./_components/shell";
 import "./mortgage.css";
 
@@ -25,7 +27,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const locale = asLocale((await params).locale);
-  const t = await getTranslations({ locale, namespace: "mortgage" });
+  const t = await getMortgageTranslator(locale);
   return {
     title: t("shell.section"),
     // An application form has no business in a search index.
@@ -44,18 +46,21 @@ export default async function MortgageLayout({
   if (locale !== DEFAULT_LOCALE) notFound();
   setRequestLocale(locale);
 
-  const branding = await getPublicBranding(locale);
+  // The words and switches an editor set in Pages & blocks → Wizards, laid over the catalogue.
+  const [branding, overlay] = await Promise.all([getPublicBranding(locale), getMortgageWizardOverlay(locale)]);
   const logo = branding.logo_url
     ? { url: branding.logo_url, style: branding.logo_style, name: branding.brand_name }
     : null;
 
   return (
-    <RouteMessages locale={locale} namespaces={["mortgage"]}>
-      <div className="mrq flex min-h-dvh flex-1 flex-col bg-bz-bg text-bz-ink">
-        <FlowTopBar locale={locale} logo={logo} />
-        {children}
-        <FlowFooter locale={locale} />
-      </div>
+    <RouteMessages locale={locale} namespaces={["mortgage"]} overrides={{ mortgage: overlay.messages }}>
+      <WizardFlowProvider flow={overlay.flow}>
+        <div className="mrq flex min-h-dvh flex-1 flex-col bg-bz-bg text-bz-ink">
+          <FlowTopBar locale={locale} logo={logo} />
+          {children}
+          <FlowFooter locale={locale} />
+        </div>
+      </WizardFlowProvider>
     </RouteMessages>
   );
 }

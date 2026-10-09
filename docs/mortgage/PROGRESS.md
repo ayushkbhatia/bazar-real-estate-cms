@@ -1272,3 +1272,57 @@ kanban follow as phases 2–4.)
   Exit); every mortgage e2e spec (20/20) on a reset stack; in the browser, the
   calendar picking 14 March 1990 by mouse and the 15th by keyboard, and a JPG
   salary certificate and a PDF statement both reaching ready.
+
+## Client feedback, phase 3 — Pages & blocks → Wizards → Mortgage application · 9 Oct 2026
+
+Bazar: "the mortgage wizard itself, from a content and form and flow
+standpoint, does not have an editability feature (like we have built for the
+various master pages in the pages and blocks section) … create a new section
+for 'Wizards'."
+
+**Built**
+- **A Wizards group on Pages & blocks** (`/admin/pages/wizards`), with one
+  wizard, the mortgage application (`/admin/pages/wizards/mortgage-application`),
+  edited in the master pages' own editor (`MasterPageEditor`): one locked
+  section per screen in the order an applicant meets them — header, footer
+  and steps; Step 1; Step 2; the consultancy review; the documents; sending;
+  request received; the secure link — and a Flow section.
+- **Built from the catalogue, not beside it** (`lib/master-pages/wizards.ts`).
+  Every message in `messages/{en,ar}/mortgage.json` is a field (266 of
+  them), its English and Arabic the defaults. Counted phrases (ICU plurals,
+  8) are not offered: their branches are easy to break and impossible to
+  check by eye. Labels are read off the key ("Date of birth · placeholder"),
+  and a field whose wording `copy-status.ts` still lists as owed is marked
+  "awaiting sign-off: D11a" and so on.
+- **A save stores only what differs from the catalogue** (`wizardStoredValues`),
+  so a wording fixed in code still reaches every field nobody edited. It
+  refuses a message that drops or invents a `{placeholder}`, changes its
+  `<b>`/`<ink>`/`<link>` marks, or that next-intl can't format (a stray
+  brace), in either language (`wizardCopyIssues`). Document:
+  `pages.slug = subpage/wizard/mortgage-application`, audited as
+  `page.wizard_update` / `page.wizard_reset`.
+- **The flow reads it per request** (`lib/queries/wizards.ts`): the
+  `(mortgage)` layout lays the edited messages over the `mortgage` namespace
+  (`RouteMessages` takes `overrides`), and the four server-side reads (the
+  shell, the page title, the secure link's messages) use
+  `getMortgageTranslator`. No screen changed to read its words.
+- **Flow switches**: which service Step 1 leads with, Step 1's side panel,
+  Step 1's contact line, Step 2's side panel (`WizardFlowProvider`). The
+  contact line's call and WhatsApp links now follow the numbers written in
+  the copy, so changing a number in the editor changes where it dials.
+  What the form asks for — the documents, formats, limits and the clock —
+  stays the server's rules and isn't set here.
+- Arabic edits are stored and checked, and render once the flow opens in
+  Arabic (D12). The shared field editor now names its text boxes
+  (`aria-label`), which every Pages & blocks editor lacked.
+
+**Verified**
+- `wizards.test.ts`: every catalogue message offered once (or a counted
+  phrase), the catalogue as defaults, the screen order, sign-off marks, the
+  save checks (placeholders, marks, stray braces, Arabic), diff-only storage,
+  and the overlay laying only edited messages. G-3 and G-16 now enumerate
+  the wizard (an email placeholder is data, with no twin).
+- `e2e/mortgage-wizard-editor.spec.ts` (local stack): edit Step 1's heading,
+  a dropped `{reference}` refused with nothing saved, lead with Fast
+  Pre-Approval and hide Step 1's panel, save — and `/mortgages/apply` shows
+  all three. Every mortgage e2e spec, 21/21.

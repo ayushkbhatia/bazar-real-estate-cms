@@ -1,3 +1,4 @@
+import { MORTGAGE_EDITABLE_KEYS, WIZARD_ADMIN_PATH, WIZARDS } from "@/lib/master-pages/wizards";
 import Link from "next/link";
 import { Plus, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
@@ -177,6 +178,37 @@ export default async function AdminPagesPage() {
                   </span>
                   <span className="mt-1 text-[11.5px] text-bz-muted-2">
                     {cardSectionFieldCount(card)} fields
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+          <div>
+            <h2 className="text-[14px] font-medium">
+              <Link href="/admin/pages/wizards" className="hover:text-bz-accent">
+                Wizards
+              </Link>
+            </h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              The multi-step forms. Every screen&apos;s words — headings,
+              buttons, field labels, hints and error messages — in both
+              languages, and switches for what each step shows.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {WIZARDS.map((w) => (
+              <li key={w.key}>
+                <Link
+                  href={WIZARD_ADMIN_PATH(w.key)}
+                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+                >
+                  <span className="text-[13.5px] font-medium">{w.label}</span>
+                  <span className="mono text-[11px] text-bz-muted">{w.path}</span>
+                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                    {MORTGAGE_EDITABLE_KEYS.length} messages · 8 screens
                   </span>
                 </Link>
               </li>

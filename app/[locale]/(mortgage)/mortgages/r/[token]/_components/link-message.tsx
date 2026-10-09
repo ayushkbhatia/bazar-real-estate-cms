@@ -1,4 +1,5 @@
-import { getTranslations } from "next-intl/server";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { getMortgageTranslator } from "@/lib/queries/wizards";
 import { FlowPage } from "../../../../_components/flow-page";
 import { FlowHeading } from "../../../../_components/steps";
 
@@ -17,7 +18,8 @@ export async function LinkMessage({
   /** A used invite: the application it made, which the applicant already knows. */
   reference?: string | null;
 }) {
-  const t = await getTranslations("mortgage");
+  // The flow is English only (D12).
+  const t = await getMortgageTranslator(DEFAULT_LOCALE);
   const key = state === "used" && purpose === "preapproval_invite" ? "invited" : state;
   return (
     <FlowPage>
