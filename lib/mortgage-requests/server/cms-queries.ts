@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { allRows } from "@/lib/salesforce/listings/paginate";
+import { BOARD_CLOSED_LIMIT, BOARD_COLUMNS, type BoardService } from "../board";
 import { buildActivity, staffIdsIn, type ActivityLine, type ContactInput, type EventInput } from "../activity";
 import {
   ageOn,
@@ -10,6 +11,7 @@ import {
   formatDayMonth,
   formatLongDate,
   formatWhen,
+  firstNameOf,
   initialsOf,
   maskIp,
   maskMobile,
@@ -137,6 +139,7 @@ type QueueDbRow = SlaFields & {
   owner_staff_id: string | null;
   submitted_at: string;
   closed_at: string | null;
+  updated_at: string;
   site_locale: "en" | "ar" | null;
   owner: { display_name: string } | null;
   mortgage_documents: { kind: DocKind; state: "to_review" | "accepted" | "reupload_requested" }[];
@@ -146,7 +149,7 @@ type QueueDbRow = SlaFields & {
 
 const QUEUE_COLUMNS = `
   id, reference, service, status, full_name, mobile_e164, residency, employment_type,
-  owner_staff_id, submitted_at, closed_at, site_locale,
+  owner_staff_id, submitted_at, closed_at, updated_at, site_locale,
   sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at,
   owner:staff!mortgage_requests_owner_staff_id_fkey(display_name),
   mortgage_documents(kind, state),
@@ -206,6 +209,8 @@ function received(value: string, now: Date): string {
 
 type Prepared = {
   row: QueueRow;
+  id: string;
+  updatedAt: string;
   mobileE164: string;
   ownerId: string | null;
   submittedAt: string;
@@ -232,6 +237,8 @@ function prepare(r: QueueDbRow, now: Date, policy: SlaPolicy): Prepared {
       website: r.site_locale,
       received: received(r.submitted_at, now),
     },
+    id: r.id,
+    updatedAt: r.updated_at,
     mobileE164: r.mobile_e164,
     ownerId: r.owner_staff_id,
     submittedAt: r.submitted_at,
@@ -252,13 +259,9 @@ function matchesService(p: Prepared, service: ServiceFilter): boolean {
   return service === "all" || p.row.service === service;
 }
 
-/** C1's data for one view (SPEC §4.3; docs/mortgage/cms/C1 "Data"). */
-export async function listQueue(
-  db: SupabaseClient,
-  params: QueueParams & { q: string },
-  ctx: { now: Date; meId: string; policy: SlaPolicy },
-): Promise<QueueResult> {
-  const raw = await allRows<QueueDbRow>((from, to) =>
+/** Every request with what C1 shows of it, in pages of 1,000 (Supabase's silent cap). */
+function readQueueRows(db: SupabaseClient): Promise<QueueDbRow[]> {
+  return allRows<QueueDbRow>((from, to) =>
     db
       .from("mortgage_requests")
       .select(QUEUE_COLUMNS)
@@ -269,7 +272,15 @@ export async function listQueue(
       .order("starts_at", { referencedTable: "mortgage_consultations", ascending: false })
       .range(from, to) as unknown as PromiseLike<{ data: QueueDbRow[] | null; error: { message: string } | null }>,
   );
-  const all = raw.map((r) => prepare(r, ctx.now, ctx.policy));
+}
+
+/** C1's data for one view (SPEC §4.3; docs/mortgage/cms/C1 "Data"). */
+export async function listQueue(
+  db: SupabaseClient,
+  params: QueueParams & { q: string },
+  ctx: { now: Date; meId: string; policy: SlaPolicy },
+): Promise<QueueResult> {
+  const all = (await readQueueRows(db)).map((r) => prepare(r, ctx.now, ctx.policy));
   const open = all.filter((p) => !CLOSED_STATUSES.includes(p.row.status));
 
   // Owner and search narrow everything below; tab and service are the axes the counts are for.
@@ -327,6 +338,96 @@ export async function listQueue(
     },
     atRisk,
   };
+}
+
+// ── C1 · the board ───────────────────────────────────────────────
+
+/** A board card: C1's row plus what an action needs to send and to decide whether it may. */
+export type BoardCard = QueueRow & {
+  id: string;
+  updatedAt: string;
+  /** The owner or the Head: only they may move it (`mayActOn`; the database checks again). */
+  canAct: boolean;
+  firstName: string;
+};
+
+export type BoardColumn = {
+  status: RequestStatus;
+  cards: BoardCard[];
+  /** Every file in the column; a closed column shows only the newest `BOARD_CLOSED_LIMIT`. */
+  total: number;
+};
+
+export type BoardLane = { service: BoardService; columns: BoardColumn[] };
+
+export type BoardResult = {
+  lanes: BoardLane[];
+  counts: QueueResult["counts"];
+  atRisk: QueueResult["atRisk"];
+  /** The signed-in member's first name, for the decline message's sign-off. */
+  myFirstName: string;
+};
+
+/**
+ * C1's board (Bazar, 9 Oct 2026): every open file of the service(s) asked
+ * for, one column per status, in the list's "promise due" order; and the
+ * newest closed files. The list's owner filter and search apply; its tabs
+ * don't, since the columns are the tabs.
+ */
+export async function listBoard(
+  db: SupabaseClient,
+  params: Pick<QueueParams, "service" | "owner" | "risk"> & { q: string },
+  ctx: { now: Date; meId: string; role: "head" | "adviser"; myName: string; policy: SlaPolicy },
+): Promise<BoardResult> {
+  const all = (await readQueueRows(db)).map((r) => prepare(r, ctx.now, ctx.policy));
+  const open = all.filter((p) => !CLOSED_STATUSES.includes(p.row.status));
+  const base = all.filter(
+    (p) =>
+      matchesOwner(p, params.owner, ctx.meId) &&
+      matchesSearch({ fullName: p.row.fullName, reference: p.row.reference, mobile: p.mobileE164 }, params.q) &&
+      (!params.risk || isAtRisk(p.row.sla)),
+  );
+  const card = (p: Prepared): BoardCard => ({
+    ...p.row,
+    id: p.id,
+    updatedAt: p.updatedAt,
+    canAct: ctx.role === "head" || (p.ownerId !== null && p.ownerId === ctx.meId),
+    firstName: firstNameOf(p.row.fullName),
+  });
+  const services: BoardService[] = params.service === "all" ? ["pre_approval", "consultancy"] : [params.service];
+  const lanes = services.map((service) => ({
+    service,
+    columns: BOARD_COLUMNS[service].map((status) => {
+      const here = base.filter((p) => p.row.service === service && p.row.status === status);
+      if (CLOSED_STATUSES.includes(status)) {
+        here.sort((a, b) => (b.closedAt ?? b.submittedAt).localeCompare(a.closedAt ?? a.submittedAt));
+        return { status, total: here.length, cards: here.slice(0, BOARD_CLOSED_LIMIT).map(card) };
+      }
+      here.sort((a, b) =>
+        promiseDueCompare(
+          { service: a.row.service, status: a.row.status, submittedAt: a.submittedAt, sla: a.row.sla, bookedAt: a.bookedAt, lastContactAt: a.lastContactAt },
+          { service: b.row.service, status: b.row.status, submittedAt: b.submittedAt, sla: b.row.sla, bookedAt: b.bookedAt, lastContactAt: b.lastContactAt },
+        ),
+      );
+      return { status, total: here.length, cards: here.map(card) };
+    }),
+  }));
+  const atRisk = open
+    .filter((p) => isAtRisk(p.row.sla))
+    .sort((a, b) => (a.row.sla!.remainingSeconds ?? 0) - (b.row.sla!.remainingSeconds ?? 0))
+    .map((p) => ({ reference: p.row.reference, fullName: p.row.fullName, remaining: formatDuration(p.row.sla!.remainingSeconds ?? 0) }));
+  const tabs = Object.fromEntries(QUEUE_TABS.map((tab) => [tab, base.filter((p) => inTab(p.row.status, tab)).length])) as Record<QueueTab, number>;
+  const counts = {
+    tabs,
+    services: {
+      all: base.filter((p) => !CLOSED_STATUSES.includes(p.row.status)).length,
+      pre_approval: base.filter((p) => p.row.service === "pre_approval" && !CLOSED_STATUSES.includes(p.row.status)).length,
+      consultancy: base.filter((p) => p.row.service === "consultancy" && !CLOSED_STATUSES.includes(p.row.status)).length,
+    },
+    open: open.length,
+    new: all.filter((p) => p.row.status === "new").length,
+  };
+  return { lanes, counts, atRisk, myFirstName: firstNameOf(ctx.myName) };
 }
 
 // ── C2 / C6 · one request ────────────────────────────────────────

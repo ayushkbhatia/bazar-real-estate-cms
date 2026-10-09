@@ -1272,3 +1272,54 @@ kanban follow as phases 2–4.)
   Exit); every mortgage e2e spec (20/20) on a reset stack; in the browser, the
   calendar picking 14 March 1990 by mouse and the 15th by keyboard, and a JPG
   salary certificate and a PDF statement both reaching ready.
+
+## Client feedback, phase 2 — the queue's board view · 9 Oct 2026
+
+Bazar: "the master screen for mortgages (the mortgage dashboard) should also
+contain a kanban view. This view should allow the mortgage applicants to be
+dragged and dropped into the relevant state fields … (in addition to what
+exists)."
+
+**Built**
+- **A List | Board switch on C1** (`?view=board`, `QueueParams.view`). The
+  board keeps the list's service, owner and search filters; its columns
+  replace the tabs. One lane per service: Fast Pre-Approval (New, In review,
+  Awaiting applicant, With banks, Pre-approved, Declined) and Mortgage
+  Consultancy (New, Contacted, Consultation booked, Completed); "All" shows
+  both. Cards carry the list's row: reference, name, profile, document bar,
+  promise clock or consultation line, owner, website. Closed columns show
+  the newest 12 and link to the Closed tab. It polls every 30 s and on focus.
+- **A drop is an action, never a status write** (`lib/mortgage-requests/board.ts`,
+  `boardMove`), because status moves only through `mortgage_transition()`
+  and most moves need something from the team:
+  - run at once: New → In review (`startReview`);
+  - one question on the board: how a contact went (New → Contacted), mark a
+    consultation held, cancel an open re-upload (Awaiting → In review), and
+    the decline dialog (→ Declined, from any open stage), built from C2's own
+    `DeclineFields`;
+  - the screen built for it: which document needs a re-upload, then C4's
+    form (`…/documents/[kind]?reupload=1`); Accept application with the
+    banks (`?do=accept`, which opens it on C2); the decision (C5); the
+    booking card (`?do=book`, which scrolls C6 to it);
+  - refused with the reason, the card staying put: closed files, going
+    back a stage, skipping review or the banks, an open re-upload, booking
+    before contact, completing before booking.
+  A test checks every drop the board allows is a move the transition table
+  makes. Each card has a Move menu with the same moves, for the keyboard.
+- **"Start review"** has no SQL function of its own: the move is the
+  system's `first_document_opened` (what the owner's first open raises),
+  so `_board-actions.ts` checks the caller may act (owner or Head, SR-12) and
+  makes it with the service role, as the re-upload request already does,
+  then logs `review.started` with their name (activity: "… started the review
+  from the board"). No migration.
+- Only the owner or the Head can drag a card (`BoardCard.canAct`); the
+  database checks again on every action. dnd-kit's accessibility ids are
+  named (`useId`), or the board hydrated with a mismatch.
+
+**Verified**
+- Unit tests (every drop, and that each allowed one is a real transition);
+  `e2e/mortgage-board.spec.ts` on the local stack: drag New → In review
+  (status and `review.started` written), a refused drop to Pre-approved,
+  In review → With banks opening Accept application, Declined from the Move
+  menu opening the decline dialog, consultancy New → Contacted via "Reached".
+  Every mortgage e2e spec, 21/21.

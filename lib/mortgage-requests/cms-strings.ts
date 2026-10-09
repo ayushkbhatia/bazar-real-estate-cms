@@ -68,6 +68,7 @@ export const CMS_MESSAGES = {
     "linkLocked": "The secure link locked after five wrong codes",
     "opened": "{actor} opened {document}",
     "openedLetter": "{actor} opened a bank's letter",
+    "reviewStarted": "{actor} started the review from the board",
     "packageOpened": "{bank} opened the package",
     "packageSent": {
       "sub": "{count} documents · structured summary",
@@ -132,6 +133,68 @@ export const CMS_MESSAGES = {
     "settingsNote": "The mortgage team's Head keeps the same list in the Mortgage requests section.",
     "title": "Partner banks"
   },
+  "board": {
+    "closedMore": "Newest {shown} of {total}",
+    "closedAll": "All closed",
+    "column": "{status}, {count, plural, one {# file} other {# files}}",
+    "dialog": {
+      "book": {
+        "cta": "Open the file to book",
+        "lede": "Choose the adviser, the format and the slot on {firstName}'s file. It moves to Consultation booked when you book.",
+        "title": "Book {firstName}'s consultation"
+      },
+      "cancel": {
+        "cta": "Cancel the request for {document}",
+        "lede": "{firstName}'s file goes back to In review, and its clock runs again, once no re-upload request is left open.",
+        "title": "Cancel the re-upload request?"
+      },
+      "contact": {
+        "lede": "Logging the attempt moves {firstName}'s request to Contacted.",
+        "title": "How did contacting {firstName} go?"
+      },
+      "decide": {
+        "cta": "Open the decision",
+        "lede": "On the decision screen you record each bank's answer, choose the lead offer and send {firstName} the pre-approval.",
+        "title": "Record the banks' offers"
+      },
+      "held": {
+        "cta": "Mark it held",
+        "lede": "{firstName}'s request moves to Completed.",
+        "title": "Was the consultation held?"
+      },
+      "loading": "Reading the file…",
+      "reupload": {
+        "lede": "Choose the document. You write the reason and the message on the next screen, and the file moves to Awaiting applicant when you send it.",
+        "requested": "Already requested",
+        "title": "Which of {firstName}'s documents needs a re-upload?"
+      },
+      "send": {
+        "cta": "Open the file to send",
+        "lede": "Every document must be accepted first. On the file you choose the partner banks and send each its package; it moves to With banks when you do.",
+        "title": "Accept {firstName}'s application"
+      }
+    },
+    "done": {
+      "startReview": "{reference} is in review."
+    },
+    "empty": "No files",
+    "hint": "Drag a card to another column, or use its Move menu.",
+    "illegal": {
+      "backwards": "A file can't go back a stage. Its activity shows what happened.",
+      "closed": "A closed file stays closed.",
+      "needsBanks": "Send the file to the banks first: a pre-approval comes from a bank's offer.",
+      "needsBooking": "Book the consultation first.",
+      "needsContact": "Log a contact first: a request is contacted before it's booked.",
+      "needsReview": "Review the documents first: every one must be accepted before the file goes to the banks.",
+      "reuploadOpen": "A re-upload request is still open. Cancel it, or wait for the applicant, first."
+    },
+    "lane": "{service} · {count, plural, one {# open} other {# open}}",
+    "move": "Move",
+    "moveTo": "Move {reference} to",
+    "refused": {
+      "startReview": "Only a new Fast Pre-Approval can start its review."
+    }
+  },
   "c1": {
     "aria": {
       "next": "Next page",
@@ -156,6 +219,11 @@ export const CMS_MESSAGES = {
       "request": "Request",
       "status": "Status",
       "website": "Website"
+    },
+    "view": {
+      "board": "Board",
+      "label": "View",
+      "list": "List"
     },
     "website": {
       "ar": "Arabic",
@@ -898,6 +966,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.reuploadFiles",
   "activity.reuploadReceived",
   "activity.reuploadRequested",
+  "activity.reviewStarted",
   "activity.statusChanged",
   "banks.active",
   "banks.add",
@@ -927,6 +996,44 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "banks.saved",
   "banks.settingsNote",
   "banks.title",
+  "board.closedAll",
+  "board.closedMore",
+  "board.column",
+  "board.dialog.book.cta",
+  "board.dialog.book.lede",
+  "board.dialog.book.title",
+  "board.dialog.cancel.cta",
+  "board.dialog.cancel.lede",
+  "board.dialog.cancel.title",
+  "board.dialog.contact.lede",
+  "board.dialog.contact.title",
+  "board.dialog.decide.cta",
+  "board.dialog.decide.lede",
+  "board.dialog.decide.title",
+  "board.dialog.held.cta",
+  "board.dialog.held.lede",
+  "board.dialog.held.title",
+  "board.dialog.loading",
+  "board.dialog.reupload.lede",
+  "board.dialog.reupload.requested",
+  "board.dialog.reupload.title",
+  "board.dialog.send.cta",
+  "board.dialog.send.lede",
+  "board.dialog.send.title",
+  "board.done.startReview",
+  "board.empty",
+  "board.hint",
+  "board.illegal.backwards",
+  "board.illegal.closed",
+  "board.illegal.needsBanks",
+  "board.illegal.needsBooking",
+  "board.illegal.needsContact",
+  "board.illegal.needsReview",
+  "board.illegal.reuploadOpen",
+  "board.lane",
+  "board.move",
+  "board.moveTo",
+  "board.refused.startReview",
   "c1.aria.next",
   "c1.aria.owner",
   "c1.aria.prev",
@@ -952,6 +1059,9 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.risk.more",
   "c1.risk.showAll",
   "c1.tabFooter",
+  "c1.view.board",
+  "c1.view.label",
+  "c1.view.list",
   "c1.website.ar",
   "c1.website.arLabel",
   "c1.website.en",

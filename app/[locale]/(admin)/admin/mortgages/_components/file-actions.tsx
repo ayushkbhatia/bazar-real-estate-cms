@@ -614,20 +614,28 @@ export function HeldButton({ target, canAct }: { target: Target; canAct: boolean
 }
 
 /** "Book consultation" in the top bar: to the booking card, focused (C6). */
+function scrollToBooking() {
+  const card = document.getElementById("book");
+  card?.scrollIntoView({ behavior: "smooth", block: "start" });
+  card?.querySelector<HTMLElement>("select, button")?.focus({ preventScroll: true });
+}
+
 export function BookScrollButton() {
   return (
-    <Button
-      className="text-[13px]"
-      onClick={() => {
-        const card = document.getElementById("book");
-        card?.scrollIntoView({ behavior: "smooth", block: "start" });
-        card?.querySelector<HTMLElement>("select, button")?.focus({ preventScroll: true });
-      }}
-    >
+    <Button className="text-[13px]" onClick={scrollToBooking}>
       <Calendar strokeWidth={1.6} />
       {t("c6.action.book")}
     </Button>
   );
+}
+
+/** The queue board's "book" drop lands here (`?do=book`): go straight to the booking card. */
+export function ScrollToBooking() {
+  useEffect(() => {
+    const id = window.setTimeout(scrollToBooking, 150);
+    return () => window.clearTimeout(id);
+  }, []);
+  return null;
 }
 
 // ── Pre-approval invite ──────────────────────────────────────────
@@ -1025,6 +1033,7 @@ export function AcceptApplicationButton({
   consentGiven,
   banks,
   canManageBanks,
+  defaultOpen,
 }: {
   enabled: boolean;
   why: string;
@@ -1036,9 +1045,11 @@ export function AcceptApplicationButton({
   consentGiven: string | null;
   banks: readonly SendableBank[];
   canManageBanks: boolean;
+  /** Start open (the queue board's In review → With banks drop), when it can be used. */
+  defaultOpen?: boolean;
 }) {
   const { pending, run } = useAction();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => !!defaultOpen && enabled);
   const [chosen, setChosen] = useState<ReadonlySet<string>>(() => new Set(banks.filter((b) => b.sendable).map((b) => b.id)));
   const toggle = (id: string) =>
     setChosen((current) => {

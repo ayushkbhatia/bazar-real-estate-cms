@@ -229,12 +229,15 @@ describe("the CMS copy", () => {
 describe("the queue's URL", () => {
   it("round-trips a view, leaving defaults out", () => {
     expect(queueQuery(DEFAULT_QUEUE_PARAMS)).toBe("");
-    const view = { tab: "in_review", service: "pre_approval", owner: "unassigned", page: 2, risk: true } as const;
+    const view = { tab: "in_review", service: "pre_approval", owner: "unassigned", page: 2, risk: true, view: "list" } as const;
     expect(parseQueueParams(Object.fromEntries(new URLSearchParams(queueQuery(view).slice(1))))).toEqual(view);
+    const board = { ...DEFAULT_QUEUE_PARAMS, service: "consultancy", view: "board" } as const;
+    expect(queueQuery(board)).toBe("?service=consultancy&view=board");
+    expect(parseQueueParams(Object.fromEntries(new URLSearchParams(queueQuery(board).slice(1))))).toEqual(board);
   });
 
   it("falls back to the defaults for anything it doesn't know", () => {
-    expect(parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes" })).toEqual(
+    expect(parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes", view: "gantt" })).toEqual(
       DEFAULT_QUEUE_PARAMS,
     );
     expect(parseQueueParams({ owner: "3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c" }).owner).toBe("3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c");
