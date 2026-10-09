@@ -100,7 +100,7 @@ function Choice({
         />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="serif block text-[21px] leading-tight md:text-[23px]" style={{ letterSpacing: "-0.01em" }}>
+        <span className="serif block text-[21px] leading-tight md:text-[24px]" style={{ letterSpacing: "-0.01em" }}>
           {title}
         </span>
         {desc ? (
