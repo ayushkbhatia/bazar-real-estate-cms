@@ -74,6 +74,7 @@ export const DOC_LABEL_KEY: Record<DocKind, string> = {
 };
 
 export const STATUS_LABEL_KEY: Record<string, string> = {
+  open: "status.open",
   new: "status.new",
   in_review: "status.inReview",
   awaiting_applicant: "status.awaitingApplicant",
@@ -95,10 +96,11 @@ const QUIET_TRANSITIONS = new Set([
   "reupload_requested",
   "reupload_fulfilled",
   "reupload_cancelled",
-  // The decision's own line says it (D19), and so do accepting and pre-approving (0156).
+  // The decision's own line says it (D19), and so did accepting and pre-approving (0156).
   "declined",
   "application_accepted",
   "pre_approved",
+  "stage_changed",
 ]);
 
 export const REASON_KEY: Record<string, string> = {
@@ -151,8 +153,17 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       return { ...base, text: t("activity.opened", { actor, document: docLabel(e.data.kind) }) };
     case "document.downloaded":
       return { ...base, text: t("activity.downloaded", { actor, document: docLabel(e.data.kind) }) };
-    case "application.accepted":
-      return { ...base, text: t("activity.applicationAccepted.title", { actor }), sub: t("activity.applicationAccepted.sub"), tone: "success" };
+    case "stage.changed": {
+      // A stage move (0158), named as the stage was called at the time.
+      const to = str(e.data.to) ?? "";
+      if (e.data.reopened === true) return { ...base, text: t("activity.stageReopened", { actor, stage: to }), tone: "accent" };
+      return {
+        ...base,
+        text: t("activity.stageChanged.title", { actor, stage: to }),
+        sub: str(e.data.from) ? t("activity.stageChanged.sub", { stage: str(e.data.from)! }) : undefined,
+        tone: "accent",
+      };
+    }
     case "decision.pre_approved":
       return { ...base, text: t("activity.preApproved.title", { actor }), sub: str(e.data.note) ?? undefined, tone: "success" };
     case "document.accepted":

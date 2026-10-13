@@ -1,9 +1,8 @@
 /**
  * Local seed for the mortgage module — the data the CMS designs show
  * (docs/mortgage/cms): C1's eleven requests, Priya Raman's file (C2, C3), Karim
- * Haddad's re-upload (C4, W8), Ahmed Al Suwaidi's consultation (C6), an
- * accepted application and a recorded pre-approval (0156), and the mortgage
- * team.
+ * Haddad's re-upload (C4, W8), Ahmed Al Suwaidi's consultation (C6), files on
+ * the later stages of the pipeline (0158), and the mortgage team.
  *
  * Every clock is set relative to now through lib/mortgage-requests/sla.ts, on
  * the working-hours calendar (decision D11), so the queue shows the designed
@@ -13,9 +12,16 @@
  * Deliberate differences from the designs:
  *   · Emails are @example.com, so nothing seeded can ever be mailed to a real
  *     address (the PNGs show gmail/outlook addresses).
- *   · The designs' two "With banks" files follow the light CRM (0156): Liam
- *     Walsh (BZM-26-0404) is accepted, Arjun Mehta (BZM-26-0398) accepted and
- *     then pre-approved. There are no partner banks, packages or letters.
+ *   · Fast Pre-Approvals follow the stages (0158): each is `open` on a stage
+ *     of `mortgage_stages`, looked up by the seeded name, and its activity
+ *     shows one `stage.changed` per move. The designs' two "With banks" files
+ *     are Liam Walsh (BZM-26-0404) on Accepted and Arjun Mehta (BZM-26-0398)
+ *     on Pre-Approved, both with the clock stopped at the acceptance; Karim's
+ *     re-upload keeps him on In Review with the clock paused (Awaiting
+ *     applicant is gone). Two files the designs don't have fill the later
+ *     columns of the board: Fatima Al Zaabi (BZM-26-0405) on Valuation and
+ *     Elena Petrova (BZM-26-0399) on Disbursed, which closes her file.
+ *     There are no partner banks, packages or letters.
  *   · Statement file names and periods follow the months required for each
  *     request's submission date, so coverage is consistent with "now".
  *
@@ -214,25 +220,52 @@ if (!DEMO) insert(
 
 out.push("select set_config('mortgage.transition', 'on', true);");
 
+// ── Stages (0158) ───────────────────────────────────────────────
+
+/** The stages 0158 seeds, first to last, with the switches it gives them. */
+const STAGES = ["New", "In Review", "Accepted", "Pre-Approved", "Valuation", "Final Offer Letter", "Registration", "Disbursed"] as const;
+type StageName = (typeof STAGES)[number];
+const STOPS_CLOCK_FROM = STAGES.indexOf("Accepted");
+const CLOSES_FILE: StageName = "Disbursed";
+
+/** A stage's id, by name. */
+const stageId = (name: StageName) => raw(`(select id from public.mortgage_stages where name = ${lit(name)})`);
+
+// A deployed stack's stages are the client's to rename: refuse to guess.
+out.push(
+  `do $$ begin\n` +
+    `  if (select count(*) from public.mortgage_stages where name in (${STAGES.map((s) => lit(s)).join(", ")})) <> ${STAGES.length} then\n` +
+    `    raise exception 'the seed needs the stages 0158 created: %', ${lit(STAGES.join(", "))};\n` +
+    `  end if;\n` +
+    `end $$;`,
+);
+
 type DocMark = "accepted" | "review" | "flagged";
 type PreSeed = {
   ref: string; name: string; mobile: string; email: string; dob: string;
   residency: "uae_national" | "uae_resident_expat"; employment: "salaried" | "business_owner";
-  status: "new" | "in_review" | "awaiting_applicant" | "accepted" | "pre_approved";
+  stage: StageName;
   docs: [DocMark, DocMark, DocMark, DocMark];
-  remaining: number; paused?: boolean; owner: OwnerKey | null;
+  /** Working time left on a running clock (or at the pause), which sets when it was submitted… */
+  remaining?: number;
+  /** …or, for a file well down the pipeline, how much working time ago it was submitted. */
+  ageWorkingHours?: number;
+  paused?: boolean; owner: OwnerKey | null;
   entry: string;
 };
 
 const PRE_APPROVALS: PreSeed[] = [
-  { ref: "BZM-26-0406", name: "Mariam Al Kaabi", mobile: "+971504813321", email: "mariam.alkaabi@example.com", dob: "1984-06-02", residency: "uae_national", employment: "business_owner", status: "in_review", docs: ["accepted", "accepted", "review", "review"], remaining: H + 48 * MIN, owner: "leena", entry: "home" },
-  { ref: "BZM-26-0403", name: "Thomas Becker", mobile: "+971523067710", email: "thomas.becker@example.com", dob: "1979-01-19", residency: "uae_resident_expat", employment: "salaried", status: "in_review", docs: ["accepted", "accepted", "accepted", "review"], remaining: 3 * H + 20 * MIN, owner: "rashid", entry: "calculator_preapproval" },
-  { ref: "BZM-26-0398", name: "Arjun Mehta", mobile: "+971559120142", email: "arjun.mehta@example.com", dob: "1987-09-11", residency: "uae_resident_expat", employment: "salaried", status: "pre_approved", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 4 * H + 30 * MIN, owner: "yasmin", entry: "property_detail" },
-  { ref: "BZM-26-0404", name: "Liam Walsh", mobile: "+971586309021", email: "liam.walsh@example.com", dob: "1991-02-27", residency: "uae_resident_expat", employment: "salaried", status: "accepted", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 9 * H + 15 * MIN, owner: "rashid", entry: "home" },
-  { ref: "BZM-26-0409", name: "Karim Haddad", mobile: "+971557412290", email: "karim.haddad@example.com", dob: "1982-12-05", residency: "uae_resident_expat", employment: "business_owner", status: "awaiting_applicant", docs: ["accepted", "accepted", "accepted", "flagged"], remaining: 9 * H + 13 * MIN, paused: true, owner: "yasmin", entry: "calculator_preapproval" },
-  { ref: "BZM-26-0412", name: "Priya Raman", mobile: "+971502184417", email: "priya.raman@example.com", dob: "1990-03-14", residency: "uae_resident_expat", employment: "salaried", status: "in_review", docs: ["accepted", "accepted", "review", "review"], remaining: 17 * H + 42 * MIN, owner: "yasmin", entry: "calculator_preapproval" },
-  { ref: "BZM-26-0416", name: "Daniel Okafor", mobile: "+971568806604", email: "daniel.okafor@example.com", dob: "1993-07-30", residency: "uae_resident_expat", employment: "business_owner", status: "new", docs: ["review", "review", "review", "review"], remaining: 21 * H + 5 * MIN, owner: null, entry: "home" },
-  { ref: "BZM-26-0417", name: "Sofia Marques", mobile: "+971509938836", email: "sofia.marques@example.com", dob: "1995-04-08", residency: "uae_resident_expat", employment: "salaried", status: "new", docs: ["review", "review", "review", "review"], remaining: 22 * H + 41 * MIN, owner: null, entry: "calculator_preapproval" },
+  { ref: "BZM-26-0406", name: "Mariam Al Kaabi", mobile: "+971504813321", email: "mariam.alkaabi@example.com", dob: "1984-06-02", residency: "uae_national", employment: "business_owner", stage: "In Review", docs: ["accepted", "accepted", "review", "review"], remaining: H + 48 * MIN, owner: "leena", entry: "home" },
+  { ref: "BZM-26-0403", name: "Thomas Becker", mobile: "+971523067710", email: "thomas.becker@example.com", dob: "1979-01-19", residency: "uae_resident_expat", employment: "salaried", stage: "In Review", docs: ["accepted", "accepted", "accepted", "review"], remaining: 3 * H + 20 * MIN, owner: "rashid", entry: "calculator_preapproval" },
+  { ref: "BZM-26-0398", name: "Arjun Mehta", mobile: "+971559120142", email: "arjun.mehta@example.com", dob: "1987-09-11", residency: "uae_resident_expat", employment: "salaried", stage: "Pre-Approved", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 4 * H + 30 * MIN, owner: "yasmin", entry: "property_detail" },
+  { ref: "BZM-26-0404", name: "Liam Walsh", mobile: "+971586309021", email: "liam.walsh@example.com", dob: "1991-02-27", residency: "uae_resident_expat", employment: "salaried", stage: "Accepted", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 9 * H + 15 * MIN, owner: "rashid", entry: "home" },
+  { ref: "BZM-26-0409", name: "Karim Haddad", mobile: "+971557412290", email: "karim.haddad@example.com", dob: "1982-12-05", residency: "uae_resident_expat", employment: "business_owner", stage: "In Review", docs: ["accepted", "accepted", "accepted", "flagged"], remaining: 9 * H + 13 * MIN, paused: true, owner: "yasmin", entry: "calculator_preapproval" },
+  { ref: "BZM-26-0412", name: "Priya Raman", mobile: "+971502184417", email: "priya.raman@example.com", dob: "1990-03-14", residency: "uae_resident_expat", employment: "salaried", stage: "In Review", docs: ["accepted", "accepted", "review", "review"], remaining: 17 * H + 42 * MIN, owner: "yasmin", entry: "calculator_preapproval" },
+  { ref: "BZM-26-0416", name: "Daniel Okafor", mobile: "+971568806604", email: "daniel.okafor@example.com", dob: "1993-07-30", residency: "uae_resident_expat", employment: "business_owner", stage: "New", docs: ["review", "review", "review", "review"], remaining: 21 * H + 5 * MIN, owner: null, entry: "home" },
+  { ref: "BZM-26-0417", name: "Sofia Marques", mobile: "+971509938836", email: "sofia.marques@example.com", dob: "1995-04-08", residency: "uae_resident_expat", employment: "salaried", stage: "New", docs: ["review", "review", "review", "review"], remaining: 22 * H + 41 * MIN, owner: null, entry: "calculator_preapproval" },
+  // Further down the pipeline (0158): the board's later columns.
+  { ref: "BZM-26-0405", name: "Fatima Al Zaabi", mobile: "+971502276615", email: "fatima.alzaabi@example.com", dob: "1988-08-23", residency: "uae_national", employment: "salaried", stage: "Valuation", docs: ["accepted", "accepted", "accepted", "accepted"], ageWorkingHours: 60, owner: "leena", entry: "property_detail" },
+  { ref: "BZM-26-0399", name: "Elena Petrova", mobile: "+971527753308", email: "elena.petrova@example.com", dob: "1985-12-17", residency: "uae_resident_expat", employment: "salaried", stage: "Disbursed", docs: ["accepted", "accepted", "accepted", "accepted"], ageWorkingHours: 180, owner: "rashid", entry: "calculator_preapproval" },
 ];
 
 const CONSENT_V = "v0.1";
@@ -250,7 +283,7 @@ const attempts: Record<string, Value>[] = [];
 const consultations: Record<string, Value>[] = [];
 const events: Record<string, Value>[] = [];
 
-const event = (requestId: string, at: Date, type: string, actor: "applicant" | "staff" | "system", actorId: string | null, data: Record<string, unknown> = {}) =>
+const event = (requestId: string, at: Date, type: string, actor: "applicant" | "staff" | "system", actorId: string | null, data: Record<string, unknown> | Raw = {}) =>
   events.push({ request_id: requestId, actor_kind: actor, actor_id: actorId, type, data, created_at: notAfterNow(at) });
 
 function fileRow(
@@ -320,29 +353,28 @@ function seedFiles(documentId: string, kind: DocKind, submittedAt: Date, who: Pr
   }
 }
 
-const PRE_APPROVAL_NOTE = "FAB pre-approved AED 2,150,000 at 3.99% fixed for 3 years.";
-
-/** When an answered file was accepted and, if it was, pre-approved. */
-function answeredTimes(submittedAt: Date) {
-  const acceptedAt = notAfterNow(plusMinutes(submittedAt, 51));
-  return { acceptedAt, decidedAt: notAfterNow(plusMinutes(acceptedAt, 86)) };
-}
-
 /**
- * The columns mortgage_transition() writes (0156): acceptance stops the clock
- * and leaves the file open; a pre-approval closes it, keeping that clock.
+ * When the file moved onto each stage of its path, New excepted: In Review
+ * when the owner first opened it, Accepted 51 minutes in, Pre-Approved once
+ * the banks answered the team, and any later stage spread evenly from there
+ * to now.
  */
-function answeredShape(seed: PreSeed, submittedAt: Date, ownerId: string | null): Record<string, Value> {
-  const { acceptedAt, decidedAt } = answeredTimes(submittedAt);
-  if (seed.status !== "pre_approved") return { sla_stopped_at: acceptedAt };
-  return {
-    sla_stopped_at: acceptedAt,
-    decision: "pre_approved",
-    decided_at: decidedAt,
-    decided_by: ownerId,
-    decision_message: PRE_APPROVAL_NOTE,
-    closed_at: decidedAt,
-  };
+function stageTimes(seed: PreSeed, submittedAt: Date): Date[] {
+  const target = STAGES.indexOf(seed.stage);
+  const times: Date[] = [];
+  for (let i = 1; i <= target; i++) {
+    if (i === 1) times.push(plusMinutes(submittedAt, 19));
+    else if (i === 2) times.push(plusMinutes(submittedAt, 51));
+    else if (i === 3) times.push(plusMinutes(submittedAt, 51 + 86));
+    else {
+      const from = plusMinutes(submittedAt, 51 + 86).getTime();
+      const span = NOW.getTime() - 60 * MIN * 1000 - from;
+      // That day in Dubai, during the morning, as a team would move it.
+      const day = dubaiParts(new Date(from + (span * (i - 3)) / (target - 2)));
+      times.push(dubaiInstant(day.year, day.month, day.day, 10 + (i % 4), 20));
+    }
+  }
+  return times.map(notAfterNow);
 }
 
 for (const seed of PRE_APPROVALS) {
@@ -354,24 +386,31 @@ for (const seed of PRE_APPROVALS) {
   let submittedAt: Date;
   let dueAt: Date | null;
   let pausedAt: Date | null = null;
-  // Accepted 51 minutes in (Accept application stops the clock, 0156); Arjun's
-  // pre-approval is recorded once the banks answered the team.
-  const answered = seed.status === "accepted" || seed.status === "pre_approved";
   if (seed.paused) {
     pausedAt = subtractWorkingSeconds(NOW, 4 * H + 40 * MIN, CAL);
-    const dueBeforePause = addWorkingSeconds(pausedAt, seed.remaining, CAL);
+    const dueBeforePause = addWorkingSeconds(pausedAt, seed.remaining!, CAL);
     submittedAt = subtractWorkingSeconds(dueBeforePause, POLICY.budgetSeconds, CAL);
     dueAt = null;
+  } else if (seed.ageWorkingHours !== undefined) {
+    submittedAt = subtractWorkingSeconds(NOW, seed.ageWorkingHours * H, CAL);
+    dueAt = addWorkingSeconds(submittedAt, POLICY.budgetSeconds, CAL);
   } else {
-    dueAt = addWorkingSeconds(NOW, seed.remaining, CAL);
+    dueAt = addWorkingSeconds(NOW, seed.remaining!, CAL);
     submittedAt = subtractWorkingSeconds(dueAt, POLICY.budgetSeconds, CAL);
   }
+  // The moves mortgage_move_stage() would have made (0158): the first onto a
+  // stage that stops the clock (Accepted) stopped it for good; Disbursed closes the file.
+  const moves = stageTimes(seed, submittedAt);
+  const stoppedAt = moves[STOPS_CLOCK_FROM - 1] ?? null;
+  const closedAt = seed.stage === CLOSES_FILE ? moves.at(-1)! : null;
 
   requests.push({
     id: requestId,
     reference: ref(seed.ref),
     service: "pre_approval",
-    status: seed.status,
+    // The insert trigger (0158) would make it open anyway; the stage says where it stands.
+    status: "open",
+    stage_id: stageId(seed.stage),
     full_name: seed.name,
     date_of_birth: seed.dob,
     mobile_e164: seed.mobile,
@@ -386,7 +425,8 @@ for (const seed of PRE_APPROVALS) {
     sla_due_at: dueAt,
     sla_paused_at: pausedAt,
     sla_remaining_seconds: seed.paused ? seed.remaining : null,
-    ...(answered ? answeredShape(seed, submittedAt, owner?.id ?? null) : {}),
+    sla_stopped_at: stoppedAt,
+    closed_at: closedAt,
     // A sample's clock counts as already alerted, so the SLA tick emails nobody about it.
     sla_risk_notified_at: DEMO ? submittedAt : null,
     sla_breach_notified_at: DEMO ? submittedAt : null,
@@ -404,9 +444,18 @@ for (const seed of PRE_APPROVALS) {
 
   event(requestId, submittedAt, "request.submitted", "applicant", null, { service: "pre_approval", entry_point: seed.entry });
   if (owner) event(requestId, plusMinutes(submittedAt, 17), "owner.assigned", "system", null, { owner_staff_id: owner.id, via: "round_robin" });
-  if (seed.status !== "new" && owner) {
+  if (seed.stage !== "New" && owner) {
     event(requestId, plusMinutes(submittedAt, 19), "document.viewed", "staff", owner.id, { kind: "emirates_id" });
-    event(requestId, plusMinutes(submittedAt, 19), "status.changed", "system", null, { from: "new", to: "in_review", event: "first_document_opened" });
+  }
+  if (owner) {
+    // One stage.changed per move, as mortgage_transition() writes it.
+    moves.forEach((at, i) => {
+      const from = STAGES[i]!;
+      const to = STAGES[i + 1]!;
+      event(requestId, at, "stage.changed", "staff", owner.id, raw(
+        `jsonb_build_object('from', ${lit(from)}, 'to', ${lit(to)}, 'from_stage_id', ${stageId(from).sql}, 'to_stage_id', ${stageId(to).sql}, 'reopened', false)`,
+      ));
+    });
   }
 
   const kinds = DOCUMENT_SETS[seed.employment];
@@ -480,8 +529,8 @@ for (const seed of PRE_APPROVALS) {
         requested_at: pausedAt,
         access_link_id: linkId,
       });
+      // The file stays on its stage; only the clock pauses (0158).
       event(requestId, pausedAt, "reupload.requested", "staff", owner.id, { kind, reason: "period_incomplete" });
-      event(requestId, pausedAt, "status.changed", "staff", owner.id, { from: "in_review", to: "awaiting_applicant", event: "reupload_requested" });
     }
   });
 
@@ -490,15 +539,6 @@ for (const seed of PRE_APPROVALS) {
     event(requestId, minutesAgo(11), "document.viewed", "staff", owner.id, { kind: "salary_certificate" });
   }
 
-  if (answered && owner) {
-    const { acceptedAt, decidedAt } = answeredTimes(submittedAt);
-    event(requestId, acceptedAt, "status.changed", "staff", owner.id, { from: "in_review", to: "accepted", event: "application_accepted" });
-    event(requestId, acceptedAt, "application.accepted", "staff", owner.id);
-    if (seed.status === "pre_approved") {
-      event(requestId, decidedAt, "status.changed", "staff", owner.id, { from: "accepted", to: "pre_approved", event: "pre_approved" });
-      event(requestId, decidedAt, "decision.pre_approved", "staff", owner.id, { note: PRE_APPROVAL_NOTE });
-    }
-  }
 }
 
 // ── Consultancy (C1, C6) ────────────────────────────────────────

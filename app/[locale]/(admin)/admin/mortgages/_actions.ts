@@ -65,6 +65,7 @@ export async function loadQueue(
       owner: params.owner ?? DEFAULT_QUEUE_PARAMS.owner,
       page: String(params.page ?? 1),
       risk: params.risk ? "1" : undefined,
+      stage: params.stage ?? undefined,
     });
     const { policy } = await loadMortgageSettings(s.supabase);
     const result = await listQueue(s.supabase, { ...view, q: String(q ?? "").slice(0, 100) }, {

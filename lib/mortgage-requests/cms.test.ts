@@ -87,7 +87,7 @@ const clock = (state: SlaStatus["state"], remainingSeconds: number): SlaStatus =
 
 const row = (o: Partial<Orderable>): Orderable => ({
   service: "pre_approval",
-  status: "in_review",
+  status: "open",
   submittedAt: "2026-09-22T06:00:00Z",
   sla: null,
   bookedAt: null,
@@ -124,12 +124,11 @@ describe("the promise-due order (SPEC §4.3)", () => {
     ]);
   });
 
-  it("files statuses under the designed tabs", () => {
-    expect(inTab("awaiting_applicant", "awaiting")).toBe(true);
-    expect(inTab("consultation_booked", "contacted_booked")).toBe(true);
-    expect(inTab("completed", "open")).toBe(false);
-    expect(inTab("completed", "closed")).toBe(true);
-    expect(inTab("new", "open")).toBe(true);
+  it("files requests under Open or Closed by whether they are closed (0158)", () => {
+    expect(inTab({ closed: false }, "open")).toBe(true);
+    expect(inTab({ closed: false }, "closed")).toBe(false);
+    expect(inTab({ closed: true }, "closed")).toBe(true);
+    expect(inTab({ closed: true }, "open")).toBe(false);
   });
 
   it("searches name, reference with or without BZM-, and the mobile's last digits", () => {
@@ -229,7 +228,15 @@ describe("the CMS copy", () => {
 describe("the queue's URL", () => {
   it("round-trips a view, leaving defaults out", () => {
     expect(queueQuery(DEFAULT_QUEUE_PARAMS)).toBe("");
-    const view = { tab: "in_review", service: "pre_approval", owner: "unassigned", page: 2, risk: true, view: "list" } as const;
+    const view = {
+      tab: "closed",
+      service: "pre_approval",
+      owner: "unassigned",
+      page: 2,
+      risk: true,
+      view: "list",
+      stage: "3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c",
+    } as const;
     expect(parseQueueParams(Object.fromEntries(new URLSearchParams(queueQuery(view).slice(1))))).toEqual(view);
     const board = { ...DEFAULT_QUEUE_PARAMS, service: "consultancy", view: "board" } as const;
     expect(queueQuery(board)).toBe("?service=consultancy&view=board");
@@ -237,7 +244,9 @@ describe("the queue's URL", () => {
   });
 
   it("falls back to the defaults for anything it doesn't know", () => {
-    expect(parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes", view: "gantt" })).toEqual(
+    expect(
+      parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes", view: "gantt", stage: "Valuation" }),
+    ).toEqual(
       DEFAULT_QUEUE_PARAMS,
     );
     expect(parseQueueParams({ owner: "3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c" }).owner).toBe("3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c");
@@ -340,16 +349,23 @@ describe("activity lines (00-foundations §11)", () => {
     }
   });
 
-  it("words accepting and the outcome, and drops the retired bank steps (0156)", () => {
-    expect(describeEvent(event("application.accepted", {}, RASHID), ctx)).toMatchObject({
-      text: "Rashid accepted the application",
-      sub: "Ready to share with the partner banks",
+  it("words a stage move and a reopening (0158), and drops the retired steps", () => {
+    expect(describeEvent(event("stage.changed", { from: "In Review", to: "Valuation" }, RASHID), ctx)).toMatchObject({
+      text: "Rashid moved it to Valuation",
+      sub: "From In Review",
     });
+    expect(describeEvent(event("stage.changed", { from: "Accepted", to: "Accepted", reopened: true }, RASHID), ctx)?.text).toBe(
+      "Rashid reopened it at Accepted",
+    );
+    // Its status.changed twin is quiet: the stage line says it.
+    expect(describeEvent(event("status.changed", { from: "declined", to: "open", event: "stage_changed" }), ctx)).toBeNull();
+    // 0156's pre-approval line still reads, with its note.
     expect(describeEvent(event("decision.pre_approved", { note: "FAB, AED 2.1m" }, RASHID), ctx)).toMatchObject({
       text: "Rashid marked it pre-approved",
       sub: "FAB, AED 2.1m",
     });
-    expect(describeEvent(event("decision.pre_approved", {}, RASHID), ctx)?.sub).toBeUndefined();
+    // 0156's acceptance line reads as nothing now; the stage move replaces it.
+    expect(describeEvent(event("application.accepted", {}, RASHID), ctx)).toBeNull();
     // The activity log is append-only, so files that went to the banks before 0156 keep these lines; they read as nothing.
     for (const type of ["bank.package_sent", "bank.package_opened", "bank.reminder_sent", "bank.response_recorded"]) {
       expect(describeEvent(event(type, { bank: "FAB", label: "FAB" }, RASHID), ctx)).toBeNull();

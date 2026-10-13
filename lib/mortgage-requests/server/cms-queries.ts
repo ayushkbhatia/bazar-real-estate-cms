@@ -1,7 +1,8 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { allRows } from "@/lib/salesforce/listings/paginate";
-import { BOARD_CLOSED_LIMIT, BOARD_COLUMNS, type BoardService } from "../board";
+import { BOARD_CLOSED_LIMIT, columnKeyOf, CONSULTANCY_COLUMNS, type BoardService } from "../board";
+import { DECLINED_KEY, loadStages, type MortgageStage } from "../stages";
 import { buildActivity, staffIdsIn, type ActivityLine, type ContactInput, type EventInput } from "../activity";
 import {
   ageOn,
@@ -23,7 +24,6 @@ import { isDeclineReason, type DeclineReason } from "../decline";
 import { DOCUMENT_SETS, type DocKind } from "../documents";
 import { formatDayTime, formatMobile, formatTime } from "../format";
 import {
-  CLOSED_STATUSES,
   inTab,
   isAtRisk,
   matchesSearch,
@@ -100,6 +100,10 @@ export type QueueRow = {
   service: Service;
   profile: string;
   status: RequestStatus;
+  /** A Fast Pre-Approval's stage (0158); null for a consultancy. */
+  stage: { id: string; name: string } | null;
+  /** Declined, completed, or on a closing stage. */
+  closed: boolean;
   docs: DocBarState[] | null;
   sla: SlaStatus | null;
   /** The promise column of a consultancy row: "Waiting 12m", "Replied on WhatsApp 11:20", "Wed 23 Sep · 11:30". */
@@ -125,6 +129,8 @@ export type QueueResult = {
   };
   /** The at-risk banner: every running pre-approval with 4 hours or less left, whatever the filters. */
   atRisk: { reference: string; fullName: string; remaining: string }[];
+  /** The stage filter's options, first to last, with their open files. */
+  stages: { id: string; name: string; count: number }[];
 };
 
 type QueueDbRow = SlaFields & {
@@ -141,6 +147,7 @@ type QueueDbRow = SlaFields & {
   closed_at: string | null;
   updated_at: string;
   site_locale: "en" | "ar" | null;
+  stage_id: string | null;
   owner: { display_name: string } | null;
   mortgage_documents: { kind: DocKind; state: "to_review" | "accepted" | "reupload_requested" }[];
   mortgage_contact_attempts: Pick<ContactInput, "channel" | "outcome" | "occurred_at">[];
@@ -149,7 +156,7 @@ type QueueDbRow = SlaFields & {
 
 const QUEUE_COLUMNS = `
   id, reference, service, status, full_name, mobile_e164, residency, employment_type,
-  owner_staff_id, submitted_at, closed_at, updated_at, site_locale,
+  owner_staff_id, submitted_at, closed_at, updated_at, site_locale, stage_id,
   sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at,
   owner:staff!mortgage_requests_owner_staff_id_fkey(display_name),
   mortgage_documents(kind, state),
@@ -219,7 +226,7 @@ type Prepared = {
   lastContactAt: string | null;
 };
 
-function prepare(r: QueueDbRow, now: Date, policy: SlaPolicy): Prepared {
+function prepare(r: QueueDbRow, now: Date, policy: SlaPolicy, stages: ReadonlyMap<string, MortgageStage>): Prepared {
   const sla = r.service === "pre_approval" ? slaStatus(r, now, policy) : null;
   const residencyShort = r.residency === "uae_national" ? t("residency.uaeNational") : t("residency.expatShort");
   return {
@@ -230,6 +237,8 @@ function prepare(r: QueueDbRow, now: Date, policy: SlaPolicy): Prepared {
       service: r.service,
       profile: t("c1.profile", { residency: residencyShort, employment: t(EMPLOYMENT_KEY[r.employment_type]) }),
       status: r.status,
+      stage: r.stage_id ? { id: r.stage_id, name: stages.get(r.stage_id)?.name ?? "" } : null,
+      closed: r.closed_at !== null || r.status === "declined" || r.status === "completed",
       docs: docBar(r),
       sla,
       consult: consultSummary(r, now),
@@ -274,29 +283,47 @@ function readQueueRows(db: SupabaseClient): Promise<QueueDbRow[]> {
   );
 }
 
+/** Every request, prepared, with the stages they sit on. */
+async function prepareAll(db: SupabaseClient, now: Date, policy: SlaPolicy) {
+  const [rows, stages] = await Promise.all([readQueueRows(db), loadStages(db)]);
+  const byId = new Map(stages.map((s) => [s.id, s]));
+  return { all: rows.map((r) => prepare(r, now, policy, byId)), stages };
+}
+
+/** The breadcrumbs' "new": consultancy requests not yet contacted, and pre-approvals on the first stage. */
+function newCount(all: readonly Prepared[], stages: readonly MortgageStage[]): number {
+  const first = stages[0]?.id;
+  return all.filter((p) => !p.row.closed && (p.row.status === "new" || (first !== undefined && p.row.stage?.id === first))).length;
+}
+
+function matchesStage(p: Prepared, stage: string | null): boolean {
+  return stage === null || p.row.stage?.id === stage;
+}
+
 /** C1's data for one view (SPEC §4.3; docs/mortgage/cms/C1 "Data"). */
 export async function listQueue(
   db: SupabaseClient,
   params: QueueParams & { q: string },
   ctx: { now: Date; meId: string; policy: SlaPolicy },
 ): Promise<QueueResult> {
-  const all = (await readQueueRows(db)).map((r) => prepare(r, ctx.now, ctx.policy));
-  const open = all.filter((p) => !CLOSED_STATUSES.includes(p.row.status));
+  const { all, stages } = await prepareAll(db, ctx.now, ctx.policy);
+  const open = all.filter((p) => !p.row.closed);
 
-  // Owner and search narrow everything below; tab and service are the axes the counts are for.
+  // Owner, search and stage narrow everything below; tab and service are the axes the counts are for.
   const base = all.filter(
     (p) =>
       matchesOwner(p, params.owner, ctx.meId) &&
+      matchesStage(p, params.stage) &&
       matchesSearch({ fullName: p.row.fullName, reference: p.row.reference, mobile: p.mobileE164 }, params.q),
   );
 
   const tabs = Object.fromEntries(
-    QUEUE_TABS.map((tab) => [tab, base.filter((p) => matchesService(p, params.service) && inTab(p.row.status, tab)).length]),
+    QUEUE_TABS.map((tab) => [tab, base.filter((p) => matchesService(p, params.service) && inTab(p.row, tab)).length]),
   ) as Record<QueueTab, number>;
   const services = Object.fromEntries(
     (["all", "pre_approval", "consultancy"] as const).map((s) => [
       s,
-      base.filter((p) => matchesService(p, s) && inTab(p.row.status, params.tab)).length,
+      base.filter((p) => matchesService(p, s) && inTab(p.row, params.tab)).length,
     ]),
   ) as Record<ServiceFilter, number>;
 
@@ -310,17 +337,12 @@ export async function listQueue(
     }));
 
   const visible = base.filter(
-    (p) => matchesService(p, params.service) && inTab(p.row.status, params.tab) && (!params.risk || isAtRisk(p.row.sla)),
+    (p) => matchesService(p, params.service) && inTab(p.row, params.tab) && (!params.risk || isAtRisk(p.row.sla)),
   );
   if (params.tab === "closed") {
     visible.sort((a, b) => (b.closedAt ?? b.submittedAt).localeCompare(a.closedAt ?? a.submittedAt));
   } else {
-    visible.sort((a, b) =>
-      promiseDueCompare(
-        { service: a.row.service, status: a.row.status, submittedAt: a.submittedAt, sla: a.row.sla, bookedAt: a.bookedAt, lastContactAt: a.lastContactAt },
-        { service: b.row.service, status: b.row.status, submittedAt: b.submittedAt, sla: b.row.sla, bookedAt: b.bookedAt, lastContactAt: b.lastContactAt },
-      ),
-    );
+    visible.sort(byPromise);
   }
 
   const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
@@ -334,10 +356,18 @@ export async function listQueue(
       tabs,
       services,
       open: open.length,
-      new: all.filter((p) => p.row.status === "new").length,
+      new: newCount(all, stages),
     },
     atRisk,
+    stages: stages.map((s) => ({ id: s.id, name: s.name, count: open.filter((p) => p.row.stage?.id === s.id).length })),
   };
+}
+
+function byPromise(a: Prepared, b: Prepared): number {
+  return promiseDueCompare(
+    { service: a.row.service, status: a.row.status, submittedAt: a.submittedAt, sla: a.row.sla, bookedAt: a.bookedAt, lastContactAt: a.lastContactAt },
+    { service: b.row.service, status: b.row.status, submittedAt: b.submittedAt, sla: b.row.sla, bookedAt: b.bookedAt, lastContactAt: b.lastContactAt },
+  );
 }
 
 // ── C1 · the board ───────────────────────────────────────────────
@@ -349,12 +379,21 @@ export type BoardCard = QueueRow & {
   /** The owner or the Head: only they may move it (`mayActOn`; the database checks again). */
   canAct: boolean;
   firstName: string;
+  /** "No bank made an offer" is offered once the team has answered (the clock stopped by a stage). */
+  answered: boolean;
 };
 
+/**
+ * A board column. A Fast Pre-Approval lane has one per stage (its key the
+ * stage's id) and Declined; a consultancy lane one per status.
+ */
 export type BoardColumn = {
-  status: RequestStatus;
+  key: string;
+  label: string;
+  /** Closed files: newest first, only the newest `BOARD_CLOSED_LIMIT` shown. */
+  closing: boolean;
   cards: BoardCard[];
-  /** Every file in the column; a closed column shows only the newest `BOARD_CLOSED_LIMIT`. */
+  /** Every file in the column. */
   total: number;
 };
 
@@ -369,18 +408,18 @@ export type BoardResult = {
 };
 
 /**
- * C1's board (Bazar, 9 Oct 2026): every open file of the service(s) asked
- * for, one column per status, in the list's "promise due" order; and the
- * newest closed files. The list's owner filter and search apply; its tabs
- * don't, since the columns are the tabs.
+ * C1's board (Bazar, 9 and 13 Oct 2026): a Fast Pre-Approval lane with a
+ * column per stage and Declined, and a consultancy lane with a column per
+ * status, in the list's "promise due" order; closed columns show their newest
+ * files. The list's owner filter and search apply; its tabs don't.
  */
 export async function listBoard(
   db: SupabaseClient,
   params: Pick<QueueParams, "service" | "owner" | "risk"> & { q: string },
   ctx: { now: Date; meId: string; role: "head" | "adviser"; myName: string; policy: SlaPolicy },
 ): Promise<BoardResult> {
-  const all = (await readQueueRows(db)).map((r) => prepare(r, ctx.now, ctx.policy));
-  const open = all.filter((p) => !CLOSED_STATUSES.includes(p.row.status));
+  const { all, stages } = await prepareAll(db, ctx.now, ctx.policy);
+  const open = all.filter((p) => !p.row.closed);
   const base = all.filter(
     (p) =>
       matchesOwner(p, params.owner, ctx.meId) &&
@@ -393,42 +432,52 @@ export async function listBoard(
     updatedAt: p.updatedAt,
     canAct: ctx.role === "head" || (p.ownerId !== null && p.ownerId === ctx.meId),
     firstName: firstNameOf(p.row.fullName),
+    answered: p.row.sla?.stopped ?? false,
   });
+  const column = (service: BoardService, key: string, label: string, closing: boolean): BoardColumn => {
+    const here = base.filter((p) => p.row.service === service && columnKeyOf(p.row) === key);
+    if (closing) {
+      here.sort((a, b) => (b.closedAt ?? b.submittedAt).localeCompare(a.closedAt ?? a.submittedAt));
+      return { key, label, closing, total: here.length, cards: here.slice(0, BOARD_CLOSED_LIMIT).map(card) };
+    }
+    here.sort(byPromise);
+    return { key, label, closing, total: here.length, cards: here.map(card) };
+  };
   const services: BoardService[] = params.service === "all" ? ["pre_approval", "consultancy"] : [params.service];
   const lanes = services.map((service) => ({
     service,
-    columns: BOARD_COLUMNS[service].map((status) => {
-      const here = base.filter((p) => p.row.service === service && p.row.status === status);
-      if (CLOSED_STATUSES.includes(status)) {
-        here.sort((a, b) => (b.closedAt ?? b.submittedAt).localeCompare(a.closedAt ?? a.submittedAt));
-        return { status, total: here.length, cards: here.slice(0, BOARD_CLOSED_LIMIT).map(card) };
-      }
-      here.sort((a, b) =>
-        promiseDueCompare(
-          { service: a.row.service, status: a.row.status, submittedAt: a.submittedAt, sla: a.row.sla, bookedAt: a.bookedAt, lastContactAt: a.lastContactAt },
-          { service: b.row.service, status: b.row.status, submittedAt: b.submittedAt, sla: b.row.sla, bookedAt: b.bookedAt, lastContactAt: b.lastContactAt },
-        ),
-      );
-      return { status, total: here.length, cards: here.map(card) };
-    }),
+    columns:
+      service === "pre_approval"
+        ? [
+            ...stages.map((s) => column(service, s.id, s.name, s.closesFile)),
+            column(service, DECLINED_KEY, t("status.declined"), true),
+          ]
+        : CONSULTANCY_COLUMNS.map((status) => column(service, status, t(CONSULT_LABEL[status]), status === "completed")),
   }));
   const atRisk = open
     .filter((p) => isAtRisk(p.row.sla))
     .sort((a, b) => (a.row.sla!.remainingSeconds ?? 0) - (b.row.sla!.remainingSeconds ?? 0))
     .map((p) => ({ reference: p.row.reference, fullName: p.row.fullName, remaining: formatDuration(p.row.sla!.remainingSeconds ?? 0) }));
-  const tabs = Object.fromEntries(QUEUE_TABS.map((tab) => [tab, base.filter((p) => inTab(p.row.status, tab)).length])) as Record<QueueTab, number>;
+  const tabs = Object.fromEntries(QUEUE_TABS.map((tab) => [tab, base.filter((p) => inTab(p.row, tab)).length])) as Record<QueueTab, number>;
   const counts = {
     tabs,
     services: {
-      all: base.filter((p) => !CLOSED_STATUSES.includes(p.row.status)).length,
-      pre_approval: base.filter((p) => p.row.service === "pre_approval" && !CLOSED_STATUSES.includes(p.row.status)).length,
-      consultancy: base.filter((p) => p.row.service === "consultancy" && !CLOSED_STATUSES.includes(p.row.status)).length,
+      all: base.filter((p) => !p.row.closed).length,
+      pre_approval: base.filter((p) => p.row.service === "pre_approval" && !p.row.closed).length,
+      consultancy: base.filter((p) => p.row.service === "consultancy" && !p.row.closed).length,
     },
     open: open.length,
-    new: all.filter((p) => p.row.status === "new").length,
+    new: newCount(all, stages),
   };
   return { lanes, counts, atRisk, myFirstName: firstNameOf(ctx.myName) };
 }
+
+const CONSULT_LABEL: Record<(typeof CONSULTANCY_COLUMNS)[number], string> = {
+  new: "status.new",
+  contacted: "status.contacted",
+  consultation_booked: "status.consultationBooked",
+  completed: "status.completed",
+};
 
 // ── C2 / C6 · one request ────────────────────────────────────────
 
@@ -466,6 +515,11 @@ export type RequestFile = {
   reference: string;
   service: Service;
   status: RequestStatus;
+  /** A Fast Pre-Approval's stage (0158) and every stage it can move to, first to last. */
+  stage: { id: string; name: string } | null;
+  stages: { id: string; name: string; closesFile: boolean }[];
+  /** Declined, completed, or on a closing stage. */
+  closed: boolean;
   /** The optimistic-concurrency token every action sends back. */
   updatedAt: string;
   fullName: string;
@@ -503,8 +557,8 @@ export type RequestFile = {
   /** Once decided: what, why (a decline, D19), by whom and when, and the message the applicant got. */
   decision: {
     kind: "pre_approved" | "declined";
-    /** The status it was decided from: a decline can come before acceptance (D19). */
-    from: RequestStatus | null;
+    /** The stage it was declined from (D19), as it was named then. */
+    fromStage: string | null;
     reason: DeclineReason | null;
     message: string | null;
     decidedAt: string;
@@ -514,9 +568,10 @@ export type RequestFile = {
   me: { id: string; role: TeamRole };
   /**
    * `withdrawConsent` isn't `act`: an applicant can withdraw after a decision
-   * too (SR-17).
+   * too (SR-17). `move` isn't either: the owner or the Head moves a file to
+   * any stage, a closed or declined one included (0158).
    */
-  can: { act: boolean; reassign: boolean; claim: boolean; withdrawConsent: boolean };
+  can: { act: boolean; reassign: boolean; claim: boolean; withdrawConsent: boolean; move: boolean };
 };
 
 type RequestDbRow = SlaFields & {
@@ -536,6 +591,7 @@ type RequestDbRow = SlaFields & {
   first_contact_at: string | null;
   closed_at: string | null;
   updated_at: string;
+  stage_id: string | null;
   decision: "pre_approved" | "declined" | null;
   decline_reason: string | null;
   decision_message: string | null;
@@ -570,7 +626,7 @@ export async function getRequestFile(
   const { data: found, error } = await db
     .from("mortgage_requests")
     .select(
-      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
+      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, stage_id, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
     )
     .eq("reference", reference)
     .maybeSingle();
@@ -729,13 +785,18 @@ export async function getRequestFile(
 
   const role = ctx.me.role;
   const isOwner = r.owner_staff_id === ctx.me.id;
-  const closed = CLOSED_STATUSES.includes(r.status);
+  const closed = r.closed_at !== null || r.status === "declined" || r.status === "completed";
+  const stages = r.service === "pre_approval" ? await loadStages(db) : [];
+  const stage = r.stage_id ? (stages.find((x) => x.id === r.stage_id) ?? null) : null;
 
   return {
     id: r.id,
     reference: r.reference,
     service: r.service,
     status: r.status,
+    stage: stage ? { id: stage.id, name: stage.name } : null,
+    stages: stages.map((x) => ({ id: x.id, name: x.name, closesFile: x.closesFile })),
+    closed,
     updatedAt: r.updated_at,
     fullName: r.full_name,
     firstName: r.full_name.trim().split(/\s+/)[0] ?? r.full_name,
@@ -781,9 +842,10 @@ export async function getRequestFile(
       r.decision && r.decided_at
         ? {
             kind: r.decision,
-            from:
-              (eventRows.findLast((e) => e.type === "status.changed" && e.data.to === r.decision)?.data.from as RequestStatus | undefined) ??
-              null,
+            fromStage: (() => {
+              const declined = eventRows.find((e) => e.type === "decision.declined")?.data.stage;
+              return typeof declined === "string" ? declined : null;
+            })(),
             reason: isDeclineReason(r.decline_reason) ? r.decline_reason : null,
             message: r.decision_message,
             decidedAt: r.decided_at,
@@ -797,6 +859,7 @@ export async function getRequestFile(
       reassign: role === "head" && !closed,
       claim: !closed && r.owner_staff_id === null,
       withdrawConsent: role === "head" || isOwner,
+      move: r.service === "pre_approval" && (role === "head" || isOwner),
     },
   };
 }

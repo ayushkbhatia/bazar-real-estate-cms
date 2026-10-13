@@ -82,7 +82,7 @@ test("C4 → W8 → C2: a re-upload goes out, comes back, and the file is in rev
   await page.waitForURL(new RegExp(`/admin/mortgages/${PRIYA}$`));
   // The local stack sends no email: the answer says the link didn't reach her (SR-25).
   await expect(page.getByText("The request is recorded, but this site isn't sending email, so the link didn't reach Priya.")).toBeVisible();
-  await expect(page.getByText("Awaiting applicant")).toBeVisible();
+  // The file stays on its stage (0158); the promise pauses while Priya is asked.
   await expect(page.getByText(/^Paused/)).toBeVisible();
 
   // The link's token is only in the email: point the new link at one of ours.
@@ -126,9 +126,8 @@ test("C4 → W8 → C2: a re-upload goes out, comes back, and the file is in rev
   await expect(w8.getByText(PRIYA)).toHaveCount(0);
   await applicant.close();
 
-  // C2: back in review, the promise running again.
+  // C2: the promise running again.
   await page.reload();
-  await expect(page.getByText("Awaiting applicant")).toHaveCount(0);
   await expect(page.getByText(/^Paused/)).toHaveCount(0);
   await expect(page.getByText(/\d+h \d{2}m left|\d+m left/).first()).toBeVisible();
   await expect(page.getByText("Priya sent Last 3 months' bank statements").first()).toBeVisible();

@@ -1,23 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { BOARD_COLUMNS, boardMove } from "./board";
+import { boardMove, columnKeyOf, CONSULTANCY_COLUMNS, movesOnBoard } from "./board";
+import { DECLINED_KEY } from "./stages";
 import { nextStatus, TRANSITIONS, type MortgageStatus } from "./state";
 
+const NEW = "11111111-1111-4111-8111-111111111111";
+const VALUATION = "55555555-5555-4555-8555-555555555555";
+const DISBURSED = "88888888-8888-4888-8888-888888888888";
+
 describe("the queue board's drops", () => {
-  it("lays each service out in the order a file travels", () => {
-    expect(BOARD_COLUMNS.pre_approval).toEqual(["new", "in_review", "awaiting_applicant", "accepted", "pre_approved", "declined"]);
-    expect(BOARD_COLUMNS.consultancy).toEqual(["new", "contacted", "consultation_booked", "completed"]);
+  it("lays the consultancy lane out in the order a request travels", () => {
+    expect(CONSULTANCY_COLUMNS).toEqual(["new", "contacted", "consultation_booked", "completed"]);
   });
 
-  it("maps each forward Fast Pre-Approval move to the action that makes it", () => {
-    expect(boardMove("pre_approval", "new", "in_review")).toEqual({ kind: "start_review" });
-    expect(boardMove("pre_approval", "in_review", "awaiting_applicant")).toEqual({ kind: "request_reupload" });
-    expect(boardMove("pre_approval", "new", "awaiting_applicant")).toEqual({ kind: "request_reupload" });
-    expect(boardMove("pre_approval", "awaiting_applicant", "in_review")).toEqual({ kind: "cancel_reupload" });
-    expect(boardMove("pre_approval", "in_review", "accepted")).toEqual({ kind: "accept" });
-    expect(boardMove("pre_approval", "accepted", "pre_approved")).toEqual({ kind: "pre_approve" });
-    for (const from of ["new", "in_review", "awaiting_applicant", "accepted"] as const) {
-      expect(boardMove("pre_approval", from, "declined")).toEqual({ kind: "decline" });
+  it("puts a Fast Pre-Approval in its stage's column, or Declined", () => {
+    expect(columnKeyOf({ service: "pre_approval", status: "open", stage: { id: VALUATION } })).toBe(VALUATION);
+    expect(columnKeyOf({ service: "pre_approval", status: "declined", stage: { id: VALUATION } })).toBe(DECLINED_KEY);
+    expect(columnKeyOf({ service: "consultancy", status: "contacted", stage: null })).toBe("contacted");
+  });
+
+  it("moves a Fast Pre-Approval freely: any stage to any stage, back, forward, out of a closing stage or Declined", () => {
+    expect(boardMove("pre_approval", NEW, VALUATION)).toEqual({ kind: "move_stage", stageId: VALUATION });
+    expect(boardMove("pre_approval", VALUATION, NEW)).toEqual({ kind: "move_stage", stageId: NEW });
+    expect(boardMove("pre_approval", DISBURSED, VALUATION)).toEqual({ kind: "move_stage", stageId: VALUATION });
+    expect(boardMove("pre_approval", DECLINED_KEY, NEW)).toEqual({ kind: "move_stage", stageId: NEW });
+    for (const from of [NEW, VALUATION, DISBURSED]) {
+      expect(boardMove("pre_approval", from, DECLINED_KEY)).toEqual({ kind: "decline" });
     }
+    expect(boardMove("pre_approval", VALUATION, VALUATION)).toEqual({ kind: "same" });
+    expect(boardMove("pre_approval", DECLINED_KEY, DECLINED_KEY)).toEqual({ kind: "same" });
   });
 
   it("maps each forward consultancy move", () => {
@@ -26,51 +36,36 @@ describe("the queue board's drops", () => {
     expect(boardMove("consultancy", "consultation_booked", "completed")).toEqual({ kind: "held" });
   });
 
-  it("refuses what SPEC §2.4 doesn't allow, and says why", () => {
-    expect(boardMove("pre_approval", "declined", "in_review")).toEqual({ kind: "illegal", why: "closed" });
-    expect(boardMove("pre_approval", "pre_approved", "accepted")).toEqual({ kind: "illegal", why: "closed" });
-    expect(boardMove("pre_approval", "accepted", "in_review")).toEqual({ kind: "illegal", why: "backwards" });
-    expect(boardMove("pre_approval", "in_review", "new")).toEqual({ kind: "illegal", why: "backwards" });
-    expect(boardMove("pre_approval", "new", "accepted")).toEqual({ kind: "illegal", why: "needsReview" });
-    expect(boardMove("pre_approval", "in_review", "pre_approved")).toEqual({ kind: "illegal", why: "needsAccept" });
-    expect(boardMove("pre_approval", "awaiting_applicant", "accepted")).toEqual({ kind: "illegal", why: "reuploadOpen" });
+  it("refuses the consultancy moves SPEC §2.4 doesn't allow, and says why", () => {
     expect(boardMove("consultancy", "new", "consultation_booked")).toEqual({ kind: "illegal", why: "needsContact" });
     expect(boardMove("consultancy", "contacted", "completed")).toEqual({ kind: "illegal", why: "needsBooking" });
     expect(boardMove("consultancy", "completed", "contacted")).toEqual({ kind: "illegal", why: "closed" });
     expect(boardMove("consultancy", "consultation_booked", "contacted")).toEqual({ kind: "illegal", why: "backwards" });
-    expect(boardMove("pre_approval", "in_review", "in_review")).toEqual({ kind: "same" });
   });
 
-  it("only offers moves the transition table can make (state.ts mirrors mortgage_transition)", () => {
-    // Every drop that isn't refused must land where some event from `from` leads.
-    const reach = (service: "pre_approval" | "consultancy", from: MortgageStatus): Set<MortgageStatus> => {
+  it("finishes stage moves and declines on the board; booking opens the file", () => {
+    expect(movesOnBoard({ kind: "move_stage", stageId: NEW })).toBe(true);
+    expect(movesOnBoard({ kind: "decline" })).toBe(true);
+    expect(movesOnBoard({ kind: "book" })).toBe(false);
+  });
+
+  it("only offers consultancy moves the transition table can make (state.ts mirrors mortgage_transition)", () => {
+    const reach = (from: MortgageStatus): Set<MortgageStatus> => {
       const out = new Set<MortgageStatus>();
-      for (const rule of TRANSITIONS.filter((r) => r.service === service && r.from.includes(from))) {
-        try {
-          out.add(
-            nextStatus(service, from, rule.event, rule.actor, {
-              outstandingReuploads: 0,
-              acceptedDocuments: 4,
-              requiredDocuments: 4,
-              consentOnFile: true,
-            }).to,
-          );
-        } catch {
-          // A guarded move that these facts don't open.
-        }
+      for (const rule of TRANSITIONS.filter((r) => r.service === "consultancy" && r.from.includes(from))) {
+        out.add(nextStatus("consultancy", from, rule.event, rule.actor, {}).to);
       }
       return out;
     };
-    for (const service of ["pre_approval", "consultancy"] as const) {
-      for (const from of BOARD_COLUMNS[service]) {
-        for (const to of BOARD_COLUMNS[service]) {
-          const move = boardMove(service, from, to);
-          if (move.kind === "same" || move.kind === "illegal") continue;
-          // A re-upload from New first moves the file to In review, as the action does.
-          const start = from === "new" && move.kind === "request_reupload" ? "in_review" : from;
-          expect(reach(service, start as MortgageStatus).has(to as MortgageStatus), `${service}: ${from} → ${to}`).toBe(true);
-        }
+    for (const from of CONSULTANCY_COLUMNS) {
+      for (const to of CONSULTANCY_COLUMNS) {
+        const move = boardMove("consultancy", from, to);
+        if (move.kind === "same" || move.kind === "illegal") continue;
+        expect(reach(from).has(to), `${from} → ${to}`).toBe(true);
       }
     }
+    // And the board's stage moves are ones the transition table makes, from open and from declined.
+    expect(nextStatus("pre_approval", "open", "stage_changed", "staff").to).toBe("open");
+    expect(nextStatus("pre_approval", "declined", "stage_changed", "staff").to).toBe("open");
   });
 });

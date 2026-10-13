@@ -23,7 +23,6 @@ import { loadMortgageSettings, type LoadedSettings } from "@/lib/mortgage-reques
 import { formatDuration } from "@/lib/mortgage-requests/sla";
 import { cn } from "@/lib/utils";
 import {
-  AcceptApplicationButton,
   ActivityCard,
   BookingCard,
   BookScrollButton,
@@ -38,8 +37,8 @@ import {
   HeldButton,
   InviteButton,
   ReassignDialog,
-  RecordPreApprovalButton,
   RequestDocumentsButton,
+  StageMenu,
   WithdrawConsentButton,
   type BookingDay,
   type Target,
@@ -80,11 +79,10 @@ export default async function MortgageRequestPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { reference } = await params;
-  // The queue board sends a drop that needs this screen here with `?do=`:
-  // "accept" opens Accept application, "pre-approve" opens Mark pre-approved,
-  // "book" goes to the booking card.
+  // The queue board sends a consultancy's Contacted → Booked drop here with
+  // `?do=book`: it goes to the booking card.
   const doParam = (await searchParams).do;
-  const intent = doParam === "accept" || doParam === "pre-approve" || doParam === "book" ? doParam : null;
+  const intent = doParam === "book" ? doParam : null;
   const { user, role, supabase } = await requireMortgageRole();
   const loaded = await loadMortgageSettings(supabase);
   const now = new Date();
@@ -113,8 +111,6 @@ export default async function MortgageRequestPage({
       target={target}
       breadcrumbs={breadcrumbs}
       now={now}
-      startAccept={intent === "accept"}
-      startPreApproval={intent === "pre-approve"}
     />
   );
 }
@@ -127,7 +123,7 @@ function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
   return (
     <Card title={t("c2.decision.title")}>
       <div className="flex flex-wrap items-center gap-2">
-        <StatusPill status={file.status} />
+        <StatusPill status={file.status} stage={file.stage} closed={file.closed} />
         {d.reason ? <span className="text-[12.5px]">{declineReasonLabel(d.reason)}</span> : null}
       </div>
       <p className="mt-1.5 text-[12px] text-bz-muted">
@@ -135,9 +131,7 @@ function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
       </p>
       {d.message ? (
         <>
-          <div className="mt-4 text-[11.5px] text-bz-muted">
-            {file.status === "pre_approved" ? t("c2.decision.note") : t("c2.decision.message", { firstName: file.firstName })}
-          </div>
+          <div className="mt-4 text-[11.5px] text-bz-muted">{t("c2.decision.message", { firstName: file.firstName })}</div>
           <p className="mt-1 text-[12.5px] leading-[1.55] break-words whitespace-pre-line">{d.message}</p>
         </>
       ) : null}
@@ -147,46 +141,25 @@ function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
 
 // ── C2 ───────────────────────────────────────────────────────────
 
-const PRE_STAGES = ["status.new", "status.inReview", "status.accepted", "status.preApproved"];
-const PRE_AT: Partial<Record<RequestFile["status"], number>> = {
-  new: 0,
-  in_review: 1,
-  // CMS-12 proposal: In review stays current while the file waits on the
-  // applicant; the header's pill says so.
-  awaiting_applicant: 1,
-  accepted: 2,
-  pre_approved: 3,
-  declined: 3,
-};
-
 function PreApproval({
   file,
   target,
   breadcrumbs,
   now,
-  startAccept,
-  startPreApproval,
 }: {
   file: RequestFile;
   target: Target;
   breadcrumbs: React.ReactNode;
   now: Date;
-  /** Opened from the queue board's In review → Accepted drop: Accept application starts open. */
-  startAccept: boolean;
-  /** Opened from the board's Accepted → Pre-approved drop: Mark pre-approved starts open. */
-  startPreApproval: boolean;
 }) {
   const accepted = file.documents.filter((d) => d.state === "accepted").length;
   const total = file.documents.length;
   const firstToReview = file.documents.find((d) => d.state === "to_review")?.id;
   const viewer = (kind: string) => `/admin/mortgages/${file.reference}/documents/${kind}`;
-  // A decline takes the place of the next stage from wherever the file was (D19), so the rail
-  // shows the path it took: declined from New reads New · Declined.
-  const reached = file.status === "declined" ? (PRE_AT[file.decision?.from ?? "accepted"] ?? 2) : null;
-  const stages =
-    reached === null ? PRE_STAGES.map((k) => t(k)) : [...PRE_STAGES.slice(0, reached + 1).map((k) => t(k)), t("status.declined")];
-  const decided = !!file.decision;
-  const acceptTitle = accepted < total ? t("c2.docs.accepted", { accepted, total }) : t("common.notOwner");
+  // The rail is the client's stages (0158), the file's own one current. A declined file keeps the
+  // stage it was declined from, so the rail still shows how far it got.
+  const at = Math.max(0, file.stages.findIndex((s) => s.id === file.stage?.id));
+  const declined = file.status === "declined";
 
   return (
     <CmsShell
@@ -197,18 +170,18 @@ function PreApproval({
           {DECLINABLE.includes(file.status) ? (
             <DeclineButton
               target={target}
-              status={file.status}
+              answered={file.sla?.stopped ?? false}
               firstName={file.firstName}
               myFirstName={firstNameOf(file.team.find((m) => m.id === file.me.id)?.name ?? "")}
               elapsed={file.sla?.elapsedSeconds != null ? formatDuration(file.sla.elapsedSeconds) : null}
-              awaiting={file.status === "awaiting_applicant"}
+              awaiting={file.sla?.state === "paused"}
               canAct={file.can.act}
             />
           ) : null}
-          {decided ? null : (
+          {file.closed ? null : (
             <RequestDocumentsButton
               reference={file.reference}
-              canAct={file.can.act && (file.status === "new" || file.status === "in_review" || file.status === "awaiting_applicant")}
+              canAct={file.can.act}
               documents={file.documents.map((d) => ({
                 kind: d.kind,
                 name: t(DOC_LABEL_KEY[d.kind]),
@@ -219,24 +192,7 @@ function PreApproval({
         </>
       }
       primary={
-        // Accepted, the file waits on the banks the team shared it with: its outcome is recorded here.
-        file.status === "accepted" ? (
-          file.can.act ? (
-            <RecordPreApprovalButton target={target} firstName={file.firstName} defaultOpen={startPreApproval} />
-          ) : null
-        ) : decided ? null : (
-          <AcceptApplicationButton
-            enabled={
-              file.can.act && file.status === "in_review" && accepted === total && total > 0 && !!file.consent && !file.consent.withdrawn
-            }
-            why={acceptTitle}
-            target={target}
-            firstName={file.firstName}
-            documents={total}
-            consentGiven={file.consent?.given ?? null}
-            defaultOpen={startAccept}
-          />
-        )
+        file.can.move ? <StageMenu target={target} stages={file.stages} current={file.stage?.id ?? null} declined={declined} /> : null
       }
     >
       <FileRefresher />
@@ -248,14 +204,12 @@ function PreApproval({
         ]}
         right={
           <span className="flex items-center gap-3">
-            {file.status === "awaiting_applicant" || file.status === "accepted" || file.status === "declined" ? (
-              <StatusPill status={file.status} />
-            ) : null}
+            <StatusPill status={file.status} stage={file.stage} closed={file.closed} />
             {file.sla ? <PromiseClock sla={file.sla} width={300} showDue /> : null}
           </span>
         }
       />
-      <StageRail stages={stages} at={reached === null ? (PRE_AT[file.status] ?? 0) : reached + 1} />
+      <StageRail stages={file.stages.map((s) => s.name)} at={at} />
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex min-w-0 flex-col gap-4">

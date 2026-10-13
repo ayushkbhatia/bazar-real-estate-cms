@@ -214,13 +214,15 @@ type RequestClock = {
   email: string;
   locale: string;
   sla_due_at: string | null;
+  sla_paused_at: string | null;
+  sla_stopped_at: string | null;
   sla_remaining_seconds: number | null;
 };
 
 async function readClock(db: SupabaseClient, requestId: string): Promise<RequestClock | null> {
   const { data, error } = await db
     .from("mortgage_requests")
-    .select("status, updated_at, owner_staff_id, full_name, email, locale, sla_due_at, sla_remaining_seconds")
+    .select("status, updated_at, owner_staff_id, full_name, email, locale, sla_due_at, sla_paused_at, sla_stopped_at, sla_remaining_seconds")
     .eq("id", requestId)
     .single();
   return error ? null : (data as RequestClock);
@@ -245,29 +247,17 @@ export async function requestReupload(input: z.input<typeof reuploadInput>): Pro
   if (!admin) return FAILED;
   const b = parsed.data;
 
-  let request = await readClock(s.supabase, b.requestId);
+  const request = await readClock(s.supabase, b.requestId);
   if (!request) return FAILED;
   if (request.updated_at !== b.updatedAt) return refused({ code: "MR409", message: "" }, "mortgage.cms.reupload");
   // The move below is the system's, made with the service role, so the caller's
   // right to act is checked before it rather than only by the request's own
   // function after it (SECURITY-REVIEW SR-12).
   if (!mayActOn(s.role, request.owner_staff_id, s.user.id)) return NOT_ALLOWED;
-  // A reviewer can ask before the owner's first open moved the file on: that
-  // move happens now, as the system's (SPEC §2.4 "Owner opens the first document").
-  if (request.status === "new") {
-    const { error } = await admin.rpc("mortgage_transition", {
-      p_request_id: b.requestId,
-      p_event: "first_document_opened",
-      p_actor_kind: "system",
-    });
-    if (error) return refused(error, "mortgage.cms.reupload");
-    request = await readClock(s.supabase, b.requestId);
-    if (!request) return FAILED;
-  }
-
   const now = new Date();
   const { policy, settings } = await loadMortgageSettings(s.supabase);
-  const sla = request.sla_due_at ? clockPause(request, now, policy) : {};
+  // A running clock pauses while the applicant is asked (0158 keeps the file on its stage).
+  const sla = request.sla_due_at && !request.sla_stopped_at && !request.sla_paused_at ? clockPause(request, now, policy) : {};
   const token = newToken();
   const expiresAt = new Date(now.getTime() + settings.link_expiry_days * 86_400_000).toISOString();
 

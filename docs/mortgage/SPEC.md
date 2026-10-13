@@ -4,6 +4,8 @@ The contract for the mortgage module. Screens W1–W8 (website) and C1–C6 (CMS
 
 > **Amended 13 Oct 2026 (migration 0156): the CMS is a light CRM.** The team shares an application with its partner banks by hand, so the banks' side of this spec is withdrawn: the partner-bank list, bank packages and their links, reminders, bank responses and letters, the C5 decision screen and the pre-approval email with the bank's letter. A Fast Pre-Approval now goes `in_review → accepted → pre_approved | declined`; `with_banks` was renamed `accepted`. The sections below are corrected where they said otherwise; DECISIONS.md and PROGRESS.md (13 Oct 2026) have the detail.
 
+> **Amended 13 Oct 2026 (migrations 0157, 0158): stages.** A Fast Pre-Approval's status is now only `open` or `declined`; where an open file stands is its **stage**, a row in `mortgage_stages` the client keeps in Pages & blocks → Mortgage stages (seeded New, In Review, Accepted, Pre-Approved, Valuation, Final Offer Letter, Registration, Disbursed). The team moves a file freely between stages, any to any, with no document or consent checks (`mortgage_move_stage()`). 0156's Accept application and Mark pre-approved are gone, and so is `awaiting_applicant`: a re-upload request keeps the stage and only pauses a running clock. Each stage has two switches: *Answers the applicant* (`stops_clock`) stops the 24-hour clock the first time a file reaches it, *Closes the file* (`closes_file`) closes it. Declined stays beside the stages. Mortgage Consultancy keeps its statuses. §2.4, §2.5, §3, §4 and §7 are corrected; DECISIONS.md ("Decided 13 Oct 2026 — mortgage stages") and PROGRESS.md ("Mortgage stages · 13 Oct 2026") have the detail.
+
 **Stack assumed:** the Bazar platform stack in `design_handoff_bazar_website_cms/docs/09-architecture-and-stack.md` (Next.js App Router, TypeScript, Postgres + Drizzle, Better Auth, Cloudflare R2, Inngest, Resend, WhatsApp Business Cloud API). Phase 0 maps these names onto the real repo.
 
 ---
@@ -13,7 +15,7 @@ The contract for the mortgage module. Screens W1–W8 (website) and C1–C6 (CMS
 **In v1**
 - Public flow at `/mortgages/apply`: choose service → personal details → (Consultancy) review & submit, or (Fast Pre-Approval) documents & submit → confirmation.
 - Secure links with OTP: re-upload one document, and the Fast Pre-Approval invite sent from a consultancy request.
-- CMS: queue, request file, document viewer with checks, re-upload requests, accepting the application and recording its outcome (0156: no bank packages or responses), consultancy contact log and booking.
+- CMS: queue, request file, document viewer with checks, re-upload requests, moving the file between the client's stages (0158; 0156 dropped bank packages and responses), consultancy contact log and booking.
 - The 24-hour promise clock, alerts, append-only activity/audit log.
 
 **Not in v1**
@@ -74,18 +76,16 @@ Rules:
 
 ### 2.4 Statuses and transitions
 
-Fast Pre-Approval: `new → in_review → accepted → pre_approved | declined` (0156; was `with_banks`), with `in_review ⇄ awaiting_applicant` while a re-upload is outstanding.
+Fast Pre-Approval (0158): `open` (on a stage) ⇄ `declined`. An open file moves between stages freely; the stages are data (`mortgage_stages`), not statuses. Before 0158 it went `new → in_review → accepted → pre_approved | declined`, with `in_review ⇄ awaiting_applicant` during a re-upload.
 Mortgage Consultancy: `new → contacted → consultation_booked → completed`.
 
 | From | To | Trigger | Actor | Side effects |
 |---|---|---|---|---|
-| — | `new` | Applicant submits | applicant | Reference allocated; SLA starts (pre-approval); document rows created; consent stored; confirmation email; owner assignment; team notified |
-| `new` | `in_review` | Owner opens the first document | system | — |
-| `in_review` | `awaiting_applicant` | Re-upload request sent | owner, head | SLA pauses; access link created; WhatsApp + email |
-| `awaiting_applicant` | `in_review` | Applicant sends the re-upload | applicant | SLA resumes; that document → `to_review`; owner notified |
-| `in_review` | `accepted` | Accept application (every document accepted, consent on file) | owner, head | SLA stops (the team's answer); the file stays open (0156) |
-| `accepted` | `pre_approved` | Mark pre-approved (optional team note) | owner, head | File closes; nothing sent to the applicant (0156) |
-| `new` · `in_review` · `awaiting_applicant` · `accepted` | `declined` | Decline & notify | owner, head | SLA stops (unless accepting already stopped it); email (D19, 0156) |
+| — | `open`, first stage (pre-approval) · `new` (consultancy) | Applicant submits | applicant | Reference allocated; SLA starts (pre-approval); document rows created; consent stored; confirmation email; owner assignment; team notified |
+| `open` | `open`, same stage | Re-upload request sent | owner, head | SLA pauses if running; access link created; WhatsApp + email (0158: the file no longer moves) |
+| `open` | `open`, same stage | Applicant sends the last outstanding re-upload (or staff cancel it) | applicant / staff | SLA resumes; that document → `to_review`; owner notified |
+| `open` · `declined` | `open`, any stage | Move to stage (event `stage_changed`; no checks) | owner, head | A stage that answers the applicant stops the SLA, once; a closing stage closes the file, leaving it reopens; a declined file is reopened (0158) |
+| `open` | `declined` | Decline & notify | owner, head | SLA stops (unless a stage already stopped it); email (D19); "no bank made an offer" only once a stage has stopped the clock (0158) |
 | `new` | `contacted` | First contact attempt logged (any outcome) | staff | `first_contact_at` set |
 | `contacted` | `consultation_booked` | Consultation booked | staff | Invite by email (.ics) + WhatsApp |
 | `consultation_booked` | `completed` | Consultation marked held | staff | — |
@@ -96,8 +96,8 @@ Mortgage Consultancy: `new → contacted → consultation_booked → completed`.
 ### 2.5 The 24-hour promise (Fast Pre-Approval only)
 
 - **Starts** at submission ("when the applicant presses Get Fast Pre-Approval").
-- **Pauses** on entering `awaiting_applicant`; **resumes** on leaving it.
-- **Stops** on `accepted` (0156) or on `declined` before acceptance. `met` = stopped before due.
+- **Pauses** when a re-upload is requested while it runs; **resumes** when no re-upload is outstanding (0158: the file keeps its stage throughout).
+- **Stops** the first time the file reaches a stage marked *Answers the applicant* (`stops_clock`; seeded Accepted onwards), or on `declined` before that. It never restarts, even if the file moves back. `met` = stopped before due. (Before 0158 it stopped on `accepted`.)
 - **Due** = start + 24h + total paused time.
 - **At risk** = running with ≤ 4h left (C1 banner and red bar). **Breached** = running and past due.
 - Wall-clock hours, nights and weekends included — W7 shows the applicant an exact time. Confirm (§9).
@@ -128,8 +128,10 @@ Conventions from `docs/06-data-model.md`: UUID v7 ids, `timestamptz`, snake_case
 
 ```
 mortgage_service           consultancy | pre_approval
-mortgage_status            new | in_review | awaiting_applicant | accepted | pre_approved | declined
-                           | contacted | consultation_booked | completed
+mortgage_status            open | declined                      (pre-approval, 0158)
+                           | new | contacted | consultation_booked | completed   (consultancy)
+                           in_review | awaiting_applicant | accepted | pre_approved stay in the
+                           enum (forward-only) but no row uses them since 0158
 mortgage_residency         uae_national | uae_resident_expat
 mortgage_employment        salaried | business_owner
 mortgage_entry_point       home | calculator_preapproval | calculator_advisor | property_detail
@@ -154,7 +156,7 @@ Staff roles: add `mortgage_head` and `mortgage_adviser` to the existing staff ro
 ### Tables
 
 **`mortgage_requests`**
-`id`, `reference` (unique), `service`, `status`,
+`id`, `reference` (unique), `service`, `status`, `stage_id` (fk `mortgage_stages`, on delete restrict; set exactly when `service = pre_approval`, 0158),
 `full_name`, `date_of_birth` (date), `mobile_e164`, `email` (citext), `residency`, `employment_type`,
 `entry_point`, `property_id` (fk, null), `parent_request_id` (fk self, null),
 `owner_staff_id` (fk, null), `assigned_at`, `submitted_at`, `first_contact_at`,
@@ -190,9 +192,12 @@ C2 shows it as "Given Tue 22 Sep, 10:14 · 94.203.•.• · Chrome, macOS" with
 
 **`mortgage_partner_banks`**, **`mortgage_bank_submissions`** — dropped in 0156 (banks are contacted outside the site).
 
+**`mortgage_stages`** (0158) — the client's pipeline for a Fast Pre-Approval.
+`id`, `name` (1–40 chars, unique case-insensitively), `position` (1…n, unique, deferrable), `stops_clock` (bool: answers the applicant), `closes_file` (bool), `created_at`, `updated_at`. Read by the mortgage team and the stage editors (RLS); written only through `mortgage_save_stage()`, `mortgage_reorder_stages()`, `mortgage_delete_stage()`.
+
 **`mortgage_events`** — append-only activity and access log.
 `id`, `request_id`, `actor_kind`, `actor_id`, `type`, `data` (jsonb), `ip`, `created_at`.
-Types include: `request.submitted`, `status.changed`, `owner.assigned`, `document.viewed`, `document.downloaded`, `document.accepted`, `reupload.requested`, `reupload.fulfilled`, `link.otp_sent`, `link.verified`, `file.scan_failed`, `application.accepted`, `decision.pre_approved`, `decision.declined`, `contact.logged`, `consultation.booked`.
+Types include: `request.submitted`, `status.changed`, `owner.assigned`, `document.viewed`, `document.downloaded`, `document.accepted`, `reupload.requested`, `reupload.fulfilled`, `link.otp_sent`, `link.verified`, `file.scan_failed`, `stage.changed` (0158), `decision.declined` (`application.accepted` and `decision.pre_approved` are 0156's, kept in old logs), `contact.logged`, `consultation.booked`.
 Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them. Only the retention job's role may delete.
 
 ---
@@ -245,7 +250,8 @@ Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them.
 
 **C1 behaviour**
 - Nav: "Mortgages" item in the CMS shell; breadcrumb "Inbox · 31 open · 5 new".
-- Tabs: Open · New · In review · Awaiting applicant · Accepted (0156; was With banks) · Contacted & booked · Closed (= pre_approved, declined, completed). Counts on each.
+- Tabs (0158): Open · Closed (declined, completed, or on a closing stage), with counts, plus a Stage filter (the client's stages). Before 0158: Open · New · In review · Awaiting applicant · Accepted · Contacted & booked · Closed.
+- Board view: a Fast Pre-Approval's columns are the stages plus Declined; a drop onto a stage is the move, a drop onto Declined opens the decline dialog.
 - Service filter: All · Fast Pre-Approval · Mortgage Consultancy, with counts. Search "Name, reference or mobile". Owner filter. Sort default "promise due".
 - Promise-due order: pre-approvals by time remaining (paused ones by their frozen remaining time), then consultancy — New by longest waiting, then Contacted, then Booked by appointment time.
 - Mobile numbers masked in the list (+971 50 ••• 3321). Full number on the file page.
@@ -253,7 +259,7 @@ Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them.
 - Pagination 25 per page. Poll every 15–30s; no realtime needed in v1.
 
 **CMS server actions** — each one: authorise → validate (zod) → write in one transaction (via `transition()` if status changes) → event → enqueue notifications.
-`claimRequest`, `reassignOwner`, `editApplicant`, `setCheck`, `setRecordedFields`, `setStatementPeriod`, `acceptDocument`, `requestReupload` (also behind C2's "Request documents", starting with a document picker), `cancelReupload`, `acceptApplication`, `recordPreApproval(note?)`, `decline` (0156 replaced `acceptApplicationAndSend(bankIds)`, `recordBankResponse`, `sendBankReminder`, `decide`), `logContactAttempt`, `bookConsultation`, `markConsultationHeld`, `sendPreapprovalInvite`.
+`claimRequest`, `reassignOwner`, `editApplicant`, `setCheck`, `setRecordedFields`, `setStatementPeriod`, `acceptDocument`, `requestReupload` (also behind C2's "Request documents", starting with a document picker), `cancelReupload`, `moveStage(stageId)`, `decline` (0158 replaced 0156's `acceptApplication`, `recordPreApproval(note?)`; 0156 had replaced `acceptApplicationAndSend(bankIds)`, `recordBankResponse`, `sendBankReminder`, `decide`), `logContactAttempt`, `bookConsultation`, `markConsultationHeld`, `sendPreapprovalInvite`.
 
 ---
 
@@ -299,8 +305,10 @@ Unclaimed drafts: a bucket lifecycle rule deletes `drafts/` objects after 24h. N
 | Open / download documents (always logged) | ✓ | ✓ | — |
 | Claim an unassigned request | ✓ | ✓ | — |
 | Review, request re-upload, contact, book | owner | ✓ | — |
-| Accept, mark pre-approved, decline | owner | ✓ | — |
+| Move to a stage, decline (0158) | owner | ✓ | — |
 | Reassign | — | ✓ | — |
+
+Keeping the stages (Pages & blocks → Mortgage stages: rename, add, delete, reorder, the two switches) is open to the Head of mortgages and to staff with role admin, editor or marketing (`mortgage_can_edit_stages()`, 0158); it gives no access to requests or documents.
 
 The website says only the mortgage team can open documents, so admins without a mortgage role get no document access. Any break-glass access must be logged and reviewed.
 

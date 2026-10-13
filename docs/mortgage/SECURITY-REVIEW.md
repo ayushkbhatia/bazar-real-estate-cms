@@ -28,6 +28,15 @@ it was checked, and each gap is numbered **SR-n** for the fix list.
   `mortgage_record_pre_approval()` (§3). `lib/secure-link-redaction.ts` still
   redacts `/mortgages/p/<token>`, because links already emailed to banks
   carry tokens.
+- **Amended 13 Oct 2026 (`0157`, `0158`, mortgage stages):** a Fast
+  Pre-Approval is `open` (on a client-kept stage) or `declined`.
+  `mortgage_accept_application()` and `mortgage_record_pre_approval()` are
+  dropped. New: `mortgage_move_stage()` (owner or Head),
+  `mortgage_can_edit_stages()`, and the stage editor's `mortgage_save_stage()`,
+  `mortgage_reorder_stages()`, `mortgage_delete_stage()` — the first module
+  functions open to staff **without** a mortgage role (admin, editor,
+  marketing) (§3, §4). Moves check no documents or consent, by decision
+  (SR-27); the stage editors' reach is SR-28.
 
 Paths: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 `app/[locale]/(admin)/admin/mortgages/`, `L/` = `lib/mortgage-requests/`.
@@ -75,7 +84,7 @@ hand, since `0156`). The consent step says so; the security line doesn't.
 | **Malware scan** before staff can open a file | **None, by decision (D6, 8 Oct 2026):** Bazar accepts every document that passes the format checks above, and it's ready at once. The scanner adapter, its variables and the worker's retry were removed. What stands in for it: the type allow-list read from the bytes, no encrypted PDFs, the team's viewer drawing files inside the page, the file route's `nosniff` and CSP headers | ✗ accepted (**SR-3**) |
 | ~~**Bank packages:** expiring, logged links, not attachments~~ | **Retired 13 Oct 2026 (`0156`):** the team shares files with banks by hand; no package, link or bank download exists. Was: `L/server/banks.ts`, `M/mortgages/p/[token]`, `app/api/mortgage/packages/…`: one link per bank, 7 days, hash only, every open and download logged as the bank, downloads rate-limited, `no-referrer`, not indexed | ✓ `banks.db.test.ts`; bearer link with no second factor (D3, **SR-18**) |
 | **No PII in logs, Sentry or PostHog** | Mortgage code has no `console.*` calls; `reportError` contexts carry ids and codes only; the flow's PostHog events are an allow-list of enums and counts (`L/client/analytics.ts`, tested); secure-link tokens are redacted from PostHog and Vercel Analytics URLs (`lib/secure-link-redaction.ts`); team and bank emails carry no applicant details. Since step 4: Sentry scrubs every event (`lib/sentry-scrub.ts`), `reportError` scrubs messages, stacks and contexts (`lib/pii-scrub.ts`), and email logs mask the recipient | ◐ CMS autocapture (**SR-7**) |
-| **DSR:** export and delete by email/mobile across the mortgage tables, in the PDPL flow | `/admin/dsr` finds a subject's requests by email and, optionally, UAE mobile (`L/server/dsr.ts`); the archive lists them; erasure deletes them — objects first, then the rows through `mortgage_erase_requests()` (`0151`, redefined in `0156`) — and names the requests that had been accepted, which the team may have shared with banks by hand (it named the banks before `0156`) | ✓ `dsr.db.test.ts` (step 3) |
+| **DSR:** export and delete by email/mobile across the mortgage tables, in the PDPL flow | `/admin/dsr` finds a subject's requests by email and, optionally, UAE mobile (`L/server/dsr.ts`); the archive lists them; erasure deletes them — objects first, then the rows through `mortgage_erase_requests()` (`0151`, redefined in `0156`) — and names the requests that may have reached banks (since `0158`: open with a stopped clock, or declined for "no bank made an offer"), which the team may have shared by hand (it named the banks before `0156`); the export carries `may_have_been_shared_with_banks` | ✓ `dsr.db.test.ts` (step 3) |
 | **Retention** purge | `/api/cron/mortgage-retention` (daily): closed requests' files, `retention_months` after closing (`L/server/retention.ts`, `0151`); nothing while the months are unset (D7) | ✓ `dsr.db.test.ts` (step 3); ◻ D7 sets the months |
 | **Data residency** | Supabase and the functions are in Tokyo (ap-northeast-1 / hnd1) | ◻ D4 open (**SR-21**) |
 
@@ -98,10 +107,11 @@ writes.
 | Open / download documents, always logged | ✓ | ✓ | — | `openStaffFile` role check; `mortgage_log_event` first | ✓ |
 | Claim an unassigned request | ✓ | ✓ | — | `mortgage_claim` (a second claim answers 409) | ✓ `cms.db.test.ts` |
 | Review, request re-upload, contact, book | owner | ✓ | — | `mortgage_set_check`, `…_set_recorded`, `…_set_statement_period`, `…_accept_document`, `…_request_reupload`, `…_cancel_reupload`, `…_log_contact`, `…_book_consultation`, `…_consultation_held`, `…_create_invite` | ✓ `links.db.test.ts`, `cms.db.test.ts` |
-| Accept, mark pre-approved, decline (`0156`) | owner | ✓ | — | `mortgage_accept_application`, `mortgage_record_pre_approval`, `mortgage_decline` (the bank functions they replace were dropped) | ✓ `decline.db.test.ts` |
+| Move to a stage, decline (`0158`) | owner | ✓ | — | `mortgage_move_stage` (`mortgage_authorise`, then the transition's `stage_changed`; no document or consent check, SR-27), `mortgage_decline`. `0156`'s `mortgage_accept_application` and `mortgage_record_pre_approval` were dropped in `0158` | ◐ `decline.db.test.ts` (to move to stages); no database test for `mortgage_move_stage` yet |
+| Keep the stages: rename, add, reorder, delete, the two switches (`0158`) | — | ✓ | admin, editor, marketing | `mortgage_can_edit_stages()` inside `mortgage_save_stage`, `mortgage_reorder_stages`, `mortgage_delete_stage` (each refuses a non-`authenticated` caller); `mortgage_stages` has RLS select for the team and the editors only, and no direct writes for signed-in users. Deleting is refused while files are on the stage and for the last stage. Gives no read of requests or documents (SR-28) | ◐ `_logic.test.ts`, `e2e/mortgage-stages-editor.spec.ts` (local); no database test yet |
 | Reassign | — | ✓ | — | `mortgage_reassign` | ✓ |
 | Settings and holidays | — | ✓ | — | `mortgage_update_settings`, `mortgage_set_holiday` | ✓ |
-| Record a consent withdrawal | owner | ✓ | — | `mortgage_withdraw_consent` (`0152`; since `0156` it records the withdrawal only, with no bank links to stop, and Accept is then refused) | ✓ `decline.db.test.ts` |
+| Record a consent withdrawal | owner | ✓ | — | `mortgage_withdraw_consent` (`0152`; since `0156` it records the withdrawal only, with no bank links to stop; Accept was then refused until `0158`, and since then nothing is, SR-27) | ✓ `decline.db.test.ts` |
 | ~~Manage partner banks~~ | — | — | — | **Retired 13 Oct 2026 (`0156`):** no bank list. Was: `mortgage_save_bank` (Head or `is_admin()`); the Head at `A/banks`, an admin at `/admin/settings/partner-banks` | ✓ `banks.db.test.ts`, `mortgage-security.spec.ts` (SR-13) |
 | Break-glass access, logged and reviewed | | | | D10: grant a mortgage role for the duration, in SQL (RUNBOOK §6); a trigger on `staff` audits every change (`0152`) | ✓ `database.db.test.ts` (SR-14); the review is a person's |
 
@@ -118,7 +128,7 @@ owner (SR-10) — and `mortgage_log_event()` takes from them only an open or a
 download of that request's own file (SR-11); `requestReupload` checks the
 caller before it moves anything (SR-12).
 
-**Functions:** all 47 `mortgage_*` functions set `search_path`. The
+**Functions:** all 47 `mortgage_*` functions set `search_path` (as counted on 30 Sep; the ones `0156` and `0158` add do too). The
 SECURITY DEFINER ones callable by signed-in users begin with
 `mortgage_authorise()` or an equivalent role check; the rest are service-role
 only (creating requests, the link functions, the outbox, the SLA flag).
@@ -143,6 +153,7 @@ refuses to call a trigger function directly.
 | `GET /api/admin/mortgages/files/[fileId]` | team | role, logged first, a finished file on a request | ✓ |
 | ~~`POST /api/admin/mortgages/letters` (+ `/[fileId]/complete`)~~ | — | **Retired 13 Oct 2026 (`0156`):** routes removed, letter rows deleted. Was: session; `mortgage_letter_presign`; PDF checks (no scan, D6); JSON only (SR-16) | ✓ |
 | `A/*` pages and server actions | team | §3; not framed (SR-15); `ph-no-capture` (SR-7) | ✓ |
+| `/admin/pages/mortgage-stages` and its actions (`0158`) | Head; admin, editor, marketing | outside `A/layout.tsx`'s gate: a 404 unless `mortgage_can_edit_stages()` says yes (`stageEditorSession()`), asked through the caller's session; every action is one of the three stage functions, which ask again; zod on input; audit rows written by the app (`mortgage.stage_*`), so a change made in SQL isn't audited | ✓ |
 | ~~`/admin/settings/partner-banks`~~ | — | **Retired 13 Oct 2026 (`0156`):** page removed | — |
 | `/api/cron/mortgage-worker` | Vercel cron | Bearer `CRON_SECRET`; scans, draft purge, SLA tick, outbox; heartbeat on `/admin/settings/health` | ✓ |
 | Emails | applicant, team | links are sent by the action and never stored (the outbox can't hold a token); team emails carry no applicant details; no bank emails or pre-approval email since `0156`; the adviser is told when one didn't go (SR-25) | ✓ |
@@ -185,6 +196,8 @@ call, not code.
 | SR-19 | Info | **The security line and bank sharing** (§1): "Only Bazar's mortgage team can open them" leaves out the partner banks the applicant consents to | Word it for D17 (design and compliance) | decision |
 | SR-20 | — | **Production checks** (§6) | — | ops |
 | SR-21 | — | **Data residency** (D4): documents and rows are in Tokyo | Decide D4; S3 in `me-central-1` is the prepared alternative (IMPLEMENTATION §1.7) | decision |
+| SR-27 | Medium | **Stage moves check nothing (decided 13 Oct 2026).** Accept application (`0156`) needed every document accepted and consent on file before the clock stopped and the file counted as ready for the banks. `mortgage_move_stage()` (`0158`) lets the owner or the Head move any file to any stage, so a file can reach Accepted (stopping the 24-hour clock, which also feeds the met rate) with documents unreviewed or consent withdrawn. Every move is in the append-only activity log | Accepted by the owner: the team is trusted and the log records who moved what. Revisit if the met rate is reported outside the team, or if compliance wants consent checked before a file is shared | decision |
+| SR-28 | Low | **Staff without a mortgage role can change the pipeline** (`0158`). Admin, editor and marketing staff can rename, reorder and delete stages and flip the two switches, which changes where new requests land, which stages stop the clock and which close a file — for files moved afterwards. They see stage names, and a refused delete tells them how many files are on a stage; no names, references or documents. Their changes are audited by the app, not the database | Accepted as the client's request (Pages & blocks' editors keep the stages). If the Head wants sole control, drop the three roles from `mortgage_can_edit_stages()` in a migration | decision |
 | SR-26 | Info | **Disputes the copy may cause, not a control:** W1 and W7 promise an answer in "24 hours", and the clock counts 24 *working* hours (D11, D11a); an invite link lets someone submit a Fast Pre-Approval while the flag is off (by design: the team sent it); the flag is the Head's alone in the code, where IMPLEMENTATION §1.10 mentions admins | Word the promise (D11a); confirm the other two stand | decision |
 
 **Accessibility (step 5, not a security gap):** axe (WCAG 2.1 A/AA) now runs
@@ -196,7 +209,7 @@ admin page; that file is shared, so it's a separate task.
 Nothing here lets someone outside the mortgage team read an applicant's
 documents or details. SR-22 did (a bank that already had a link kept it for
 up to seven days after the applicant withdrew consent) and is fixed. SR-10 to
-SR-12 concerned team members bypassing rules, not access, and are fixed. The
+SR-12 concerned team members bypassing rules, not access, and are fixed. SR-28 (`0158`) gives staff outside the team counts per stage, not request data. The
 High items are production settings that the code already fails closed on
 (SR-2, SR-3) or that the database backs up (SR-1). SR-22 to SR-26 were found
 while writing the runbook.

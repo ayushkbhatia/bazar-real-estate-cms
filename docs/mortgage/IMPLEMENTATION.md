@@ -21,6 +21,16 @@ Open decisions are referenced as **D-n** and tracked in
 > email) or Decline closes it. The rows below are corrected where they said
 > otherwise.
 
+> **Amended 13 Oct 2026 (0157, 0158): mortgage stages.** Accept application
+> and Mark pre-approved are gone (both functions dropped). A Fast
+> Pre-Approval's status is `open` or `declined`; where an open file stands is
+> its stage (`mortgage_stages`, `mortgage_requests.stage_id`, `L/stages.ts`),
+> kept by the client at Pages & blocks → Mortgage stages
+> (`app/[locale]/(admin)/admin/pages/mortgage-stages/`) and moved freely by
+> the owner or the Head (`mortgage_move_stage()`). Awaiting applicant and the
+> first-open move are gone. The Light CRM row in §4 and the paths below are
+> amended; PROGRESS.md has the detail.
+
 ---
 
 ## 0. What differs from what SPEC assumes
@@ -264,7 +274,11 @@ app/api/admin/mortgages/files/[fileId]/route.ts                        logged fi
 ```
 
 (C5 at `[reference]/decision` and the banks page were removed in 0156; the
-outcome is recorded on C2, `A/_outcome-actions.ts`.)
+outcome is recorded on C2, `A/_outcome-actions.ts`. Since 0158 that file
+moves a file between stages and declines it. The stages are edited outside
+`/admin/mortgages`, at `app/[locale]/(admin)/admin/pages/mortgage-stages/`
+(Pages & blocks), gated by `mortgage_can_edit_stages()` rather than
+`requireMortgageRole()`.)
 
 - **Gate.** The admin layout already requires an active staff row
   (`(admin)/layout.tsx:18-24`, `66-84`). The mortgages layout adds
@@ -578,7 +592,9 @@ reproduces the PNG".
 
 Bank packages already sent can't be recalled, so erasure should record that
 fact rather than imply it. (Since 0156 the team shares by hand, so erasure
-names the requests that had been accepted instead of a bank list.)
+names the requests that had been accepted instead of a bank list. Since 0158
+that is any request open with a stopped clock, or declined for "no bank made
+an offer".)
 
 ---
 
@@ -680,6 +696,7 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 | **6** Banks & decision C5 (built; all but the decline removed in 0156) | `0149_mortgage_banks_decision.sql`, `0150_mortgage_bank_emails.sql`; `A/banks/page.tsx`, `A/[reference]/decision/page.tsx`, `A/_components/{decision-view,banks-view}.tsx`, `A/_banks-actions.ts`; `M/mortgages/p/[token]/page.tsx`; `app/api/mortgage/packages/[token]/files/[fileId]/route.ts`; `app/api/admin/mortgages/letters/**`; `L/pre-approval.ts`; `L/server/{banks,letters,decision}.ts`; `L/pre-approval.test.ts`, `L/banks.db.test.ts`; `e2e/mortgage-decision.spec.ts`. **Built ahead (D19, 29 Sep):** the decline — `0147_mortgage_decline.sql` (reasons, `mortgage_decline()`, `mortgage_transition()` redefined to decline from any open status), `0148_mortgage_decline_email.sql`, `L/decline.ts`, `A/_decision-actions.ts`, C2's Decline dialog and Decision card, the outbox's `decision_declined`, `L/decline.test.ts`, `L/decline.db.test.ts`, `e2e/mortgage-decline.spec.ts`. C5's Decline tab reuses the dialog's form | `lib/email.ts` (binary attachments); `L/state.ts` (the decline moves); `A/[reference]/page.tsx` + `A/_components/file-actions.tsx` (the bank step, "Open decision"); `A/_decision-actions.ts`; `A/page.tsx` (the Partner banks link); `A/_review-actions.ts` + `document-review.tsx` (statements' coverage check saved at Accept); `L/{activity,cms-strings}.ts`; `L/server/{notify,cms-kit,errors}.ts`; `lib/content-assets/*` + `lib/email-templates.ts` (three emails); `L/testing/local-stack.ts` (`retireTestStaff`); the local seed (every offer has a letter) |
 | **7** Hardening (built; step 2's fixes after SECURITY-REVIEW's approval) | `docs/mortgage/{SECURITY-REVIEW,RUNBOOK}.md`; `0151_mortgage_retention_erasure.sql`; `0152_mortgage_review_fixes.sql` (SR-10, SR-11, SR-14, SR-17, SR-22); `L/{permissions,sends}.ts`; `A/../settings/partner-banks/page.tsx` (admins' banks, SR-13); `e2e/mortgage-security.spec.ts`; `app/api/cron/mortgage-retention`; `L/server/{retention,dsr,metrics}.ts`, `L/metrics.ts`; `lib/{pii-scrub,sentry-scrub}.ts`; `L/dsr.db.test.ts`, `L/{dsr,metrics}.test.ts`, `L/client/analytics.test.ts`, `lib/{pii-scrub,sentry-scrub}.test.ts`; `e2e/mortgage-a11y.spec.ts` (axe on W1–W8 and C1–C6, and the keyboard) | `lib/queries/dsr-subject.ts`, `lib/dsr.ts`, `A/../dsr/{_actions,_console}.tsx` (mortgage requests, by email or mobile); `lib/observability.ts` (scrubbed reports); `lib/email.ts` (masked log lines); `instrumentation*.ts` (Sentry scrubbers); `lib/secure-link-redaction.ts` (API paths too); `vercel.json` + `lib/queries/health.ts` (the retention cron); `L/server/settings.ts` + `A/settings/page.tsx` (retention and the met rate); `L/client/analytics.ts` (`APPLY_FUNNELS`); contrast and breadcrumb fixes in `A/_components/*` and the pages. Step 2: `A/layout.tsx` and the package page (`ph-no-capture`); `A/_decision-actions.ts` (`withdrawConsent`, honest send results), `A/_actions.ts`, `A/_review-actions.ts` (`mayActOn`, skipped sends), `A/_banks-actions.ts` (`bankEditorSession`); `A/_components/file-actions.tsx` (`WithdrawConsentButton`, warning toasts) and C2's Consent card; `L/server/banks.ts` (consent on the package), `L/server/notify.ts` (stuck fifth attempts), `L/server/http.ts` (JSON only), `L/server/deps.ts` (no dev scanner on Preview); `next.config.ts` (`frame-ancestors`); `A/../settings/_components/settings-tabs.tsx` (the tab). The mobile-geometry gate isn't extended: its checks are for public pages, and the flow already passes 375 px by hand |
 | **Light CRM** (13 Oct, 0156) | `0156_mortgage_light_crm.sql`; `A/_outcome-actions.ts` (accept, mark pre-approved, decline, consent withdrawal) | Removes Phase 6's banks side (see the note at the top), `A/_decision-actions.ts`, `L/payments.ts`, `L/pre-approval.ts`, `L/server/{banks,letters,decision}.ts`; changes `L/{state,board,queue,activity,decline,cms-strings}.ts`, `A/_components/{file-actions,board-view,queue-view,ui}.tsx`, `L/server/{notify,dsr,files,review,cms-queries}.ts`, `lib/dsr.ts`, `lib/content-assets/*`, `lib/secure-link-redaction.ts`, the local seed and `scripts/mortgage-demo/*` |
+| **Mortgage stages** (13 Oct, 0157, 0158) | `0157_mortgage_status_open.sql` (the enum value `open`, committed on its own), `0158_mortgage_stages.sql`; `L/stages.ts`; `app/[locale]/(admin)/admin/pages/mortgage-stages/{page,_access,_actions,_logic,_stages-editor}.ts(x)` + `_logic.test.ts`; `e2e/mortgage-stages-editor.spec.ts` | Replaces accept / mark pre-approved with `moveStage` in `A/_outcome-actions.ts`; removes `startReview` and `loadBoardMoveContext` from `A/_board-actions.ts`; changes `L/{state,board,queue,activity,decline,cms-strings}.ts` (+ tests), `L/server/{cms-queries,files,review,dsr}.ts`, `lib/dsr.ts` (+ test), `A/[reference]/page.tsx`, `A/_components/{file-actions,board-view,queue-view,ui}.tsx`, `A/_actions.ts`, `A/_review-actions.ts`, `A/../dsr/_actions.ts`, `A/../pages/page.tsx` (the card), `db/types.ts`, `e2e/mortgage-{board,a11y}.spec.ts` |
 
 **Indicative schedule,** using PLAN's sizes, starting Tue 29 Sep, on UAE
 working days (Mon–Fri). This assumes each decision lands by its phase:

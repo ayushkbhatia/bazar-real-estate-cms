@@ -30,6 +30,7 @@ function cardSectionFieldCount(card: (typeof CARDS)[number]): number {
   return cardSection(card).fields.length;
 }
 import { countSubPagesByKind } from "@/lib/queries/subpages";
+import { canEditMortgageStages } from "./mortgage-stages/_access";
 
 export const dynamic = "force-dynamic";
 
@@ -84,9 +85,11 @@ function MasterPageCard({ page }: { page: (typeof MASTER_PAGES)[number] }) {
 }
 
 export default async function AdminPagesPage() {
-  const [{ rows, total }, subPageCounts] = await Promise.all([
+  const [{ rows, total }, subPageCounts, showMortgageStages] = await Promise.all([
     listAllPagesForAdmin({ limit: 200 }),
     countSubPagesByKind(),
+    // The database's answer (0158): Pages & blocks' editors and the Head of mortgages.
+    canEditMortgageStages(),
   ]);
 
   // The service landings are split out of the top-level grid. They are the
@@ -213,6 +216,20 @@ export default async function AdminPagesPage() {
                 </Link>
               </li>
             ))}
+            {showMortgageStages ? (
+              <li>
+                <Link
+                  href="/admin/pages/mortgage-stages"
+                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+                >
+                  <span className="text-[13.5px] font-medium">Mortgage stages</span>
+                  <span className="mono text-[11px] text-bz-muted">/admin/mortgages</span>
+                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                    The stages a Fast Pre-Approval moves through on the mortgage board
+                  </span>
+                </Link>
+              </li>
+            ) : null}
           </ul>
         </section>
 

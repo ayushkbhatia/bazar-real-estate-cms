@@ -269,7 +269,7 @@ export async function fulfilErasureRequest(
   // A bank's copy is beyond reach: say so, so the reply to the subject does too.
   if (mortgage.accepted.length > 0) {
     parts.push(
-      `${mortgage.accepted.join(", ")} had been accepted, so the mortgage team may have shared ${mortgage.accepted.length === 1 ? "it" : "them"} with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject`,
+      `${mortgage.accepted.join(", ")} had been answered, so the mortgage team may have shared ${mortgage.accepted.length === 1 ? "it" : "them"} with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject`,
     );
   }
 

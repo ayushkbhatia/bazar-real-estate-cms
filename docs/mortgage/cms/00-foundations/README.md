@@ -2,6 +2,8 @@
 
 > **Amended 13 Oct 2026 (migration 0156): the CMS is a light CRM.** The team shares applications with its partner banks by hand. C5 (the decision page), the partner banks page, bank packages, reminders, letters and the pre-approval email were removed, and the C5-decision folder with them. `with_banks` is now `accepted` ("Accepted"): C2's "Accept application" needs every document accepted and consent on file, stops the clock and leaves the file open; "Mark pre-approved" (an optional team note, no email) or Decline, both on C2, close it. Where this file describes With banks, C5 or the banks, read it as the design that was, not the build. docs/mortgage/PROGRESS.md (13 Oct 2026) has the detail.
 
+> **Amended 13 Oct 2026 (migrations 0157, 0158): stages.** A Fast Pre-Approval's status is now only `open` or `declined`. Where an open file stands is its **stage**, which the client keeps in Pages & blocks → Mortgage stages (`/admin/pages/mortgage-stages`; seeded New, In Review, Accepted, Pre-Approved, Valuation, Final Offer Letter, Registration, Disbursed). The owner or the Head moves a file freely between stages (C2's "Move to stage", or the board), with no checks; Accept application, Mark pre-approved, Awaiting applicant and the first-open move are gone. A stage marked *Answers the applicant* stops the clock the first time a file reaches it; *Closes the file* (Disbursed) closes it. The status pill shows an open file's stage name (green on a closing stage); the In review / Awaiting applicant / Accepted / Pre-approved status labels below are no longer used for new files. Consultancy is unchanged.
+
 Build this before any CMS screen. It covers what C1–C6 share: routes, permissions, the CMS shell change, tokens, shared components, the promise clock, data and actions, formatting, accessibility and strings.
 
 | | |
@@ -29,7 +31,9 @@ Build this before any CMS screen. It covers what C1–C6 share: routes, permissi
 C2 and C6 share a route; the request's service decides which one renders. C3 and C4 are two states of one viewer.
 
 ### Status flow (SPEC §2.4, as amended by 0156)
-Fast Pre-Approval:
+*Since 0158 the Fast Pre-Approval diagram below is history:* an open file sits on one of the client's stages and moves to any other freely; Declined is reachable from any stage, and moving a declined file onto a stage reopens it.
+
+Fast Pre-Approval (0156 to 0158):
 ```mermaid
 flowchart LR
   n[New] -->|owner opens the first document| r[In review]

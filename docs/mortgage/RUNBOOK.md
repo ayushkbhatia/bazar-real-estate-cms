@@ -15,13 +15,14 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 9. [An applicant locked out of a secure link](#9-an-applicant-locked-out-of-a-secure-link)
 10. [The feature flag](#10-the-feature-flag)
 11. [Going live](#11-going-live)
+12. [Mortgage stages](#12-mortgage-stages)
 - [Data-subject requests (export and erasure)](#data-subject-requests-export-and-erasure)
 - [Retention](#retention)
 
 **Before you use it**
 
-- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing; then step 2's security fixes, migration `0152`), and a local database built from every migration, 30 Sep 2026. **Amended 13 Oct 2026 for `0156`, the light CRM:** the team shares applications with its partner banks by hand, so the site has no bank list, packages, reminders, letters or C5; `with_banks` is now `accepted`. D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
-- Screens: C1 is the queue (`/admin/mortgages`); C2 is a Fast Pre-Approval's file and C6 a consultancy's (`/admin/mortgages/[reference]`); C3/C4 is the document viewer (`…/documents/[kind]`). There is no C5 since 0156: Accept application, Mark pre-approved and Decline are on C2. W1–W7 are the website's application; W8 is the secure-link page.
+- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing; then step 2's security fixes, migration `0152`), and a local database built from every migration, 30 Sep 2026. **Amended 13 Oct 2026 for `0156`, the light CRM:** the team shares applications with its partner banks by hand, so the site has no bank list, packages, reminders, letters or C5; `with_banks` is now `accepted`. **Amended 13 Oct 2026 for `0157`/`0158`, mortgage stages:** a Fast Pre-Approval is `open` (on one of the client's stages) or `declined`; Accept application, Mark pre-approved and Awaiting applicant are gone (§12). D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
+- Screens: C1 is the queue (`/admin/mortgages`); C2 is a Fast Pre-Approval's file and C6 a consultancy's (`/admin/mortgages/[reference]`); C3/C4 is the document viewer (`…/documents/[kind]`). There is no C5 since 0156; since 0158 C2 has "Move to stage" and Decline (and the board moves files too). The stages are kept in Pages & blocks → Mortgage stages (§12). W1–W7 are the website's application; W8 is the secure-link page.
 - The examples use the local seed's file BZM-26-0412 (Priya Raman). Put the real reference in its place.
 - The SQL returns references, ids, statuses and times, not names, emails or mobiles (an event's `data` can still hold a file name). Keep personal data out of tickets, chats and error reports.
 - **Read-only** SQL changes nothing. **Changes data** SQL is for an engineer only, and runs in production only after the change is agreed (each section says with whom). Try it on the local stack first: `npm run db:local:reset`, then `docker exec -it supabase_db_bazar-local psql -U postgres -d postgres`. Each such statement writes its own audit row in the same statement, so the change and its record land together or not at all.
@@ -82,7 +83,7 @@ select source, level, message, count, first_seen_at, last_seen_at
 
 ### The file's Activity card
 
-On C2, and inside C6's contact log. Newest first; "View all {count}" opens the rest. It shows who opened or downloaded each document (staff by first name), re-upload requests and replies, the acceptance, the outcome and its note, "The secure link locked after five wrong codes", "Promise at risk" and "Promise missed".
+On C2, and inside C6's contact log. Newest first; "View all {count}" opens the rest. It shows who opened or downloaded each document (staff by first name), re-upload requests and replies, stage moves ("{actor} moved it to {stage}", "reopened it at {stage}"; 0158 — older files also show the acceptance and the pre-approval note), "The secure link locked after five wrong codes", "Promise at risk" and "Promise missed".
 
 It doesn't show emails, codes sent, links verified or failed scans: those are in `mortgage_events` and `mortgage_notifications`. On a Fast Pre-Approval, the "Submitted from the website" line's "Confirmation shown · email sent" is fixed wording and doesn't prove the email went. Opening or downloading a document is logged; looking at a file's page isn't.
 
@@ -126,7 +127,7 @@ select kind, channel, status, count(*)
 
 ### The audit log: /admin/audit-log
 
-Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`); `mortgage.bank.create` / `mortgage.bank.update` rows predate 0156, which removed the bank list. Changing anyone's mortgage role writes `staff.mortgage_role_change` by itself, from a trigger on `staff` (`0152`, SR-14): the role before and after, `via` (`app` for a signed-in change, `sql` otherwise) and, when the SQL names them (§6), who and why; a change that doesn't name them is recorded as the system's. Nothing else in the module writes one. A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
+Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`); `mortgage.bank.create` / `mortgage.bank.update` rows predate 0156, which removed the bank list. Changing anyone's mortgage role writes `staff.mortgage_role_change` by itself, from a trigger on `staff` (`0152`, SR-14): the role before and after, `via` (`app` for a signed-in change, `sql` otherwise) and, when the SQL names them (§6), who and why; a change that doesn't name them is recorded as the system's. Changes to the stages write `mortgage.stage_add`, `mortgage.stage_update`, `mortgage.stage_reorder` and `mortgage.stage_delete` (0158, §12). Nothing else in the module writes one. A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
 
 Every **Changes data** statement in this runbook writes its own row (§6's role changes through the trigger, the rest with an insert). This is the insert's shape; the statements below fill it in for you:
 
@@ -334,9 +335,9 @@ An applicant says the promise was missed. Or the team thinks a clock is wrong: C
 - A budget of 24 working hours (`mortgage_settings.sla_budget_minutes`, 1440), counted against `mortgage_settings.working_hours` minus the dates in `mortgage_holidays`, in Dubai time (D11). The default hours are Sunday to Thursday 09:00–19:00, Friday 09:00–15:00, Saturday closed. So the budget is about two and a half working days: an application sent on a Tuesday at 10:14 is due on Thursday at 14:14.
 - **Start:** at submission. `sla_due_at` is fixed then. It's the time W7 showed and the confirmation email gave: "We'll contact you by {due} — 24 working hours from when you submitted." A later change to the hours or holidays never moves it; a pause and resume does.
 - **At risk and missed:** at risk with 4 working hours or less left (`sla_risk_minutes`, 240); missed once past `sla_due_at`. Both show on C1 and on the file, and each sends a bell notification and an email to the owner and every Head. The worker checks every five minutes. Each alarm fires once, and again only after a pause and resume.
-- **Pause:** a re-upload request moves the file to Awaiting applicant. `sla_paused_at` is set, the working time left is frozen in `sla_remaining_seconds`, and `sla_due_at` is cleared. A second request while already waiting doesn't pause again.
+- **Pause:** a re-upload request pauses a running clock; the file stays on its stage (since 0158; before, it moved to Awaiting applicant). `sla_paused_at` is set, the working time left is frozen in `sla_remaining_seconds`, and `sla_due_at` is cleared. A second request while already waiting doesn't pause again.
 - **Resume:** when the last open re-upload is sent back or cancelled. The new `sla_due_at` is the frozen time counted on from that moment, so the applicant's wait doesn't count against the team. `sla_paused_seconds` totals the calendar time spent paused, for the record only. Nothing sends the applicant the new time.
-- **Stop:** the team's answer: Accept application (`accepted`, since 0156; `sla_stopped_at` only, the file stays open), or a decline before that (`sla_stopped_at`, `decided_at`, `closed_at`). Met if it stopped by the due time. Marking an accepted file pre-approved or declined closes it without touching the stopped clock. A file declined while paused keeps the time frozen at the pause. Files that were With banks when 0156 ran stopped at the moment they were sent.
+- **Stop:** the team's answer: since 0158, the first move onto a stage marked *Answers the applicant* (seeded on Accepted and every stage after it; `sla_stopped_at` only, the file stays open), or a decline before that (`sla_stopped_at`, `decided_at`, `closed_at`). Met if it stopped by the due time. Once stopped it never restarts: moving the file back to New or In Review, or turning the switch off, leaves it stopped. A later decline or closing stage doesn't touch it. A file declined while paused keeps the time frozen at the pause. (From 0156 to 0158 the stop was Accept application; files that were With banks when 0156 ran stopped at the moment they were sent.)
 - The clock runs until that answer. The website and email promise contact ("We'll contact you by"), so a phone call alone doesn't stop it.
 - Until design rewords them (D11a), W1's "Within 24 hours" and W7's "24 hours from when you submitted" read as calendar hours, even though W7 shows the working-hours due time. Expect disputes about that wording. If the file was paused, its due time moved later by the time the applicant took, and nothing told them.
 
@@ -361,7 +362,7 @@ select e.created_at, e.type, e.actor_kind, e.data
   from public.mortgage_events e
   join public.mortgage_requests r on r.id = e.request_id
  where r.reference = 'BZM-26-0412'
-   and (e.type in ('request.submitted', 'status.changed', 'reupload.requested', 'application.accepted',
+   and (e.type in ('request.submitted', 'status.changed', 'stage.changed', 'reupload.requested', 'application.accepted',
                    'reupload.fulfilled', 'reupload.cancelled', 'sla.at_risk', 'sla.breached')
         or e.type like 'decision.%')
  order by e.created_at;
@@ -371,6 +372,7 @@ Read it as stretches of running time:
 
 - The first runs from `request.submitted` to the first `status.changed` whose `data.to` is `awaiting_applicant` (a pause).
 - Each later stretch runs from a `status.changed` back to `in_review` with `data.event` `reupload_fulfilled` or `reupload_cancelled` (a resume) to the next pause, or to the answer (`application.accepted`, or `decision.declined` before acceptance).
+- Since 0158 a pause or resume writes no `status.changed`: a stretch ends at a `reupload.requested` while the clock ran and starts again at the `reupload.fulfilled` / `reupload.cancelled` that left none outstanding. The answer is the `stage.changed` at `sla_stopped_at` (its `data.to` names the stage), or `decision.declined`.
 - `sla.at_risk` and `sla.breached` record the due time in force when they fired (`data.due_at`).
 - The working time used is the working time inside those stretches.
 
@@ -421,8 +423,8 @@ console.log(formatDuration(workingSecondsBetween(started, new Date("2026-09-30T0
 
 **Don't**
 
-- Don't edit a clock. The trigger `mortgage_requests_guard` rejects any change to `status`, `sla_started_at`, `sla_due_at`, `sla_paused_at`, `sla_paused_seconds`, `sla_remaining_seconds`, `sla_stopped_at` or the decision columns: "status, clock and decision columns change only through mortgage_transition()".
-- Don't set the `mortgage.transition` setting yourself to get past the trigger, and don't call `mortgage_transition()` by hand.
+- Don't edit a clock. The trigger `mortgage_requests_guard` rejects any change to `status`, `stage_id`, `sla_started_at`, `sla_due_at`, `sla_paused_at`, `sla_paused_seconds`, `sla_remaining_seconds`, `sla_stopped_at` or the decision columns: "status, clock and decision columns change only through mortgage_transition()".
+- Don't set the `mortgage.transition` setting yourself to get past the trigger, and don't call `mortgage_transition()` by hand (the one agreed exception is a stage move, §12).
 - Don't clear `sla_risk_notified_at` or `sla_breach_notified_at`. The trigger doesn't guard them, but clearing them sends the alarms again.
 - Don't work deadlines out in calendar hours or in a spreadsheet.
 
@@ -566,7 +568,7 @@ The file's owner, or the Head of mortgages, opens the file (C2) and presses "Rec
 **What happens** (`mortgage_withdraw_consent()`, `0152`, redefined in `0156` without the banks)
 
 - `mortgage_consents.withdrawn_at` is set. The Consent card loses its tick and shows "Withdrawn {when}"; the Activity card says "{actor} recorded {firstName}'s withdrawal of consent", and the card adds "Don't share this file with the banks."
-- C2's "Accept application" is refused without consent. Declining still works.
+- Nothing is refused because of it since 0158: a stage move checks nothing, so the team must read the Consent card before sharing a file. (From 0156 to 0158, Accept application was refused without consent.) Declining still works.
 - The site holds no bank links to stop (0156). If the team has already shared the file with banks by hand, the Head tells those banks; what they hold can't be recalled.
 
 **Then**
@@ -595,7 +597,9 @@ select c.given_at, c.withdrawn_at, r.reference, r.status
 
 **Since 13 Oct 2026 (`0156`) the site has no partner banks.** The bank list, its pages (`/admin/mortgages/banks`, `/admin/settings/partner-banks`), bank packages and their links (`/mortgages/p/[token]`), reminders, the banks' letters and C5 were removed. The team shares an accepted application with its banks itself.
 
-**The flow on C2**
+> **Amended 13 Oct 2026 (0158).** Accept application and Mark pre-approved are gone. The team moves the file through the stages instead (C2's "Move to stage", or the board): typically Accepted when it is ready to share (the clock stops there), then Pre-Approved, Valuation, Final Offer Letter, Registration, Disbursed (which closes it). Moves check nothing — not the documents, not consent. Decline is unchanged; "No bank made an offer" is offered once a stage has stopped the clock. The flow below is how it worked from 0156 to 0158.
+
+**The flow on C2 (0156 to 0158)**
 
 1. **Accept application** (owner or Head), once every document is accepted and consent is on file. The file moves to Accepted (C1's Accepted tab, the board's Accepted column) and the 24-hour clock stops: accepting is the team's answer (§5). The file stays open.
 2. The team shares the file with its banks outside the site. Downloads from the CMS viewer are logged under the adviser's name as always; the site doesn't record which banks were sent what.
@@ -611,8 +615,8 @@ Package links emailed to banks before 0156 now open nothing (the route is gone).
 
 **Don't**
 
-- Don't mark a file pre-approved before a bank has said yes: the note is the team's only record of it.
-- Don't share a file whose consent is withdrawn (§7).
+- Don't move a file to Pre-Approved before a bank has said yes: the move is the team's only record of it.
+- Don't share a file whose consent is withdrawn (§7). Since 0158 nothing stops you, so look at the Consent card first.
 
 ---
 
@@ -636,7 +640,7 @@ A page that asks for a code again after two hours, or when the link is opened fr
 
 **Why**
 
-Five wrong codes lock a link for good. Rate limits are off in production until Upstash is set up (SR-1), so that lock is what stops anyone guessing a code. A locked or expired re-upload link leaves the file in Awaiting applicant with the clock paused. Nothing moves until someone acts.
+Five wrong codes lock a link for good. Rate limits are off in production until Upstash is set up (SR-1), so that lock is what stops anyone guessing a code. A locked or expired re-upload link leaves the file on its stage with the clock paused (it was Awaiting applicant before 0158). Nothing moves until someone acts.
 
 **Check**
 
@@ -714,7 +718,7 @@ select at, actor_id, before ->> 'flag' as flag_before, after ->> 'flag' as flag_
 
 ## 11. Going live
 
-Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.md); the flag is `off` and nobody has a mortgage role. *(History: the flag has been `public` since 8 Oct 2026. `0156`, the light CRM, needs the banks' letter objects deleted from the bucket before it is applied: PROGRESS.md, 13 Oct 2026.)*
+Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.md); the flag is `off` and nobody has a mortgage role. *(History: the flag has been `public` since 8 Oct 2026. `0156`, the light CRM, needs the banks' letter objects deleted from the bucket before it is applied: PROGRESS.md, 13 Oct 2026. `0157` must be applied and committed on its own before `0158`: Postgres can't use a new enum value in the transaction that adds it.)*
 
 **1. Before anything**
 
@@ -774,6 +778,84 @@ To go back, set the flag to `off` (§10). No deploy is needed, and secure links 
 
 ---
 
+## 12. Mortgage stages
+
+Since 13 Oct 2026 (`0157`, `0158`) a Fast Pre-Approval is `open` or `declined`, and where an open file stands is its **stage**: a row in `mortgage_stages`, seeded New, In Review, Accepted, Pre-Approved, Valuation, Final Offer Letter, Registration, Disbursed. Mortgage Consultancy has no stages.
+
+**Who keeps them, and where**
+
+Pages & blocks → **Mortgage stages** (`/admin/pages/mortgage-stages`): staff with role admin, editor or marketing, and the Head of mortgages (`mortgage_can_edit_stages()`). Anyone else gets a 404 and doesn't see the card on Pages & blocks. Keeping the stages gives no access to requests or documents. Every change is a SQL function called with the editor's session, and writes an audit row (§1).
+
+- **Rename:** 1–40 characters, no two stages with the same name (case ignored). The board, the queue's Stage filter and C2 show the new name at once; the activity log keeps the name each move used at the time.
+- **Add:** always at the end; move it up from there.
+- **Reorder:** up and down. The order is the board's column order, and **the first stage is where new applications land**, so moving another stage to the top changes that.
+- **Delete:** refused while any file is on the stage — a declined file counts, because it remembers the stage it was declined from — and for the last remaining stage. Move those files to another stage first (C2 or the board), then delete. To see them:
+
+```sql
+-- Read-only: the files on a stage, declined ones included
+select r.reference, r.status, r.closed_at
+  from public.mortgage_requests r
+  join public.mortgage_stages s on s.id = r.stage_id
+ where s.name = 'Valuation'
+ order by r.submitted_at;
+```
+
+**The two switches**
+
+- **Answers the applicant** (`stops_clock`; seeded on Accepted and every stage after it): the first time a file reaches such a stage, its 24-hour clock stops, for good (§5). Moving it back, or turning the switch off later, doesn't restart it. Turning the switch on for a stage doesn't stop the clocks of files already on it; it applies to the next file moved there.
+- **Closes the file** (`closes_file`; seeded on Disbursed): a file moved there gets `closed_at`, shows under C1's Closed tab, stops being reviewable, and counts towards retention (below). Moving it to any other stage reopens it. Changing the switch doesn't change files already on the stage until they're next moved.
+
+**Moving files**
+
+The owner or the Head, from C2's "Move to stage" (on a declined file, "Reopen at a stage") or by dropping a card on the board. Any stage to any stage, forwards or back, with no document or consent checks. A declined file moved onto a stage is reopened and its decision cleared; the activity log keeps the decline. Each move is a `stage.changed` event with both stage names.
+
+**Moving a file by hand** (engineer; only when the CMS can't, e.g. a bug, and with the Head's agreement)
+
+The Head can move any file from the CMS, so ask them first. If it must be SQL, use the transition (the only path the trigger allows) and write the audit row in the same statement. `p_actor_id` is the staff member the activity log will name.
+
+> **Changes data.** Engineer only. In production only once the Head has agreed.
+
+```sql
+-- CHANGES DATA. Move one Fast Pre-Approval to a stage, with its audit row.
+with target as (
+  select r.id, r.reference, r.updated_at, s.name as from_stage
+    from public.mortgage_requests r
+    left join public.mortgage_stages s on s.id = r.stage_id
+   where r.reference = 'BZM-26-0412' and r.service = 'pre_approval'
+), dest as (
+  select id, name from public.mortgage_stages where name = 'Valuation'
+), moved as (
+  select (public.mortgage_transition(
+            t.id, 'stage_changed', 'staff', '<staff user id to name>'::uuid,
+            '{}'::jsonb, jsonb_build_object('stage_id', d.id), t.updated_at)).reference
+    from target t, dest d
+)
+insert into public.audit_log (actor_id, actor_kind, action, target_kind, target_id, before, after)
+select '<your user id>'::uuid, 'user'::public.audit_actor_kind, 'mortgage.stage_move_by_hand',
+       'mortgage_request', m.reference,
+       jsonb_build_object('stage', t.from_stage),
+       jsonb_build_object('stage', d.name, 'agreed_by', '<the Head>', 'why', '<reason>')
+  from moved m, target t, dest d
+returning id, at;
+```
+
+If it returns no row, the reference or the stage name didn't match and nothing moved. The usual rules apply (§5's stop, the closing switch, a declined file reopened). Check it:
+
+```sql
+-- Read-only
+select r.reference, r.status, s.name as stage, r.sla_stopped_at, r.closed_at
+  from public.mortgage_requests r
+  left join public.mortgage_stages s on s.id = r.stage_id
+ where r.reference = 'BZM-26-0412';
+```
+
+**Don't**
+
+- Don't write `mortgage_requests.stage_id` or the `mortgage_stages` table directly: the trigger refuses the first, and the second skips the checks (files on a deleted stage, a duplicate name, positions 1…n) and the audit row. Use the screen.
+- Don't delete every stage but one to "start again": the files have to be moved first anyway, and each move is in their activity log.
+
+---
+
 ## Data-subject requests (export and erasure)
 
 **Where**
@@ -786,20 +868,20 @@ To go back, set the flag to `off` (§10). No deploy is needed, and secure links 
 **Export** ("Build access archive")
 
 - The archive downloads to your machine; send it from the DPO mailbox yourself. Nothing is emailed automatically.
-- Its `mortgage_requests` section has, for each request: the details the applicant gave, the consents (with the IP address and browser they were given from), each document's status and what the team recorded from it, its files by name and size, the decision and the message sent (an accepted request is noted as possibly shared with partner banks by the team), consultations, the contact log, re-upload requests, and the activity's kinds and dates. Staff aren't named.
+- Its `mortgage_requests` section has, for each request: the details the applicant gave, its stage (0158), the consents (with the IP address and browser they were given from), each document's status and what the team recorded from it, its files by name and size, the decision and the message sent (`may_have_been_shared_with_banks`: open with a stopped clock, or declined for "no bank made an offer" — the archive then says the team may have shared it with partner banks), consultations, the contact log, re-upload requests, and the activity's kinds and dates. Staff aren't named.
 - **The documents themselves aren't in it.** If the subject asks for copies, the file's owner or the Head downloads each in the CMS viewer (every download is logged) and they go from the DPO mailbox.
 - Each request's activity gets a `dsr.exported` line.
 
 **Erasure** ("Erase all data")
 
 - **Mortgage requests are deleted outright,** unlike the platform's other tables, which keep AML-relevant rows with their personal fields wiped. The documents leave the bucket first; then the requests go with their consents, secure links (and their unsent uploads), consultations, contact log, outbox rows and activity log. An open file disappears from the queue.
-- The result names what went: "mortgage requests deleted: N (references), with N files". If a request had been accepted (accepted, pre-approved, or declined with "no bank made an offer"), it also says "{references} had been accepted, so the mortgage team may have shared … with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject". The site doesn't record which banks (0156), so ask the Head. If the subject wants a bank to delete its copy, they (or the Head, at their request) ask that bank.
+- The result names what went: "mortgage requests deleted: N (references), with N files". If a request may have reached banks (since 0158: open with its clock stopped by a stage, or declined with "no bank made an offer"), it also says "{references} had been answered, so the mortgage team may have shared … with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject". The site doesn't record which banks (0156), so ask the Head. If the subject wants a bank to delete its copy, they (or the Head, at their request) ask that bank.
 - **If it fails** ("The mortgage requests couldn't be erased (…). Nothing was changed; try again."), run it again. Files deleted before the failure stay deleted; the rows are still there until a run completes. Erasing the platform's tables only happens after the mortgage part succeeds.
-- **D7 caution.** Whether the UAE AML record rule covers these files is still open. Until compliance answers, ask the Head (and compliance) before erasing an accepted or pre-approved file, and record their answer in the reply.
+- **D7 caution.** Whether the UAE AML record rule covers these files is still open. Until compliance answers, ask the Head (and compliance) before erasing a file past its answering stage (Accepted onwards), and record their answer in the reply.
 
 **The record**
 
-Each export or erasure writes a `dsr_requests` row. For an erasure its `payload.mortgage` holds the references, the number of files and activity lines deleted, and which requests had been accepted (`accepted`; `shared_with_banks` on rows before 0156) — that row is the evidence the request was handled.
+Each export or erasure writes a `dsr_requests` row. For an erasure its `payload.mortgage` holds the references, the number of files and activity lines deleted, and which requests may have reached banks (`accepted`, the field's name since 0156, whatever the stage; `shared_with_banks` on rows before 0156) — that row is the evidence the request was handled.
 
 ```sql
 -- Read-only: what an erasure recorded
@@ -818,7 +900,7 @@ select kind, status, fulfilled_at, payload -> 'mortgage' as mortgage
 
 **What it does**
 
-`/api/cron/mortgage-retention`, daily at 22:30 UTC (02:30 in Dubai). For every request closed (pre-approved, declined or completed) more than `mortgage_settings.retention_months` months ago, it deletes the files — the applicant's documents — from the bucket, then keeps each file's row as `removed`, with its name replaced by "deleted", and adds "files purged" (`files.purged`) to the request's activity. The request itself, its details, what was recorded from its documents and its activity stay. A run clears up to 2,000 files; any more are cleared on the following nights.
+`/api/cron/mortgage-retention`, daily at 22:30 UTC (02:30 in Dubai). For every request closed (declined, completed, or on a closing stage such as Disbursed — 0158; pre-approved until then) more than `mortgage_settings.retention_months` months ago, it deletes the files — the applicant's documents — from the bucket, then keeps each file's row as `removed`, with its name replaced by "deleted", and adds "files purged" (`files.purged`) to the request's activity. The request itself, its details, what was recorded from its documents and its activity stay. A run clears up to 2,000 files; any more are cleared on the following nights.
 
 **Today it's off.** `retention_months` is null until compliance decides the period (D7), and the job deletes nothing. The health page line says so, and the Head's settings page shows "Kept until compliance sets how long (decision D7). Nothing is deleted."
 

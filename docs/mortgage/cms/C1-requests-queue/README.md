@@ -13,6 +13,8 @@
 
 > **Amended 13 Oct 2026 (0156):** the With banks tab is **Accepted** (`c1.tab.accepted`, status `accepted`); the team shares accepted files with its banks by hand. On the board view, the Accepted column replaces With banks: dropping In review → Accepted opens C2's Accept dialog, and Accepted → Pre-approved asks for an optional note on the board. The design's "With banks" strings below are kept as designed.
 
+> **Amended 13 Oct 2026 (0158): stages.** The tabs are now **Open** and **Closed** only (closed = declined, completed, or on a closing stage such as Disbursed), plus a **Stage** filter listing the client's stages with counts (`?stage=<id>`, `c1.stage.*`). The per-status tabs (New, In review, Awaiting applicant, Accepted, Contacted & booked) and their table below are the design, not the build. An open Fast Pre-Approval's status pill shows its stage name. On the board, a Fast Pre-Approval's columns are the stages (Pages & blocks → Mortgage stages) plus Declined: a drop onto a stage moves the file at once, any direction, a declined file included (reopened); a drop onto Declined opens the decline dialog. Consultancy's columns are unchanged.
+
 ## Purpose
 One inbox for both services, ordered by what's due first. The team sees what's new, which pre-approvals are close to missing the 24-hour promise, and who owns each request.
 

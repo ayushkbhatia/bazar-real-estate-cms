@@ -3,8 +3,8 @@
  */
 
 /**
- * The mortgage module's database — migrations 0138 and 0139 — tested against
- * the local Supabase stack:
+ * The mortgage module's database — migrations 0138 and 0139, and the stages
+ * of 0158 — tested against the local Supabase stack:
  *
  *   npm run db:local:reset && npm run test:db
  *
@@ -18,6 +18,13 @@
  *   · references stay unique and gap-free under concurrent submits, and a
  *     retried submit makes one request;
  *   · the clock columns follow sla.ts through start, pause, resume and stop;
+ *   · a Fast Pre-Approval is open on a stage or declined (0158): it lands on
+ *     the first stage, moves freely between stages through
+ *     mortgage_move_stage() (owner or Head), a stage that stops the clock
+ *     stops it once, a closing stage closes the file, and a declined file
+ *     moved onto a stage reopens;
+ *   · the stages are kept by mortgage_save_stage / _reorder_stages /
+ *     _delete_stage, for whom mortgage_can_edit_stages() allows;
  *   · who sees and does what (SPEC §7): admins without a mortgage role see nothing;
  *     signed-in staff move a request only through the actions (0152, SR-10) and
  *     log only opens and downloads of its own files (SR-11); every mortgage
@@ -68,6 +75,10 @@ type Row = {
   sla_remaining_seconds: number | null;
   sla_stopped_at: string | null;
   decision: string | null;
+  decided_at: string | null;
+  decline_reason: string | null;
+  decision_message: string | null;
+  stage_id: string | null;
   property_id: string | null;
   property_ref: string | null;
 };
@@ -82,12 +93,17 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
   let service: SupabaseClient;
   let policy: SlaPolicy;
   let seq = 0;
+  /** The seeded stages' ids, by name (0158). */
+  const stage: Record<string, string> = {};
 
   beforeAll(async () => {
     service = client(local, local.serviceRoleKey);
     const { data: settings, error } = await service.from("mortgage_settings").select("*").single();
     if (error) throw new Error(`no mortgage_settings — has 0138 been applied? ${error.message}`);
     policy = slaPolicy(settings);
+    const { data: stages, error: stagesError } = await service.from("mortgage_stages").select("id, name").order("position");
+    if (stagesError) throw new Error(`no mortgage_stages — has 0158 been applied? ${stagesError.message}`);
+    for (const s of stages as { id: string; name: string }[]) stage[s.name] = s.id;
   });
 
   afterAll(async () => {
@@ -192,11 +208,6 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     if (error) throw new Error(error.message);
   }
 
-  /** Every document accepted, so the application can be (0156). */
-  async function readyToAccept(row: Row) {
-    await service.from("mortgage_documents").update({ state: "accepted" }).eq("request_id", row.id);
-  }
-
   /** A fresh request walked through legal moves to `status`. */
   async function inState(kind: MortgageService, status: MortgageStatus): Promise<Row> {
     if (kind === "consultancy") {
@@ -208,37 +219,23 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       if (status === "consultation_booked") return row;
       return mustTransition(row, "consultation_held", "staff");
     }
-    let row = await create("pre_approval");
-    if (status === "new") return row;
-    row = await mustTransition(row, "first_document_opened", "system");
-    if (status === "in_review") return row;
-    if (status === "awaiting_applicant") {
-      await openReupload(row);
-      return mustTransition(row, "reupload_requested", "staff", { sla: slaFor(row) });
-    }
-    await readyToAccept(row);
-    row = await mustTransition(row, "application_accepted", "staff");
-    if (status === "accepted") return row;
-    return mustTransition(row, status === "pre_approved" ? "pre_approved" : "declined", "staff");
+    const row = await create("pre_approval");
+    if (status === "open") return row;
+    return mustTransition(row, "declined", "staff", { data: { message: "No." } });
   }
 
   /** The facts mortgage_transition() reads, for state.ts to judge by. */
   async function contextOf(row: Row): Promise<TransitionContext> {
-    const [docs, consents, open] = await Promise.all([
-      service.from("mortgage_documents").select("state").eq("request_id", row.id),
-      service.from("mortgage_consents").select("id").eq("request_id", row.id).is("withdrawn_at", null),
-      service
-        .from("mortgage_reupload_requests")
-        .select("id")
-        .eq("request_id", row.id)
-        .is("fulfilled_at", null)
-        .is("cancelled_at", null),
-    ]);
+    const { data: open } = await service
+      .from("mortgage_reupload_requests")
+      .select("id")
+      .eq("request_id", row.id)
+      .is("fulfilled_at", null)
+      .is("cancelled_at", null);
     return {
-      requiredDocuments: docs.data?.length ?? 0,
-      acceptedDocuments: docs.data?.filter((d) => d.state === "accepted").length ?? 0,
-      consentOnFile: (consents.data?.length ?? 0) > 0,
-      outstandingReuploads: open.data?.length ?? 0,
+      outstandingReuploads: open?.length ?? 0,
+      clockRunning: !!row.sla_due_at && !row.sla_paused_at && !row.sla_stopped_at,
+      clockPaused: !!row.sla_paused_at && !row.sla_stopped_at,
     };
   }
 
@@ -255,7 +252,8 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
           for (const actor of ACTOR_KINDS) {
             const expected = canTransition(kind, status, event, actor, ctx);
             const target = expected ? await inState(kind, status) : shared;
-            const { data, error } = await transition(target, event, actor, { sla: slaFor(target) });
+            // A stage move names its stage; every other event ignores the data.
+            const { data, error } = await transition(target, event, actor, { sla: slaFor(target), data: { stage_id: stage["In Review"] } });
             const label = `${kind}: ${status} --${event} (${actor})-->`;
             if (!error !== expected) {
               mismatches.push(`${label} database ${error ? `refused (${error.code} ${error.message})` : "allowed"}, state.ts ${expected ? "allows" : "refuses"}`);
@@ -322,20 +320,23 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     let row = await create("pre_approval", { at: submitted });
     expect(new Date(row.sla_started_at!)).toEqual(submitted);
     expect(new Date(row.sla_due_at!)).toEqual(dubaiInstant(2026, 9, 24, 14, 14)); // Thu, working hours
+    const moveTo = (name: string, at: Date) => mustTransition(row, "stage_changed", "staff", { at, data: { stage_id: stage[name] } });
 
-    row = await mustTransition(row, "first_document_opened", "system", { at: dubaiInstant(2026, 9, 22, 10, 33) });
+    // Into review: a stage that doesn't answer the applicant leaves the clock running.
+    row = await moveTo("In Review", dubaiInstant(2026, 9, 22, 10, 33));
+    expect(row).toMatchObject({ status: "open", stage_id: stage["In Review"], sla_stopped_at: null });
+    expect(new Date(row.sla_due_at!)).toEqual(dubaiInstant(2026, 9, 24, 14, 14));
     await openReupload(row);
 
-    // Pause Wed 11:00 with 13h 14m of working time left.
+    // Pause Wed 11:00 with 13h 14m of working time left. The file stays on its stage.
     const pausedAt = dubaiInstant(2026, 9, 23, 11, 0);
     row = await mustTransition(row, "reupload_requested", "staff", { at: pausedAt, sla: clockPause(row, pausedAt, policy) });
-    expect(row.status).toBe("awaiting_applicant");
-    expect(row.sla_due_at).toBeNull();
+    expect(row).toMatchObject({ status: "open", stage_id: stage["In Review"], sla_due_at: null });
     expect(row.sla_remaining_seconds).toBe(13 * 3600 + 14 * 60);
     expect(slaStatus(row, dubaiInstant(2026, 9, 27, 12, 0), policy).state).toBe("paused");
 
     // A pause without the frozen remainder is refused.
-    const bare = await inState("pre_approval", "in_review");
+    const bare = await inState("pre_approval", "open");
     await openReupload(bare);
     expect((await transition(bare, "reupload_requested", "staff")).error?.code).toBe("MR422");
 
@@ -346,26 +347,52 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       .eq("request_id", row.id);
     const resumedAt = dubaiInstant(2026, 9, 28, 16, 0);
     row = await mustTransition(row, "reupload_fulfilled", "applicant", { at: resumedAt, sla: clockResume(row, resumedAt, policy) });
-    expect(row.status).toBe("in_review");
+    expect(row).toMatchObject({ status: "open", stage_id: stage["In Review"], sla_paused_at: null });
     expect(new Date(row.sla_due_at!)).toEqual(dubaiInstant(2026, 9, 30, 9, 14));
     expect(row.sla_paused_seconds).toBe((resumedAt.getTime() - pausedAt.getTime()) / 1000);
     expect(slaStatus(row, resumedAt, policy).remainingSeconds).toBe(13 * 3600 + 14 * 60);
 
     // Accepted Tuesday morning: the team has answered, so the clock stops there, but the file stays open.
-    await readyToAccept(row);
     const acceptedAt = dubaiInstant(2026, 9, 29, 10, 0);
-    row = await mustTransition(row, "application_accepted", "staff", { at: acceptedAt });
-    expect(row).toMatchObject({ status: "accepted", decision: null, closed_at: null });
+    row = await moveTo("Accepted", acceptedAt);
+    expect(row).toMatchObject({ status: "open", decision: null, closed_at: null });
     expect(new Date(row.sla_stopped_at!)).toEqual(acceptedAt);
     expect(slaStatus(row, dubaiInstant(2026, 10, 5, 12, 0), policy)).toMatchObject({ state: "met", stopped: true });
 
-    // Pre-approved a week later: the file closes, and the promise is still measured to the acceptance.
-    const decidedAt = dubaiInstant(2026, 10, 6, 11, 0);
-    row = await mustTransition(row, "pre_approved", "staff", { at: decidedAt, data: { message: "Good news." } });
-    expect(row).toMatchObject({ status: "pre_approved", decision: "pre_approved" });
+    // On through the pipeline, and back: the promise stays measured to the acceptance.
+    row = await moveTo("Pre-Approved", dubaiInstant(2026, 10, 6, 11, 0));
+    row = await moveTo("In Review", dubaiInstant(2026, 10, 6, 12, 0));
     expect(new Date(row.sla_stopped_at!)).toEqual(acceptedAt);
-    expect(new Date(row.closed_at!)).toEqual(decidedAt);
-    expect(slaStatus(row, dubaiInstant(2026, 10, 5, 12, 0), policy).state).toBe("met");
+    expect(row.closed_at).toBeNull();
+
+    // Disbursed closes the file; leaving it reopens it.
+    const disbursedAt = dubaiInstant(2026, 11, 2, 11, 0);
+    row = await moveTo("Disbursed", disbursedAt);
+    expect(row).toMatchObject({ status: "open", stage_id: stage["Disbursed"] });
+    expect(new Date(row.closed_at!)).toEqual(disbursedAt);
+    expect(new Date(row.sla_stopped_at!)).toEqual(acceptedAt);
+    row = await moveTo("Registration", dubaiInstant(2026, 11, 3, 11, 0));
+    expect(row).toMatchObject({ status: "open", closed_at: null });
+    expect(slaStatus(row, dubaiInstant(2026, 11, 3, 12, 0), policy).state).toBe("met");
+  });
+
+  it("lands a new Fast Pre-Approval on the first stage, open; a consultancy has no stage", async () => {
+    const { data: first } = await service.from("mortgage_stages").select("id").order("position").limit(1).single();
+    const row = await create("pre_approval");
+    expect(row).toMatchObject({ status: "open", stage_id: (first as { id: string }).id, closed_at: null, sla_stopped_at: null });
+    const { data: log } = await service.from("mortgage_events").select("type").eq("request_id", row.id);
+    expect((log ?? []).map((e: { type: string }) => e.type)).not.toContain("status.changed");
+
+    const consult = await create("consultancy");
+    expect(consult).toMatchObject({ status: "new", stage_id: null });
+  });
+
+  it("does nothing when a document is first opened, and refuses a stage that doesn't exist", async () => {
+    const row = await create("pre_approval");
+    const opened = await mustTransition(row, "first_document_opened", "system");
+    expect(opened).toMatchObject({ status: "open", stage_id: row.stage_id, updated_at: row.updated_at });
+    expect((await transition(row, "stage_changed", "staff", { data: { stage_id: randomUUID() } })).error?.code).toBe("MR422");
+    expect((await transition(row, "stage_changed", "staff")).error?.code).toBe("MR422");
   });
 
   it("sets first contact on consultancy and closes it when the consultation is held", async () => {
@@ -385,8 +412,11 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
 
   it("refuses any other write to status or the clock, even from the service role", async () => {
     const row = await create("pre_approval");
-    const status = await service.from("mortgage_requests").update({ status: "accepted" }).eq("id", row.id);
+    const status = await service.from("mortgage_requests").update({ status: "declined" }).eq("id", row.id);
     expect(status.error?.code).toBe("MR403");
+    const onStage = await service.from("mortgage_requests").update({ stage_id: stage["Accepted"] }).eq("id", row.id);
+    expect(onStage.error?.code).toBe("MR403");
+    expect((await service.from("mortgage_requests").select("stage_id").eq("id", row.id).single()).data).toEqual({ stage_id: stage["New"] });
     const clock = await service.from("mortgage_requests").update({ sla_due_at: new Date().toISOString() }).eq("id", row.id);
     expect(clock.error?.code).toBe("MR403");
     const employment = await service.from("mortgage_requests").update({ employment_type: "business_owner" }).eq("id", row.id);
@@ -576,14 +606,15 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
         ["first_document_opened", "staff", people.adviserA],
         ["first_document_opened", "system", people.adviserA],
         ["reupload_fulfilled", "applicant", people.head],
+        ["stage_changed", "staff", people.adviserA],
         ["declined", "staff", people.head],
       ] as const;
       for (const [event, actor, who] of calls) {
-        const { error } = await transition(row, event, actor, {}, who.client);
+        const { error } = await transition(row, event, actor, { data: { stage_id: stage["Accepted"] } }, who.client);
         expect(error?.code, `${event} as ${actor}`).toBe("42501");
       }
-      const { data } = await service.from("mortgage_requests").select("status").eq("id", row.id).single();
-      expect(data!.status).toBe("new");
+      const { data } = await service.from("mortgage_requests").select("status, stage_id").eq("id", row.id).single();
+      expect(data).toEqual({ status: "open", stage_id: stage["New"] });
     });
 
     it("records the signed-in caller and the database's time, whatever the call claims", async () => {
