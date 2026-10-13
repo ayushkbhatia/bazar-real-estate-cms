@@ -31,6 +31,7 @@ import { recordHeartbeat, reportError, reportIssue } from "@/lib/observability";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured, isSalesforceConfigured } from "@/lib/env";
 import {
+  leadPageUrl,
   pushLead,
   LOCAL_BLOCK_PREFIX,
   type LeadSourceRow,
@@ -81,6 +82,8 @@ type QueueRow = {
   inferred_constraints: { intent?: string | null } | null;
   crm_attempts: number;
   properties: QueueProperty | QueueProperty[] | null;
+  developments: { name: string } | { name: string }[] | null;
+  form_submissions: { source_path: string | null }[] | null;
 };
 
 type QueueProperty = {
@@ -115,8 +118,14 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
     property_reference: crmName ?? property?.reference ?? null,
     property_mode: property?.mode ?? null,
     website_reference: crmName ? (property?.reference ?? null) : null,
+    page_url: leadPageUrl(
+      (row.form_submissions ?? []).map((s) => s.source_path),
+      env.NEXT_PUBLIC_SITE_URL,
+    ),
+    project_name: one(row.developments)?.name ?? null,
   };
 }
+
 
 /**
  * Mirror the run onto the integrations row so
@@ -206,7 +215,7 @@ export async function GET(req: NextRequest) {
     const { data, error } = await admin
       .from("enquiries")
       .select(
-        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode, salesforce_listings(sf_listing_name))",
+        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode, salesforce_listings(sf_listing_name)), developments:development_id(name), form_submissions(source_path)",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())
