@@ -47,6 +47,7 @@ function row(over: Partial<Row> = {}): Row {
     intent: null,
     property_reference: "BAZ-AD-04891",
     property_mode: "buy",
+    page_url: "https://www.bazarrealestate.ae/p/villa-baz-ad-04891",
     ...over,
   };
 }
@@ -99,12 +100,11 @@ describe("pushLead", () => {
     expect(body).not.toHaveProperty("Country_Code__c");
   });
 
-  it("resends without Property_Reference__c when the org has dropped it", async () => {
-    // Production, 13 Oct 2026: "No such column 'Property_Reference__c' on
-    // sobject of type Lead__c" on every property enquiry.
+  it("resends without Website_Listing_URL__c if the org has no such field", async () => {
+    // Its API name on Lead__c is assumed; a wrong guess must not lose the lead.
     salesforceRequest
       .mockImplementationOnce(async () => {
-        throw new FakeSalesforceError("No such column 'Property_Reference__c' on sobject of type Lead__c", {
+        throw new FakeSalesforceError("No such column 'Website_Listing_URL__c' on sobject of type Lead__c", {
           status: 400,
           errorCode: "INVALID_FIELD",
           retryable: false,
@@ -114,9 +114,12 @@ describe("pushLead", () => {
     const out = await pushLead(row());
     expect(out).toEqual({ ok: true, id: "a04Y" });
     expect(salesforceRequest).toHaveBeenCalledTimes(2);
+    const first = (salesforceRequest.mock.calls[0][1] as { body: Record<string, unknown> }).body;
     const second = (salesforceRequest.mock.calls[1][1] as { body: Record<string, unknown> }).body;
-    expect(second).not.toHaveProperty("Property_Reference__c");
-    expect(String(second.Description__c)).toContain("Property: BAZ-AD-04891");
+    expect(first.Website_Listing_URL__c).toBe("https://www.bazarrealestate.ae/p/villa-baz-ad-04891");
+    expect(first).not.toHaveProperty("Property_Reference__c");
+    expect(second).not.toHaveProperty("Website_Listing_URL__c");
+    expect(String(second.Description__c)).toContain("Page: https://www.bazarrealestate.ae/p/villa-baz-ad-04891");
   });
 
   it("does not retry other field errors", async () => {

@@ -36,6 +36,7 @@ function row(over: Partial<LeadSourceRow> = {}): LeadSourceRow {
     intent: null,
     property_reference: "BAZ-AD-04891",
     property_mode: "buy",
+    page_url: "https://www.bazarrealestate.ae/p/villa-baz-ad-04891",
     ...over,
   };
 }
@@ -49,7 +50,9 @@ describe("buildLeadPayload", () => {
     expect(payload.Phone__c).toBe("501234567");
     expect(payload.Lead_Source__c).toBe("Website");
     expect(payload.Inquiry_Type__c).toBe("Buy");
-    expect(payload.Property_Reference__c).toBe("BAZ-AD-04891");
+    expect(payload.Website_Listing_URL__c).toBe("https://www.bazarrealestate.ae/p/villa-baz-ad-04891");
+    // Removed from Lead__c at Bazar's request, 13 Oct 2026.
+    expect(payload).not.toHaveProperty("Property_Reference__c");
   });
 
   it("emits only the fields the doc names", () => {
@@ -64,7 +67,7 @@ describe("buildLeadPayload", () => {
       "Lead_Source__c",
       "Description__c",
       "Inquiry_Type__c",
-      "Property_Reference__c",
+      "Website_Listing_URL__c",
     ]);
     for (const key of Object.keys(buildLeadPayload(row()))) {
       expect(allowed.has(key), `unexpected field ${key}`).toBe(true);
@@ -77,7 +80,7 @@ describe("buildLeadPayload", () => {
     const payload = buildLeadPayload(
       row({ property_reference: null, property_mode: null, source: "contact_page" }),
     );
-    expect("Property_Reference__c" in payload).toBe(false);
+    expect("Website_Listing_URL__c" in payload).toBe(false);
   });
 
   it("omits both phone fields when the enquiry carries no usable number", () => {
@@ -213,7 +216,7 @@ describe("buildDescription", () => {
       ) ?? "";
     expect(text).toContain("Page: https://www.bazarrealestate.ae/ar/developments/yas-riva-reserve");
     expect(text).toContain("Project: Yas Riva Reserve");
-    expect(buildDescription(row())).not.toContain("Page:");
+    expect(buildDescription(row({ page_url: null }))).not.toContain("Page:");
   });
 
   it("names the website's page when the listing came from Salesforce", () => {
@@ -222,7 +225,7 @@ describe("buildDescription", () => {
     const payload = buildLeadPayload(
       row({ property_reference: "LST-00003", website_reference: "BAZ-AD-04891" }),
     );
-    expect(payload.Property_Reference__c).toBe("LST-00003");
+    expect(payload.Description__c).toContain("Property: LST-00003");
     expect(payload.Description__c).toContain("Website listing: BAZ-AD-04891");
     expect(buildDescription(row())).not.toContain("Website listing:");
   });

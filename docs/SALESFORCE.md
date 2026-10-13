@@ -49,7 +49,7 @@ custom, all documented in the vendor doc and nothing beyond them.
 | `Lead_Source__c` | enquiry `source` | `Website`, or `Others` for WhatsApp. Required. |
 | `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent`. Required. |
 | `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
-| `Property_Reference__c` | `properties.reference` | `BAZ-AD-04891`. Omitted for non-property leads. |
+| `Website_Listing_URL__c` | the listing page's absolute URL | Property enquiries only. Replaced `Property_Reference__c`, which Levarus removed at Bazar's request on 13 Oct 2026. The API name is assumed from the listing object; a lead is resent without it if the org says no such column. The reference itself is in the description (`Property: …`). |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
 **On the two picklists.** Both are Required as of 23 Sept, which inverts the
@@ -117,11 +117,13 @@ leads arrive with no change here. The two leads that had been blocked were
 not missing a phone: one was test text, and one was a visitor who typed
 Arabic-Indic digits (`+٩٧١…`), which `splitPhone` now reads as digits.
 
-**`Property_Reference__c` disappeared from `Lead__c` in production on
-13 Oct 2026** — every property enquiry answered `INVALID_FIELD: No such
-column`. `pushLead` now resends such a lead once without the field, and the
-description always carries `Property: <reference>`, so the lead lands either
-way. Ask Levarus whether the field was renamed or its access removed.
+**`Property_Reference__c` was removed from `Lead__c` in production on
+13 Oct 2026**, at Omar's request, and replaced with a website listing URL
+field. Until the sync caught up every property enquiry answered
+`INVALID_FIELD: No such column`. The sync now sends `Website_Listing_URL__c`
+instead — its API name assumed until Levarus confirm it — and resends a lead
+once without a field the org says it does not have, so a wrong guess costs a
+call, not the lead. The description always carries `Property: <reference>`.
 
 The description also carries, since the same day, `Page:` — the absolute
 URL of the page the form was sent from (`form_submissions.source_path`) — and
