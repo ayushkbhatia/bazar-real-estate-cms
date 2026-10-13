@@ -5,7 +5,7 @@ import { z } from "zod";
 import { logAudit } from "@/lib/audit";
 import { reportError } from "@/lib/observability";
 import { loadStages, type MortgageStage } from "@/lib/mortgage-requests/stages";
-import { MORTGAGE_BOARD_PATH, STAGES_ADMIN_PATH, stageEditorSession } from "./_access";
+import { stageEditorSession } from "./_access";
 import { cleanStageName, STAGE_NAME_MAX, stageRefusal, type StageDbError } from "./_logic";
 
 /**
@@ -44,8 +44,9 @@ async function fresh(s: Session): Promise<MortgageStage[] | undefined> {
 }
 
 function refresh() {
-  revalidatePath(STAGES_ADMIN_PATH);
-  revalidatePath(MORTGAGE_BOARD_PATH);
+  // Admin paths sit outside the public locale cache, so a plain revalidatePath is right here.
+  revalidatePath("/admin/pages/mortgage-stages");
+  revalidatePath("/admin/mortgages");
 }
 
 async function refused(s: Session, error: StageDbError, source: string): Promise<StageActionResult> {

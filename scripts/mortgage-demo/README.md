@@ -1,8 +1,9 @@
 # Mortgage sample data (for a demo)
 
 Sample mortgage requests in a deployed stack, so the client can walk the
-team's CMS end to end (C1 queue, C2/C6 files, the C3/C4 viewer, an accepted
-application and a recorded pre-approval) before any real application exists. They are the CMS
+team's CMS end to end (C1 queue, C2/C6 files, the C3/C4 viewer, and files on
+every column of the stage board, Accepted to Disbursed) before any real
+application exists. They are the CMS
 designs' requests — the same data as the local seed — written by the demo mode
 of [`scripts/db-local/seed-mortgage.ts`](../db-local/seed-mortgage.ts).
 
@@ -41,7 +42,9 @@ npx tsx scripts/db-local/seed-mortgage.ts > /tmp/mortgage-demo.sql
 ```
 
 The SQL is one transaction. Run it as the database owner, since it sets
-`mortgage.transition` to write statuses and clocks:
+`mortgage.transition` to write statuses, stages and clocks. It places each
+file on its stage by name, so it refuses to run if the stages 0158 created
+(New … Disbursed) have been renamed or removed:
 
 - **Local stack:** `docker exec -i supabase_db_bazar-local psql -U postgres -d postgres -v ON_ERROR_STOP=1 < /tmp/mortgage-demo.sql`
 - **Production:** the Management API with the project's access token

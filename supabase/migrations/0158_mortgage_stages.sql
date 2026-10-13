@@ -32,8 +32,10 @@ create function public.mortgage_can_edit_stages()
 returns boolean
 language sql stable security definer set search_path = public
 as $$
+  -- Both sides coalesced: a NULL here would make `not mortgage_can_edit_stages()`
+  -- NULL too, and the functions below would let the caller through.
   select coalesce(public.current_staff_role()::text in ('admin', 'editor', 'marketing'), false)
-      or public.mortgage_role() = 'head';
+      or coalesce(public.mortgage_role() = 'head', false);
 $$;
 revoke all on function public.mortgage_can_edit_stages() from public, anon;
 grant execute on function public.mortgage_can_edit_stages() to authenticated, service_role;
@@ -270,8 +272,8 @@ begin
   if r.service = 'pre_approval' then
     case
       -- Since 0158 opening a document doesn't move the file; callers from
-      -- before it may still send the event.
-      when p_event = 'first_document_opened' then
+      -- before it may still send the event. Open files only, as state.ts has it.
+      when r.status = 'open' and p_event = 'first_document_opened' then
         return r;
       -- A re-upload request pauses a running clock; the file stays on its stage.
       when r.status = 'open' and p_event = 'reupload_requested' then
@@ -517,8 +519,10 @@ begin
           jsonb_build_object('reason', p_reason, 'channels', to_jsonb(p_channels),
                              'reuploads_cancelled', v_cancelled, 'stage', v_stage));
 
-  insert into public.mortgage_notifications (request_id, kind, channel, created_at, next_attempt_at)
-  select r.id, 'decision_declined', c, now(), now()
+  -- One email per decline: a file reopened onto a stage can be declined again,
+  -- and the outbox keeps one row per (request, kind, channel, dedupe).
+  insert into public.mortgage_notifications (request_id, kind, channel, dedupe, created_at, next_attempt_at)
+  select r.id, 'decision_declined', c, r.decided_at::text, now(), now()
     from unnest(p_channels) as c;
 
   return r;

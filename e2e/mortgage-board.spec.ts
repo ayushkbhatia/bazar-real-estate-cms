@@ -85,15 +85,21 @@ async function drag(page: Page, from: Locator, to: Locator) {
   await page.mouse.up();
 }
 
-test("the board: stages as columns, a free move by dragging, back again, decline from the Move menu, log a contact", async ({ page }) => {
+test("the board: stages as columns, a free move from the Move menu, back again by dragging, decline, log a contact", async ({ page }) => {
   test.setTimeout(120_000);
   const fresh = newRequest("pre_approval", "Board Tester");
   const other = newRequest("pre_approval", "Board Decliner");
   const consult = newRequest("consultancy", "Board Caller");
 
   await signIn(page);
-  await page.setViewportSize({ width: 2560, height: 1100 });
+  // Wide enough for every stage column, and tall enough that a long New column doesn't make the page
+  // scroll: dnd-kit auto-scrolls near the edge, and a scrolling board moves the drop target mid-drag.
+  await page.setViewportSize({ width: 2560, height: 4000 });
+  // The board re-reads itself as soon as it mounts; drag only once that answer is in, or the card is
+  // re-rendered from under the pointer.
+  const firstRead = page.waitForResponse((r) => r.request().method() === "POST" && r.url().includes("/admin/mortgages"));
   await page.goto("/admin/mortgages?view=board");
+  await firstRead;
 
   const pre = "Fast Pre-Approval";
   await expect(page.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "true");
@@ -105,8 +111,10 @@ test("the board: stages as columns, a free move by dragging, back again, decline
   expect(stage(fresh)).toBe("New");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/board.png` });
 
-  // New → Valuation, skipping stages: moved at once, and the clock stops (Valuation answers the applicant).
-  await drag(page, card(page, fresh), column(page, pre, "Valuation"));
+  // New → Valuation, skipping stages, from the card's Move menu: moved at once, and the clock stops
+  // (Valuation answers the applicant).
+  await card(page, fresh).getByRole("button", { name: `Move ${fresh} to` }).last().click();
+  await page.getByRole("menuitem", { name: "Valuation" }).click();
   await expect(page.getByText(`${fresh} moved to Valuation.`)).toBeVisible();
   await expect(column(page, pre, "Valuation").locator(`[data-reference="${fresh}"]`)).toBeVisible();
   expect(status(fresh)).toBe("open");
@@ -114,8 +122,11 @@ test("the board: stages as columns, a free move by dragging, back again, decline
   expect(sql(`select sla_stopped_at is not null from public.mortgage_requests where reference = '${fresh}'`)).toBe("t");
   expect(sql(`select count(*) from public.mortgage_events e join public.mortgage_requests r on r.id = e.request_id where r.reference = '${fresh}' and e.type = 'stage.changed'`)).toBe("1");
 
-  // Back to In Review: free, and the stopped clock stays stopped.
+  // Back to In Review: free, and the stopped clock stays stopped. Let the board's re-read settle first,
+  // or the card is swapped out from under the pointer mid-drag.
+  await expect(page.getByText(`${fresh} moved to Valuation.`)).toBeHidden({ timeout: 10_000 });
   await drag(page, card(page, fresh), column(page, pre, "In Review"));
+  await expect(page.getByText(`${fresh} moved to In Review.`)).toBeVisible();
   await expect(column(page, pre, "In Review").locator(`[data-reference="${fresh}"]`)).toBeVisible();
   expect(stage(fresh)).toBe("In Review");
   expect(sql(`select sla_stopped_at is not null from public.mortgage_requests where reference = '${fresh}'`)).toBe("t");

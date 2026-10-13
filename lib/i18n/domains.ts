@@ -916,6 +916,7 @@ export const DOMAINS: Domain[] = [
     "mortgage_reference_counters",
     "mortgage_requests",
     "mortgage_reupload_requests",
+    "mortgage_stages",
     "mortgage_settings",
     "mortgage_upload_drafts",
   ].map((table) => ({

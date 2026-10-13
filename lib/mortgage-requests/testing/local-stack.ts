@@ -82,7 +82,7 @@ export async function retireTestStaff(service: SupabaseClient): Promise<void> {
 export async function createTestStaff(
   stack: LocalStack,
   service: SupabaseClient,
-  role: "support" | "admin" | "agent",
+  role: "support" | "admin" | "agent" | "editor" | "marketing",
   mortgageRole: "head" | "adviser" | null,
 ): Promise<TestStaff> {
   const email = `staff-${crypto.randomUUID().slice(0, 8)}@example.com`;

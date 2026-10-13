@@ -1040,7 +1040,8 @@ export function StageMenu({
 }) {
   const { pending, run } = useAction();
   return (
-    <DropdownMenu>
+    // Not modal: a modal menu hides the page from assistive tech while focus can still reach it (axe aria-hidden-focus).
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button className="text-[13px]" disabled={pending}>
           <ArrowRightLeft strokeWidth={1.8} />

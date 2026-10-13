@@ -191,12 +191,14 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     };
   }
 
-  async function openReupload(row: Row) {
+  /** An open re-upload request on the request's `nth` document (one open per document). */
+  async function openReupload(row: Pick<Row, "id">, nth = 0) {
     const { data: doc } = await service
       .from("mortgage_documents")
       .select("id")
       .eq("request_id", row.id)
-      .limit(1)
+      .order("kind")
+      .range(nth, nth)
       .single();
     const { error } = await service.from("mortgage_reupload_requests").insert({
       request_id: row.id,
@@ -705,6 +707,370 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       expect((await who.from("mortgage_events").insert({ request_id: row.id, actor_kind: "staff", type: "fake.event" })).error).not.toBeNull();
       expect((await who.rpc("mortgage_create_request", createArgs("consultancy"))).error).not.toBeNull();
       expect((await who.rpc("mortgage_allocate_reference", {})).error).not.toBeNull();
+    });
+  });
+
+  // ── Stages (0158) ───────────────────────────────────────────
+
+  describe("stages", () => {
+    type StageRow = { id: string; name: string; position: number; stops_clock: boolean; closes_file: boolean };
+    const people: Record<"head" | "owner" | "other" | "admin" | "editor" | "marketing" | "agent", TestStaff> = {} as never;
+    let seeded: StageRow[] = [];
+
+    beforeAll(async () => {
+      const [head, owner, other, admin, editor, marketing, agent] = await Promise.all([
+        createTestStaff(local, service, "support", "head"),
+        createTestStaff(local, service, "support", "adviser"),
+        createTestStaff(local, service, "support", "adviser"),
+        createTestStaff(local, service, "admin", null),
+        createTestStaff(local, service, "editor", null),
+        createTestStaff(local, service, "marketing", null),
+        createTestStaff(local, service, "agent", null),
+      ]);
+      Object.assign(people, { head, owner, other, admin, editor, marketing, agent });
+      seeded = await stages();
+    }, 60_000);
+
+    // Put the stages back as the seed made them, whatever a test left, so the
+    // other test files and the e2e specs see the seeded eight.
+    afterAll(() => {
+      if (!seeded.length) return;
+      const keep = seeded.map((s) => `'${s.id}'`).join(", ");
+      psql(
+        `begin;` +
+          ` set constraints all deferred;` +
+          ` delete from public.mortgage_stages where id not in (${keep}) and not exists (select 1 from public.mortgage_requests r where r.stage_id = mortgage_stages.id);` +
+          seeded
+            .map(
+              (s) =>
+                ` update public.mortgage_stages set name = '${s.name.replace(/'/g, "''")}', position = ${s.position}, stops_clock = ${s.stops_clock}, closes_file = ${s.closes_file} where id = '${s.id}';`,
+            )
+            .join("") +
+          ` commit;`,
+      );
+    });
+
+    async function stages(): Promise<StageRow[]> {
+      const { data, error } = await service.from("mortgage_stages").select("id, name, position, stops_clock, closes_file").order("position");
+      if (error) throw new Error(error.message);
+      return data as StageRow[];
+    }
+
+    async function read(id: string): Promise<Row> {
+      const { data, error } = await service.from("mortgage_requests").select("*").eq("id", id).single();
+      if (error) throw new Error(error.message);
+      return data as Row;
+    }
+
+    async function owned(): Promise<Row> {
+      const row = await create("pre_approval");
+      await service.from("mortgage_requests").update({ owner_staff_id: people.owner.id }).eq("id", row.id);
+      return read(row.id);
+    }
+
+    function moveStage(who: TestStaff, row: Pick<Row, "id">, name: string, expected?: string) {
+      return who.client.rpc("mortgage_move_stage", {
+        p_request_id: row.id,
+        p_stage_id: stage[name] ?? name,
+        p_expected_updated_at: expected ?? null,
+      });
+    }
+
+    async function mustMove(who: TestStaff, row: Pick<Row, "id">, name: string): Promise<Row> {
+      const { error } = await moveStage(who, row, name);
+      if (error) throw new Error(`move to ${name} failed: ${error.code} ${error.message}`);
+      return read(row.id);
+    }
+
+    async function stageEvents(id: string) {
+      const { data } = await service
+        .from("mortgage_events")
+        .select("type, actor_kind, actor_id, data")
+        .eq("request_id", id)
+        .eq("type", "stage.changed")
+        .order("created_at");
+      return (data ?? []) as { type: string; actor_kind: string; actor_id: string; data: Record<string, unknown> }[];
+    }
+
+    // ── Moving a file ─────────────────────────────────────────
+
+    it("lets the owner and the Head move a file, and nobody else", async () => {
+      const row = await owned();
+      expect((await moveStage(people.other, row, "In Review")).error?.code).toBe("MR403");
+      expect((await moveStage(people.admin, row, "In Review")).error?.code).toBe("MR403");
+      expect((await moveStage(people.editor, row, "In Review")).error?.code).toBe("MR403");
+      expect((await read(row.id)).stage_id).toBe(stage["New"]);
+
+      expect((await mustMove(people.owner, row, "In Review")).stage_id).toBe(stage["In Review"]);
+      expect((await mustMove(people.head, row, "Valuation")).stage_id).toBe(stage["Valuation"]);
+
+      // A consultancy has no stages.
+      const consult = await create("consultancy");
+      await service.from("mortgage_requests").update({ owner_staff_id: people.owner.id }).eq("id", consult.id);
+      expect((await moveStage(people.owner, consult, "In Review")).error?.code).toBe("MR422");
+      expect((await moveStage(people.owner, row, randomUUID())).error?.code).toBe("MR422");
+    });
+
+    it("moves any stage to any stage, forwards and back, and logs each move by name", async () => {
+      let row = await owned();
+      for (const name of ["Registration", "In Review", "New", "Final Offer Letter"]) {
+        row = await mustMove(people.owner, row, name);
+        expect(row).toMatchObject({ status: "open", stage_id: stage[name] });
+      }
+      const log = await stageEvents(row.id);
+      expect(log.map((e) => [e.data.from, e.data.to])).toEqual([
+        ["New", "Registration"],
+        ["Registration", "In Review"],
+        ["In Review", "New"],
+        ["New", "Final Offer Letter"],
+      ]);
+      expect(log[0]).toMatchObject({
+        actor_kind: "staff",
+        actor_id: people.owner.id,
+        data: { from_stage_id: stage["New"], to_stage_id: stage["Registration"], reopened: false },
+      });
+    });
+
+    it("treats a move onto the stage the file is on as nothing", async () => {
+      const row = await mustMove(people.owner, await owned(), "In Review");
+      const { data, error } = await moveStage(people.owner, row, "In Review", row.updated_at);
+      expect(error).toBeNull();
+      expect((data as Row).updated_at).toBe(row.updated_at);
+      expect((await read(row.id)).updated_at).toBe(row.updated_at);
+      expect(await stageEvents(row.id)).toHaveLength(1);
+    });
+
+    it("refuses a move on a stale page", async () => {
+      const row = await owned();
+      await service.from("mortgage_requests").update({ full_name: "Changed Meanwhile" }).eq("id", row.id);
+      expect((await moveStage(people.owner, row, "In Review", row.updated_at)).error?.code).toBe("MR409");
+      const fresh = await read(row.id);
+      expect((await moveStage(people.owner, fresh, "In Review", fresh.updated_at)).error).toBeNull();
+    });
+
+    it("stops the clock on the first stage that answers the applicant, and never starts it again", async () => {
+      let row = await mustMove(people.owner, await owned(), "In Review");
+      expect(row.sla_stopped_at).toBeNull();
+      row = await mustMove(people.owner, row, "Accepted");
+      const stoppedAt = row.sla_stopped_at;
+      expect(stoppedAt).not.toBeNull();
+      expect(row.sla_due_at).not.toBeNull(); // kept, to measure the promise against
+      for (const name of ["New", "Valuation", "In Review", "Pre-Approved"]) {
+        row = await mustMove(people.owner, row, name);
+        expect(row.sla_stopped_at, name).toBe(stoppedAt);
+      }
+      expect(slaStatus(row, new Date(Date.now() + 30 * 86_400_000), policy)).toMatchObject({ stopped: true });
+    });
+
+    it("closes the file on a closing stage, and reopens it when it leaves", async () => {
+      let row = await mustMove(people.owner, await owned(), "Disbursed");
+      expect(row.status).toBe("open");
+      expect(row.closed_at).not.toBeNull();
+      expect(row.sla_stopped_at).not.toBeNull(); // Disbursed answers the applicant too
+      row = await mustMove(people.owner, row, "Registration");
+      expect(row.closed_at).toBeNull();
+      row = await mustMove(people.head, row, "Disbursed");
+      expect(row.closed_at).not.toBeNull();
+    });
+
+    it("pauses and resumes the clock for a re-upload without moving the file", async () => {
+      let row = await mustMove(people.owner, await owned(), "In Review");
+      await openReupload(row);
+      row = await mustTransition(row, "reupload_requested", "staff", { sla: clockPause(row, new Date(), policy) });
+      expect(row).toMatchObject({ status: "open", stage_id: stage["In Review"], sla_due_at: null });
+      expect(row.sla_paused_at).not.toBeNull();
+
+      // Moved while it waits: the pause stays as it was.
+      row = await mustMove(people.owner, row, "New");
+      expect(row.sla_paused_at).not.toBeNull();
+
+      // A second request still open keeps the clock paused when the first is cancelled.
+      await openReupload(row, 1);
+      const { data: open } = await service.from("mortgage_reupload_requests").select("id").eq("request_id", row.id).order("requested_at");
+      await service.from("mortgage_reupload_requests").update({ cancelled_at: new Date().toISOString() }).eq("id", (open as { id: string }[])[0]!.id);
+      row = await mustTransition(row, "reupload_cancelled", "staff", { sla: clockResume(row, new Date(), policy) });
+      expect(row.sla_paused_at).not.toBeNull();
+
+      await service.from("mortgage_reupload_requests").update({ fulfilled_at: new Date().toISOString() }).eq("request_id", row.id).is("cancelled_at", null);
+      row = await mustTransition(row, "reupload_fulfilled", "applicant", { sla: clockResume(row, new Date(), policy) });
+      expect(row).toMatchObject({ status: "open", stage_id: stage["New"], sla_paused_at: null, sla_remaining_seconds: null });
+      expect(row.sla_due_at).not.toBeNull();
+
+      // Once the team has answered, a re-upload leaves the stopped clock alone.
+      row = await mustMove(people.owner, row, "Accepted");
+      await openReupload(row);
+      row = await mustTransition(row, "reupload_requested", "staff", { sla: clockPause(row, new Date(), policy) });
+      expect(row.sla_paused_at).toBeNull();
+      expect(row.sla_stopped_at).not.toBeNull();
+    });
+
+    it("reopens a declined file moved onto a stage, clearing the decision", async () => {
+      const row = await mustMove(people.owner, await owned(), "In Review");
+      const { error: declineError } = await people.owner.client.rpc("mortgage_decline", {
+        p_request_id: row.id,
+        p_reason: "debt_burden",
+        p_message: "Not this time.",
+        p_channels: ["email"],
+        p_expected_updated_at: row.updated_at,
+      });
+      expect(declineError).toBeNull();
+      const declined = await read(row.id);
+      expect(declined).toMatchObject({ status: "declined", decision: "declined", decline_reason: "debt_burden", stage_id: stage["In Review"] });
+      expect(declined.closed_at).not.toBeNull();
+
+      // Not by someone else.
+      expect((await moveStage(people.other, declined, "Accepted")).error?.code).toBe("MR403");
+
+      const reopened = await mustMove(people.head, declined, "Accepted");
+      expect(reopened).toMatchObject({
+        status: "open",
+        stage_id: stage["Accepted"],
+        decision: null,
+        decided_at: null,
+        decline_reason: null,
+        decision_message: null,
+        closed_at: null,
+      });
+      expect(reopened.sla_stopped_at).toBe(declined.sla_stopped_at);
+      expect((await stageEvents(row.id)).at(-1)).toMatchObject({
+        actor_id: people.head.id,
+        data: { from: "In Review", to: "Accepted", reopened: true },
+      });
+
+      // Even onto the stage it was declined from.
+      const { error: againError } = await people.owner.client.rpc("mortgage_decline", {
+        p_request_id: row.id,
+        p_reason: "other",
+        p_message: "Not this time either.",
+        p_channels: ["email"],
+      });
+      expect(againError).toBeNull();
+      expect(await mustMove(people.owner, row, "Accepted")).toMatchObject({ status: "open", decision: null, stage_id: stage["Accepted"] });
+    });
+
+    // ── Keeping the stages ────────────────────────────────────
+
+    it("lets admins, editors, marketing and the Head of mortgages keep the stages, and nobody else", async () => {
+      const can = async (who: TestStaff) => (await who.client.rpc("mortgage_can_edit_stages")).data as boolean;
+      expect(await can(people.admin)).toBe(true);
+      expect(await can(people.editor)).toBe(true);
+      expect(await can(people.marketing)).toBe(true);
+      expect(await can(people.head)).toBe(true);
+      expect(await can(people.owner)).toBe(false);
+      expect(await can(people.agent)).toBe(false);
+
+      // The team and the stage keepers read them; nobody else.
+      expect((await people.owner.client.from("mortgage_stages").select("id")).data).toHaveLength(seeded.length);
+      expect((await people.editor.client.from("mortgage_stages").select("id")).data).toHaveLength(seeded.length);
+      expect((await people.agent.client.from("mortgage_stages").select("id")).data ?? []).toEqual([]);
+      expect((await client(local, local.anonKey).from("mortgage_stages").select("id")).data ?? []).toEqual([]);
+
+      const save = (who: SupabaseClient) =>
+        who.rpc("mortgage_save_stage", { p_id: null, p_name: "Not allowed", p_stops_clock: false, p_closes_file: false });
+      for (const who of [people.owner.client, people.agent.client, service]) {
+        expect((await save(who)).error?.code).toBe("MR403");
+      }
+      for (const who of [people.owner, people.agent]) {
+        expect((await who.client.rpc("mortgage_reorder_stages", { p_ids: seeded.map((s) => s.id) })).error?.code).toBe("MR403");
+        expect((await who.client.rpc("mortgage_delete_stage", { p_id: seeded.at(-1)!.id })).error?.code).toBe("MR403");
+      }
+      // Signed-in staff can't write the table directly either.
+      expect((await people.editor.client.from("mortgage_stages").update({ name: "Edited Directly" }).eq("id", seeded[0]!.id)).error).not.toBeNull();
+      expect((await stages()).map((s) => s.name)).toEqual(seeded.map((s) => s.name));
+    });
+
+    it("adds a stage at the end and edits it, refusing a taken name or a bad length", async () => {
+      const save = (who: TestStaff, id: string | null, name: string, stops = false, closes = false) =>
+        who.client.rpc("mortgage_save_stage", { p_id: id, p_name: name, p_stops_clock: stops, p_closes_file: closes });
+
+      const { data: added, error } = await save(people.editor, null, "  Snagging  ", true, false);
+      expect(error).toBeNull();
+      const stageRow = added as StageRow;
+      expect(stageRow).toMatchObject({ name: "Snagging", position: seeded.length + 1, stops_clock: true, closes_file: false });
+
+      expect((await save(people.editor, null, "in review")).error?.message).toContain("stage_name_taken");
+      expect((await save(people.editor, null, "IN REVIEW")).error?.code).toBe("MR409");
+      expect((await save(people.editor, stageRow.id, "Disbursed")).error?.code).toBe("MR409");
+      expect((await save(people.editor, null, "   ")).error?.code).toBe("MR422");
+      expect((await save(people.editor, null, "x".repeat(41))).error?.code).toBe("MR422");
+      expect((await save(people.editor, randomUUID(), "Nowhere")).error?.code).toBe("MR404");
+
+      // Its own name, in another case, is no clash; the switches change with it.
+      const { data: edited, error: editError } = await save(people.head, stageRow.id, "SNAGGING", false, true);
+      expect(editError).toBeNull();
+      expect(edited).toMatchObject({ id: stageRow.id, name: "SNAGGING", position: seeded.length + 1, stops_clock: false, closes_file: true });
+
+      expect((await save(people.marketing, stageRow.id, "Snagging", true, false)).error).toBeNull();
+      expect((await people.admin.client.rpc("mortgage_delete_stage", { p_id: stageRow.id })).error).toBeNull();
+      expect((await stages()).map((s) => s.id)).toEqual(seeded.map((s) => s.id));
+    });
+
+    it("reorders only with every stage listed once", async () => {
+      const ids = seeded.map((s) => s.id);
+      const reorder = (p_ids: string[]) => people.editor.client.rpc("mortgage_reorder_stages", { p_ids });
+      expect((await reorder(ids.slice(1))).error?.code).toBe("MR422");
+      expect((await reorder([...ids.slice(1), ids[1]!])).error?.code).toBe("MR422");
+      expect((await reorder([...ids.slice(1), randomUUID()])).error?.code).toBe("MR422");
+      expect((await reorder([...ids, randomUUID()])).error?.code).toBe("MR422");
+      expect((await stages()).map((s) => s.id)).toEqual(ids);
+
+      const reversed = [...ids].reverse();
+      expect((await reorder(reversed)).error).toBeNull();
+      const after = await stages();
+      expect(after.map((s) => s.id)).toEqual(reversed);
+      expect(after.map((s) => s.position)).toEqual(ids.map((_, i) => i + 1));
+
+      // New requests land on whatever is first now.
+      expect((await create("pre_approval")).stage_id).toBe(reversed[0]);
+
+      expect((await people.head.client.rpc("mortgage_reorder_stages", { p_ids: ids })).error).toBeNull();
+      expect((await stages()).map((s) => s.id)).toEqual(ids);
+    });
+
+    it("deletes only a stage no file is on, then closes the gap", async () => {
+      // New holds the seed's new files and every test's.
+      const inUse = await people.editor.client.rpc("mortgage_delete_stage", { p_id: stage["New"] });
+      expect(inUse.error?.code).toBe("MR409");
+      expect(inUse.error?.message).toMatch(/^stage_in_use:\d+$/);
+
+      // A stage in the middle, with one file on it.
+      const { data: added } = await people.editor.client.rpc("mortgage_save_stage", {
+        p_id: null, p_name: "Survey", p_stops_clock: false, p_closes_file: false,
+      });
+      const survey = added as StageRow;
+      const order = seeded.map((s) => s.id);
+      order.splice(2, 0, survey.id);
+      expect((await people.editor.client.rpc("mortgage_reorder_stages", { p_ids: order })).error).toBeNull();
+      const row = await owned();
+      expect((await moveStage(people.owner, row, survey.id)).error).toBeNull();
+
+      const busy = await people.editor.client.rpc("mortgage_delete_stage", { p_id: survey.id });
+      expect(busy.error?.code).toBe("MR409");
+      expect(busy.error?.message).toBe("stage_in_use:1");
+
+      await mustMove(people.owner, row, "In Review");
+      expect((await people.editor.client.rpc("mortgage_delete_stage", { p_id: survey.id })).error).toBeNull();
+      expect((await people.editor.client.rpc("mortgage_delete_stage", { p_id: survey.id })).error?.code).toBe("MR404");
+      const after = await stages();
+      expect(after.map((s) => s.id)).toEqual(seeded.map((s) => s.id));
+      expect(after.map((s) => s.position)).toEqual(seeded.map((_, i) => i + 1));
+    });
+
+    it("keeps the last stage", () => {
+      // Only one stage left, inside a transaction that never commits: the
+      // others hold files, so the foreign key goes for the length of it.
+      const last = seeded[0]!.id;
+      expect(() =>
+        psql(
+          `begin;` +
+            ` alter table public.mortgage_requests drop constraint mortgage_requests_stage_id_fkey;` +
+            ` delete from public.mortgage_stages where id <> '${last}';` +
+            ` select set_config('request.jwt.claims', '{"role": "authenticated", "sub": "${people.head.id}"}', true);` +
+            ` select public.mortgage_delete_stage('${last}');` +
+            ` rollback;`,
+        ),
+      ).toThrow(/last_stage/);
+      expect(psql("select count(*) from public.mortgage_stages").trim()).toBe(String(seeded.length));
     });
   });
 });
