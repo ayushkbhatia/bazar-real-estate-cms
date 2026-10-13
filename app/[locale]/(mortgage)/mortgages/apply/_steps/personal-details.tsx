@@ -59,7 +59,7 @@ function ruleFor(field: DetailField, draft: DetailsDraft): DetailRule | null {
  * checked on blur and again on Continue, which focuses the first field that
  * fails.
  */
-export function PersonalDetails({ ltv }: { ltv: { national: number; expat: number } }) {
+export function PersonalDetails() {
   const t = useTranslations("mortgage");
   const flow = useWizardFlow();
   const router = useRouter();
@@ -186,7 +186,6 @@ export function PersonalDetails({ ltv }: { ltv: { national: number; expat: numbe
               checked={d.residency === "uae_national"}
               onSelect={(v) => set({ residency: v as DetailsDraft["residency"] })}
               title={t("residency.uaeNational.title")}
-              sub={t("residency.uaeNational.sub", { ltv: ltv.national })}
               invalid={!!errors.residency}
               describedBy={errors.residency ? "w2-residency-error" : undefined}
             />
@@ -196,7 +195,6 @@ export function PersonalDetails({ ltv }: { ltv: { national: number; expat: numbe
               checked={d.residency === "uae_resident_expat"}
               onSelect={(v) => set({ residency: v as DetailsDraft["residency"] })}
               title={t("residency.expat.title")}
-              sub={t("residency.expat.sub", { ltv: ltv.expat })}
               invalid={!!errors.residency}
               describedBy={errors.residency ? "w2-residency-error" : undefined}
             />

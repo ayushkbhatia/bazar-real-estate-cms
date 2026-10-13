@@ -90,11 +90,9 @@
   },
   "residency": {
     "expat": {
-      "sub": "Up to {ltv}% LTV",
       "title": "UAE Resident / Expat"
     },
     "uaeNational": {
-      "sub": "Up to {ltv}% LTV",
       "title": "UAE National"
     }
   },
