@@ -76,4 +76,8 @@ describe("splitPhone", () => {
       "9995551234567",
     );
   });
+  it("reads Arabic-Indic digits as digits", () => {
+    expect(splitPhone("+٩٧١٥٥٨٥٦٨٧٢٨")).toEqual({ countryCode: "+971", national: "558568728" });
+    expect(splitPhone("۰۵۰۱۲۳۴۵۶۷")).toEqual(splitPhone("0501234567"));
+  });
 });

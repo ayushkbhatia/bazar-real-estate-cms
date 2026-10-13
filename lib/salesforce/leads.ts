@@ -230,7 +230,27 @@ export type LeadSourceRow = {
    * the advisor can still find the page the visitor was on.
    */
   website_reference?: string | null;
+  /** The page the visitor sent the form from, absolute
+   *  (`https://www.bazarrealestate.ae/ar/p/…`). `Lead__c` has no field for it,
+   *  so it rides in the description. */
+  page_url?: string | null;
+  /** The project, when the enquiry was about one (a brochure request on a
+   *  project page). */
+  project_name?: string | null;
 };
+
+/**
+ * The page an enquiry was sent from, as a link an advisor can open: the first
+ * site-relative path its form submissions recorded (`form_submissions.
+ * source_path`), on the site's own origin. Anything that is not a path is
+ * ignored rather than linked.
+ */
+export function leadPageUrl(paths: readonly (string | null)[], siteUrl: string | undefined): string | null {
+  const path = paths.find((p): p is string => !!p && p.startsWith("/") && !p.startsWith("//"));
+  if (!path) return null;
+  const origin = (siteUrl ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
+  return `${origin}${path}`;
+}
 
 /**
  * The description is where everything Salesforce has no field for goes.
@@ -249,6 +269,11 @@ export function buildDescription(row: LeadSourceRow): string | undefined {
   if (message) lines.push(message);
 
   const meta: string[] = [];
+  if (row.page_url) meta.push(`Page: ${row.page_url}`);
+  // Also in Property_Reference__c; repeated here so a lead sent without that
+  // field (see pushLead) still says which listing it is about.
+  if (row.property_reference) meta.push(`Property: ${row.property_reference}`);
+  if (row.project_name) meta.push(`Project: ${row.project_name}`);
   if (row.website_reference) meta.push(`Website listing: ${row.website_reference}`);
   if (row.form_key) meta.push(`Form: ${row.form_key}`);
   if (row.locale && row.locale !== "en") meta.push(`Language: ${row.locale}`);
@@ -315,14 +340,17 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
 }
 
 /**
- * The fields the 23 Sept revision marks **Required**.
+ * The required fields checked before sending.
  *
- * `Name__c` is not listed here even though it is required: `enquiries.name`
- * is NOT NULL with a two-character minimum in the zod schema, so it cannot be
- * absent. The two picklists are not listed either — their mappings are total.
- * What is left is the genuinely at-risk set.
+ * The 23 Sept revision also marks `Phone__c` and `Country_Code__c` Required,
+ * but the website's forms ask for email OR phone, and since 13 Oct 2026 a lead
+ * without a phone is sent anyway (Bazar's call): Salesforce, not this file,
+ * decides whether it can be created, so the day Levarus relax the requirement
+ * those leads start arriving with no change here. Until then Salesforce
+ * answers REQUIRED_FIELD_MISSING and the row is parked `failed` with its
+ * reason. `Name__c` is NOT NULL here and the two picklists are total.
  */
-const REQUIRED_FIELDS = ["Email__c", "Phone__c", "Country_Code__c"] as const;
+const REQUIRED_FIELDS = ["Email__c"] as const;
 
 /** Prefix that marks a failure this side decided, with no call made. */
 export const LOCAL_BLOCK_PREFIX = "Blocked locally";
@@ -387,6 +415,30 @@ export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
     };
   }
 
+  const first = await send(row.id, object, externalIdField, payload);
+  // `Property_Reference__c` vanished from Lead__c in production on
+  // 13 Oct 2026 (INVALID_FIELD on every property enquiry). One field the org
+  // drops must not lose the lead: send it again without, the reference is in
+  // the description too.
+  if (
+    !first.ok &&
+    first.errorCode === "INVALID_FIELD" &&
+    /Property_Reference__c/.test(first.message) &&
+    "Property_Reference__c" in payload
+  ) {
+    const { Property_Reference__c: _ref, ...rest } = payload;
+    void _ref;
+    return send(row.id, object, externalIdField, rest);
+  }
+  return first;
+}
+
+async function send(
+  enquiryId: string,
+  object: string,
+  externalIdField: string | null,
+  payload: LeadPayload,
+): Promise<PushResult> {
   try {
     if (externalIdField) {
       // Upsert. The UUID rides in the URL, not the body — Salesforce infers
@@ -399,10 +451,10 @@ export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
       // which the vendor doc does not mention; falling back to the enquiry id
       // keeps that case from looking like a failure.)
       const res = await salesforceRequest<{ id?: string; created?: boolean }>(
-        `sobjects/${object}/${externalIdField}/${encodeURIComponent(row.id)}`,
+        `sobjects/${object}/${externalIdField}/${encodeURIComponent(enquiryId)}`,
         { method: "PATCH", body: payload },
       );
-      return { ok: true, id: res?.id ?? row.id };
+      return { ok: true, id: res?.id ?? enquiryId };
     }
 
     const res = await salesforceRequest<{ id?: string; success?: boolean }>(

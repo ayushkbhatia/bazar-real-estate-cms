@@ -109,11 +109,23 @@ generic failure on a form that looked complete. Those four rows were flipped
 in the database at the same time, so the UI agrees, but the guarantee does
 not depend on them.
 
-`missingRequiredFields` stays as the last line of defence: a lead that still
-reaches the push without the fields is marked `failed` with a
-`Blocked locally:` reason and costs no API call. It should now be unreachable
-from the public forms, and it remains the right answer for anything that
-writes an enquiry by another route.
+`missingRequiredFields` checks only `Email__c` since 13 Oct 2026. A lead
+whose phone cannot be split into a picklist code and a number (or that came
+by a route with no phone) is now sent anyway, by Bazar's decision, and
+Salesforce answers for itself — so the day Levarus relax `Phone__c` those
+leads arrive with no change here. The two leads that had been blocked were
+not missing a phone: one was test text, and one was a visitor who typed
+Arabic-Indic digits (`+٩٧١…`), which `splitPhone` now reads as digits.
+
+**`Property_Reference__c` disappeared from `Lead__c` in production on
+13 Oct 2026** — every property enquiry answered `INVALID_FIELD: No such
+column`. `pushLead` now resends such a lead once without the field, and the
+description always carries `Property: <reference>`, so the lead lands either
+way. Ask Levarus whether the field was renamed or its access removed.
+
+The description also carries, since the same day, `Page:` — the absolute
+URL of the page the form was sent from (`form_submissions.source_path`) — and
+`Project:` for an enquiry about a project (`enquiries.development_id`).
 
 **The trade was accepted deliberately.** Some visitors will not give a number
 and will not submit. The alternative is capturing leads the sales team never

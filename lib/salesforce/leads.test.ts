@@ -15,6 +15,7 @@ const {
   leadSourceFor,
   leadObjectName,
   leadExternalIdField,
+  leadPageUrl,
   missingRequiredFields,
   INQUIRY_TYPES,
   LEAD_SOURCES,
@@ -165,13 +166,12 @@ describe("buildLeadPayload", () => {
     expect(missingRequiredFields(payload)).not.toContain("Country_Code__c");
   });
 
-  it("still refuses a code the picklist does not hold, rather than mislabelling it", () => {
-    // Blocking keeps the lead visible and recoverable in the CMS; sending a
-    // wrong code would put bad data in the CRM and look like success.
+  it("never sends a code the picklist does not hold, rather than mislabelling it", () => {
+    // Sending a wrong code would put bad data in the CRM and look like
+    // success; leaving it out lets Salesforce say what it wants instead.
     // +999 is unassigned: no picklist holds it.
     const payload = buildLeadPayload(row({ phone: "+99955512345" }));
     expect("Country_Code__c" in payload).toBe(false);
-    expect(missingRequiredFields(payload)).toContain("Country_Code__c");
     // The digits are not thrown away.
     expect(payload.Phone__c).toBeTruthy();
   });
@@ -201,6 +201,19 @@ describe("buildDescription", () => {
     const text = buildDescription(row({ brief_raw: null })) ?? "";
     expect(text).toContain(row().id);
     expect(text.startsWith("\n")).toBe(false);
+  });
+
+  it("carries the page the form was sent from, and the project", () => {
+    const text =
+      buildDescription(
+        row({
+          page_url: "https://www.bazarrealestate.ae/ar/developments/yas-riva-reserve",
+          project_name: "Yas Riva Reserve",
+        }),
+      ) ?? "";
+    expect(text).toContain("Page: https://www.bazarrealestate.ae/ar/developments/yas-riva-reserve");
+    expect(text).toContain("Project: Yas Riva Reserve");
+    expect(buildDescription(row())).not.toContain("Page:");
   });
 
   it("names the website's page when the listing came from Salesforce", () => {
@@ -265,13 +278,25 @@ describe("leadSourceFor", () => {
   });
 });
 
-describe("missingRequiredFields", () => {
-  it("names what Salesforce would reject", () => {
-    // 279 of 772 production leads have no phone — this site has always asked
-    // for email OR phone, and the CRM now demands both.
-    expect(missingRequiredFields(buildLeadPayload(row({ phone: null })))).toEqual(
-      ["Phone__c", "Country_Code__c"],
+describe("leadPageUrl", () => {
+  it("links the page on the site's own origin", () => {
+    expect(leadPageUrl([null, "/ar/p/the-wadi-baz-ad-08542"], "https://www.bazarrealestate.ae/")).toBe(
+      "https://www.bazarrealestate.ae/ar/p/the-wadi-baz-ad-08542",
     );
+    expect(leadPageUrl(["/services/sell"], undefined)).toBe("https://www.bazarrealestate.ae/services/sell");
+  });
+
+  it("links nothing that is not a path on this site", () => {
+    expect(leadPageUrl([], undefined)).toBeNull();
+    expect(leadPageUrl(["https://evil.test/x", "//evil.test/x"], undefined)).toBeNull();
+  });
+});
+
+describe("missingRequiredFields", () => {
+  it("blocks only a lead with no email — one without a phone is sent", () => {
+    // The forms ask for email OR phone. Since 13 Oct 2026 a phoneless lead
+    // goes to Salesforce, which decides; email is still checked here.
+    expect(missingRequiredFields(buildLeadPayload(row({ phone: null })))).toEqual([]);
     expect(missingRequiredFields(buildLeadPayload(row({ email: null })))).toEqual(
       ["Email__c"],
     );

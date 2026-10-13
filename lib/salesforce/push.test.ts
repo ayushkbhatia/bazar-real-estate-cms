@@ -29,7 +29,7 @@ vi.mock("@/lib/env", () => ({
   isSalesforceConfigured: true,
 }));
 
-const { pushLead, LOCAL_BLOCK_PREFIX } = await import("./leads");
+const { pushLead } = await import("./leads");
 type Row = Parameters<typeof pushLead>[0];
 
 const UUID = "3f1c9e64-1111-4222-8333-444455556666";
@@ -88,16 +88,44 @@ describe("pushLead", () => {
     expect(await pushLead(row())).toEqual({ ok: true, id: UUID });
   });
 
-  it("refuses a lead with no phone without calling Salesforce", async () => {
-    // 279 of 772 production leads look like this. Each would be a guaranteed
-    // non-retryable 400, so five round trips to learn what is knowable here.
-    const out = await pushLead(row({ phone: null }));
+  it("sends a lead with no phone and lets Salesforce decide", async () => {
+    // The forms ask for email OR phone; Bazar chose (13 Oct 2026) to send
+    // these rather than block them, so they arrive the day Levarus relax
+    // Phone__c without a change here.
+    await pushLead(row({ phone: null }));
+    expect(salesforceRequest).toHaveBeenCalledTimes(1);
+    const body = (salesforceRequest.mock.calls[0][1] as { body: Record<string, unknown> }).body;
+    expect(body).not.toHaveProperty("Phone__c");
+    expect(body).not.toHaveProperty("Country_Code__c");
+  });
 
-    expect(salesforceRequest).not.toHaveBeenCalled();
+  it("resends without Property_Reference__c when the org has dropped it", async () => {
+    // Production, 13 Oct 2026: "No such column 'Property_Reference__c' on
+    // sobject of type Lead__c" on every property enquiry.
+    salesforceRequest
+      .mockImplementationOnce(async () => {
+        throw new FakeSalesforceError("No such column 'Property_Reference__c' on sobject of type Lead__c", {
+          status: 400,
+          errorCode: "INVALID_FIELD",
+          retryable: false,
+        });
+      })
+      .mockResolvedValueOnce({ id: "a04Y", created: true });
+    const out = await pushLead(row());
+    expect(out).toEqual({ ok: true, id: "a04Y" });
+    expect(salesforceRequest).toHaveBeenCalledTimes(2);
+    const second = (salesforceRequest.mock.calls[1][1] as { body: Record<string, unknown> }).body;
+    expect(second).not.toHaveProperty("Property_Reference__c");
+    expect(String(second.Description__c)).toContain("Property: BAZ-AD-04891");
+  });
+
+  it("does not retry other field errors", async () => {
+    salesforceRequest.mockImplementationOnce(async () => {
+      throw new FakeSalesforceError("No such column 'Budget__c'", { status: 400, errorCode: "INVALID_FIELD", retryable: false });
+    });
+    const out = await pushLead(row());
     expect(out.ok).toBe(false);
-    expect(out.ok === false && out.retryable).toBe(false);
-    expect(out.ok === false && out.message).toContain(LOCAL_BLOCK_PREFIX);
-    expect(out.ok === false && out.message).toContain("Phone__c");
+    expect(salesforceRequest).toHaveBeenCalledTimes(1);
   });
 
   it("refuses a lead with no email the same way", async () => {

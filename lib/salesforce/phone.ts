@@ -87,7 +87,13 @@ export function splitPhone(
 ): SplitPhone | null {
   if (!raw) return null;
 
-  const trimmed = raw.trim();
+  // Arabic-Indic (٠–٩) and Eastern Arabic-Indic (۰–۹) digits are what an
+  // Arabic keyboard types. Stripping them as "not digits" lost a real lead
+  // on 25 Sept 2026 ("+٩٧١٥…" became six characters short of a number).
+  const trimmed = raw
+    .trim()
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
   // "00971…" is the same intent as "+971…" — the international access prefix
   // used across Europe and the Gulf. Normalise before anything else looks.
   const hadPlus = trimmed.startsWith("+") || trimmed.startsWith("00");
