@@ -57,7 +57,7 @@ async function main() {
       ? buildPdf({
           pages: Math.max(1, f.page_count ?? 1),
           // No kind: a bank's letter (C5), not one of the applicant's documents.
-          lines: (page, pages) => [f.kind ? (NAMES[f.kind] ?? f.kind) : "Bank letter", f.original_name, `Page ${page} of ${pages}`, "Placeholder for local testing"],
+          lines: (page, pages) => [f.kind ? (NAMES[f.kind] ?? f.kind) : "Document", f.original_name, `Page ${page} of ${pages}`, "Placeholder for local testing"],
         })
       : cardPng();
     const { error: upload } = await db.storage

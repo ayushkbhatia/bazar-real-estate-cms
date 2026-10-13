@@ -18,19 +18,16 @@ import { createTranslator } from "next-intl";
 export const CMS_MESSAGES = {
   "activity": {
     "accepted": "{actor} accepted {document}",
+    "applicationAccepted": {
+      "sub": "Ready to share with the partner banks",
+      "title": "{actor} accepted the application"
+    },
     "assigned": {
       "invite": "Sent the pre-approval link",
       "roundRobin": "Round-robin · mortgage team",
       "title": "Assigned to {owner}"
     },
     "atRisk": "Promise at risk",
-    "bankDeclined": "{bank} declined",
-    "bankDownloaded": "{bank} downloaded {document}",
-    "bankPreApproved": {
-      "sub": "Letter attached · {fileName}",
-      "title": "{bank} pre-approved up to {amount}"
-    },
-    "bankReminder": "Reminder sent to {bank}",
     "booked": {
       "sub": "{format} with {adviser}",
       "title": "{actor} booked {when}"
@@ -44,7 +41,6 @@ export const CMS_MESSAGES = {
     "callReached": "{actor} called · reached",
     "claimed": "{owner} claimed this request",
     "consentWithdrawn": {
-      "sub": "{count, plural, one {# bank link stopped} other {# bank links stopped}}",
       "title": "{actor} recorded {firstName}'s withdrawal of consent"
     },
     "consultReceived": {
@@ -53,7 +49,6 @@ export const CMS_MESSAGES = {
     },
     "declined": "{actor} declined the application",
     "downloaded": "{actor} downloaded {document}",
-    "downloadedLetter": "{actor} downloaded a bank's letter",
     "dsrExported": "The applicant's data was exported at their request",
     "edited": "{actor} edited the applicant's details",
     "emailSent": "{actor} sent an email",
@@ -67,16 +62,8 @@ export const CMS_MESSAGES = {
     "inviteUsed": "{firstName} applied for Fast Pre-Approval",
     "linkLocked": "The secure link locked after five wrong codes",
     "opened": "{actor} opened {document}",
-    "openedLetter": "{actor} opened a bank's letter",
-    "reviewStarted": "{actor} started the review from the board",
-    "packageOpened": "{bank} opened the package",
-    "packageSent": {
-      "sub": "{count} documents · structured summary",
-      "title": "Package sent to {banks}"
-    },
     "preApproved": {
-      "sub": "{bank} · up to {amount}",
-      "title": "{actor} sent the pre-approval"
+      "title": "{actor} marked it pre-approved"
     },
     "quote": "“{text}”",
     "reassigned": {
@@ -87,6 +74,7 @@ export const CMS_MESSAGES = {
     "reuploadFiles": "{count, plural, one {# file} other {# files}}",
     "reuploadReceived": "{firstName} sent {document}",
     "reuploadRequested": "{actor} asked for {document} again",
+    "reviewStarted": "{actor} started the review from the board",
     "statusChanged": "Moved to {status}",
     "submitted": {
       "sub": "Confirmation shown · email sent",
@@ -95,49 +83,16 @@ export const CMS_MESSAGES = {
     "whatsappIn": "<b>{firstName} replied on WhatsApp</b>",
     "whatsappOut": "{actor} sent a WhatsApp"
   },
-  "banks": {
-    "active": "Active",
-    "add": "Add bank",
-    "col": {
-      "bank": "Bank",
-      "inboxes": "Package inboxes",
-      "status": "Status"
-    },
-    "dialog": {
-      "add": "Add a partner bank",
-      "edit": "Edit {name}"
-    },
-    "edit": "Edit",
-    "empty": "No partner banks yet. Add the banks Bazar sends files to.",
-    "error": {
-      "codeTaken": "Another bank already uses that code.",
-      "invalid": "Check the code, the name and the addresses.",
-      "needsInbox": "An active bank needs a package inbox."
-    },
-    "field": {
-      "active": "Offer this bank when sending a file",
-      "code": "Code",
-      "codeHint": "2–12 capital letters or digits, as the team calls the bank: FAB, ADCB.",
-      "colour": "Colour",
-      "inboxes": "Package inboxes",
-      "inboxesHint": "One address per line, up to five. Each gets the package.",
-      "name": "Name",
-      "order": "Order"
-    },
-    "inactive": "Switched off",
-    "lede": "The banks a file can be sent to. Each gets its packages at its package inboxes, as a secure link.",
-    "link": "Partner banks",
-    "readOnly": "Only the Head of mortgages or an admin can change the partner banks.",
-    "save": "Save bank",
-    "saved": "Saved.",
-    "settingsNote": "The mortgage team's Head keeps the same list in the Mortgage requests section.",
-    "title": "Partner banks"
-  },
   "board": {
-    "closedMore": "Newest {shown} of {total}",
     "closedAll": "All closed",
+    "closedMore": "Newest {shown} of {total}",
     "column": "{status}, {count, plural, one {# file} other {# files}}",
     "dialog": {
+      "accept": {
+        "cta": "Open the file to accept",
+        "lede": "Every document must be accepted and consent on file. You accept on the file, beside the documents.",
+        "title": "Accept {firstName}'s application"
+      },
       "book": {
         "cta": "Open the file to book",
         "lede": "Choose the adviser, the format and the slot on {firstName}'s file. It moves to Consultation booked when you book.",
@@ -152,26 +107,21 @@ export const CMS_MESSAGES = {
         "lede": "Logging the attempt moves {firstName}'s request to Contacted.",
         "title": "How did contacting {firstName} go?"
       },
-      "decide": {
-        "cta": "Open the decision",
-        "lede": "On the decision screen you record each bank's answer, choose the lead offer and send {firstName} the pre-approval.",
-        "title": "Record the banks' offers"
-      },
       "held": {
         "cta": "Mark it held",
         "lede": "{firstName}'s request moves to Completed.",
         "title": "Was the consultation held?"
       },
       "loading": "Reading the file…",
+      "preApprove": {
+        "cta": "Mark pre-approved",
+        "lede": "Record that a partner bank pre-approved {firstName}. This closes the file. Nothing is sent: tell {firstName} yourself.",
+        "title": "Mark {firstName} pre-approved?"
+      },
       "reupload": {
         "lede": "Choose the document. You write the reason and the message on the next screen, and the file moves to Awaiting applicant when you send it.",
         "requested": "Already requested",
         "title": "Which of {firstName}'s documents needs a re-upload?"
-      },
-      "send": {
-        "cta": "Open the file to send",
-        "lede": "Every document must be accepted first. On the file you choose the partner banks and send each its package; it moves to With banks when you do.",
-        "title": "Accept {firstName}'s application"
       }
     },
     "done": {
@@ -182,10 +132,10 @@ export const CMS_MESSAGES = {
     "illegal": {
       "backwards": "A file can't go back a stage. Its activity shows what happened.",
       "closed": "A closed file stays closed.",
-      "needsBanks": "Send the file to the banks first: a pre-approval comes from a bank's offer.",
+      "needsAccept": "Accept the application first: a pre-approval comes after it is shared with the banks.",
       "needsBooking": "Book the consultation first.",
       "needsContact": "Log a contact first: a request is contacted before it's booked.",
-      "needsReview": "Review the documents first: every one must be accepted before the file goes to the banks.",
+      "needsReview": "Review the documents first: every one must be accepted before the application is.",
       "reuploadOpen": "A re-upload request is still open. Cancel it, or wait for the applicant, first."
     },
     "lane": "{service} · {count, plural, one {# open} other {# open}}",
@@ -219,18 +169,6 @@ export const CMS_MESSAGES = {
       "request": "Request",
       "status": "Status",
       "website": "Website"
-    },
-    "view": {
-      "board": "Board",
-      "label": "View",
-      "list": "List"
-    },
-    "website": {
-      "ar": "Arabic",
-      "arLabel": "Came from the Arabic website",
-      "en": "English",
-      "enLabel": "Came from the English website",
-      "unknown": "Not recorded"
     },
     "consult": {
       "booked": "{date} · {time}",
@@ -276,22 +214,43 @@ export const CMS_MESSAGES = {
       "promiseDue": "Sort: promise due"
     },
     "tab": {
+      "accepted": "Accepted",
       "awaiting": "Awaiting applicant",
       "closed": "Closed",
       "contactedBooked": "Contacted & booked",
       "inReview": "In review",
       "new": "New",
-      "open": "Open",
-      "withBanks": "With banks"
+      "open": "Open"
     },
     "tabFooter": "Showing {shown} of {total} requests · sorted by promise due",
-    "title": "Mortgage requests"
+    "title": "Mortgage requests",
+    "view": {
+      "board": "Board",
+      "label": "View",
+      "list": "List"
+    },
+    "website": {
+      "ar": "Arabic",
+      "arLabel": "Came from the Arabic website",
+      "en": "English",
+      "enLabel": "Came from the English website",
+      "unknown": "Not recorded"
+    }
   },
   "c2": {
+    "accept": {
+      "consent": "Consent to share with partner banks · {given}",
+      "cta": "Accept application",
+      "done": "{firstName}'s application is accepted.",
+      "lede": "All {count} documents are accepted. Accepting stops the 24-hour clock; you then share the file with the partner banks yourself and record the outcome here.",
+      "needsConsent": "Consent isn't on file, so the application can't be accepted.",
+      "needsDocuments": "Accept every document first.",
+      "title": "Accept {firstName}'s application?"
+    },
     "action": {
       "acceptApplication": "Accept application",
-      "decision": "Open decision",
       "decline": "Decline",
+      "markPreApproved": "Mark pre-approved",
       "requestDocuments": "Request documents"
     },
     "activity": {
@@ -310,20 +269,21 @@ export const CMS_MESSAGES = {
       "pending": "Wording {version} · pending compliance",
       "title": "Consent",
       "withdraw": {
-        "body": "Use this when {firstName} asks Bazar to stop sharing their documents with partner banks. Banks still deciding are withdrawn, every package link on this file stops working now, and nothing more can be sent to a bank. This can't be undone.",
+        "body": "Use this when {firstName} asks Bazar to stop sharing their documents with partner banks. The file can't be accepted without consent, and the team stops sharing it. This can't be undone.",
         "button": "Record a withdrawal",
         "confirm": "Record withdrawal",
-        "done": "{firstName}'s withdrawal is recorded. The banks' links have stopped.",
+        "done": "{firstName}'s withdrawal is recorded.",
         "none": "There's no consent on file to withdraw.",
         "title": "Record a withdrawal of consent?"
       },
       "withdrawn": "Withdrawn {when}",
-      "withdrawnNote": "Nothing more can be shared with the banks."
+      "withdrawnNote": "Don't share this file with the banks."
     },
     "decision": {
       "by": "{name} · {when}",
       "declined": "Declined",
       "message": "Message sent to {firstName}",
+      "note": "Note",
       "title": "Decision"
     },
     "docs": {
@@ -338,6 +298,14 @@ export const CMS_MESSAGES = {
     "owner": {
       "reassign": "Reassign",
       "title": "Owner"
+    },
+    "preApproved": {
+      "cta": "Mark pre-approved",
+      "done": "{firstName} is marked pre-approved.",
+      "lede": "Record that a partner bank pre-approved {firstName}. This closes the file. Nothing is sent: tell {firstName} yourself.",
+      "noteLabel": "Note for the team (optional)",
+      "notePlaceholder": "Which bank, the amount, anything worth keeping",
+      "title": "Mark {firstName} pre-approved"
     },
     "request": {
       "continue": "Continue",
@@ -354,20 +322,6 @@ export const CMS_MESSAGES = {
         "title": "Cancel this request?"
       },
       "sent": "Requested {when} · {reason}"
-    },
-    "send": {
-      "addBanks": "Add partner banks",
-      "banks": "Partner banks",
-      "consent": "Consent on file · {given}",
-      "cta": "{count, plural, =0 {Choose a bank} one {Send to # bank} other {Send to # banks}}",
-      "done": "Sent to {banks}.",
-      "emailFailed": "The file is with the banks, but the email to {bank} didn't go. Send a reminder from the decision page.",
-      "emailPartial": "The file is with the banks, but the email to {bank} didn't reach every inbox. Send a reminder from the decision page.",
-      "emailSkipped": "The file is with the banks, but this site isn't sending email, so nothing went to {bank}.",
-      "lede": "Each bank gets a structured summary and the {count} accepted documents through a secure link of its own, working until {expires}. Every open and download is recorded.",
-      "noInbox": "No package inbox",
-      "none": "No partner banks are set up yet.",
-      "title": "Send {firstName}'s file to partner banks"
     }
   },
   "c3": {
@@ -459,124 +413,6 @@ export const CMS_MESSAGES = {
     "send": "Send request to {firstName}",
     "sent": "Request sent to {firstName}.",
     "whatsappPending": "WhatsApp isn't connected yet, so this goes by email."
-  },
-  "c5": {
-    "bank": {
-      "awaiting": "Awaiting reply · sent {time}",
-      "declined": "Declined · {time}",
-      "editResponse": "Edit",
-      "monthly": "25 yrs · monthly",
-      "preApproved": "Pre-approved · {time}",
-      "rate": "Rate",
-      "rateValue": "{rate}% fixed · {years} yrs",
-      "rateVariable": "{rate}% variable",
-      "record": "Record response",
-      "reminder": "Send a reminder",
-      "reminderSent": "Reminder sent {time}",
-      "upTo": "Up to",
-      "withdrawn": "Withdrawn"
-    },
-    "banks": {
-      "basis": "Priced on a monthly gross salary of {salary} (salary certificate) and a maximum LTV of {ltv}% ({residency}).",
-      "basisBusiness": "Priced on 12 months of business bank statements and a maximum LTV of {ltv}% ({residency}).",
-      "basisNoSalary": "Priced on a maximum LTV of {ltv}% ({residency}); the salary isn't recorded yet.",
-      "hint": "Choose the offer to lead with",
-      "none": "No bank has answered yet.",
-      "title": "Partner bank responses"
-    },
-    "breadcrumbs": "Inbox › Mortgage requests › {reference} › Decision",
-    "channel": {
-      "emailLetter": "Email + letter"
-    },
-    "cta": {
-      "needsConsent": "Consent isn't on file.",
-      "needsLead": "Choose the offer to lead with first.",
-      "note": "Moves the file to Pre-approved and stops the clock at {elapsed}.",
-      "noteNoClock": "Moves the file to Pre-approved.",
-      "title": "Confirm pre-approval & notify {firstName}",
-      "withdraws": "{count, plural, one {The bank still deciding is withdrawn, and its link stops working.} other {The # banks still deciding are withdrawn, and their links stop working.}}"
-    },
-    "decided": "Decided {when}.",
-    "decision": {
-      "decline": "Decline",
-      "preApprove": "Pre-approve",
-      "title": "Decision"
-    },
-    "done": "Pre-approved. {firstName} has been emailed, with the letter.",
-    "lead": {
-      "expired": "{bank}'s offer expired on {date}. Record a new one or choose another.",
-      "letterMissing": "{bank}'s letter is still being checked.",
-      "none": "Choose a pre-approved offer to lead with.",
-      "offer": "Lead offer",
-      "offerValue": "{bank} · up to {amount}",
-      "rate": "Rate",
-      "rateValue": "{rate}% fixed for {years} years",
-      "rateVariableValue": "{rate}% variable",
-      "validUntil": "Valid until",
-      "validValue": "{date} · {days, plural, =0 {last day} one {# day} other {# days}}"
-    },
-    "message": {
-      "example": "Good news, Priya: you're pre-approved. First Abu Dhabi Bank has pre-approved you for up to AED 2,150,000 at 3.99% fixed for 3 years, valid until 21 November 2026. ADCB has also pre-approved you for up to AED 2,000,000.\n\nI'll call you tomorrow morning to talk through both. Yasmin",
-      "label": "Message to {firstName}"
-    },
-    "record": {
-      "amount": "Up to (AED)",
-      "declined": "Declined",
-      "edit": "Edit {bank}'s response",
-      "fixed": "Fixed",
-      "invalid": "Check the amount, the rate, the term and the date.",
-      "letter": "Pre-approval letter",
-      "letterBusy": "Checking the letter…",
-      "letterFailed": "That file can't be used. Upload the bank's letter as a PDF of up to 10 MB, without a password.",
-      "letterOpen": "Open",
-      "letterReplace": "Replace",
-      "letterUpload": "Upload the letter (PDF)",
-      "needsLetter": "Upload the bank's letter first.",
-      "notes": "Notes for the team",
-      "outcome": "Response",
-      "preApproved": "Pre-approved",
-      "rate": "Rate (%)",
-      "save": "Save response",
-      "saved": "{bank}'s response is recorded.",
-      "title": "Record {bank}'s response",
-      "type": "Rate",
-      "validUntil": "Valid until",
-      "variable": "Variable",
-      "years": "Fixed for (years)"
-    },
-    "reminder": {
-      "emailFailed": "The reminder to {bank} didn't go, and its earlier link has stopped. Send another in 10 minutes.",
-      "emailSkipped": "This site isn't sending email, so no reminder went to {bank}, and its earlier link has stopped.",
-      "noConsent": "The applicant withdrew their consent, so no new link can go to {bank}.",
-      "partial": "The reminder reached only some of {bank}'s inboxes. Its earlier link has stopped; send another in 10 minutes.",
-      "recent": "A reminder went to {bank} a few minutes ago.",
-      "sent": "Reminder sent to {bank}."
-    },
-    "template": {
-      "also": "{bank} has also pre-approved you for up to {amount}.",
-      "close": "{count, plural, one {I'll call you tomorrow morning to talk it through.} =2 {I'll call you tomorrow morning to talk through both.} other {I'll call you tomorrow morning to talk through them all.}}",
-      "leadFixed": "{bank} has pre-approved you for up to {amount} at {rate}% fixed for {years} years, valid until {validUntil}.",
-      "leadVariable": "{bank} has pre-approved you for up to {amount} at {rate}% variable, valid until {validUntil}.",
-      "opening": "Good news, {firstName}: you're pre-approved."
-    },
-    "tile": {
-      "consent": {
-        "sub": "Partner-bank sharing · {givenAt}",
-        "title": "Consent on file"
-      },
-      "consentMissing": {
-        "sub": "Nothing more can be shared with the banks.",
-        "title": "Consent isn't on file"
-      },
-      "docs": {
-        "sub": "Last one accepted by {name} at {time}",
-        "title": "{accepted} of {total} documents accepted"
-      },
-      "sent": {
-        "sub": "Package shared at {time}",
-        "title": "Sent to {count, plural, one {# partner bank} other {# partner banks}}"
-      }
-    }
   },
   "c6": {
     "action": {
@@ -680,7 +516,7 @@ export const CMS_MESSAGES = {
     "lede": "Choose a reason, then check the message. It goes to {firstName} by email, and a decision can't be undone.",
     "messageLabel": "Message to {firstName}",
     "messageRequired": "Write the message {firstName} will read.",
-    "noBankOfferTooEarly": "Only a file that went to the banks can be declined for that.",
+    "noBankOfferTooEarly": "Only an accepted file can be declined for that.",
     "note": "Moves the file to Declined and stops the clock at {elapsed}.",
     "noteAwaiting": "The open re-upload request is cancelled, and its link stops working.",
     "noteNoClock": "Moves the file to Declined.",
@@ -802,32 +638,6 @@ export const CMS_MESSAGES = {
   "owner": {
     "unassigned": "Unassigned"
   },
-  "pkg": {
-    "contact": "Questions? Reply to the email this link came in, or call Bazar's mortgage team on +971 2 632 2223.",
-    "documents": "Documents",
-    "download": "Download",
-    "eyebrow": "{reference} · Fast Pre-Approval",
-    "field": {
-      "employedSince": "Employed since",
-      "employer": "Employer",
-      "ltv": "Maximum LTV",
-      "salary": "Monthly gross salary"
-    },
-    "fileMeta": "{name} · {meta}",
-    "lede": "{adviser} from Bazar's mortgage team shared this application with {bank} on {sentAt}. The link works until {expires}, and every open and download is recorded.",
-    "state": {
-      "expired": {
-        "body": "Ask Bazar's mortgage team for a fresh link: reply to the email it came in.",
-        "title": "This package link has expired"
-      },
-      "unavailable": {
-        "body": "It may have been withdrawn, or the link is incomplete. Call Bazar's mortgage team on +971 2 632 2223.",
-        "title": "This package isn't available"
-      }
-    },
-    "summary": "Summary",
-    "title": "A Fast Pre-Approval package from Bazar"
-  },
   "reassign": {
     "label": "New owner",
     "submit": "Reassign",
@@ -896,6 +706,7 @@ export const CMS_MESSAGES = {
     "title": "Mortgage settings"
   },
   "status": {
+    "accepted": "Accepted",
     "awaitingApplicant": "Awaiting applicant",
     "completed": "Completed",
     "consultationBooked": "Consultation booked",
@@ -903,8 +714,7 @@ export const CMS_MESSAGES = {
     "declined": "Declined",
     "inReview": "In review",
     "new": "New",
-    "preApproved": "Pre-approved",
-    "withBanks": "With banks"
+    "preApproved": "Pre-approved"
   },
   "viewer": {
     "breadcrumbs": "Mortgage requests › {reference} · {applicant} › Documents",
@@ -930,22 +740,19 @@ export const CMS_MESSAGES = {
 
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
+  "activity.applicationAccepted.sub",
+  "activity.applicationAccepted.title",
   "activity.assigned.invite",
   "activity.atRisk",
-  "activity.bankDeclined",
-  "activity.bankDownloaded",
-  "activity.bankReminder",
   "activity.booked.sub",
   "activity.booked.title",
   "activity.breached",
   "activity.callLeftMessage",
   "activity.callReached",
   "activity.claimed",
-  "activity.consentWithdrawn.sub",
   "activity.consentWithdrawn.title",
   "activity.declined",
   "activity.downloaded",
-  "activity.downloadedLetter",
   "activity.dsrExported",
   "activity.edited",
   "activity.emailSent",
@@ -956,9 +763,6 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.inviteSent.title",
   "activity.inviteUsed",
   "activity.linkLocked",
-  "activity.openedLetter",
-  "activity.packageOpened",
-  "activity.preApproved.sub",
   "activity.preApproved.title",
   "activity.reassigned.sub",
   "activity.reassigned.title",
@@ -968,37 +772,12 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.reuploadRequested",
   "activity.reviewStarted",
   "activity.statusChanged",
-  "banks.active",
-  "banks.add",
-  "banks.col.bank",
-  "banks.col.inboxes",
-  "banks.col.status",
-  "banks.dialog.add",
-  "banks.dialog.edit",
-  "banks.edit",
-  "banks.empty",
-  "banks.error.codeTaken",
-  "banks.error.invalid",
-  "banks.error.needsInbox",
-  "banks.field.active",
-  "banks.field.code",
-  "banks.field.codeHint",
-  "banks.field.colour",
-  "banks.field.inboxes",
-  "banks.field.inboxesHint",
-  "banks.field.name",
-  "banks.field.order",
-  "banks.inactive",
-  "banks.lede",
-  "banks.link",
-  "banks.readOnly",
-  "banks.save",
-  "banks.saved",
-  "banks.settingsNote",
-  "banks.title",
   "board.closedAll",
   "board.closedMore",
   "board.column",
+  "board.dialog.accept.cta",
+  "board.dialog.accept.lede",
+  "board.dialog.accept.title",
   "board.dialog.book.cta",
   "board.dialog.book.lede",
   "board.dialog.book.title",
@@ -1007,25 +786,22 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "board.dialog.cancel.title",
   "board.dialog.contact.lede",
   "board.dialog.contact.title",
-  "board.dialog.decide.cta",
-  "board.dialog.decide.lede",
-  "board.dialog.decide.title",
   "board.dialog.held.cta",
   "board.dialog.held.lede",
   "board.dialog.held.title",
   "board.dialog.loading",
+  "board.dialog.preApprove.cta",
+  "board.dialog.preApprove.lede",
+  "board.dialog.preApprove.title",
   "board.dialog.reupload.lede",
   "board.dialog.reupload.requested",
   "board.dialog.reupload.title",
-  "board.dialog.send.cta",
-  "board.dialog.send.lede",
-  "board.dialog.send.title",
   "board.done.startReview",
   "board.empty",
   "board.hint",
   "board.illegal.backwards",
   "board.illegal.closed",
-  "board.illegal.needsBanks",
+  "board.illegal.needsAccept",
   "board.illegal.needsBooking",
   "board.illegal.needsContact",
   "board.illegal.needsReview",
@@ -1058,6 +834,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.owner.unassigned",
   "c1.risk.more",
   "c1.risk.showAll",
+  "c1.tab.accepted",
   "c1.tabFooter",
   "c1.view.board",
   "c1.view.label",
@@ -1067,8 +844,15 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.website.en",
   "c1.website.enLabel",
   "c1.website.unknown",
-  "c2.action.decision",
+  "c2.accept.consent",
+  "c2.accept.cta",
+  "c2.accept.done",
+  "c2.accept.lede",
+  "c2.accept.needsConsent",
+  "c2.accept.needsDocuments",
+  "c2.accept.title",
   "c2.action.decline",
+  "c2.action.markPreApproved",
   "c2.activity.showLatest",
   "c2.consent.withdraw.body",
   "c2.consent.withdraw.button",
@@ -1081,7 +865,14 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c2.decision.by",
   "c2.decision.declined",
   "c2.decision.message",
+  "c2.decision.note",
   "c2.decision.title",
+  "c2.preApproved.cta",
+  "c2.preApproved.done",
+  "c2.preApproved.lede",
+  "c2.preApproved.noteLabel",
+  "c2.preApproved.notePlaceholder",
+  "c2.preApproved.title",
   "c2.request.continue",
   "c2.request.label",
   "c2.request.none",
@@ -1092,18 +883,6 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c2.reupload.confirm.keep",
   "c2.reupload.confirm.title",
   "c2.reupload.sent",
-  "c2.send.addBanks",
-  "c2.send.banks",
-  "c2.send.consent",
-  "c2.send.cta",
-  "c2.send.done",
-  "c2.send.emailFailed",
-  "c2.send.emailPartial",
-  "c2.send.emailSkipped",
-  "c2.send.lede",
-  "c2.send.noInbox",
-  "c2.send.none",
-  "c2.send.title",
   "c3.accepted",
   "c3.acceptedBy",
   "c3.allAccepted",
@@ -1128,61 +907,6 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c4.reasonRequired",
   "c4.sent",
   "c4.whatsappPending",
-  "c5.bank.declined",
-  "c5.bank.editResponse",
-  "c5.bank.rateVariable",
-  "c5.bank.record",
-  "c5.bank.reminderSent",
-  "c5.bank.withdrawn",
-  "c5.banks.basisBusiness",
-  "c5.banks.basisNoSalary",
-  "c5.banks.none",
-  "c5.cta.needsConsent",
-  "c5.cta.needsLead",
-  "c5.cta.noteNoClock",
-  "c5.cta.withdraws",
-  "c5.decided",
-  "c5.done",
-  "c5.lead.expired",
-  "c5.lead.letterMissing",
-  "c5.lead.none",
-  "c5.lead.rateVariableValue",
-  "c5.record.amount",
-  "c5.record.declined",
-  "c5.record.edit",
-  "c5.record.fixed",
-  "c5.record.invalid",
-  "c5.record.letter",
-  "c5.record.letterBusy",
-  "c5.record.letterFailed",
-  "c5.record.letterOpen",
-  "c5.record.letterReplace",
-  "c5.record.letterUpload",
-  "c5.record.needsLetter",
-  "c5.record.notes",
-  "c5.record.outcome",
-  "c5.record.preApproved",
-  "c5.record.rate",
-  "c5.record.save",
-  "c5.record.saved",
-  "c5.record.title",
-  "c5.record.type",
-  "c5.record.validUntil",
-  "c5.record.variable",
-  "c5.record.years",
-  "c5.reminder.emailFailed",
-  "c5.reminder.emailSkipped",
-  "c5.reminder.noConsent",
-  "c5.reminder.partial",
-  "c5.reminder.recent",
-  "c5.reminder.sent",
-  "c5.template.also",
-  "c5.template.close",
-  "c5.template.leadFixed",
-  "c5.template.leadVariable",
-  "c5.template.opening",
-  "c5.tile.consentMissing.sub",
-  "c5.tile.consentMissing.title",
   "c6.book.needsContact",
   "c6.book.none",
   "c6.book.passed",
@@ -1276,22 +1000,6 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "notify.newRequest",
   "notify.reupload",
   "notify.reuploadBody",
-  "pkg.contact",
-  "pkg.documents",
-  "pkg.download",
-  "pkg.eyebrow",
-  "pkg.field.employedSince",
-  "pkg.field.employer",
-  "pkg.field.ltv",
-  "pkg.field.salary",
-  "pkg.fileMeta",
-  "pkg.lede",
-  "pkg.state.expired.body",
-  "pkg.state.expired.title",
-  "pkg.state.unavailable.body",
-  "pkg.state.unavailable.title",
-  "pkg.summary",
-  "pkg.title",
   "reassign.label",
   "reassign.submit",
   "reassign.title",
@@ -1327,6 +1035,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "settings.save",
   "settings.saved",
   "settings.title",
+  "status.accepted",
   "viewer.loadFailed",
   "viewer.noFiles",
   "viewer.required",
@@ -1334,7 +1043,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "viewer.stage",
   "viewer.tabs",
   "viewer.zoomIn",
-  "viewer.zoomOut"
+  "viewer.zoomOut",
 ];
 
 export const cmsT = createTranslator({ locale: "en", messages: { cms: CMS_MESSAGES }, namespace: "cms" });

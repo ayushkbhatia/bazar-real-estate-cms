@@ -29,7 +29,7 @@ export const DECLINE_REASONS = [
 export type DeclineReason = (typeof DECLINE_REASONS)[number];
 
 /** Where a file can be declined from (state.ts has the same rule). */
-export const DECLINABLE: readonly MortgageStatus[] = ["new", "in_review", "awaiting_applicant", "with_banks"];
+export const DECLINABLE: readonly MortgageStatus[] = ["new", "in_review", "awaiting_applicant", "accepted"];
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
 
@@ -50,7 +50,7 @@ export function isDeclineReason(value: unknown): value is DeclineReason {
 
 /** The reasons a file in `status` can be declined for, in the order the form lists them. */
 export function declineReasonsFor(status: MortgageStatus): readonly DeclineReason[] {
-  return status === "with_banks" ? DECLINE_REASONS : DECLINE_REASONS.filter((r) => r !== "no_bank_offer");
+  return status === "accepted" ? DECLINE_REASONS : DECLINE_REASONS.filter((r) => r !== "no_bank_offer");
 }
 
 /** The reason as the team reads it (the form, C2's decision card, the activity log). */

@@ -503,7 +503,7 @@ export type RequestFile = {
   /** Once decided: what, why (a decline, D19), by whom and when, and the message the applicant got. */
   decision: {
     kind: "pre_approved" | "declined";
-    /** The status it was decided from: a decline can come before the banks (D19). */
+    /** The status it was decided from: a decline can come before acceptance (D19). */
     from: RequestStatus | null;
     reason: DeclineReason | null;
     message: string | null;
@@ -514,7 +514,7 @@ export type RequestFile = {
   me: { id: string; role: TeamRole };
   /**
    * `withdrawConsent` isn't `act`: an applicant can withdraw after a decision
-   * too, and the banks' links are still live then (SR-17, SR-22).
+   * too (SR-17).
    */
   can: { act: boolean; reassign: boolean; claim: boolean; withdrawConsent: boolean };
 };

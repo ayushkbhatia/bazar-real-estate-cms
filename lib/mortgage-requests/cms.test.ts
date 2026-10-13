@@ -340,36 +340,27 @@ describe("activity lines (00-foundations §11)", () => {
     }
   });
 
-  it("words the Phase 6 bank steps, naming each bank as the team does", () => {
-    const bank = (type: string, data: Record<string, unknown>) => ({ ...event(type, data, null), actor_kind: "bank" as const });
-    const lines = [
-      describeEvent(event("bank.package_sent", { banks: ["FAB", "ADCB", "MSQ"], labels: ["FAB", "ADCB", "Mashreq"], documents: 4 }, RASHID), ctx),
-      describeEvent(bank("bank.package_opened", { bank: "MSQ", label: "Mashreq" }), ctx),
-      describeEvent(bank("document.downloaded", { bank: "FAB", label: "FAB", kind: "passport" }), ctx),
-      describeEvent(event("bank.reminder_sent", { bank: "ADCB", label: "ADCB" }, RASHID), ctx),
-      describeEvent(event("bank.response_recorded", { bank: "FAB", label: "FAB", status: "pre_approved", amount: 2150000, letter: "FAB-letter.pdf" }, RASHID), ctx),
-      describeEvent(event("bank.response_recorded", { bank: "ADCB", label: "ADCB", status: "declined" }, RASHID), ctx),
-      describeEvent(event("decision.pre_approved", { bank: "FAB", label: "FAB", amount: 2150000 }, RASHID), ctx),
-      // Before 0149 an event carried the code alone.
-      describeEvent(bank("bank.package_opened", { bank: "ENBD" }), ctx),
-      describeEvent(event("document.viewed", { file_id: "f", kind: "bank_letter" }), ctx),
-    ];
-    expect(lines.map((l) => [l?.text, l?.sub ?? null])).toEqual([
-      ["Package sent to FAB, ADCB and Mashreq", "4 documents · structured summary"],
-      ["Mashreq opened the package", null],
-      ["FAB downloaded Passport copy", null],
-      ["Reminder sent to ADCB", null],
-      ["FAB pre-approved up to AED 2,150,000", "Letter attached · FAB-letter.pdf"],
-      ["ADCB declined", null],
-      ["Rashid sent the pre-approval", "FAB · up to AED 2,150,000"],
-      ["ENBD opened the package", null],
-      ["Yasmin opened a bank's letter", null],
-    ]);
+  it("words accepting and the outcome, and drops the retired bank steps (0156)", () => {
+    expect(describeEvent(event("application.accepted", {}, RASHID), ctx)).toMatchObject({
+      text: "Rashid accepted the application",
+      sub: "Ready to share with the partner banks",
+    });
+    expect(describeEvent(event("decision.pre_approved", { note: "FAB, AED 2.1m" }, RASHID), ctx)).toMatchObject({
+      text: "Rashid marked it pre-approved",
+      sub: "FAB, AED 2.1m",
+    });
+    expect(describeEvent(event("decision.pre_approved", {}, RASHID), ctx)?.sub).toBeUndefined();
+    // The activity log is append-only, so files that went to the banks before 0156 keep these lines; they read as nothing.
+    for (const type of ["bank.package_sent", "bank.package_opened", "bank.reminder_sent", "bank.response_recorded"]) {
+      expect(describeEvent(event(type, { bank: "FAB", label: "FAB" }, RASHID), ctx)).toBeNull();
+    }
     // Phase 7: retention and a data-subject export leave their mark too.
     expect(describeEvent(event("files.purged", { files: 4, reason: "retention" }, null), ctx)?.text).toBe("4 files deleted: the retention period ended");
     expect(describeEvent(event("dsr.exported", {}, null), ctx)?.text).toBe("The applicant's data was exported at their request");
-    for (const quiet of ["sent_to_banks", "pre_approved", "declined"]) {
-      expect(describeEvent(event("status.changed", { to: "with_banks", event: quiet }), ctx)).toBeNull();
+    for (const quiet of ["application_accepted", "pre_approved", "declined"]) {
+      expect(describeEvent(event("status.changed", { to: "accepted", event: quiet }), ctx)).toBeNull();
     }
+    // A status.changed from before the rename names a status there's no label for any more.
+    expect(describeEvent(event("status.changed", { to: "with_banks", event: "sent_to_banks" }), ctx)).toBeNull();
   });
 });

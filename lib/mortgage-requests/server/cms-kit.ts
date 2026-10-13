@@ -48,20 +48,6 @@ export async function teamSession() {
   return { user, staff, role, supabase: await createSupabaseServerClient() };
 }
 
-/**
- * The caller, when they may keep the partner banks (SPEC §7): the Head of
- * mortgages, or an admin — who needs no mortgage role for it, since the banks
- * page shows no applicant (SECURITY-REVIEW SR-13). `mortgage_save_bank()`
- * decides again.
- */
-export async function bankEditorSession() {
-  const user = await getCurrentUser();
-  if (!user) return null;
-  const [staff, role] = await Promise.all([getCurrentStaffRow(), getMortgageRole()]);
-  if (!staff || staff.status !== "active" || !(role === "head" || staff.role === "admin")) return null;
-  return { user, staff, role, supabase: await createSupabaseServerClient() };
-}
-
 /** A database refusal as the page shows it. SQLSTATEs from 0139, 0143 and 0145. */
 export function refused(error: { code?: string; message: string }, source: string): MortgageActionResult {
   switch (error.code) {
@@ -84,11 +70,10 @@ export function refused(error: { code?: string; message: string }, source: strin
   }
 }
 
-/** The queue, and a request's file, its decision and one of its documents, when named. */
+/** The queue, and a request's file and one of its documents, when named. */
 export function refreshMortgagePaths(reference?: string, documentKind?: string) {
   revalidatePath("/admin/mortgages");
   if (reference) revalidatePath(`/admin/mortgages/${reference}`);
-  if (reference) revalidatePath(`/admin/mortgages/${reference}/decision`);
   if (reference && documentKind) revalidatePath(`/admin/mortgages/${reference}/documents/${documentKind}`);
 }
 
@@ -110,7 +95,7 @@ export async function sendLinkEmail(
   admin: SupabaseClient,
   input: {
     requestId: string;
-    kind: "preapproval_invite" | "reupload_request" | "bank_package" | "bank_reminder";
+    kind: "preapproval_invite" | "reupload_request";
     dedupe: string;
     to: string;
     replyTo?: string | null;

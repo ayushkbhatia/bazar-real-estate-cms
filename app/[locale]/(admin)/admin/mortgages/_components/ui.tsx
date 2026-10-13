@@ -72,7 +72,7 @@ export const STATUS: Record<RequestStatus, { key: string; tone: Tone }> = {
   new: { key: "status.new", tone: "accent" },
   in_review: { key: "status.inReview", tone: "warn" },
   awaiting_applicant: { key: "status.awaitingApplicant", tone: "muted" },
-  with_banks: { key: "status.withBanks", tone: "info" },
+  accepted: { key: "status.accepted", tone: "info" },
   pre_approved: { key: "status.preApproved", tone: "success" },
   declined: { key: "status.declined", tone: "danger" },
   contacted: { key: "status.contacted", tone: "warn" },

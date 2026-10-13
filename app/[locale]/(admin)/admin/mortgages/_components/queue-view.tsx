@@ -21,7 +21,7 @@ const TAB_KEY: Record<QueueTab, string> = {
   new: "c1.tab.new",
   in_review: "c1.tab.inReview",
   awaiting: "c1.tab.awaiting",
-  with_banks: "c1.tab.withBanks",
+  accepted: "c1.tab.accepted",
   contacted_booked: "c1.tab.contactedBooked",
   closed: "c1.tab.closed",
 };

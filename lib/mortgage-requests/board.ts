@@ -6,7 +6,7 @@
  * A drop is never a bare status write. Status moves only through
  * `mortgage_transition()` (state.ts mirrors it), and most moves carry
  * something the team has to supply — a re-upload needs a document and a
- * reason, sending to banks needs the banks, a decision needs the offer, a
+ * reason, accepting needs the documents read and the consent seen, a
  * decline needs a reason and a message. So a drop names the action that
  * makes the move: some the board runs at once, some it asks one question
  * for, and the rest open the screen built for them. Moves SPEC §2.4 doesn't
@@ -19,7 +19,7 @@ export type BoardService = "pre_approval" | "consultancy";
 
 /** Each service's columns, left to right, in the order a file travels. */
 export const BOARD_COLUMNS: Record<BoardService, readonly RequestStatus[]> = {
-  pre_approval: ["new", "in_review", "awaiting_applicant", "with_banks", "pre_approved", "declined"],
+  pre_approval: ["new", "in_review", "awaiting_applicant", "accepted", "pre_approved", "declined"],
   consultancy: ["new", "contacted", "consultation_booked", "completed"],
 };
 
@@ -32,7 +32,7 @@ export type IllegalReason =
   | "closed"
   | "backwards"
   | "needsReview"
-  | "needsBanks"
+  | "needsAccept"
   | "reuploadOpen"
   | "needsContact"
   | "needsBooking";
@@ -46,10 +46,10 @@ export type BoardMove =
   | { kind: "request_reupload" }
   /** Awaiting applicant → In review: cancel the open re-upload request. */
   | { kind: "cancel_reupload" }
-  /** In review → With banks: C2's "Accept application", to choose the banks. */
-  | { kind: "send_to_banks" }
-  /** With banks → Pre-approved: C5, to record the offers and choose the lead. */
-  | { kind: "decide" }
+  /** In review → Accepted: C2's "Accept application", beside the documents and the consent. */
+  | { kind: "accept" }
+  /** Accepted → Pre-approved: record the outcome, on the board. */
+  | { kind: "pre_approve" }
   /** → Declined: the decline dialog, on the board. */
   | { kind: "decline" }
   /** Consultancy New → Contacted: how the contact went, on the board. */
@@ -72,11 +72,11 @@ export function boardMove(service: BoardService, from: RequestStatus, to: Reques
     // A re-upload can be asked before the first open: the request moves the file on first.
     if ((from === "new" || from === "in_review") && to === "awaiting_applicant") return { kind: "request_reupload" };
     if (from === "awaiting_applicant" && to === "in_review") return { kind: "cancel_reupload" };
-    if (from === "in_review" && to === "with_banks") return { kind: "send_to_banks" };
-    if (from === "with_banks" && to === "pre_approved") return { kind: "decide" };
-    if (to === "pre_approved") return { kind: "illegal", why: "needsBanks" };
-    if (from === "awaiting_applicant" && to === "with_banks") return { kind: "illegal", why: "reuploadOpen" };
-    if (from === "new" && to === "with_banks") return { kind: "illegal", why: "needsReview" };
+    if (from === "in_review" && to === "accepted") return { kind: "accept" };
+    if (from === "accepted" && to === "pre_approved") return { kind: "pre_approve" };
+    if (to === "pre_approved") return { kind: "illegal", why: "needsAccept" };
+    if (from === "awaiting_applicant" && to === "accepted") return { kind: "illegal", why: "reuploadOpen" };
+    if (from === "new" && to === "accepted") return { kind: "illegal", why: "needsReview" };
     return { kind: "illegal", why: ORDER(service, to) < ORDER(service, from) ? "backwards" : "needsReview" };
   }
 
@@ -90,5 +90,5 @@ export function boardMove(service: BoardService, from: RequestStatus, to: Reques
 
 /** Moves the board finishes itself (at once, or after one question on the board). */
 export function movesOnBoard(move: BoardMove): boolean {
-  return ["start_review", "cancel_reupload", "decline", "log_contact", "held"].includes(move.kind);
+  return ["start_review", "cancel_reupload", "pre_approve", "decline", "log_contact", "held"].includes(move.kind);
 }

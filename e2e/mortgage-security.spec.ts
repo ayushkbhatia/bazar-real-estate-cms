@@ -3,8 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 /**
  * Fixes from the mortgage module's security review
  * (docs/mortgage/SECURITY-REVIEW.md), where they show from outside:
- * SR-15's framing headers, SR-16's JSON-only routes, and SR-13's partner
- * banks page for an admin without a mortgage role.
+ * SR-15's framing headers and SR-16's JSON-only routes. SR-13's partner
+ * banks page went with the banks (0156): it is gone for everyone.
  *
  * Signs in with the local seed's accounts, so it runs only against a local or
  * staging stack seeded by `npm run db:local:reset` — never production. See
@@ -62,19 +62,12 @@ test("SR-16: the mortgage API reads JSON only", async ({ request }) => {
   expect(await plain.json()).toMatchObject({ code: "invalid" });
 });
 
-test("SR-13: an admin without a mortgage role keeps the partner banks from settings", async ({ page }) => {
+test("the partner banks pages are gone (0156)", async ({ page }) => {
   await signIn(page);
   await page.goto("/admin/settings");
-  await page.getByRole("link", { name: "Partner banks" }).click();
-  await expect(page).toHaveURL(/\/admin\/settings\/partner-banks$/);
-  await expect(page.getByRole("heading", { name: "Partner banks", level: 1 })).toBeVisible();
-  // The seeded banks, each with the edit control only an editor gets.
-  for (const code of ["FAB", "ADCB", "Mashreq"]) {
-    await expect(page.getByRole("row").filter({ hasText: code }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Partner banks" })).toHaveCount(0);
+  for (const path of ["/admin/settings/partner-banks", "/admin/mortgages/banks"]) {
+    const res = await page.goto(path);
+    expect(res?.status(), path).toBe(404);
   }
-  await expect(page.getByRole("button", { name: /^Edit / }).first()).toBeVisible();
-  await page.getByRole("button", { name: "Add bank" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toBeHidden();
 });

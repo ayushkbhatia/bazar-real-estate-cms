@@ -1,8 +1,9 @@
 /**
  * Local seed for the mortgage module — the data the CMS designs show
  * (docs/mortgage/cms): C1's eleven requests, Priya Raman's file (C2, C3), Karim
- * Haddad's re-upload (C4, W8), Ahmed Al Suwaidi's consultation (C6), the bank
- * responses C5 shows, and the mortgage team.
+ * Haddad's re-upload (C4, W8), Ahmed Al Suwaidi's consultation (C6), an
+ * accepted application and a recorded pre-approval (0156), and the mortgage
+ * team.
  *
  * Every clock is set relative to now through lib/mortgage-requests/sla.ts, on
  * the working-hours calendar (decision D11), so the queue shows the designed
@@ -12,8 +13,9 @@
  * Deliberate differences from the designs:
  *   · Emails are @example.com, so nothing seeded can ever be mailed to a real
  *     address (the PNGs show gmail/outlook addresses).
- *   · C5's bank responses sit on Arjun Mehta (BZM-26-0398, With banks), not
- *     Priya: C2 needs Priya in review, and one file can't be both.
+ *   · The designs' two "With banks" files follow the light CRM (0156): Liam
+ *     Walsh (BZM-26-0404) is accepted, Arjun Mehta (BZM-26-0398) accepted and
+ *     then pre-approved. There are no partner banks, packages or letters.
  *   · Statement file names and periods follow the months required for each
  *     request's submission date, so coverage is consistent with "now".
  *
@@ -34,9 +36,8 @@
  *   · nothing is sent: every notification queued for a sample is marked
  *     skipped, and each 24-hour clock counts as already alerted, so the SLA
  *     tick emails nobody about a sample;
- *   · every bearer token is random. The bank package links go to the manifest
- *     (MORTGAGE_DEMO_MANIFEST), with the files whose bytes upload-files.ts puts
- *     in the bucket.
+ *   · every bearer token is random. The manifest (MORTGAGE_DEMO_MANIFEST)
+ *     lists the files whose bytes upload-files.ts puts in the bucket.
  */
 
 import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -209,34 +210,6 @@ if (!DEMO) insert(
   ),
 );
 
-// ── Partner banks (C5) ──────────────────────────────────────────
-
-const BANKS = {
-  FAB: { name: "First Abu Dhabi Bank", color: "oklch(0.42 0.06 250)" },
-  ADCB: { name: "Abu Dhabi Commercial Bank", color: "oklch(0.45 0.09 25)" },
-  MSQ: { name: "Mashreq", color: "oklch(0.45 0.08 320)" },
-};
-/** A bank's row by its code: one the stack already has is reused, inboxes and all. */
-const bankId = (code: string) => raw(`(select id from public.mortgage_partner_banks where code = ${lit(code)})`);
-/** As the activity log names a bank: "Mashreq", but "FAB" (bankLabel, 0149). */
-function bankLabelOf(code: string): string {
-  const name = BANKS[code as keyof typeof BANKS].name;
-  return name.includes(" ") ? code : name;
-}
-
-insert(
-  "public.mortgage_partner_banks",
-  Object.entries(BANKS).map(([code, bank], i) => ({
-    code,
-    name: bank.name,
-    brand_color: bank.color,
-    active: true,
-    package_emails: textArray([`${code.toLowerCase()}-packages@example.com`]),
-    sort_order: i,
-  })),
-);
-out[out.length - 1] = out[out.length - 1]!.replace(/;$/, "\non conflict (code) do nothing;");
-
 // ── Requests (C1) ───────────────────────────────────────────────
 
 out.push("select set_config('mortgage.transition', 'on', true);");
@@ -245,34 +218,17 @@ type DocMark = "accepted" | "review" | "flagged";
 type PreSeed = {
   ref: string; name: string; mobile: string; email: string; dob: string;
   residency: "uae_national" | "uae_resident_expat"; employment: "salaried" | "business_owner";
-  status: "new" | "in_review" | "awaiting_applicant" | "with_banks";
+  status: "new" | "in_review" | "awaiting_applicant" | "accepted" | "pre_approved";
   docs: [DocMark, DocMark, DocMark, DocMark];
   remaining: number; paused?: boolean; owner: OwnerKey | null;
   entry: string;
 };
 
-/**
- * A bank's package link. Locally its token is derived from the reference, so
- * /mortgages/p/BZM-26-0398-FAB-package opens it; a sample's is random, and
- * the link goes to the manifest for the demo.
- */
-function packageToken(designedRef: string, code: string, sentAt: Date): string {
-  if (!DEMO) return `${designedRef}-${code}-package`;
-  const token = freshToken();
-  packageLinks.push({
-    reference: ref(designedRef),
-    bank: code,
-    url: `${SITE_URL}/mortgages/p/${token}`,
-    expiresAt: new Date(sentAt.getTime() + 7 * DAY_MS).toISOString(),
-  });
-  return token;
-}
-
 const PRE_APPROVALS: PreSeed[] = [
   { ref: "BZM-26-0406", name: "Mariam Al Kaabi", mobile: "+971504813321", email: "mariam.alkaabi@example.com", dob: "1984-06-02", residency: "uae_national", employment: "business_owner", status: "in_review", docs: ["accepted", "accepted", "review", "review"], remaining: H + 48 * MIN, owner: "leena", entry: "home" },
   { ref: "BZM-26-0403", name: "Thomas Becker", mobile: "+971523067710", email: "thomas.becker@example.com", dob: "1979-01-19", residency: "uae_resident_expat", employment: "salaried", status: "in_review", docs: ["accepted", "accepted", "accepted", "review"], remaining: 3 * H + 20 * MIN, owner: "rashid", entry: "calculator_preapproval" },
-  { ref: "BZM-26-0398", name: "Arjun Mehta", mobile: "+971559120142", email: "arjun.mehta@example.com", dob: "1987-09-11", residency: "uae_resident_expat", employment: "salaried", status: "with_banks", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 4 * H + 30 * MIN, owner: "yasmin", entry: "property_detail" },
-  { ref: "BZM-26-0404", name: "Liam Walsh", mobile: "+971586309021", email: "liam.walsh@example.com", dob: "1991-02-27", residency: "uae_resident_expat", employment: "salaried", status: "with_banks", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 9 * H + 15 * MIN, owner: "rashid", entry: "home" },
+  { ref: "BZM-26-0398", name: "Arjun Mehta", mobile: "+971559120142", email: "arjun.mehta@example.com", dob: "1987-09-11", residency: "uae_resident_expat", employment: "salaried", status: "pre_approved", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 4 * H + 30 * MIN, owner: "yasmin", entry: "property_detail" },
+  { ref: "BZM-26-0404", name: "Liam Walsh", mobile: "+971586309021", email: "liam.walsh@example.com", dob: "1991-02-27", residency: "uae_resident_expat", employment: "salaried", status: "accepted", docs: ["accepted", "accepted", "accepted", "accepted"], remaining: 9 * H + 15 * MIN, owner: "rashid", entry: "home" },
   { ref: "BZM-26-0409", name: "Karim Haddad", mobile: "+971557412290", email: "karim.haddad@example.com", dob: "1982-12-05", residency: "uae_resident_expat", employment: "business_owner", status: "awaiting_applicant", docs: ["accepted", "accepted", "accepted", "flagged"], remaining: 9 * H + 13 * MIN, paused: true, owner: "yasmin", entry: "calculator_preapproval" },
   { ref: "BZM-26-0412", name: "Priya Raman", mobile: "+971502184417", email: "priya.raman@example.com", dob: "1990-03-14", residency: "uae_resident_expat", employment: "salaried", status: "in_review", docs: ["accepted", "accepted", "review", "review"], remaining: 17 * H + 42 * MIN, owner: "yasmin", entry: "calculator_preapproval" },
   { ref: "BZM-26-0416", name: "Daniel Okafor", mobile: "+971568806604", email: "daniel.okafor@example.com", dob: "1993-07-30", residency: "uae_resident_expat", employment: "business_owner", status: "new", docs: ["review", "review", "review", "review"], remaining: 21 * H + 5 * MIN, owner: null, entry: "home" },
@@ -287,7 +243,6 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 const requests: Record<string, Value>[] = [];
 const documents: Record<string, Value>[] = [];
 const consents: Record<string, Value>[] = [];
-const submissions: Record<string, Value>[] = [];
 const files: Record<string, Value>[] = [];
 const links: Record<string, Value>[] = [];
 const reuploads: Record<string, Value>[] = [];
@@ -295,25 +250,23 @@ const attempts: Record<string, Value>[] = [];
 const consultations: Record<string, Value>[] = [];
 const events: Record<string, Value>[] = [];
 
-const event = (requestId: string, at: Date, type: string, actor: "applicant" | "staff" | "system" | "bank", actorId: string | null, data: Record<string, unknown> = {}) =>
+const event = (requestId: string, at: Date, type: string, actor: "applicant" | "staff" | "system", actorId: string | null, data: Record<string, unknown> = {}) =>
   events.push({ request_id: requestId, actor_kind: actor, actor_id: actorId, type, data, created_at: notAfterNow(at) });
 
 function fileRow(
-  documentId: string | null,
-  kind: DocKind | null,
+  documentId: string,
+  kind: DocKind,
   name: string,
   sizeBytes: number,
   pages: number | null,
   mime: string,
   uploadedAt: Date,
   period?: [string, string],
-  bankSubmissionId?: string,
 ) {
   const id = randomUUID();
   files.push({
     id,
     document_id: documentId,
-    bank_submission_id: bankSubmissionId ?? null,
     kind,
     state: "active",
     storage_key: `f/${id}`,
@@ -367,7 +320,30 @@ function seedFiles(documentId: string, kind: DocKind, submittedAt: Date, who: Pr
   }
 }
 
-const packageLinks: { reference: string; bank: string; url: string; expiresAt: string }[] = [];
+const PRE_APPROVAL_NOTE = "FAB pre-approved AED 2,150,000 at 3.99% fixed for 3 years.";
+
+/** When an answered file was accepted and, if it was, pre-approved. */
+function answeredTimes(submittedAt: Date) {
+  const acceptedAt = notAfterNow(plusMinutes(submittedAt, 51));
+  return { acceptedAt, decidedAt: notAfterNow(plusMinutes(acceptedAt, 86)) };
+}
+
+/**
+ * The columns mortgage_transition() writes (0156): acceptance stops the clock
+ * and leaves the file open; a pre-approval closes it, keeping that clock.
+ */
+function answeredShape(seed: PreSeed, submittedAt: Date, ownerId: string | null): Record<string, Value> {
+  const { acceptedAt, decidedAt } = answeredTimes(submittedAt);
+  if (seed.status !== "pre_approved") return { sla_stopped_at: acceptedAt };
+  return {
+    sla_stopped_at: acceptedAt,
+    decision: "pre_approved",
+    decided_at: decidedAt,
+    decided_by: ownerId,
+    decision_message: PRE_APPROVAL_NOTE,
+    closed_at: decidedAt,
+  };
+}
 
 for (const seed of PRE_APPROVALS) {
   const requestId = randomUUID();
@@ -378,6 +354,9 @@ for (const seed of PRE_APPROVALS) {
   let submittedAt: Date;
   let dueAt: Date | null;
   let pausedAt: Date | null = null;
+  // Accepted 51 minutes in (Accept application stops the clock, 0156); Arjun's
+  // pre-approval is recorded once the banks answered the team.
+  const answered = seed.status === "accepted" || seed.status === "pre_approved";
   if (seed.paused) {
     pausedAt = subtractWorkingSeconds(NOW, 4 * H + 40 * MIN, CAL);
     const dueBeforePause = addWorkingSeconds(pausedAt, seed.remaining, CAL);
@@ -407,6 +386,7 @@ for (const seed of PRE_APPROVALS) {
     sla_due_at: dueAt,
     sla_paused_at: pausedAt,
     sla_remaining_seconds: seed.paused ? seed.remaining : null,
+    ...(answered ? answeredShape(seed, submittedAt, owner?.id ?? null) : {}),
     // A sample's clock counts as already alerted, so the SLA tick emails nobody about it.
     sla_risk_notified_at: DEMO ? submittedAt : null,
     sla_breach_notified_at: DEMO ? submittedAt : null,
@@ -510,60 +490,14 @@ for (const seed of PRE_APPROVALS) {
     event(requestId, minutesAgo(11), "document.viewed", "staff", owner.id, { kind: "salary_certificate" });
   }
 
-  if (seed.status === "with_banks" && owner) {
-    const sentAt = plusMinutes(submittedAt, 51);
-    const isArjun = seed.ref === "BZM-26-0398";
-    for (const code of Object.keys(BANKS)) {
-      const submissionId = randomUUID();
-      const offer =
-        isArjun && code === "FAB"
-          ? { amount: 2_150_000, rate: 3.99, respondedAfter: 86 }
-          : isArjun && code === "ADCB"
-            ? { amount: 2_000_000, rate: 4.15, respondedAfter: 57 }
-            : null;
-      const respondedAt = offer ? notAfterNow(plusMinutes(sentAt, offer.respondedAfter)) : null;
-      submissions.push({
-        id: submissionId,
-        request_id: requestId,
-        bank_id: bankId(code),
-        status: offer ? "pre_approved" : "sent",
-        sent_at: notAfterNow(sentAt),
-        sent_by: owner.id,
-        package_manifest: { documents: kinds, summary: true },
-        package_token_hash: sha256(packageToken(seed.ref, code, sentAt)),
-        package_expires_at: new Date(sentAt.getTime() + 7 * DAY_MS),
-        responded_at: respondedAt,
-        recorded_by: offer ? owner.id : null,
-        max_amount_aed: offer?.amount ?? null,
-        rate_pct: offer?.rate ?? null,
-        rate_type: offer ? "fixed" : null,
-        fixed_years: offer ? 3 : null,
-        valid_until: offer ? new Date(NOW.getTime() + 60 * DAY_MS).toISOString().slice(0, 10) : null,
-      });
-      // A pre-approval is recorded with its letter (0149), so each offer has one.
-      const letter = offer ? `${code}-pre-approval-${ref(seed.ref)}.pdf` : null;
-      if (letter) {
-        fileRow(null, null, letter, 0.3 * MB, 2, "application/pdf", respondedAt ?? NOW, undefined, submissionId);
-      }
-      if (offer && respondedAt) {
-        event(requestId, respondedAt, "bank.response_recorded", "staff", owner.id, {
-          bank: code,
-          label: bankLabelOf(code),
-          status: "pre_approved",
-          amount: offer.amount,
-          rate: offer.rate,
-          rate_type: "fixed",
-          fixed_years: 3,
-          letter,
-        });
-      }
+  if (answered && owner) {
+    const { acceptedAt, decidedAt } = answeredTimes(submittedAt);
+    event(requestId, acceptedAt, "status.changed", "staff", owner.id, { from: "in_review", to: "accepted", event: "application_accepted" });
+    event(requestId, acceptedAt, "application.accepted", "staff", owner.id);
+    if (seed.status === "pre_approved") {
+      event(requestId, decidedAt, "status.changed", "staff", owner.id, { from: "accepted", to: "pre_approved", event: "pre_approved" });
+      event(requestId, decidedAt, "decision.pre_approved", "staff", owner.id, { note: PRE_APPROVAL_NOTE });
     }
-    event(requestId, sentAt, "bank.package_sent", "staff", owner.id, {
-      banks: Object.keys(BANKS),
-      labels: Object.keys(BANKS).map(bankLabelOf),
-      documents: kinds.length,
-    });
-    event(requestId, sentAt, "status.changed", "staff", owner.id, { from: "in_review", to: "with_banks", event: "sent_to_banks" });
   }
 }
 
@@ -649,7 +583,6 @@ for (const seed of CONSULTATIONS) {
 insert("public.mortgage_requests", requests);
 insert("public.mortgage_documents", documents);
 insert("public.mortgage_consents", consents);
-insert("public.mortgage_bank_submissions", submissions);
 insert("public.mortgage_files", files);
 insert("public.mortgage_access_links", links);
 insert("public.mortgage_reupload_requests", reuploads);
@@ -666,7 +599,7 @@ if (DEMO) {
       ` where request_id in (${requests.map((r) => lit(r.id)).join(", ")});`,
   );
   const manifest = process.env.MORTGAGE_DEMO_MANIFEST;
-  if (!manifest) throw new Error("MORTGAGE_DEMO_MANIFEST: where to write the sample's files and package links");
+  if (!manifest) throw new Error("MORTGAGE_DEMO_MANIFEST: where to write the sample's file list");
   writeFileSync(
     manifest,
     JSON.stringify(
@@ -675,7 +608,6 @@ if (DEMO) {
         siteUrl: SITE_URL,
         requests: requests.map((r) => ({ id: r.id, reference: r.reference, service: r.service, status: r.status, name: r.full_name })),
         files: files.map((f) => ({ storage_key: f.storage_key, mime: f.mime, page_count: f.page_count, original_name: f.original_name, kind: f.kind })),
-        packageLinks,
       },
       null,
       2,

@@ -11,7 +11,7 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 5. [A disputed clock](#5-a-disputed-clock)
 6. [Break-glass access (D10, SR-14)](#6-break-glass-access-d10-sr-14)
 7. [Recording a consent withdrawal (SR-17, SR-22)](#7-recording-a-consent-withdrawal-sr-17-sr-22)
-8. [Partner banks](#8-partner-banks)
+8. [Partner banks (shared by hand)](#8-partner-banks-shared-by-hand)
 9. [An applicant locked out of a secure link](#9-an-applicant-locked-out-of-a-secure-link)
 10. [The feature flag](#10-the-feature-flag)
 11. [Going live](#11-going-live)
@@ -20,8 +20,8 @@ What to do when the mortgage module (Fast Pre-Approval and Mortgage Consultancy)
 
 **Before you use it**
 
-- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing; then step 2's security fixes, migration `0152`), and a local database built from every migration, 30 Sep 2026. D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
-- Screens: C1 is the queue (`/admin/mortgages`); C2 is a Fast Pre-Approval's file and C6 a consultancy's (`/admin/mortgages/[reference]`); C3/C4 is the document viewer (`…/documents/[kind]`); C5 is the decision (`…/decision`). W1–W7 are the website's application; W8 is the secure-link page.
+- Checked against the code at commit `27165051`, plus Phase 7's changes (migration `0151`, retention, data-subject requests, scrubbing; then step 2's security fixes, migration `0152`), and a local database built from every migration, 30 Sep 2026. **Amended 13 Oct 2026 for `0156`, the light CRM:** the team shares applications with its partner banks by hand, so the site has no bank list, packages, reminders, letters or C5; `with_banks` is now `accepted`. D-numbers are decisions in [DECISIONS.md](DECISIONS.md); SR-numbers are gaps in [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
+- Screens: C1 is the queue (`/admin/mortgages`); C2 is a Fast Pre-Approval's file and C6 a consultancy's (`/admin/mortgages/[reference]`); C3/C4 is the document viewer (`…/documents/[kind]`). There is no C5 since 0156: Accept application, Mark pre-approved and Decline are on C2. W1–W7 are the website's application; W8 is the secure-link page.
 - The examples use the local seed's file BZM-26-0412 (Priya Raman). Put the real reference in its place.
 - The SQL returns references, ids, statuses and times, not names, emails or mobiles (an event's `data` can still hold a file name). Keep personal data out of tickets, chats and error reports.
 - **Read-only** SQL changes nothing. **Changes data** SQL is for an engineer only, and runs in production only after the change is agreed (each section says with whom). Try it on the local stack first: `npm run db:local:reset`, then `docker exec -it supabase_db_bazar-local psql -U postgres -d postgres`. Each such statement writes its own audit row in the same statement, so the change and its record land together or not at all.
@@ -67,7 +67,7 @@ select job, last_run_at, last_ok, last_detail, consecutive_failures
 
 - `mortgage.notify`: the outbox;
 - `mortgage.cms.…`: the CMS actions;
-- `mortgage.requests.…`, `mortgage.drafts.…`, `mortgage.files.…`, `mortgage.links.…`, `mortgage.letters.…` and `mortgage.packages.file`: the website and its API.
+- `mortgage.requests.…`, `mortgage.drafts.…`, `mortgage.files.…` and `mortgage.links.…`: the website and its API (`mortgage.letters.…` and `mortgage.packages.file` rows predate 0156).
 
 "Resolve" hides a row until the problem happens again. Contexts carry ids and codes, and since Phase 7 every message, stack and context is scrubbed of email addresses, phone numbers and tokens before it's stored (`lib/pii-scrub.ts`); still read a message before you paste it anywhere else. When the database itself is down, errors reach only Vercel's function logs.
 
@@ -82,7 +82,7 @@ select source, level, message, count, first_seen_at, last_seen_at
 
 ### The file's Activity card
 
-On C2, and inside C6's contact log. Newest first; "View all {count}" opens the rest. It shows who opened or downloaded each document (staff by first name, banks by name), re-upload requests and replies, the bank steps, the decision, "The secure link locked after five wrong codes", "Promise at risk" and "Promise missed".
+On C2, and inside C6's contact log. Newest first; "View all {count}" opens the rest. It shows who opened or downloaded each document (staff by first name), re-upload requests and replies, the acceptance, the outcome and its note, "The secure link locked after five wrong codes", "Promise at risk" and "Promise missed".
 
 It doesn't show emails, codes sent, links verified or failed scans: those are in `mortgage_events` and `mortgage_notifications`. On a Fast Pre-Approval, the "Submitted from the website" line's "Confirmation shown · email sent" is fixed wording and doesn't prove the email went. Opening or downloading a document is logged; looking at a file's page isn't.
 
@@ -126,7 +126,7 @@ select kind, channel, status, count(*)
 
 ### The audit log: /admin/audit-log
 
-Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`), and when a partner bank is saved (`mortgage.bank.create`, `mortgage.bank.update`). Changing anyone's mortgage role writes `staff.mortgage_role_change` by itself, from a trigger on `staff` (`0152`, SR-14): the role before and after, `via` (`app` for a signed-in change, `sql` otherwise) and, when the SQL names them (§6), who and why; a change that doesn't name them is recorded as the system's. Nothing else in the module writes one. A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
+Admins only. The module writes a row when the Head saves the settings (`mortgage.settings.update`, with the flag before and after), when the Head adds or removes a holiday (`mortgage.holiday.set`, `mortgage.holiday.remove`); `mortgage.bank.create` / `mortgage.bank.update` rows predate 0156, which removed the bank list. Changing anyone's mortgage role writes `staff.mortgage_role_change` by itself, from a trigger on `staff` (`0152`, SR-14): the role before and after, `via` (`app` for a signed-in change, `sql` otherwise) and, when the SQL names them (§6), who and why; a change that doesn't name them is recorded as the system's. Nothing else in the module writes one. A data-subject request's record is its `dsr_requests` row ("Data-subject requests", below).
 
 Every **Changes data** statement in this runbook writes its own row (§6's role changes through the trigger, the rest with an insert). This is the insert's shape; the statements below fill it in for you:
 
@@ -152,17 +152,16 @@ values (
 
 ## 2. Uploads, and no malware scan
 
-**There is no malware scanner (decision D6, 8 Oct 2026).** Bazar accepts every document that passes the format checks when its upload completes: the real type from the file's bytes (PDF, JPEG or PNG, as the document allows), its size and the document's total, a PDF that opens without a password, and its page count. A file that passes is ready at once: it can be attached, opened by the team and downloaded by banks. One that fails is deleted and the applicant is told why. `scan_status` still exists in the database, and `clean` there now means "passed those checks"; the database's gates read it.
+**There is no malware scanner (decision D6, 8 Oct 2026).** Bazar accepts every document that passes the format checks when its upload completes: the real type from the file's bytes (PDF, JPEG or PNG, as the document allows), its size and the document's total, a PDF that opens without a password, and its page count. A file that passes is ready at once: it can be attached and opened by the team. One that fails is deleted and the applicant is told why. `scan_status` still exists in the database, and `clean` there now means "passed those checks"; the database's gates read it.
 
 **What that leaves to the team**
 
 - Files come from the public. Open them in the CMS viewer, which draws a PDF or image inside the page, rather than downloading one and opening it in a desktop reader.
-- Banks download the same files from the package page. They have their own scanning; say so if a bank asks.
+- Files the team shares with banks (by hand, since 0156) are these same files. Banks have their own scanning; say so if a bank asks.
 
 **An upload that never becomes ready**
 
 - The applicant, on W5/W6 or W8: a row stays on "Uploading". The bytes never reached the bucket, or the check failed on our side. They can cancel the row and upload again. A submit with a file still uploading answers "Some documents are still being checked. Wait a moment, then try again."
-- The team: C5's "Record response" says the letter failed; upload it again.
 - A draft's files that never finish are deleted with the draft after 24 hours (the worker's `purged N drafts`). A secure link's uploads last as long as the link.
 
 **Don't**
@@ -175,8 +174,8 @@ values (
 
 **What you see**
 
-- An applicant, a team member or a bank says an email never came.
-- A CMS action says "The link was made, but the email didn't go. Send a new link to try again." or "The file is with the banks, but the email to {bank} didn't go. Send a reminder from the decision page." (an error, or a warning when the file moved anyway).
+- An applicant or a team member says an email never came.
+- A CMS action says "The link was made, but the email didn't go. Send a new link to try again." (an error, or a warning when the file moved anyway).
 - A CMS action warns that an email "didn't reach every inbox", or that "this site isn't sending email" (a dry run or no key: §3's settings below).
 - Open errors shows "mortgage notification gave up after five attempts" (source `mortgage.notify`).
 
@@ -184,7 +183,7 @@ values (
 
 | | Queued | Link emails |
 |---|---|---|
-| Kinds | `applicant_received` (the confirmation), `consultation_booked` (with the calendar invite), `decision_pre_approved` (with the bank's letter), `decision_declined`; the team's `team_new_request`, `team_at_risk`, `team_breached`, `team_reupload_received` | `reupload_request`, `preapproval_invite`, `otp_code` (the code), `bank_package`, `bank_reminder` |
+| Kinds | `applicant_received` (the confirmation), `consultation_booked` (with the calendar invite), `decision_declined`; the team's `team_new_request`, `team_at_risk`, `team_breached`, `team_reupload_received` | `reupload_request`, `preapproval_invite`, `otp_code` (the code) |
 | Sent | by the outbox, right after the action, then by the worker | once, when made |
 | Retried | yes, up to five attempts | never. The row is written already final, with `attempts` at 5 |
 | Because | the email can be rebuilt from the request | it carries a link whose token exists only in the email; the database keeps a hash |
@@ -200,7 +199,7 @@ A send that died midway is taken back after 10 minutes. If it was the fifth atte
 
 `skipped` is final. Reasons in `last_error` include "dry run — set EMAIL_DRY_RUN=false to send", "RESEND_API_KEY not set", "whatsapp isn't connected yet" (§4), "the promise is no longer running" (an alarm about a clock that has since paused or stopped, dropped on purpose), "the recipient has no email" and "consultation no longer booked".
 
-**Link emails.** The adviser is told at once how the send went (SR-25): a failure as an error, or as a warning when the action itself went through; a bank reached at only some of its inboxes as a warning; a `skipped` send (a dry run, no key) as a warning that the site isn't sending email. Only a send that reached everyone reads as a success. The outbox has each inbox's row.
+**Link emails.** The adviser is told at once how the send went (SR-25): a failure as an error, or as a warning when the action itself went through; a `skipped` send (a dry run, no key) as a warning that the site isn't sending email. Only a send that reached everyone reads as a success. The outbox has each inbox's row.
 
 **Settings that stop every email on the site**, mortgage or not (`lib/email.ts`):
 
@@ -235,8 +234,7 @@ select r.reference, n.id, n.kind, n.channel, n.status, n.attempts, n.last_error,
   - Re-upload request: on C2, "Cancel request" beside the document, then open it in the viewer (C4) and "Request re-upload" again.
   - Invite: on C6, "Send a new link". The old, unused link stops working.
   - Code: the applicant presses "Send a new code" (once a minute at most).
-  - Bank package or reminder: on C5, "Send a reminder" (at most one per bank every ten minutes).
-- **A queued email that gave up, or was skipped by a setting since fixed, and still matters** (a decision, a booking): once the cause is fixed and the file's owner or the Head agrees, an engineer re-queues that one row. The worker sends it within five minutes. Re-queue a `sent` row only after Resend shows it bounced and the address has been corrected. No row back means nothing changed.
+- **A queued email that gave up, or was skipped by a setting since fixed, and still matters** (a decline, a booking): once the cause is fixed and the file's owner or the Head agrees, an engineer re-queues that one row. The worker sends it within five minutes. Re-queue a `sent` row only after Resend shows it bounced and the address has been corrected. No row back means nothing changed.
 
 > **Changes data.** Engineer only. In production only once the file's owner or the Head of mortgages has agreed.
 
@@ -249,7 +247,7 @@ with requeued as (
    where old.id = n.id
      and n.id = '<notification id>'
      and n.channel = 'email'
-     and n.kind in ('applicant_received', 'consultation_booked', 'decision_pre_approved', 'decision_declined')
+     and n.kind in ('applicant_received', 'consultation_booked', 'decision_declined')
      and (n.status in ('failed', 'skipped', 'sent')
           or (n.status = 'sending' and n.claimed_at < now() - interval '10 minutes'))
   returning n.id, old.status as was_status, old.attempts as was_attempts
@@ -264,7 +262,7 @@ returning target_id;
 ```
 
 - **Every email stopped** (a dry run or a missing key in production): fix the variable (it takes effect with the next deployment). Then:
-  - re-queue what matters, decisions and bookings; confirmations and team alerts can be left, since the team works from the queue;
+  - re-queue what matters, declines and bookings; confirmations and team alerts can be left, since the team works from the queue;
   - find the links that were never delivered, and send each a fresh one:
 
 ```sql
@@ -274,7 +272,7 @@ select r.reference, n.kind, n.created_at, n.last_error
   join public.mortgage_requests r on r.id = n.request_id
  where n.channel = 'email'
    and n.status = 'skipped'
-   and n.kind in ('reupload_request', 'preapproval_invite', 'bank_package', 'bank_reminder')
+   and n.kind in ('reupload_request', 'preapproval_invite')
    and n.created_at > '<when the outage began>'
  order by n.created_at;
 ```
@@ -293,10 +291,10 @@ select r.reference, n.kind, n.created_at, n.last_error
 **What you see today**
 
 - Every WhatsApp row in the outbox is `skipped`, with "whatsapp isn't connected yet".
-- When WhatsApp is ticked, C4's request form, the Decline dialog and C5's decision card say "WhatsApp isn't connected yet, so this goes by email."
+- When WhatsApp is ticked, C4's request form and the Decline dialog say "WhatsApp isn't connected yet, so this goes by email."
 - Codes go by email, and W8 shows the masked email address where the design shows a mobile.
 
-Nothing is lost. Wherever WhatsApp is chosen, an email goes too and carries the whole message: the decision functions refuse a send without email, the re-upload and invite actions always email, and a booking's calendar invite goes by both or by neither.
+Nothing is lost. Wherever WhatsApp is chosen, an email goes too and carries the whole message: the decline refuses a send without email, the re-upload and invite actions always email, and a booking's calendar invite goes by both or by neither.
 
 **Why**
 
@@ -338,8 +336,8 @@ An applicant says the promise was missed. Or the team thinks a clock is wrong: C
 - **At risk and missed:** at risk with 4 working hours or less left (`sla_risk_minutes`, 240); missed once past `sla_due_at`. Both show on C1 and on the file, and each sends a bell notification and an email to the owner and every Head. The worker checks every five minutes. Each alarm fires once, and again only after a pause and resume.
 - **Pause:** a re-upload request moves the file to Awaiting applicant. `sla_paused_at` is set, the working time left is frozen in `sla_remaining_seconds`, and `sla_due_at` is cleared. A second request while already waiting doesn't pause again.
 - **Resume:** when the last open re-upload is sent back or cancelled. The new `sla_due_at` is the frozen time counted on from that moment, so the applicant's wait doesn't count against the team. `sla_paused_seconds` totals the calendar time spent paused, for the record only. Nothing sends the applicant the new time.
-- **Stop:** a decision, pre-approved or declined (`sla_stopped_at`, `decided_at`, `closed_at`). Met if it stopped by the due time. A file declined while paused keeps the time frozen at the pause.
-- The clock runs until a decision. The website and email promise contact ("We'll contact you by"), so a phone call alone doesn't stop it.
+- **Stop:** the team's answer: Accept application (`accepted`, since 0156; `sla_stopped_at` only, the file stays open), or a decline before that (`sla_stopped_at`, `decided_at`, `closed_at`). Met if it stopped by the due time. Marking an accepted file pre-approved or declined closes it without touching the stopped clock. A file declined while paused keeps the time frozen at the pause. Files that were With banks when 0156 ran stopped at the moment they were sent.
+- The clock runs until that answer. The website and email promise contact ("We'll contact you by"), so a phone call alone doesn't stop it.
 - Until design rewords them (D11a), W1's "Within 24 hours" and W7's "24 hours from when you submitted" read as calendar hours, even though W7 shows the working-hours due time. Expect disputes about that wording. If the file was paused, its due time moved later by the time the applicant took, and nothing told them.
 
 **Check**
@@ -363,7 +361,7 @@ select e.created_at, e.type, e.actor_kind, e.data
   from public.mortgage_events e
   join public.mortgage_requests r on r.id = e.request_id
  where r.reference = 'BZM-26-0412'
-   and (e.type in ('request.submitted', 'status.changed', 'reupload.requested',
+   and (e.type in ('request.submitted', 'status.changed', 'reupload.requested', 'application.accepted',
                    'reupload.fulfilled', 'reupload.cancelled', 'sla.at_risk', 'sla.breached')
         or e.type like 'decision.%')
  order by e.created_at;
@@ -372,7 +370,7 @@ select e.created_at, e.type, e.actor_kind, e.data
 Read it as stretches of running time:
 
 - The first runs from `request.submitted` to the first `status.changed` whose `data.to` is `awaiting_applicant` (a pause).
-- Each later stretch runs from a `status.changed` back to `in_review` with `data.event` `reupload_fulfilled` or `reupload_cancelled` (a resume) to the next pause, or to the decision (`decision.pre_approved` or `decision.declined`).
+- Each later stretch runs from a `status.changed` back to `in_review` with `data.event` `reupload_fulfilled` or `reupload_cancelled` (a resume) to the next pause, or to the answer (`application.accepted`, or `decision.declined` before acceptance).
 - `sla.at_risk` and `sla.breached` record the due time in force when they fired (`data.due_at`).
 - The working time used is the working time inside those stretches.
 
@@ -456,7 +454,6 @@ The Head of mortgages agrees to each grant and reviews it afterwards. D10 leaves
 | Opens and downloads documents, each logged under their name | yes | yes |
 | Acts on a file | only files they own; can claim unassigned ones | any file; can reassign |
 | Settings page (the flag, assignment, holidays) | no | yes |
-| Partner banks | can change them only if they're an admin | yes |
 | Side effect | in round-robin mode, new requests can be assigned to them | gets every team alert, by bell and email |
 
 Use `adviser` unless they must act on a file they don't own.
@@ -564,15 +561,13 @@ An applicant asks, by email or phone, to withdraw their consent to share their d
 
 **Do**
 
-The file's owner, or the Head of mortgages, opens the file (C2) and presses "Record a withdrawal" on the Consent card, then "Record withdrawal". It works on a decided file too, since the banks' links outlive the decision. It can't be undone: a new consent would be a new application.
+The file's owner, or the Head of mortgages, opens the file (C2) and presses "Record a withdrawal" on the Consent card, then "Record withdrawal". It works on a decided file too. It can't be undone: a new consent would be a new application.
 
-**What happens** (`mortgage_withdraw_consent()`, `0152`)
+**What happens** (`mortgage_withdraw_consent()`, `0152`, redefined in `0156` without the banks)
 
-- `mortgage_consents.withdrawn_at` is set. The Consent card loses its tick and shows "Withdrawn {when}"; the Activity card says "{actor} recorded {firstName}'s withdrawal of consent", with how many bank links stopped.
-- Banks still deciding are withdrawn, and every package link on the file stops now, whatever the bank answered. A bank's page says "This package isn't available", and its downloads are refused.
-- C5's "Send a reminder" is refused ("The applicant withdrew their consent, so no new link can go to {bank}."). Sending to banks and pre-approving were already refused without consent: C2's "Accept application" is disabled, and C5's consent tile turns red.
-- Declining still works.
-- What a bank has already downloaded can't be recalled. The file's Activity shows which bank opened or downloaded what.
+- `mortgage_consents.withdrawn_at` is set. The Consent card loses its tick and shows "Withdrawn {when}"; the Activity card says "{actor} recorded {firstName}'s withdrawal of consent", and the card adds "Don't share this file with the banks."
+- C2's "Accept application" is refused without consent. Declining still works.
+- The site holds no bank links to stop (0156). If the team has already shared the file with banks by hand, the Head tells those banks; what they hold can't be recalled.
 
 **Then**
 
@@ -581,10 +576,8 @@ Tell the Head. What happens to the file next is the Head's call. There's no end 
 **Check**
 
 ```sql
--- Read-only. live_links is 0 once the withdrawal is recorded.
-select c.given_at, c.withdrawn_at, r.reference, r.status,
-       (select count(*) from public.mortgage_bank_submissions s
-         where s.request_id = r.id and s.package_expires_at > now()) as live_links
+-- Read-only
+select c.given_at, c.withdrawn_at, r.reference, r.status
   from public.mortgage_consents c
   join public.mortgage_requests r on r.id = c.request_id
  where r.reference = 'BZM-26-0412';
@@ -592,63 +585,34 @@ select c.given_at, c.withdrawn_at, r.reference, r.status,
 
 **Don't**
 
-- Don't set `withdrawn_at` in SQL. The package page and the reminder would still refuse (they read the consent), but the banks' submissions would stay "Awaiting reply" and nothing would reach the Activity card.
+- Don't set `withdrawn_at` in SQL: nothing would reach the Activity card.
 - Don't delete the consent row or change `given_at`. The record of what was agreed, and when, stays.
-- Don't tell the applicant their documents have been taken back from the banks.
+- Don't tell the applicant their documents have been taken back from any bank the team shared them with.
 
 ---
 
-## 8. Partner banks
+## 8. Partner banks (shared by hand)
 
-**Where**
+**Since 13 Oct 2026 (`0156`) the site has no partner banks.** The bank list, its pages (`/admin/mortgages/banks`, `/admin/settings/partner-banks`), bank packages and their links (`/mortgages/p/[token]`), reminders, the banks' letters and C5 were removed. The team shares an accepted application with its banks itself.
 
-`/admin/mortgages/banks` ("Partner banks", linked from C1's header for the Head and for admins on the team). The whole team can read it, and the Head of mortgages can change it. An admin can change it too, with or without a mortgage role, at `/admin/settings/partner-banks` (Site settings → Partner banks; SR-13): the same list and the same dialog. The list starts empty in production (D3): no file can go to a bank until the Head adds some.
+**The flow on C2**
 
-**Adding a bank, or changing its inboxes**
+1. **Accept application** (owner or Head), once every document is accepted and consent is on file. The file moves to Accepted (C1's Accepted tab, the board's Accepted column) and the 24-hour clock stops: accepting is the team's answer (§5). The file stays open.
+2. The team shares the file with its banks outside the site. Downloads from the CMS viewer are logged under the adviser's name as always; the site doesn't record which banks were sent what.
+3. The outcome closes the file:
+   - **Mark pre-approved**: an optional note for the team (which bank, the amount; at most 1,000 characters). **Nothing is sent to the applicant**: tell them yourself.
+   - **Decline**: as before, with the applicant's email. "No bank made an offer" is offered only on an accepted file.
 
-- "Add bank", or "Edit" on a row. Fill in Code (2–12 capital letters or digits, as the team says it: FAB), Name, Colour, Order, Package inboxes (one address per line, up to five; each gets the package) and "Offer this bank when sending a file". Then "Save bank".
-- An active bank needs at least one inbox. Codes are unique ("Another bank already uses that code.").
-- Each save writes an audit row (`mortgage.bank.create` or `mortgage.bank.update`) with the before and after.
-- While the sample data exists (§11), FAB, ADCB and Mashreq are sample banks with `@example.com` inboxes. Don't give them real inboxes until the sample is erased: a send from a sample file would put a working package link in a real bank's inbox. The clear script deletes them once nothing points at them.
-- A bank is never deleted, because its submissions point at it. Switch it off instead; C2's send dialog then greys it out.
-- New inboxes apply to what's sent next. Packages already sent stay in the old inbox, and their links work until they expire. A reminder goes to the inboxes on file at that moment, so "Send a reminder" (below) puts a fresh link in the new inbox and stops the old one.
+On the board, dropping In review → Accepted opens C2's Accept dialog; Accepted → Pre-approved asks for the note on the board.
 
-**A bank says its link expired**
+**Old links**
 
-Package links last `link_expiry_days` (7) days from sending. After that the bank's page says "This package link has expired" and asks it to reply to the email for a new one; replies reach the adviser who sent it. On C5, press "Send a reminder" on that bank's row:
-
-- The bank gets a fresh link for another seven days, and the old one stops working. The row then reads "Reminder sent {time}".
-- At most one per bank every ten minutes ("A reminder went to {bank} a few minutes ago.").
-- Only while the file is With banks and that bank hasn't answered.
-- The answer says how the email went: "Reminder sent to {bank}." only when every inbox got it. If it failed, or reached only some inboxes, the old link has already stopped, so send another after the ten minutes. The outbox has kind `bank_reminder` (§3).
-- Refused once the applicant has withdrawn their consent (§7).
-
-"This package isn't available" means the link was withdrawn (the file was decided while that bank was still deciding), the applicant withdrew their consent (§7), or the link is incomplete.
-
-```sql
--- Read-only: a file's bank links
-select b.code, s.status, s.sent_at, s.reminder_sent_at, s.package_expires_at
-  from public.mortgage_bank_submissions s
-  join public.mortgage_partner_banks b on b.id = s.bank_id
- where s.request_id = (select id from public.mortgage_requests where reference = 'BZM-26-0412')
- order by b.sort_order;
-```
-
-**A bank that never answers**
-
-Nothing times out. The row stays at "Awaiting reply · sent {time}", and the 24-hour promise keeps running: only a decision stops it (§5). In order:
-
-1. "Send a reminder".
-2. Call the bank.
-3. Decide with what you have. "Confirm pre-approval" on another bank's offer withdraws the banks still deciding, and their links stop working. Or Decline, with "No bank made an offer" if none has.
-
-An answer that arrives after the decision can't be recorded: the file is no longer with the banks.
+Package links emailed to banks before 0156 now open nothing (the route is gone). `lib/secure-link-redaction.ts` still redacts `/mortgages/p/<token>` from anything that records URLs. The activity log keeps its old bank rows (`bank.*`, actor `bank`; it is append-only), but C2's Activity card no longer shows them: read them with §1's "a file's whole log" query.
 
 **Don't**
 
-- Don't email documents to a bank, or forward a package email. Each link belongs to one bank, and every open is logged as that bank.
-- Don't change `mortgage_partner_banks` by SQL. The page checks the addresses and writes the audit row.
-- Don't press "Send a reminder" to test an inbox: it replaces the link the bank has.
+- Don't mark a file pre-approved before a bank has said yes: the note is the team's only record of it.
+- Don't share a file whose consent is withdrawn (§7).
 
 ---
 
@@ -727,7 +691,7 @@ The application (`/mortgages/apply`) answers 404, or the entry points to it are 
 - The entry points, shown only while `public`: the home page's "Get pre-approval today", the calculator's "Start pre-approval" and "Talk to advisor" (a link an editor set wins), and "Get mortgage pre-approval" on listings that aren't for rent. While `public`, the calculator's old pre-approval form isn't shown (D25).
 - The home page and `/tools/mortgage` update as soon as the flag is saved; listing pages at their next revalidation.
 - The Services menu's mortgage item is a megamenu row, edited at `/admin/megamenu`. It doesn't follow the flag (§11).
-- Secure links (`/mortgages/r/[token]`) and bank packages (`/mortgages/p/[token]`) work whatever the flag, so switching it off strands nobody mid-review. It also means an invite link still lets an applicant submit a Fast Pre-Approval while the flag is off.
+- Secure links (`/mortgages/r/[token]`) work whatever the flag, so switching it off strands nobody mid-review. It also means an invite link still lets an applicant submit a Fast Pre-Approval while the flag is off.
 - The CMS works whatever the flag.
 
 **Check**
@@ -750,13 +714,13 @@ select at, actor_id, before ->> 'flag' as flag_before, after ->> 'flag' as flag_
 
 ## 11. Going live
 
-Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.md); the flag is `off` and nobody has a mortgage role.
+Migrations `0138`–`0152` were applied to production on 30 Sep 2026 (PROGRESS.md); the flag is `off` and nobody has a mortgage role. *(History: the flag has been `public` since 8 Oct 2026. `0156`, the light CRM, needs the banks' letter objects deleted from the bucket before it is applied: PROGRESS.md, 13 Oct 2026.)*
 
 **1. Before anything**
 
 - The blockers are settled: Upstash (D14, SR-1; optional — without it the rate limits do nothing); migrations `0138`–`0152` applied, the last carrying Phase 7 step 2's security fixes; the copy flagged in `lib/mortgage-requests/copy-status.ts` (D11a, D2, D17, D27, D29, FE-1); and D4 and D7. There is no scanner (D6, decided 8 Oct) and no Turnstile (D14, decided 9 Oct) to wait for.
 - Bazar has said who is on the mortgage team, and who is Head (D16).
-- The sample data is gone. Production has held sample requests since 1 Oct 2026 for the client's walkthrough (references `BZM-26-9xxx`, applicants at `@example.com`), with three sample banks: erase them with `scripts/mortgage-demo/clear.ts --yes` ([its README](../../scripts/mortgage-demo/README.md)), and check C1 is empty.
+- The sample data is gone. Production has held sample requests since 1 Oct 2026 for the client's walkthrough (references `BZM-26-9xxx`, applicants at `@example.com`; the three sample banks went with `0156`): erase them with `scripts/mortgage-demo/clear.ts --yes` ([its README](../../scripts/mortgage-demo/README.md)), and check C1 is empty.
 
 **2. Apply the migrations, only with Ayush's go-ahead**
 
@@ -778,11 +742,11 @@ select flag, assignment_mode, link_expiry_days
 **3. Set up**
 
 - The team's roles, by SQL: the statements in §6 with `'head'` or `'adviser'`, without the break-glass fields (`break_glass`, `files`, `until`), and with the reason "team member". Each change writes its audit row. At least one person must be `head`.
-- The Head adds the partner banks and their inboxes (§8) and the public holidays (§5), and checks the settings page.
+- The Head adds the public holidays (§5) and checks the settings page. (There is no bank list to fill in since 0156.)
 
 **4. Production checks**
 
-Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Upstash, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file and package headers, the gallery, and the flag still `off`.
+Work through SECURITY-REVIEW.md §6 and record each result there: the bucket, encryption at rest, the region, the variables (`vercel env ls production`: Upstash, Resend, `EMAIL_DRY_RUN` unset, `CRON_SECRET`), an admin without a mortgage role getting 404 and 403, the file headers, the gallery, and the flag still `off`.
 
 **5. UAT**
 
@@ -791,7 +755,6 @@ PLAN.md has UAT with the mortgage team on staging, which needs a staging project
 - it takes a reference from the one series, which is never reused;
 - it emails whatever address is typed in, and alerts the team;
 - its activity log is append-only, and removing it needs the erasure path (see "Data-subject requests" below);
-- a bank added for testing can't be deleted later, only switched off.
 
 Use the team's own addresses and no real applicant's details. Never point the mortgage e2e specs (`MORTGAGE_E2E_BASE_URL`) at production: they submit real applications.
 
@@ -802,7 +765,7 @@ Use the team's own addresses and no real applicant's details. Never point the mo
 - The same day, point the Services menu's mortgage item at `/mortgages/apply?service=consultancy&from=services_menu` (`/admin/megamenu`). Check the live calculator and home page copy while you're there: editors may have changed it from the defaults.
 - Watch the health page, the queue and the outbox for the first days.
 
-To go back, set the flag to `off` (§10). No deploy is needed, and secure links and bank packages keep working.
+To go back, set the flag to `off` (§10). No deploy is needed, and secure links keep working.
 
 **Don't**
 
@@ -823,20 +786,20 @@ To go back, set the flag to `off` (§10). No deploy is needed, and secure links 
 **Export** ("Build access archive")
 
 - The archive downloads to your machine; send it from the DPO mailbox yourself. Nothing is emailed automatically.
-- Its `mortgage_requests` section has, for each request: the details the applicant gave, the consents (with the IP address and browser they were given from), each document's status and what the team recorded from it, its files by name and size, the banks it was sent to with their answers, the decision and the message sent, consultations, the contact log, re-upload requests, and the activity's kinds and dates. Staff aren't named.
+- Its `mortgage_requests` section has, for each request: the details the applicant gave, the consents (with the IP address and browser they were given from), each document's status and what the team recorded from it, its files by name and size, the decision and the message sent (an accepted request is noted as possibly shared with partner banks by the team), consultations, the contact log, re-upload requests, and the activity's kinds and dates. Staff aren't named.
 - **The documents themselves aren't in it.** If the subject asks for copies, the file's owner or the Head downloads each in the CMS viewer (every download is logged) and they go from the DPO mailbox.
 - Each request's activity gets a `dsr.exported` line.
 
 **Erasure** ("Erase all data")
 
-- **Mortgage requests are deleted outright,** unlike the platform's other tables, which keep AML-relevant rows with their personal fields wiped. The documents and the banks' letters leave the bucket first; then the requests go with their consents, secure links (and their unsent uploads), bank submissions, consultations, contact log, outbox rows and activity log. An open file disappears from the queue, and banks still deciding lose their links.
-- The result names what went: "mortgage requests deleted: N (references), with N files". If a request had gone to partner banks, it also says "already sent to {banks}, which Bazar can't recall". Say so in the reply to the subject; if they want a bank to delete its copy, they (or the Head, at their request) ask that bank.
+- **Mortgage requests are deleted outright,** unlike the platform's other tables, which keep AML-relevant rows with their personal fields wiped. The documents leave the bucket first; then the requests go with their consents, secure links (and their unsent uploads), consultations, contact log, outbox rows and activity log. An open file disappears from the queue.
+- The result names what went: "mortgage requests deleted: N (references), with N files". If a request had been accepted (accepted, pre-approved, or declined with "no bank made an offer"), it also says "{references} had been accepted, so the mortgage team may have shared … with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject". The site doesn't record which banks (0156), so ask the Head. If the subject wants a bank to delete its copy, they (or the Head, at their request) ask that bank.
 - **If it fails** ("The mortgage requests couldn't be erased (…). Nothing was changed; try again."), run it again. Files deleted before the failure stay deleted; the rows are still there until a run completes. Erasing the platform's tables only happens after the mortgage part succeeds.
-- **D7 caution.** Whether the UAE AML record rule covers these files is still open. Until compliance answers, ask the Head (and compliance) before erasing a pre-approved file, or one with banks' letters, and record their answer in the reply.
+- **D7 caution.** Whether the UAE AML record rule covers these files is still open. Until compliance answers, ask the Head (and compliance) before erasing an accepted or pre-approved file, and record their answer in the reply.
 
 **The record**
 
-Each export or erasure writes a `dsr_requests` row. For an erasure its `payload.mortgage` holds the references, the number of files and activity lines deleted, and which banks had a package — that row is the evidence the request was handled.
+Each export or erasure writes a `dsr_requests` row. For an erasure its `payload.mortgage` holds the references, the number of files and activity lines deleted, and which requests had been accepted (`accepted`; `shared_with_banks` on rows before 0156) — that row is the evidence the request was handled.
 
 ```sql
 -- Read-only: what an erasure recorded
@@ -855,7 +818,7 @@ select kind, status, fulfilled_at, payload -> 'mortgage' as mortgage
 
 **What it does**
 
-`/api/cron/mortgage-retention`, daily at 22:30 UTC (02:30 in Dubai). For every request closed (pre-approved, declined or completed) more than `mortgage_settings.retention_months` months ago, it deletes the files — the applicant's documents and the banks' letters — from the bucket, then keeps each file's row as `removed`, with its name replaced by "deleted", and adds "files purged" (`files.purged`) to the request's activity. The request itself, its details, what was recorded from its documents and its activity stay. A run clears up to 2,000 files; any more are cleared on the following nights.
+`/api/cron/mortgage-retention`, daily at 22:30 UTC (02:30 in Dubai). For every request closed (pre-approved, declined or completed) more than `mortgage_settings.retention_months` months ago, it deletes the files — the applicant's documents — from the bucket, then keeps each file's row as `removed`, with its name replaced by "deleted", and adds "files purged" (`files.purged`) to the request's activity. The request itself, its details, what was recorded from its documents and its activity stay. A run clears up to 2,000 files; any more are cleared on the following nights.
 
 **Today it's off.** `retention_months` is null until compliance decides the period (D7), and the job deletes nothing. The health page line says so, and the Head's settings page shows "Kept until compliance sets how long (decision D7). Nothing is deleted."
 

@@ -5,7 +5,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
 import { DOC_LABEL_KEY, REASON_KEY } from "@/lib/mortgage-requests/activity";
-import { firstNameOf, formatDayMonth, formatWeekdayDate, formatWhen } from "@/lib/mortgage-requests/cms-format";
+import { firstNameOf, formatWeekdayDate, formatWhen } from "@/lib/mortgage-requests/cms-format";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { DECLINABLE, declineReasonLabel } from "@/lib/mortgage-requests/decline";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
@@ -38,13 +38,12 @@ import {
   HeldButton,
   InviteButton,
   ReassignDialog,
+  RecordPreApprovalButton,
   RequestDocumentsButton,
   WithdrawConsentButton,
   type BookingDay,
-  type SendableBank,
   type Target,
 } from "../_components/file-actions";
-import { loadBanks, sendable } from "@/lib/mortgage-requests/server/banks";
 import { ActivityList, Card, CRUMB_LINK, DocTile, DocumentBar, FILE_TAG, FileHeader, FileTagBody, KeyValueList, OwnerAvatar, Pill, PromiseClock, roleLabel, StageRail, StatusPill } from "../_components/ui";
 
 export const dynamic = "force-dynamic";
@@ -82,9 +81,10 @@ export default async function MortgageRequestPage({
 }) {
   const { reference } = await params;
   // The queue board sends a drop that needs this screen here with `?do=`:
-  // "accept" opens Accept application, "book" goes to the booking card.
+  // "accept" opens Accept application, "pre-approve" opens Mark pre-approved,
+  // "book" goes to the booking card.
   const doParam = (await searchParams).do;
-  const intent = doParam === "accept" || doParam === "book" ? doParam : null;
+  const intent = doParam === "accept" || doParam === "pre-approve" || doParam === "book" ? doParam : null;
   const { user, role, supabase } = await requireMortgageRole();
   const loaded = await loadMortgageSettings(supabase);
   const now = new Date();
@@ -107,35 +107,21 @@ export default async function MortgageRequestPage({
     const booking = await bookingData(supabase, file, loaded, now);
     return <Consultancy file={file} target={target} breadcrumbs={breadcrumbs} booking={booking} now={now} startBooking={intent === "book"} />;
   }
-  // The bank step (Phase 6) offers every bank; the ones that can't take a package show why.
-  const banks: SendableBank[] =
-    file.status === "in_review"
-      ? (await loadBanks(supabase)).map((b) => ({
-          id: b.id,
-          code: b.code,
-          name: b.name,
-          color: b.brand_color,
-          inboxes: b.package_emails,
-          sendable: sendable(b),
-        }))
-      : [];
-  const expires = formatDayMonth(new Date(now.getTime() + loaded.settings.link_expiry_days * 86_400_000));
   return (
     <PreApproval
       file={file}
       target={target}
       breadcrumbs={breadcrumbs}
       now={now}
-      banks={banks}
-      expires={expires}
       startAccept={intent === "accept"}
+      startPreApproval={intent === "pre-approve"}
     />
   );
 }
 
 // ── The decision ─────────────────────────────────────────────────
 
-/** What was decided, why, by whom and when, and what the applicant read (D19; C5 in Phase 6). */
+/** The outcome: what was decided, why, by whom and when, and what the applicant read or the team noted (D19, 0156). */
 function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
   const d = file.decision!;
   return (
@@ -149,7 +135,9 @@ function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
       </p>
       {d.message ? (
         <>
-          <div className="mt-4 text-[11.5px] text-bz-muted">{t("c2.decision.message", { firstName: file.firstName })}</div>
+          <div className="mt-4 text-[11.5px] text-bz-muted">
+            {file.status === "pre_approved" ? t("c2.decision.note") : t("c2.decision.message", { firstName: file.firstName })}
+          </div>
           <p className="mt-1 text-[12.5px] leading-[1.55] break-words whitespace-pre-line">{d.message}</p>
         </>
       ) : null}
@@ -159,14 +147,14 @@ function DecisionCard({ file, now }: { file: RequestFile; now: Date }) {
 
 // ── C2 ───────────────────────────────────────────────────────────
 
-const PRE_STAGES = ["status.new", "status.inReview", "status.withBanks", "status.preApproved"];
+const PRE_STAGES = ["status.new", "status.inReview", "status.accepted", "status.preApproved"];
 const PRE_AT: Partial<Record<RequestFile["status"], number>> = {
   new: 0,
   in_review: 1,
   // CMS-12 proposal: In review stays current while the file waits on the
   // applicant; the header's pill says so.
   awaiting_applicant: 1,
-  with_banks: 2,
+  accepted: 2,
   pre_approved: 3,
   declined: 3,
 };
@@ -176,18 +164,17 @@ function PreApproval({
   target,
   breadcrumbs,
   now,
-  banks,
-  expires,
   startAccept,
+  startPreApproval,
 }: {
   file: RequestFile;
   target: Target;
   breadcrumbs: React.ReactNode;
   now: Date;
-  banks: SendableBank[];
-  expires: string;
-  /** Opened from the queue board's In review → With banks drop: Accept application starts open. */
+  /** Opened from the queue board's In review → Accepted drop: Accept application starts open. */
   startAccept: boolean;
+  /** Opened from the board's Accepted → Pre-approved drop: Mark pre-approved starts open. */
+  startPreApproval: boolean;
 }) {
   const accepted = file.documents.filter((d) => d.state === "accepted").length;
   const total = file.documents.length;
@@ -195,7 +182,7 @@ function PreApproval({
   const viewer = (kind: string) => `/admin/mortgages/${file.reference}/documents/${kind}`;
   // A decline takes the place of the next stage from wherever the file was (D19), so the rail
   // shows the path it took: declined from New reads New · Declined.
-  const reached = file.status === "declined" ? (PRE_AT[file.decision?.from ?? "with_banks"] ?? 2) : null;
+  const reached = file.status === "declined" ? (PRE_AT[file.decision?.from ?? "accepted"] ?? 2) : null;
   const stages =
     reached === null ? PRE_STAGES.map((k) => t(k)) : [...PRE_STAGES.slice(0, reached + 1).map((k) => t(k)), t("status.declined")];
   const decided = !!file.decision;
@@ -232,11 +219,11 @@ function PreApproval({
         </>
       }
       primary={
-        // With the banks, or decided through them, the decision page (C5) is where the file goes next.
-        file.status === "with_banks" || (decided && file.decision?.from === "with_banks") ? (
-          <Button asChild className="text-[13px]">
-            <Link href={`/admin/mortgages/${file.reference}/decision`}>{t("c2.action.decision")}</Link>
-          </Button>
+        // Accepted, the file waits on the banks the team shared it with: its outcome is recorded here.
+        file.status === "accepted" ? (
+          file.can.act ? (
+            <RecordPreApprovalButton target={target} firstName={file.firstName} defaultOpen={startPreApproval} />
+          ) : null
         ) : decided ? null : (
           <AcceptApplicationButton
             enabled={
@@ -246,10 +233,7 @@ function PreApproval({
             target={target}
             firstName={file.firstName}
             documents={total}
-            expires={expires}
             consentGiven={file.consent?.given ?? null}
-            banks={banks}
-            canManageBanks={file.me.role === "head"}
             defaultOpen={startAccept}
           />
         )
@@ -264,7 +248,9 @@ function PreApproval({
         ]}
         right={
           <span className="flex items-center gap-3">
-            {file.status === "awaiting_applicant" || file.status === "declined" ? <StatusPill status={file.status} /> : null}
+            {file.status === "awaiting_applicant" || file.status === "accepted" || file.status === "declined" ? (
+              <StatusPill status={file.status} />
+            ) : null}
             {file.sla ? <PromiseClock sla={file.sla} width={300} showDue /> : null}
           </span>
         }

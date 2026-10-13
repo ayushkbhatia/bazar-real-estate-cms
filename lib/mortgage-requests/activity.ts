@@ -77,7 +77,7 @@ export const STATUS_LABEL_KEY: Record<string, string> = {
   new: "status.new",
   in_review: "status.inReview",
   awaiting_applicant: "status.awaitingApplicant",
-  with_banks: "status.withBanks",
+  accepted: "status.accepted",
   pre_approved: "status.preApproved",
   declined: "status.declined",
   contacted: "status.contacted",
@@ -95,26 +95,11 @@ const QUIET_TRANSITIONS = new Set([
   "reupload_requested",
   "reupload_fulfilled",
   "reupload_cancelled",
-  // The decision's own line says it (D19), and so do sending and pre-approving (Phase 6).
+  // The decision's own line says it (D19), and so do accepting and pre-approving (0156).
   "declined",
-  "sent_to_banks",
+  "application_accepted",
   "pre_approved",
 ]);
-
-/** "AED 2,150,000". */
-function aed(value: unknown): string | null {
-  return typeof value === "number" && Number.isFinite(value) ? `AED ${Math.round(value).toLocaleString("en-US")}` : null;
-}
-
-/** A bank as the event named it: its label, else its code (events from before 0149). */
-function bankOf(data: Record<string, unknown>): string {
-  return str(data.label) ?? str(data.bank) ?? "";
-}
-
-/** "FAB, ADCB and Mashreq". */
-function listOf(items: readonly string[]): string {
-  return new Intl.ListFormat("en-GB", { type: "conjunction" }).format(items);
-}
 
 export const REASON_KEY: Record<string, string> = {
   unreadable: "c4.reason.unreadable",
@@ -163,42 +148,13 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       return { ...base, text: t("activity.assigned.title", { owner }), sub: t("activity.assigned.roundRobin") };
     }
     case "document.viewed":
-      if (e.data.kind === "bank_letter") return { ...base, text: t("activity.openedLetter", { actor }) };
       return { ...base, text: t("activity.opened", { actor, document: docLabel(e.data.kind) }) };
     case "document.downloaded":
-      if (e.actor_kind === "bank") return { ...base, text: t("activity.bankDownloaded", { bank: bankOf(e.data), document: docLabel(e.data.kind) }) };
-      if (e.data.kind === "bank_letter") return { ...base, text: t("activity.downloadedLetter", { actor }) };
       return { ...base, text: t("activity.downloaded", { actor, document: docLabel(e.data.kind) }) };
-    case "bank.package_sent": {
-      const banks = Array.isArray(e.data.labels) ? e.data.labels : Array.isArray(e.data.banks) ? e.data.banks : [];
-      return {
-        ...base,
-        text: t("activity.packageSent.title", { banks: listOf(banks.map(String)) }),
-        sub: typeof e.data.documents === "number" ? t("activity.packageSent.sub", { count: e.data.documents }) : undefined,
-        tone: "accent",
-      };
-    }
-    case "bank.package_opened":
-      return { ...base, text: t("activity.packageOpened", { bank: bankOf(e.data) }) };
-    case "bank.reminder_sent":
-      return { ...base, text: t("activity.bankReminder", { bank: bankOf(e.data) }) };
-    case "bank.response_recorded": {
-      if (e.data.status === "declined") return { ...base, text: t("activity.bankDeclined", { bank: bankOf(e.data) }), tone: "danger" };
-      const amount = aed(e.data.amount);
-      return {
-        ...base,
-        text: amount ? t("activity.bankPreApproved.title", { bank: bankOf(e.data), amount }) : t("status.preApproved") + ` · ${bankOf(e.data)}`,
-        sub: str(e.data.letter) ? t("activity.bankPreApproved.sub", { fileName: str(e.data.letter)! }) : undefined,
-        tone: "success",
-      };
-    }
+    case "application.accepted":
+      return { ...base, text: t("activity.applicationAccepted.title", { actor }), sub: t("activity.applicationAccepted.sub"), tone: "success" };
     case "decision.pre_approved":
-      return {
-        ...base,
-        text: t("activity.preApproved.title", { actor }),
-        sub: aed(e.data.amount) ? t("activity.preApproved.sub", { bank: bankOf(e.data), amount: aed(e.data.amount)! }) : undefined,
-        tone: "success",
-      };
+      return { ...base, text: t("activity.preApproved.title", { actor }), sub: str(e.data.note) ?? undefined, tone: "success" };
     case "document.accepted":
       return { ...base, text: t("activity.accepted", { actor, document: docLabel(e.data.kind) }), tone: "success" };
     case "consultation.booked": {
@@ -252,12 +208,10 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
     case "link.locked":
       return { ...base, text: t("activity.linkLocked"), tone: "danger" };
     case "consent.withdrawn": {
-      // Recorded from C2 (SR-17); the banks' links stopped with it (SR-22).
-      const stopped = typeof e.data.links_stopped === "number" ? e.data.links_stopped : 0;
+      // Recorded from C2 (SR-17).
       return {
         ...base,
         text: t("activity.consentWithdrawn.title", { actor, firstName: firstNameOf(ctx.applicantName) }),
-        sub: stopped > 0 ? t("activity.consentWithdrawn.sub", { count: stopped }) : undefined,
         tone: "danger",
       };
     }

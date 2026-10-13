@@ -1,8 +1,8 @@
 # Mortgage sample data (for a demo)
 
 Sample mortgage requests in a deployed stack, so the client can walk the
-team's CMS end to end (C1 queue, C2/C6 files, the C3/C4 viewer, C5 decision,
-the bank package page) before any real application exists. They are the CMS
+team's CMS end to end (C1 queue, C2/C6 files, the C3/C4 viewer, an accepted
+application and a recorded pre-approval) before any real application exists. They are the CMS
 designs' requests — the same data as the local seed — written by the demo mode
 of [`scripts/db-local/seed-mortgage.ts`](../db-local/seed-mortgage.ts).
 
@@ -20,20 +20,15 @@ Erase it before the flag goes `public` (RUNBOOK §11).
 - Nothing is sent when it's seeded: the team's "new request" alerts are marked
   skipped, and each 24-hour clock counts as already alerted, so the SLA tick
   emails nobody about a sample.
-- Its bearer tokens are random. The bank package links are written to the
-  manifest, so the bank's view can be shown; the re-upload link (W8) isn't
-  kept, since its code would go to an `@example.com` inbox.
-- Its partner banks are FAB, ADCB and Mashreq with `@example.com` inboxes,
-  unless the stack already has banks with those codes, which are then used.
+- Its bearer tokens are random. The re-upload link (W8) isn't kept, since its
+  code would go to an `@example.com` inbox.
 - Its files' bytes are placeholders (a PDF per page count naming the
   document, a card-shaped PNG for a photo), marked clean without a scan: we
   made them.
 
-**While a sample exists:** what the team does to it is real. A decision, a
-re-upload request, an invite, a send to banks or a reminder emails the
-`@example.com` addresses, which bounce. Don't give the sample banks real
-inboxes, or send a sample to a real bank: it would get a working package link
-to the sample.
+**While a sample exists:** what the team does to it is real. A decline, a
+re-upload request or an invite emails the `@example.com` addresses, which
+bounce. Don't share a sample with a real bank.
 
 ## Seed
 
@@ -67,7 +62,6 @@ references (one transaction, nothing written): clear first.
 
 Clocks are set relative to the moment of seeding, as the local seed's are, so
 the queue shows the designs' remaining times then; they run on from there.
-Package links expire seven days after their "sent" time.
 
 ## Clear
 
@@ -76,6 +70,6 @@ Package links expire seven days after their "sent" time.
 (set -a; source .env.local; set +a; npx tsx scripts/mortgage-demo/clear.ts --yes)   # erases it
 ```
 
-Erases every sample request through the functions the DSR tool uses (0151):
+Erases every sample request through the functions the DSR tool uses (0156):
 the files from the private bucket first, then the rows, activity log
-included. Then the sample banks, once no submission points at one.
+included.

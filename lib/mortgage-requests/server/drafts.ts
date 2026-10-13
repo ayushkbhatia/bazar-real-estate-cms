@@ -52,7 +52,6 @@ export type FileRow = {
   id: string;
   draft_id: string | null;
   document_id: string | null;
-  bank_submission_id: string | null;
   kind: DocKind | null;
   state: "pending" | "active" | "removed";
   storage_key: string;
@@ -68,7 +67,7 @@ export type FileRow = {
 };
 
 export const FILE_COLUMNS =
-  "id, draft_id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes, page_count, sha256, scan_status, uploaded_at, replaces";
+  "id, draft_id, document_id, kind, state, storage_key, original_name, mime, size_bytes, page_count, sha256, scan_status, uploaded_at, replaces";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const nowOf = (deps: DraftDeps) => deps.now?.() ?? new Date();

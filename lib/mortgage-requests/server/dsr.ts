@@ -13,8 +13,9 @@ import type { MortgageStorage } from "./storage";
  *
  * **Erasure deletes** (0151): the files leave the bucket first, then the
  * requests go with everything that hangs off them, the activity log included.
- * Copies a partner bank was already sent can't be recalled, so the result
- * names the banks, for the DSR record and the reply to the subject.
+ * The team shares an accepted request with partner banks by hand (0156), and
+ * those copies can't be recalled, so the result names the requests that got
+ * that far, for the DSR record and the reply to the subject.
  */
 
 export type MortgageSubject = { email: string; mobile?: string | null };
@@ -49,15 +50,14 @@ type Row = Record<string, unknown>;
  * Everything held about the subject in these requests, for the access
  * archive: their details, consents (with the IP and browser they were given
  * from), each document's state, what was recorded from it and its files' names
- * and sizes (not the files themselves), the banks it went to and what they
- * offered, the decision, consultations, the contact log and the re-upload
+ * and sizes (not the files themselves), the decision, consultations, the contact log and the re-upload
  * requests. The activity log contributes its dates and kinds only. Staff are
  * not named: that's the staff's data, not the subject's.
  */
 export async function mortgageExport(db: SupabaseClient, ids: readonly string[]): Promise<Row[]> {
   if (ids.length === 0) return [];
   const list = [...ids];
-  const [requests, consents, documents, submissions, consultations, contacts, reuploads, events] = await Promise.all([
+  const [requests, consents, documents, consultations, contacts, reuploads, events] = await Promise.all([
     db
       .from("mortgage_requests")
       .select(
@@ -71,16 +71,12 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
         "request_id, kind, state, recorded, accepted_at, files:mortgage_files(original_name, mime, size_bytes, page_count, period_from, period_to, uploaded_at, state)",
       )
       .in("request_id", list),
-    db
-      .from("mortgage_bank_submissions")
-      .select("request_id, status, sent_at, responded_at, max_amount_aed, rate_pct, rate_type, fixed_years, valid_until, bank:mortgage_partner_banks(name)")
-      .in("request_id", list),
     db.from("mortgage_consultations").select("request_id, format, starts_at, ends_at, status").in("request_id", list),
     db.from("mortgage_contact_attempts").select("request_id, channel, outcome, body, duration_seconds, occurred_at").in("request_id", list),
     db.from("mortgage_reupload_requests").select("request_id, reason, message, requested_at, fulfilled_at, cancelled_at, document:mortgage_documents(kind)").in("request_id", list),
     db.from("mortgage_events").select("request_id, type, created_at").in("request_id", list).order("created_at"),
   ]);
-  for (const r of [requests, consents, documents, submissions, consultations, contacts, reuploads, events]) {
+  for (const r of [requests, consents, documents, consultations, contacts, reuploads, events]) {
     if (r.error) throw new Error(`mortgage export read failed: ${r.error.code}`);
   }
 
@@ -113,10 +109,6 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
         documents: of(documents.data, id).map((d) => ({
           ...without(d, "request_id", "files"),
           files: ((d.files ?? []) as Row[]).filter((f) => f.state !== "removed").map((f) => without(f, "state")),
-        })),
-        shared_with_banks: of(submissions.data, id).map((s) => ({
-          bank: (s.bank as { name?: string } | null)?.name ?? null,
-          ...without(s, "request_id", "bank"),
         })),
         decision: r.decision
           ? { outcome: r.decision, reason: r.decline_reason, message: r.decision_message, decided_at: r.decided_at }
@@ -151,11 +143,19 @@ export type MortgageErasure = {
   requests: string[];
   files: number;
   events: number;
-  /** Packages a bank was sent before the erasure: those copies can't be recalled. */
-  shared_with_banks: { reference: string; bank: string; label: string; sent_at: string; status: string }[];
+  /**
+   * Requests the team had accepted: it may have shared them with partner
+   * banks by hand, and those copies can't be recalled.
+   */
+  accepted: string[];
 };
 
-const NOTHING: MortgageErasure = { requests: [], files: 0, events: 0, shared_with_banks: [] };
+const NOTHING: MortgageErasure = { requests: [], files: 0, events: 0, accepted: [] };
+
+/** Whether the team got as far as sharing the request with banks: accepted, or an outcome after it. */
+export function reachedBanks(r: { status: unknown; decline_reason?: unknown }): boolean {
+  return r.status === "accepted" || r.status === "pre_approved" || (r.status === "declined" && r.decline_reason === "no_bank_offer");
+}
 
 /**
  * Erase the requests: their files from the bucket first, then the rows (0151).
@@ -167,6 +167,15 @@ export async function eraseMortgageRequests(
   ids: readonly string[],
 ): Promise<MortgageErasure> {
   if (ids.length === 0) return NOTHING;
+  const { data: rows, error: readError } = await deps.db
+    .from("mortgage_requests")
+    .select("reference, status, decline_reason")
+    .in("id", [...ids]);
+  if (readError) throw new Error(`erasure read failed: ${readError.code}`);
+  const accepted = ((rows ?? []) as { reference: string; status: string; decline_reason: string | null }[])
+    .filter(reachedBanks)
+    .map((r) => r.reference)
+    .sort();
   const { data: files, error } = await deps.db.rpc("mortgage_erasure_files", { p_request_ids: [...ids] });
   if (error) throw new Error(`erasure read failed: ${error.code}`);
   const keys = ((files ?? []) as { storage_key: string }[]).map((f) => f.storage_key);
@@ -179,6 +188,6 @@ export async function eraseMortgageRequests(
     requests: tally.requests ?? [],
     files: Number(tally.files ?? 0),
     events: Number(tally.events ?? 0),
-    shared_with_banks: tally.shared_with_banks ?? [],
+    accepted,
   };
 }

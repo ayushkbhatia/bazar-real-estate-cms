@@ -159,7 +159,7 @@ export async function getViewer(
   const open = (reuploads.data as { id: string; document_id: string; reason: string; message: string; requested_at: string }[]).find(
     (u) => u.document_id === doc.id,
   );
-  const closed = r.status === "with_banks" || r.status === "pre_approved" || r.status === "declined";
+  const closed = r.status === "accepted" || r.status === "pre_approved" || r.status === "declined";
 
   return {
     request: {

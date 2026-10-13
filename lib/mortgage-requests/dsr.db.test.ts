@@ -3,8 +3,8 @@
  */
 
 /**
- * Retention and erasure (Phase 7, migration 0151), against the local Supabase
- * stack (`npm run db:local:reset && npm run test:db`):
+ * Retention and erasure (Phase 7, migration 0151, redefined without the banks
+ * in 0156), against the local Supabase stack (`npm run db:local:reset && npm run test:db`):
  *
  *   · retention deletes a closed request's files once `retention_months` have
  *     passed — objects first, rows kept as removed and nameless, one line on
@@ -13,7 +13,8 @@
  *   · erasure finds a subject by email and by mobile, exports what's held,
  *     then deletes the requests with everything hanging off them (the
  *     activity log and a secure link's unsent uploads included), objects
- *     first, and names the banks that already hold a package;
+ *     first, and names the requests the team had accepted (it may have shared
+ *     them with banks by hand, 0156);
  *   · only the service role may do either, and the activity log stays
  *     append-only everywhere else.
  */
@@ -53,21 +54,11 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
   let service: SupabaseClient;
   let policy: SlaPolicy;
   let head: TestStaff;
-  let bankId: string;
-  let bankCode: string;
 
   beforeAll(async () => {
     service = client(local, local.serviceRoleKey);
     policy = (await loadMortgageSettings(service)).policy;
     head = await createTestStaff(local, service, "support", "head");
-    bankCode = `R${randomUUID().replace(/-/g, "").slice(0, 7).toUpperCase()}`;
-    const { data, error } = await service
-      .from("mortgage_partner_banks")
-      .insert({ code: bankCode, name: "Retention Test Bank", active: false })
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-    bankId = (data as { id: string }).id;
   }, 60_000);
 
   afterAll(() => retireTestStaff(service));
@@ -186,25 +177,13 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
     const secondKeys = await files(second.id);
     const bystanderKeys = await files(bystander.id);
 
-    // A bank was sent the first request, and wrote a letter.
-    const { data: sub, error: subError } = await service
-      .from("mortgage_bank_submissions")
-      .insert({ request_id: first.id, bank_id: bankId, status: "declined" })
-      .select("id")
-      .single();
-    expect(subError).toBeNull();
-    const letterId = randomUUID();
-    const letter = await service.from("mortgage_files").insert({
-      id: letterId,
-      bank_submission_id: (sub as { id: string }).id,
-      state: "active",
-      storage_key: `f/${letterId}`,
-      original_name: "letter.pdf",
-      mime: "application/pdf",
-      size_bytes: 500,
-      scan_status: "clean",
-    });
-    expect(letter.error).toBeNull();
+    // The team accepted the first request, so it may have shared it with banks.
+    await service.from("mortgage_documents").update({ state: "accepted" }).eq("request_id", first.id);
+    for (const [event, actor] of [["first_document_opened", "system"], ["application_accepted", "staff"]] as const) {
+      const { error: moveError } = await service.rpc("mortgage_transition", { p_request_id: first.id, p_event: event, p_actor_kind: actor });
+      expect(moveError).toBeNull();
+    }
+
     // A secure link whose upload was never sent: its draft doesn't hang off the request.
     const { data: draft, error: draftError } = await service
       .from("mortgage_upload_drafts")
@@ -241,9 +220,9 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
     expect(exported).toHaveLength(1);
     expect(exported[0]).toMatchObject({
       reference: first.reference,
+      status: "accepted",
       applicant: { email, full_name: "Test Applicant" },
       consents: [expect.objectContaining({ wording_version: "v0.1" })],
-      shared_with_banks: [expect.objectContaining({ bank: "Retention Test Bank", status: "declined" })],
     });
     const docs = (exported[0]!.documents as { files: { original_name: string }[] }[]).flatMap((d) => d.files.map((f) => f.original_name));
     expect(docs).toContain("emirates-id.pdf");
@@ -251,20 +230,17 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
     const mem = memoryStorage();
     const erased = await eraseMortgageRequests({ db: service, storage: mem.storage }, found.map((r) => r.id));
     expect(erased.requests.sort()).toEqual([first.reference, second.reference].sort());
-    expect(erased.files).toBe(firstKeys.length + secondKeys.length + 2);
+    expect(erased.files).toBe(firstKeys.length + secondKeys.length + 1);
     expect(erased.events).toBeGreaterThan(0);
-    // "Retention Test Bank" is more than a word, so it's named by its code, as the designs name banks.
-    expect(erased.shared_with_banks).toEqual([
-      expect.objectContaining({ reference: first.reference, bank: bankCode, label: bankCode, status: "declined" }),
-    ]);
-    expect(mem.removed.sort()).toEqual([...firstKeys, ...secondKeys, `f/${letterId}`, `f/${unsentId}`].sort());
+    expect(erased.accepted).toEqual([first.reference]);
+    expect(mem.removed.sort()).toEqual([...firstKeys, ...secondKeys, `f/${unsentId}`].sort());
 
     for (const id of [first.id, second.id]) {
       expect((await service.from("mortgage_requests").select("id").eq("id", id)).data).toEqual([]);
       expect((await service.from("mortgage_events").select("id").eq("request_id", id)).data).toEqual([]);
       expect((await service.from("mortgage_consents").select("id").eq("request_id", id)).data).toEqual([]);
     }
-    expect((await service.from("mortgage_files").select("id").in("id", [letterId, unsentId])).data).toEqual([]);
+    expect((await service.from("mortgage_files").select("id").in("id", [unsentId])).data).toEqual([]);
     expect((await service.from("mortgage_upload_drafts").select("id").eq("id", draftId)).data).toEqual([]);
 
     // Nobody else's.

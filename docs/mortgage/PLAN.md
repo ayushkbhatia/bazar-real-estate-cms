@@ -16,7 +16,7 @@ Then **Phase 1**: schema and domain rules. Every screen depends on them, and the
 | 3 | Website intake | W1–W7 | 3 days |
 | 4 | CMS queue, file & consultancy | C1, C2, C6 | 3 days |
 | 5 | Document review & re-upload loop | C3, C4, W8 | 3–4 days |
-| 6 | Partner banks & decision | C5 | 3 days |
+| 6 | Partner banks & decision (built, then removed in 0156) | C5 | 3 days |
 | 7 | Hardening & launch | all | 2–3 days |
 
 \*One developer working with Claude Code. About 4–5 weeks in total, if the platform foundations below already exist.
@@ -247,6 +247,8 @@ Tests: expired and revoked links, the OTP attempt limit, access to another reque
 ---
 
 ## Phase 6 — Partner banks & decision (C5)
+
+> **Amended 13 Oct 2026 (0156).** Built on 29 Sep, then removed at the owner's request: the CMS is a light CRM and the team shares applications with its banks by hand. There is no banks page, no package or reminder, no C5 and no pre-approval email. Accept application (C2) needs every document accepted and consent on file, stops the clock and moves the file to Accepted (formerly With banks); "Mark pre-approved" (an optional team note, nothing sent) or Decline closes it. This phase is kept as the plan it was; PROGRESS.md (13 Oct 2026) has what replaced it.
 
 **Goal:** accepted files go to banks, responses are recorded, and the applicant hears back within the 24 hours.
 

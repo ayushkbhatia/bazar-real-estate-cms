@@ -43,7 +43,7 @@ import type { BoardCard, BoardResult } from "@/lib/mortgage-requests/server/cms-
 import { cn } from "@/lib/utils";
 import { logContactAttempt, markConsultationHeld, type MortgageActionResult } from "../_actions";
 import { loadBoard, loadBoardMoveContext, startReview, type BoardMoveContext } from "../_board-actions";
-import { declineApplication } from "../_decision-actions";
+import { declineApplication, recordPreApproval } from "../_outcome-actions";
 import { cancelReupload } from "../_review-actions";
 import { DeclineFields, useDeclineDraft } from "./file-actions";
 import { ConsultCell, DocumentBar, OwnerAvatar, PromiseClock, STATUS, WebsiteCell } from "./ui";
@@ -280,6 +280,13 @@ export function BoardView({
         }}
         onContact={(outcome) => pending && void run(() => logContactAttempt({ ...target(pending.card), outcome }), { reference: pending.card.reference, to: pending.to })}
         onHeld={() => pending && void run(() => markConsultationHeld(target(pending.card)), { reference: pending.card.reference, to: pending.to })}
+        onPreApprove={() =>
+          pending &&
+          void run(() => recordPreApproval({ ...target(pending.card), firstName: pending.card.firstName }), {
+            reference: pending.card.reference,
+            to: pending.to,
+          })
+        }
         onCancelReupload={(reuploadId, kind) =>
           pending && void run(() => cancelReupload({ ...target(pending.card), reuploadId, kind }))
         }
@@ -469,6 +476,7 @@ function MoveDialog({
   onOpen,
   onContact,
   onHeld,
+  onPreApprove,
   onCancelReupload,
   onDecline,
 }: {
@@ -479,6 +487,7 @@ function MoveDialog({
   onOpen: (href: string) => void;
   onContact: (outcome: "reached" | "no_answer" | "left_message") => void;
   onHeld: () => void;
+  onPreApprove: () => void;
   onCancelReupload: (reuploadId: string, kind: BoardMoveContext["reuploads"][number]["kind"]) => void;
   onDecline: (fields: { reason: NonNullable<ReturnType<typeof useDeclineDraft>["reason"]>; message: string; channels: ("email" | "whatsapp")[] }) => void;
 }) {
@@ -491,9 +500,9 @@ function MoveDialog({
   let body: ReactNode = null;
   if (card && kind === "decline") {
     body = <DeclineBody key={card.reference} card={card} myFirstName={myFirstName} busy={busy} onClose={onClose} onDecline={onDecline} />;
-  } else if (card && (kind === "send_to_banks" || kind === "decide" || kind === "book")) {
-    const key = kind === "send_to_banks" ? "send" : kind;
-    const to = kind === "send_to_banks" ? `${href}?do=accept` : kind === "decide" ? `${href}/decision` : `${href}?do=book`;
+  } else if (card && (kind === "accept" || kind === "book")) {
+    const key = kind;
+    const to = `${href}?do=${kind}`;
     body = (
       <>
         <DialogHeader>
@@ -525,6 +534,23 @@ function MoveDialog({
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             {t("common.cancel")}
+          </Button>
+        </DialogFooter>
+      </>
+    );
+  } else if (card && kind === "pre_approve") {
+    body = (
+      <>
+        <DialogHeader>
+          <DialogTitle>{t("board.dialog.preApprove.title", { firstName })}</DialogTitle>
+          <DialogDescription>{t("board.dialog.preApprove.lede", { firstName })}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            {t("common.cancel")}
+          </Button>
+          <Button disabled={busy} onClick={onPreApprove}>
+            {t("board.dialog.preApprove.cta")}
           </Button>
         </DialogFooter>
       </>
