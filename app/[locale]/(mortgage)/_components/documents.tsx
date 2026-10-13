@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, RefreshCw, Upload, X } from "lucide-react";
+import Image from "next/image";
 import { useId, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { acceptAttribute, DOCUMENT_RULES, type DocKind } from "@/lib/mortgage-requests/documents";
@@ -38,14 +39,42 @@ const TILE: Record<TileState, string> = {
   error: "bg-[var(--mrq-danger-bg)] text-[var(--mrq-danger-glyph)]",
 };
 
+/**
+ * The client's illustrations (Bazar, 13 Oct 2026), drawn on white, so their
+ * tile is white and its border carries the state. A kind without one keeps
+ * its line glyph on a tinted tile.
+ */
+const DOC_ART: Partial<Record<DocKind, string>> = {
+  emirates_id: "/mortgage/documents/emirates-id.webp",
+  passport: "/mortgage/documents/passport.webp",
+  salary_certificate: "/mortgage/documents/salary-certificate.webp",
+  bank_statements_3m: "/mortgage/documents/bank-statements.webp",
+  bank_statements_12m: "/mortgage/documents/bank-statements.webp",
+};
+
+const ART_BORDER: Record<TileState, string> = {
+  empty: "border-bz-border",
+  busy: "border-bz-accent",
+  done: "border-[var(--mrq-badge-done)]",
+  error: "border-[var(--mrq-badge-error)]",
+};
+
 export function DocumentIcon({ kind, state = "empty", size = 44 }: { kind: DocKind; state?: TileState; size?: number }) {
+  const art = DOC_ART[kind];
   return (
     <span
       aria-hidden
-      className={cn("relative grid shrink-0 place-items-center", TILE[state])}
+      className={cn(
+        "relative grid shrink-0 place-items-center",
+        art ? cn("border bg-white", ART_BORDER[state]) : TILE[state],
+      )}
       style={{ width: size, height: size, borderRadius: Math.round(size * 0.24) }}
     >
-      <Glyph name={DOC_GLYPH[kind]} size={Math.round(size * 0.46)} />
+      {art ? (
+        <Image src={art} alt="" width={size} height={size} unoptimized className="size-[84%] object-contain" />
+      ) : (
+        <Glyph name={DOC_GLYPH[kind]} size={Math.round(size * 0.46)} />
+      )}
       {state === "done" || state === "error" ? (
         <span
           className={cn(
@@ -284,7 +313,7 @@ export function DocumentUploadRow({
       />
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <DocumentIcon kind={kind} state={tile} />
+          <DocumentIcon kind={kind} state={tile} size={56} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <span id={`${id}-title`} className="text-[15.5px] font-medium">
@@ -310,7 +339,7 @@ export function DocumentUploadRow({
             {note ? <div className="mt-0.5 text-[12.5px] text-bz-ink-2">{note}</div> : null}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-3 ps-[60px] md:ps-0">
+        <div className="flex shrink-0 items-center gap-3 ps-[72px] md:ps-0">
           {action === "upload" ? (
             <>
               <span className="hidden text-[12px] text-bz-muted md:inline">
@@ -345,7 +374,7 @@ export function DocumentUploadRow({
       </div>
 
       {view.items.length > 0 ? (
-        <div className="ph-no-capture mt-4 flex flex-col gap-2.5 border-t border-bz-border pt-3.5 md:ms-[60px]">
+        <div className="ph-no-capture mt-4 flex flex-col gap-2.5 border-t border-bz-border pt-3.5 md:ms-[72px]">
           {view.items.map((item) => (
             <UploadedFile
               key={item.localId}
