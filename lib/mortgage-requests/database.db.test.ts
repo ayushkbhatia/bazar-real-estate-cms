@@ -81,7 +81,6 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
   const local = stack as LocalStack;
   let service: SupabaseClient;
   let policy: SlaPolicy;
-  let bankId: string;
   let seq = 0;
 
   beforeAll(async () => {
@@ -89,19 +88,9 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     const { data: settings, error } = await service.from("mortgage_settings").select("*").single();
     if (error) throw new Error(`no mortgage_settings — has 0138 been applied? ${error.message}`);
     policy = slaPolicy(settings);
-    const code = `T${randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-    const { data: bank, error: bankError } = await service
-      .from("mortgage_partner_banks")
-      .insert({ code, name: "Test Bank" })
-      .select("id")
-      .single();
-    if (bankError) throw new Error(bankError.message);
-    bankId = bank.id;
   });
 
-  // Its submissions keep the bank: switch it off, so the local list the CMS offers stays the seeded three.
   afterAll(async () => {
-    if (bankId) await service.from("mortgage_partner_banks").update({ active: false }).eq("id", bankId);
     await retireTestStaff(service);
   });
 
@@ -203,9 +192,9 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     if (error) throw new Error(error.message);
   }
 
-  async function readyForBanks(row: Row) {
+  /** Every document accepted, so the application can be (0156). */
+  async function readyToAccept(row: Row) {
     await service.from("mortgage_documents").update({ state: "accepted" }).eq("request_id", row.id);
-    await service.from("mortgage_bank_submissions").insert({ request_id: row.id, bank_id: bankId });
   }
 
   /** A fresh request walked through legal moves to `status`. */
@@ -227,18 +216,17 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       await openReupload(row);
       return mustTransition(row, "reupload_requested", "staff", { sla: slaFor(row) });
     }
-    await readyForBanks(row);
-    row = await mustTransition(row, "sent_to_banks", "staff");
-    if (status === "with_banks") return row;
+    await readyToAccept(row);
+    row = await mustTransition(row, "application_accepted", "staff");
+    if (status === "accepted") return row;
     return mustTransition(row, status === "pre_approved" ? "pre_approved" : "declined", "staff");
   }
 
   /** The facts mortgage_transition() reads, for state.ts to judge by. */
   async function contextOf(row: Row): Promise<TransitionContext> {
-    const [docs, consents, subs, open] = await Promise.all([
+    const [docs, consents, open] = await Promise.all([
       service.from("mortgage_documents").select("state").eq("request_id", row.id),
       service.from("mortgage_consents").select("id").eq("request_id", row.id).is("withdrawn_at", null),
-      service.from("mortgage_bank_submissions").select("id").eq("request_id", row.id),
       service
         .from("mortgage_reupload_requests")
         .select("id")
@@ -250,7 +238,6 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       requiredDocuments: docs.data?.length ?? 0,
       acceptedDocuments: docs.data?.filter((d) => d.state === "accepted").length ?? 0,
       consentOnFile: (consents.data?.length ?? 0) > 0,
-      bankSubmissions: subs.data?.length ?? 0,
       outstandingReuploads: open.data?.length ?? 0,
     };
   }
@@ -364,13 +351,19 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
     expect(row.sla_paused_seconds).toBe((resumedAt.getTime() - pausedAt.getTime()) / 1000);
     expect(slaStatus(row, resumedAt, policy).remainingSeconds).toBe(13 * 3600 + 14 * 60);
 
-    // Accepted, sent to a bank, and pre-approved Tuesday morning: met.
-    await readyForBanks(row);
-    row = await mustTransition(row, "sent_to_banks", "staff", { at: dubaiInstant(2026, 9, 29, 10, 0) });
-    const decidedAt = dubaiInstant(2026, 9, 29, 11, 0);
+    // Accepted Tuesday morning: the team has answered, so the clock stops there, but the file stays open.
+    await readyToAccept(row);
+    const acceptedAt = dubaiInstant(2026, 9, 29, 10, 0);
+    row = await mustTransition(row, "application_accepted", "staff", { at: acceptedAt });
+    expect(row).toMatchObject({ status: "accepted", decision: null, closed_at: null });
+    expect(new Date(row.sla_stopped_at!)).toEqual(acceptedAt);
+    expect(slaStatus(row, dubaiInstant(2026, 10, 5, 12, 0), policy)).toMatchObject({ state: "met", stopped: true });
+
+    // Pre-approved a week later: the file closes, and the promise is still measured to the acceptance.
+    const decidedAt = dubaiInstant(2026, 10, 6, 11, 0);
     row = await mustTransition(row, "pre_approved", "staff", { at: decidedAt, data: { message: "Good news." } });
     expect(row).toMatchObject({ status: "pre_approved", decision: "pre_approved" });
-    expect(new Date(row.sla_stopped_at!)).toEqual(decidedAt);
+    expect(new Date(row.sla_stopped_at!)).toEqual(acceptedAt);
     expect(new Date(row.closed_at!)).toEqual(decidedAt);
     expect(slaStatus(row, dubaiInstant(2026, 10, 5, 12, 0), policy).state).toBe("met");
   });
@@ -392,7 +385,7 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
 
   it("refuses any other write to status or the clock, even from the service role", async () => {
     const row = await create("pre_approval");
-    const status = await service.from("mortgage_requests").update({ status: "with_banks" }).eq("id", row.id);
+    const status = await service.from("mortgage_requests").update({ status: "accepted" }).eq("id", row.id);
     expect(status.error?.code).toBe("MR403");
     const clock = await service.from("mortgage_requests").update({ sla_due_at: new Date().toISOString() }).eq("id", row.id);
     expect(clock.error?.code).toBe("MR403");
@@ -525,7 +518,7 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       }
     });
 
-    it("lets admins read the settings and banks they manage, and nobody outside the team or admins", async () => {
+    it("lets admins read the settings they manage, and nobody outside the team or admins", async () => {
       expect((await people.admin.client.from("mortgage_settings").select("flag")).data).toHaveLength(1);
       expect((await people.agent.client.from("mortgage_settings").select("flag")).data ?? []).toEqual([]);
     });

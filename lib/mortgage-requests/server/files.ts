@@ -57,17 +57,17 @@ export async function openStaffFile(
 
   const { data: file, error } = await deps.db
     .from("mortgage_files")
-    .select("id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes")
+    .select("id, document_id, kind, state, storage_key, original_name, mime, size_bytes")
     .eq("id", input.fileId)
     .maybeSingle();
   if (error) throw new Error(`file read failed: ${error.message}`);
   const row = file as Pick<
     FileRow,
-    "id" | "document_id" | "bank_submission_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes"
+    "id" | "document_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes"
   > | null;
   // Draft files aren't on a request yet, removed ones are gone, and a pending
   // one never finished uploading.
-  if (!row || row.state !== "active" || (!row.document_id && !row.bank_submission_id)) throw notFound();
+  if (!row || row.state !== "active" || !row.document_id) throw notFound();
 
   const request = await requestOf(deps, row);
   if (!request) throw notFound();
@@ -76,11 +76,10 @@ export async function openStaffFile(
   await deps.logAccess({
     requestId: request.id,
     type: input.download ? "document.downloaded" : "document.viewed",
-    data: { file_id: row.id, kind: row.kind ?? "bank_letter" },
+    data: { file_id: row.id, kind: row.kind },
   });
 
   if (
-    row.document_id &&
     request.service === "pre_approval" &&
     request.status === "new" &&
     request.owner_staff_id === caller.userId
@@ -102,11 +101,9 @@ type RequestSummary = { id: string; service: string; status: string; owner_staff
 
 async function requestOf(
   deps: FileAccessDeps,
-  row: { document_id: string | null; bank_submission_id: string | null },
+  row: { document_id: string | null },
 ): Promise<RequestSummary | null> {
-  const parent = row.document_id
-    ? await deps.db.from("mortgage_documents").select("request_id").eq("id", row.document_id).maybeSingle()
-    : await deps.db.from("mortgage_bank_submissions").select("request_id").eq("id", row.bank_submission_id!).maybeSingle();
+  const parent = await deps.db.from("mortgage_documents").select("request_id").eq("id", row.document_id!).maybeSingle();
   const requestId = (parent.data as { request_id: string } | null)?.request_id;
   if (!requestId) return null;
   const { data } = await deps.db

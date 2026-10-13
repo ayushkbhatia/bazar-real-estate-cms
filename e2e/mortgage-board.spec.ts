@@ -43,6 +43,15 @@ function newRequest(service: "pre_approval" | "consultancy", name: string): stri
   return reference;
 }
 
+/** Every document accepted and the file accepted, as the team would leave it (0156). */
+function accept(reference: string) {
+  sql(`
+    with r as (select id from public.mortgage_requests where reference = '${reference}')
+    update public.mortgage_documents set state = 'accepted', accepted_at = now() where request_id = (select id from r) returning 1`);
+  sql(`select (public.mortgage_transition(id, 'first_document_opened', 'system')).status from public.mortgage_requests where reference = '${reference}'`);
+  sql(`select (public.mortgage_transition(id, 'application_accepted', 'staff', '${YASMIN}')).status from public.mortgage_requests where reference = '${reference}'`);
+}
+
 const status = (reference: string) => sql(`select status from public.mortgage_requests where reference = '${reference}'`);
 
 async function signIn(page: Page) {
@@ -83,11 +92,13 @@ async function drag(page: Page, from: Locator, to: Locator) {
   await page.mouse.up();
 }
 
-test("the board: start a review by dragging, refuse a skipped stage, decline from the Move menu, log a contact", async ({ page }) => {
+test("the board: start a review by dragging, refuse a skipped stage, decline from the Move menu, record a pre-approval, log a contact", async ({ page }) => {
   test.setTimeout(120_000);
   const fresh = newRequest("pre_approval", "Board Tester");
   const other = newRequest("pre_approval", "Board Decliner");
   const consult = newRequest("consultancy", "Board Caller");
+  const outcome = newRequest("pre_approval", "Board Approved");
+  accept(outcome);
 
   await signIn(page);
   await page.setViewportSize({ width: 1600, height: 1000 });
@@ -95,7 +106,7 @@ test("the board: start a review by dragging, refuse a skipped stage, decline fro
 
   const pre = "Fast Pre-Approval";
   await expect(page.getByRole("radio", { name: "Board" })).toHaveAttribute("aria-checked", "true");
-  for (const s of ["New", "In review", "Awaiting applicant", "With banks", "Pre-approved", "Declined"]) {
+  for (const s of ["New", "In review", "Awaiting applicant", "Accepted", "Pre-approved", "Declined"]) {
     await expect(column(page, pre, s)).toBeVisible();
   }
   await expect(column(page, pre, "New").locator(`[data-reference="${fresh}"]`)).toBeVisible();
@@ -108,15 +119,25 @@ test("the board: start a review by dragging, refuse a skipped stage, decline fro
   expect(status(fresh)).toBe("in_review");
   expect(sql(`select count(*) from public.mortgage_events e join public.mortgage_requests r on r.id = e.request_id where r.reference = '${fresh}' and e.type = 'review.started'`)).toBe("1");
 
-  // In review → Pre-approved skips the banks: refused, and the card stays.
+  // In review → Pre-approved skips acceptance: refused, and the card stays.
   await drag(page, card(page, fresh), column(page, pre, "Pre-approved"));
-  await expect(page.getByText("Send the file to the banks first")).toBeVisible();
+  await expect(page.getByText("Accept the application first")).toBeVisible();
   expect(status(fresh)).toBe("in_review");
 
-  // In review → With banks opens the file's Accept application.
-  await drag(page, card(page, fresh), column(page, pre, "With banks"));
+  // In review → Accepted leads to the file's Accept application.
+  await drag(page, card(page, fresh), column(page, pre, "Accepted"));
   await expect(page.getByRole("dialog", { name: /Accept Board's application/ })).toBeVisible();
   await page.getByRole("button", { name: "Cancel" }).click();
+
+  // Accepted → Pre-approved: recorded on the board, nothing sent, the clock kept from the acceptance.
+  const stoppedAt = sql(`select sla_stopped_at from public.mortgage_requests where reference = '${outcome}'`);
+  expect(stoppedAt).not.toBe("");
+  await drag(page, card(page, outcome), column(page, pre, "Pre-approved"));
+  await page.getByRole("dialog", { name: /Mark Board pre-approved/ }).getByRole("button", { name: "Mark pre-approved" }).click();
+  await expect(column(page, pre, "Pre-approved").locator(`[data-reference="${outcome}"]`)).toBeVisible();
+  expect(status(outcome)).toBe("pre_approved");
+  expect(sql(`select sla_stopped_at from public.mortgage_requests where reference = '${outcome}'`)).toBe(stoppedAt);
+  expect(sql(`select count(*) from public.mortgage_notifications n join public.mortgage_requests r on r.id = n.request_id where r.reference = '${outcome}' and n.kind like 'decision%'`)).toBe("0");
 
   // Declined from the Move menu: the decline dialog, on the board.
   await card(page, other).getByRole("button", { name: `Move ${other} to` }).last().click();

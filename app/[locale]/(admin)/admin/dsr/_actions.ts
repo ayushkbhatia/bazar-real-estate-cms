@@ -267,9 +267,10 @@ export async function fulfilErasureRequest(
     );
   }
   // A bank's copy is beyond reach: say so, so the reply to the subject does too.
-  const banks = [...new Set(mortgage.shared_with_banks.map((b) => b.label))];
-  if (banks.length > 0) {
-    parts.push(`already sent to ${banks.join(", ")}, which Bazar can't recall — tell the subject, and the banks if they ask`);
+  if (mortgage.accepted.length > 0) {
+    parts.push(
+      `${mortgage.accepted.join(", ")} had been accepted, so the mortgage team may have shared ${mortgage.accepted.length === 1 ? "it" : "them"} with partner banks, which Bazar can't recall — ask the team which banks, and tell the subject`,
+    );
   }
 
   revalidatePath("/admin/dsr");

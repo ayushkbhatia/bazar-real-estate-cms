@@ -33,7 +33,7 @@ import { MortgageApiError } from "./server/errors";
 import { openStaffFile, staffFileResponse, type FileAccessDeps, type StaffCaller } from "./server/files";
 import { MORTGAGE_BUCKET, supabaseStorage, type MortgageStorage } from "./server/storage";
 import { sha256Hex } from "./server/verify";
-import { buildPdf, jpegBytes, pngBytes } from "./testing/fixtures";
+import { buildPdf, jpegBytes } from "./testing/fixtures";
 import { client, createTestStaff, localStack, retireTestStaff, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 const stack = localStack();
@@ -120,7 +120,8 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
   it("refuses at presign what the rules forbid", async () => {
     const draft = await newDraft();
     await rejects(presign(draft, "passport", "passport.jpg", 11 * MB, "image/jpeg"), 422, "too_large");
-    await rejects(presign(draft, "salary_certificate", "salary.png", MB, "image/png"), 422, "bad_type");
+    // Every document takes PDF, JPG or PNG (#572), and nothing else.
+    await rejects(presign(draft, "salary_certificate", "salary.gif", MB, "image/gif"), 422, "bad_type");
     await rejects(presign(draft, "passport", "passport.heic", MB, "image/heic"), 422, "bad_type");
 
     await presign(draft, "emirates_id", "front.jpg", MB, "image/jpeg");
@@ -149,7 +150,9 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
     expect((await row(big.fileId)).state).toBe("removed");
     expect(await storage.read(`f/${big.fileId}`)).toBeNull();
 
-    const disguised = await upload(draft, "salary_certificate", pngBytes(), { name: "salary.pdf", mime: "application/pdf" });
+    // A GIF sent as a PDF: neither what it claimed nor a type any document takes.
+    const gif = new TextEncoder().encode("GIF89a\x01\x00\x01\x00\x00\x00\x00;");
+    const disguised = await upload(draft, "salary_certificate", gif, { name: "salary.pdf", mime: "application/pdf" });
     await rejects(complete(draft, disguised.fileId), 422, "bad_type");
     expect(await storage.read(`f/${disguised.fileId}`)).toBeNull();
   });

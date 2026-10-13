@@ -2,8 +2,8 @@
  * The bytes behind the sample's files (the demo mode of
  * scripts/db-local/seed-mortgage.ts writes the rows and a manifest): a
  * placeholder in the private bucket at each file's storage key, so the CMS
- * viewer (C3, C4) and the bank package page open them — a PDF with the file's
- * page count, each page naming the document, or a card-shaped PNG for a photo.
+ * viewer (C3, C4) opens them — a PDF with the file's page count, each page
+ * naming the document, or a card-shaped PNG for a photo.
  *
  * Writes only keys that belong to a sample request (sample.ts), and never over
  * an object that's already there, so a rerun only fills gaps.
@@ -16,7 +16,7 @@ import { MORTGAGE_BUCKET } from "../../lib/mortgage-requests/server/storage";
 import { buildPdf, cardPng } from "../../lib/mortgage-requests/testing/fixtures";
 import { sampleRequests, serviceClient } from "./sample";
 
-type ManifestFile = { storage_key: string; mime: string; page_count: number | null; original_name: string; kind: string | null };
+type ManifestFile = { storage_key: string; mime: string; page_count: number | null; original_name: string; kind: string };
 
 const NAMES: Record<string, string> = {
   emirates_id: "Emirates ID",
@@ -48,8 +48,7 @@ async function main() {
     const bytes = pdf
       ? buildPdf({
           pages: Math.max(1, f.page_count ?? 1),
-          // No kind: a bank's letter (C5), not one of the applicant's documents.
-          lines: (page, pages) => [f.kind ? (NAMES[f.kind] ?? f.kind) : "Bank letter", f.original_name, `Page ${page} of ${pages}`, "Sample document for the demo"],
+          lines: (page, pages) => [NAMES[f.kind] ?? f.kind, f.original_name, `Page ${page} of ${pages}`, "Sample document for the demo"],
         })
       : cardPng();
     const { error: upload } = await db.storage

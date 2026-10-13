@@ -12,7 +12,7 @@ This zip holds one zip per screen, plus a foundations zip that every screen depe
 | `C2-preapproval-file.zip` | C2 · Pre-approval file, in review | 4 (bank sending in 6) | M |
 | `C3-document-viewer-accept.zip` | C3 · Document viewer, accept | 5 | L |
 | `C4-document-viewer-reupload.zip` | C4 · Document viewer, request re-upload | 5 | M |
-| `C5-decision.zip` | C5 · Decision, pre-approve and notify | 6 | L |
+| ~~`C5-decision.zip`~~ | C5 · Decision, pre-approve and notify. **Removed 13 Oct 2026 (0156):** the CMS is a light CRM and the folder is deleted; the outcome is recorded on C2 | 6 | L |
 | `C6-consultancy-request.zip` | C6 · Consultancy request, contact and book | 4 | M |
 
 Size is for one developer working with Claude Code: S = under half a day, M = about a day, L = two days or more.

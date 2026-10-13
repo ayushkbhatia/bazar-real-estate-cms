@@ -20,7 +20,7 @@ export const PRE_APPROVAL_STATUSES = [
   "new",
   "in_review",
   "awaiting_applicant",
-  "with_banks",
+  "accepted",
   "pre_approved",
   "declined",
 ] as const;
@@ -50,7 +50,7 @@ export const TRANSITION_EVENTS = [
   "reupload_requested",
   "reupload_fulfilled",
   "reupload_cancelled",
-  "sent_to_banks",
+  "application_accepted",
   "pre_approved",
   "declined",
   "contact_logged",
@@ -59,8 +59,12 @@ export const TRANSITION_EVENTS = [
 ] as const;
 export type TransitionEvent = (typeof TRANSITION_EVENTS)[number];
 
-/** What a move does to the 24-hour promise (SPEC §2.5). */
-export type ClockEffect = "pause" | "resume" | "stop" | null;
+/**
+ * What a move does to the 24-hour promise (SPEC §2.5). `answer` stops the
+ * clock on a file that stays open (Accept application); `stop` closes it,
+ * keeping a clock an earlier answer already stopped.
+ */
+export type ClockEffect = "pause" | "resume" | "answer" | "stop" | null;
 
 export type TransitionOutcome = { to: MortgageStatus; clock: ClockEffect };
 
@@ -74,7 +78,6 @@ export type TransitionContext = {
   acceptedDocuments?: number;
   requiredDocuments?: number;
   consentOnFile?: boolean;
-  bankSubmissions?: number;
 };
 
 export class IllegalTransitionError extends Error {
@@ -109,20 +112,20 @@ function leaveAwaiting(_from: MortgageStatus, ctx: TransitionContext): Transitio
     : { to: "in_review", clock: "resume" };
 }
 
-/** Accept application (4 of 4 accepted) and send to ≥ 1 bank. */
-function sendToBanks(_from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
+/**
+ * Accept application: every document accepted and consent on file. The team
+ * shares the file with the banks itself (0156), so accepting is its answer.
+ */
+function acceptApplication(_from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
   const required = ctx.requiredDocuments ?? 0;
   if (required === 0 || (ctx.acceptedDocuments ?? 0) < required) {
     throw new IllegalTransitionError("every document must be accepted first");
   }
   if (!ctx.consentOnFile) throw new IllegalTransitionError("consent is not on file");
-  if ((ctx.bankSubmissions ?? 0) === 0) {
-    throw new IllegalTransitionError("send the package to at least one bank");
-  }
-  return { to: "with_banks", clock: null };
+  return { to: "accepted", clock: "answer" };
 }
 
-/** Must match the table in `mortgage_transition()`: migration 0139, redefined in 0147 (D19). */
+/** Must match the table in `mortgage_transition()`: migration 0139, last redefined in 0156. */
 export const TRANSITIONS: readonly Rule[] = [
   // Fast Pre-Approval
   { service: "pre_approval", from: ["new"], event: "first_document_opened", actor: "system", outcome: to("in_review") },
@@ -131,10 +134,11 @@ export const TRANSITIONS: readonly Rule[] = [
   { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_requested", actor: "staff", outcome: to("awaiting_applicant") },
   { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_fulfilled", actor: "applicant", outcome: leaveAwaiting },
   { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_cancelled", actor: "staff", outcome: leaveAwaiting },
-  { service: "pre_approval", from: ["in_review"], event: "sent_to_banks", actor: "staff", outcome: sendToBanks },
-  { service: "pre_approval", from: ["with_banks"], event: "pre_approved", actor: "staff", outcome: to("pre_approved", "stop") },
-  // D19: a file can be declined before the banks as well as after; it's an answer, so the clock stops.
-  { service: "pre_approval", from: ["new", "in_review", "awaiting_applicant", "with_banks"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
+  { service: "pre_approval", from: ["in_review"], event: "application_accepted", actor: "staff", outcome: acceptApplication },
+  // The outcome, recorded once the banks have answered the team.
+  { service: "pre_approval", from: ["accepted"], event: "pre_approved", actor: "staff", outcome: to("pre_approved", "stop") },
+  // D19: a file can be declined before it is accepted as well as after; it closes the file.
+  { service: "pre_approval", from: ["new", "in_review", "awaiting_applicant", "accepted"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
   // Mortgage Consultancy
   { service: "consultancy", from: ["new"], event: "contact_logged", actor: "staff", outcome: to("contacted") },
   // Later attempts are logged without moving the request.

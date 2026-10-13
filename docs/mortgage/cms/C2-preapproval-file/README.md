@@ -11,6 +11,8 @@
 
 ![C2 · Pre-approval file](C2-preapproval-file-2x.png)
 
+> **Amended 13 Oct 2026 (0156): the light CRM.** There is no bank step. "Accept application" opens a confirmation (`c2.accept.*`) and, once every document is accepted and consent is on file, moves the file to **Accepted** (was With banks): the 24-hour clock stops, the file stays open, and the team shares it with its banks by hand. On an accepted file C2 offers **"Mark pre-approved"** (`c2.preApproved.*`: an optional note for the team, nothing sent to the applicant) and Decline, which close it. C5 is gone. The stage rail reads New · In review · Accepted · Pre-approved.
+
 ## Purpose
 The home page of one Fast Pre-Approval application: where it is, how long is left, which documents are accepted, who owns it, the applicant's consent, and what has happened so far.
 
@@ -127,7 +129,7 @@ Verbatim from the design. `{braces}` are runtime values; `<b>` marks bold (00-fo
 ## Behaviour and states
 - **Review / Open** goes to the viewer for that document (C3/C4). Clicking a file tag opens the viewer on that file.
 - **Stage rail** follows the status: New, In review, With banks, Pre-approved. Awaiting applicant and Declined aren't designed (CMS-12). Proposal: In review stays current while awaiting, and the status pill in the header says "Awaiting applicant".
-- **Accept application** is enabled when all four documents are accepted. It opens the bank selection step, which isn't designed (Phase 6). Consent must be on file.
+- **Accept application** is enabled when all four documents are accepted. It opens the bank selection step, which isn't designed (Phase 6). Consent must be on file. *(Since 0156: it opens a confirmation, not a bank step; see the note at the top.)*
 - **Request documents** opens a document picker and then the re-upload form from C4. The picker isn't designed (Phase 5).
 - **Reassign** is for the Head of mortgages; the dialog isn't designed. **Edit** on the applicant card isn't designed. Employment type stays read-only after submission (SPEC §3).
 - **Contact buttons:** Call is a `tel:` link, WhatsApp opens the team's WhatsApp tool, Email is a `mailto:`. Logging these for pre-approvals isn't designed.
@@ -137,7 +139,7 @@ Verbatim from the design. `{braces}` are runtime values; `<b>` marks bold (00-fo
 
 ## Data and actions
 - `getFile(reference)` → request, `slaStatus()`, documents (state, files, accepted by and at), consent, owner, the latest five events and the event count.
-- Actions: `reassignOwner` (head), `editApplicant`, `requestReupload` (Phase 5), `acceptApplicationAndSend(bankIds)` (Phase 6).
+- Actions: `reassignOwner` (head), `editApplicant`, `requestReupload` (Phase 5), `acceptApplicationAndSend(bankIds)` (Phase 6; since 0156 `acceptApplication`, `recordPreApproval(note?)` and `declineApplication`, in `_outcome-actions.ts`).
 - Activity lines are templates filled from `mortgage_events` (see the copy deck).
 
 ## Permissions

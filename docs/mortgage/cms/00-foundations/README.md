@@ -1,5 +1,7 @@
 # 00 · Foundations — mortgage CMS
 
+> **Amended 13 Oct 2026 (migration 0156): the CMS is a light CRM.** The team shares applications with its partner banks by hand. C5 (the decision page), the partner banks page, bank packages, reminders, letters and the pre-approval email were removed, and the C5-decision folder with them. `with_banks` is now `accepted` ("Accepted"): C2's "Accept application" needs every document accepted and consent on file, stops the clock and leaves the file open; "Mark pre-approved" (an optional team note, no email) or Decline, both on C2, close it. Where this file describes With banks, C5 or the banks, read it as the design that was, not the build. docs/mortgage/PROGRESS.md (13 Oct 2026) has the detail.
+
 Build this before any CMS screen. It covers what C1–C6 share: routes, permissions, the CMS shell change, tokens, shared components, the promise clock, data and actions, formatting, accessibility and strings.
 
 | | |
@@ -19,24 +21,25 @@ Build this before any CMS screen. It covers what C1–C6 share: routes, permissi
 | C2 | Pre-approval file | `/admin/mortgages/[reference]` (pre-approval) | 4; bank sending in 6 |
 | C3 | Document viewer · accept | `/admin/mortgages/[reference]/documents/[kind]` | 5 |
 | C4 | Document viewer · request re-upload | Same route as C3 | 5 |
-| C5 | Decision | `/admin/mortgages/[reference]/decision` | 6 |
+| ~~C5~~ | ~~Decision~~ | ~~`/admin/mortgages/[reference]/decision`~~ | 6 · removed in 0156 |
 | C6 | Consultancy request | `/admin/mortgages/[reference]` (consultancy) | 4 |
-| — | Partner banks | `/admin/mortgages/banks` | 6 · not designed |
+| ~~—~~ | ~~Partner banks~~ | ~~`/admin/mortgages/banks`~~ | 6 · removed in 0156 |
 | — | File stream | `/admin/mortgages/files/[fileId]` | 2 · no UI |
 
 C2 and C6 share a route; the request's service decides which one renders. C3 and C4 are two states of one viewer.
 
-### Status flow (SPEC §2.4)
+### Status flow (SPEC §2.4, as amended by 0156)
 Fast Pre-Approval:
 ```mermaid
 flowchart LR
   n[New] -->|owner opens the first document| r[In review]
   r -->|re-upload requested| a[Awaiting applicant]
   a -->|applicant sends| r
-  r -->|accept application, send to banks| b[With banks]
-  b -->|confirm and notify| p[Pre-approved]
+  r -->|accept application: clock stops| b[Accepted]
+  b -->|mark pre-approved, no email| p[Pre-approved]
   b -->|decline and notify| d[Declined]
 ```
+The design had `With banks` here, reached by sending packages and closed from C5. A file can also be declined from New, In review or Awaiting applicant (D19).
 Mortgage Consultancy:
 ```mermaid
 flowchart LR
@@ -84,7 +87,7 @@ Same palette as the website (`--bz-*` in `reference/styles.css`; the front-end f
 | accent | `--bz-accent-soft` | `--bz-accent` | New |
 | warn | `oklch(0.96 0.05 80)` | `oklch(0.45 0.1 60)` | In review, Contacted, To review, "pending compliance" |
 | muted | `--bz-surface-2` | `--bz-ink-2` | Awaiting applicant, Awaiting reply |
-| info | `oklch(0.95 0.03 240)` | `oklch(0.42 0.1 245)` | With banks, Consultation booked |
+| info | `oklch(0.95 0.03 240)` | `oklch(0.42 0.1 245)` | Accepted (was With banks), Consultation booked |
 | success | `oklch(0.94 0.04 145)` | `oklch(0.35 0.08 145)` | Pre-approved, Completed, Accepted |
 | danger | `oklch(0.96 0.04 28)` | `oklch(0.45 0.13 28)` | Declined, Re-upload requested |
 | ink | `--bz-ink` | `--bz-bg` | Service chip on pre-approval files, selected chips |
@@ -274,10 +277,10 @@ The CMS is desktop only, designed at 1440px. Support 1280px and up; below that, 
 
 | Item | Needed on | Phase |
 |---|---|---|
-| Choose banks and send, after "Accept application" | C2 | 6 |
-| Record a bank response: amount, rate, fixed years, valid until, letter | C5 | 6 |
-| Decline mode: reasons and message (SPEC §9 #8) | C5 | 6 |
-| Partner banks admin page | banks | 6 |
+| ~~Choose banks and send, after "Accept application"~~ (moot since 0156: Accept has no bank step) | C2 | 6 |
+| ~~Record a bank response: amount, rate, fixed years, valid until, letter~~ (removed in 0156) | C5 | 6 |
+| Decline mode: reasons and message (SPEC §9 #8) — built on C2 (D19) | C5 | 6 |
+| ~~Partner banks admin page~~ (removed in 0156) | banks | 6 |
 | Statement period entry for each file | C4 | 5 |
 | "Request documents" document picker | C2 | 5 |
 | Accepted and read-only states of the review panel | C3 | 5 |

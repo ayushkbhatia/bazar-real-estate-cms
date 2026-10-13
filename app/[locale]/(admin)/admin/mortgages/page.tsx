@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Landmark, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import { reportError } from "@/lib/observability";
@@ -55,14 +55,6 @@ export default async function MortgageQueuePage({
       }
       secondary={
         <>
-          {role === "head" || staff.role === "admin" ? (
-            <Button asChild variant="outline" size="default" className="text-[13px]">
-              <Link href="/admin/mortgages/banks">
-                <Landmark strokeWidth={1.6} />
-                {cmsT("banks.link")}
-              </Link>
-            </Button>
-          ) : null}
           {role === "head" ? (
             <Button asChild variant="outline" size="default" className="text-[13px]">
               <Link href="/admin/mortgages/settings">

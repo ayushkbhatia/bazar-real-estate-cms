@@ -6,14 +6,14 @@
 
 import type { SlaStatus } from "./sla";
 
-export const QUEUE_TABS = ["open", "new", "in_review", "awaiting", "with_banks", "contacted_booked", "closed"] as const;
+export const QUEUE_TABS = ["open", "new", "in_review", "awaiting", "accepted", "contacted_booked", "closed"] as const;
 export type QueueTab = (typeof QUEUE_TABS)[number];
 
 export type RequestStatus =
   | "new"
   | "in_review"
   | "awaiting_applicant"
-  | "with_banks"
+  | "accepted"
   | "pre_approved"
   | "declined"
   | "contacted"
@@ -26,7 +26,7 @@ const TAB_STATUSES: Record<Exclude<QueueTab, "open" | "closed">, readonly Reques
   new: ["new"],
   in_review: ["in_review"],
   awaiting: ["awaiting_applicant"],
-  with_banks: ["with_banks"],
+  accepted: ["accepted"],
   contacted_booked: ["contacted", "consultation_booked"],
 };
 

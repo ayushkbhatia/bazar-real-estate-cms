@@ -82,20 +82,28 @@ describe("buildDataExport", () => {
   });
 
   it("lists mortgage requests, and says their documents are listed rather than attached", () => {
-    const archive = buildDataExport({ account: null, mortgage_requests: [{ reference: "BZM-26-0412", shared_with_banks: [] }] });
+    const archive = buildDataExport({ account: null, mortgage_requests: [{ reference: "BZM-26-0412", status: "in_review" }] });
     expect(archive.mortgage_requests).toHaveLength(1);
     expect(archive.notes.some((n) => /mortgage_requests/.test(n) && /aren't in this archive/.test(n))).toBe(true);
-    // Not shared with a bank: no bank is named.
+    // Not accepted, so never shared with a bank: no bank is mentioned.
     expect(archive.notes.some((n) => /partner banks/.test(n))).toBe(false);
     expect(buildDataExport({ account: null }).mortgage_requests).toEqual([]);
   });
 
-  it("says a bank's copy can't be recalled when a request went to one", () => {
-    const archive = buildDataExport({
+  it("says a bank's copy can't be recalled once a request was accepted", () => {
+    for (const request of [
+      { reference: "BZM-26-0398", status: "accepted" },
+      { reference: "BZM-26-0399", status: "pre_approved" },
+      { reference: "BZM-26-0400", status: "declined", decision: { reason: "no_bank_offer" } },
+    ]) {
+      const archive = buildDataExport({ account: null, mortgage_requests: [request] });
+      expect(archive.notes.some((n) => /partner banks/.test(n) && /can't recall/.test(n))).toBe(true);
+    }
+    const early = buildDataExport({
       account: null,
-      mortgage_requests: [{ reference: "BZM-26-0398", shared_with_banks: [{ bank: "First Abu Dhabi Bank" }] }],
+      mortgage_requests: [{ reference: "BZM-26-0401", status: "declined", decision: { reason: "incomplete" } }],
     });
-    expect(archive.notes.some((n) => /partner banks/.test(n) && /can't recall/.test(n))).toBe(true);
+    expect(early.notes.some((n) => /partner banks/.test(n))).toBe(false);
   });
 
   it("stays silent about Salesforce when nothing was ever sent", () => {

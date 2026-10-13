@@ -11,6 +11,8 @@
 
 ![C1 · Requests queue](C1-requests-queue-2x.png)
 
+> **Amended 13 Oct 2026 (0156):** the With banks tab is **Accepted** (`c1.tab.accepted`, status `accepted`); the team shares accepted files with its banks by hand. On the board view, the Accepted column replaces With banks: dropping In review → Accepted opens C2's Accept dialog, and Accepted → Pre-approved asks for an optional note on the board. The design's "With banks" strings below are kept as designed.
+
 ## Purpose
 One inbox for both services, ordered by what's due first. The team sees what's new, which pre-approvals are close to missing the 24-hour promise, and who owns each request.
 
@@ -117,7 +119,7 @@ Verbatim from the design. `{braces}` are runtime values; `<b>` marks bold (00-fo
 | New | `new` (both services) |
 | In review | `in_review` |
 | Awaiting applicant | `awaiting_applicant` |
-| With banks | `with_banks` |
+| Accepted (designed as With banks) | `accepted` (was `with_banks`) |
 | Contacted & booked | `contacted`, `consultation_booked` |
 | Closed | `pre_approved`, `declined`, `completed` (no count) |
 

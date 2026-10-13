@@ -14,7 +14,7 @@ describe("decline reasons (D19)", () => {
   });
 
   it("offers 'no bank made an offer' only once the banks were asked", () => {
-    expect(declineReasonsFor("with_banks")).toContain("no_bank_offer");
+    expect(declineReasonsFor("accepted")).toContain("no_bank_offer");
     for (const status of ["new", "in_review", "awaiting_applicant"] as const) {
       expect(declineReasonsFor(status)).not.toContain("no_bank_offer");
       expect(declineReasonsFor(status)).toHaveLength(DECLINE_REASONS.length - 1);

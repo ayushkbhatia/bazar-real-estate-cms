@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useState, useTransition, type KeyboardEvent, type ReactNode } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ban, Calendar, Check, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -34,7 +33,7 @@ import {
   sendPreapprovalInvite,
   type MortgageActionResult,
 } from "../_actions";
-import { acceptApplicationAndSend, declineApplication, withdrawConsent } from "../_decision-actions";
+import { acceptApplication, declineApplication, recordPreApproval, withdrawConsent } from "../_outcome-actions";
 import { cancelReupload } from "../_review-actions";
 import { ActivityList, Card, roleLabel } from "./ui";
 
@@ -1016,12 +1015,10 @@ export function DeclineButton({
   );
 }
 
-export type SendableBank = { id: string; code: string; name: string; color: string | null; inboxes: string[]; sendable: boolean };
-
 /**
- * "Accept application" (C2; the bank step isn't designed): choose the banks —
- * every bank that can take a package, ticked — and send each its own secure
- * package. Enabled at 4 of 4 accepted with consent on file (PLAN Phase 5).
+ * "Accept application" (C2): enabled at every document accepted with consent
+ * on file. It stops the 24-hour clock and leaves the file open as Accepted;
+ * the team shares it with the banks itself and later records the outcome.
  */
 export function AcceptApplicationButton({
   enabled,
@@ -1029,10 +1026,7 @@ export function AcceptApplicationButton({
   target,
   firstName,
   documents,
-  expires,
   consentGiven,
-  banks,
-  canManageBanks,
   defaultOpen,
 }: {
   enabled: boolean;
@@ -1040,24 +1034,12 @@ export function AcceptApplicationButton({
   target: Target;
   firstName: string;
   documents: number;
-  /** When the package links would stop working, as the lede says it. */
-  expires: string;
   consentGiven: string | null;
-  banks: readonly SendableBank[];
-  canManageBanks: boolean;
-  /** Start open (the queue board's In review → With banks drop), when it can be used. */
+  /** Start open (the queue board's In review → Accepted drop), when it can be used. */
   defaultOpen?: boolean;
 }) {
   const { pending, run } = useAction();
   const [open, setOpen] = useState(() => !!defaultOpen && enabled);
-  const [chosen, setChosen] = useState<ReadonlySet<string>>(() => new Set(banks.filter((b) => b.sendable).map((b) => b.id)));
-  const toggle = (id: string) =>
-    setChosen((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   return (
     <>
       <Reason why={enabled ? null : why}>
@@ -1072,60 +1054,22 @@ export function AcceptApplicationButton({
         </span>
       )}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
-            <DialogTitle>{t("c2.send.title", { firstName })}</DialogTitle>
-            <DialogDescription>{t("c2.send.lede", { count: documents, expires })}</DialogDescription>
+            <DialogTitle>{t("c2.accept.title", { firstName })}</DialogTitle>
+            <DialogDescription>{t("c2.accept.lede", { count: documents })}</DialogDescription>
           </DialogHeader>
-          {banks.length === 0 ? (
-            <p className="text-[13px] text-bz-muted">
-              {t("c2.send.none")}{" "}
-              {canManageBanks ? (
-                <Link href="/admin/mortgages/banks" className="text-bz-accent hover:underline">
-                  {t("c2.send.addBanks")}
-                </Link>
-              ) : null}
-            </p>
-          ) : (
-            <fieldset>
-              <legend className="text-[12px] font-medium text-bz-ink-2">{t("c2.send.banks")}</legend>
-              <ul className="mt-2 divide-y divide-bz-border rounded-lg border border-bz-border">
-                {banks.map((bank) => (
-                  <li key={bank.id}>
-                    <label className={cn("flex items-center gap-3 px-3 py-2.5", bank.sendable ? "cursor-pointer" : "opacity-60")}>
-                      <input
-                        type="checkbox"
-                        className="size-4 accent-bz-ink"
-                        checked={bank.sendable && chosen.has(bank.id)}
-                        disabled={!bank.sendable || pending}
-                        onChange={() => toggle(bank.id)}
-                      />
-                      <BankMark code={bank.code} color={bank.color} size={28} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[13px] font-medium">{bank.name}</span>
-                        <span className="mono block truncate text-[11px] text-bz-muted">
-                          {bank.inboxes.length ? bank.inboxes.join(", ") : t("c2.send.noInbox")}
-                        </span>
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </fieldset>
-          )}
-          {consentGiven ? <p className="text-[11.5px] text-bz-muted">{t("c2.send.consent", { given: consentGiven })}</p> : null}
+          {consentGiven ? <p className="text-[11.5px] text-bz-muted">{t("c2.accept.consent", { given: consentGiven })}</p> : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               {t("common.cancel")}
             </Button>
             <Button
-              disabled={pending || chosen.size === 0}
-              onClick={() =>
-                run(() => acceptApplicationAndSend({ ...target, bankIds: [...chosen] }), (r) => r.ok && setOpen(false))
-              }
+              disabled={pending}
+              onClick={() => run(() => acceptApplication({ ...target, firstName }), (r) => r.ok && setOpen(false))}
             >
-              <Send strokeWidth={1.6} />
-              {t("c2.send.cta", { count: chosen.size })}
+              <Check strokeWidth={2} />
+              {t("c2.accept.cta")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1134,15 +1078,64 @@ export function AcceptApplicationButton({
   );
 }
 
-/** A bank's mark (C5): its code in white on its colour. */
-export function BankMark({ code, color, size = 38 }: { code: string; color: string | null; size?: number }) {
+/**
+ * "Mark pre-approved" (C2, on an accepted file): a bank said yes. Closes the
+ * file with an optional note for the team; nothing is sent to the applicant.
+ */
+export function RecordPreApprovalButton({
+  target,
+  firstName,
+  defaultOpen,
+}: {
+  target: Target;
+  firstName: string;
+  /** Start open (the board's Accepted → Pre-approved drop). */
+  defaultOpen?: boolean;
+}) {
+  const { pending, run } = useAction();
+  const [open, setOpen] = useState(() => !!defaultOpen);
+  const [note, setNote] = useState("");
+  const noteId = useId();
   return (
-    <span
-      aria-hidden
-      className="mono grid shrink-0 place-items-center font-semibold text-white"
-      style={{ width: size, height: size, borderRadius: Math.round(size * 0.21), background: color ?? "var(--bz-ink-2)", fontSize: size >= 36 ? 10.5 : 9 }}
-    >
-      {code}
-    </span>
+    <>
+      <Button className="text-[13px]" onClick={() => setOpen(true)}>
+        <Check strokeWidth={2} />
+        {t("c2.action.markPreApproved")}
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>{t("c2.preApproved.title", { firstName })}</DialogTitle>
+            <DialogDescription>{t("c2.preApproved.lede", { firstName })}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={noteId} className="text-[12px] font-medium text-bz-ink-2">
+              {t("c2.preApproved.noteLabel")}
+            </label>
+            <textarea
+              id={noteId}
+              value={note}
+              maxLength={1000}
+              rows={3}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder={t("c2.preApproved.notePlaceholder")}
+              className="rounded-md border border-bz-border bg-bz-surface px-3 py-2 text-[13px]"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              disabled={pending}
+              onClick={() => run(() => recordPreApproval({ ...target, note, firstName }), (r) => r.ok && setOpen(false))}
+            >
+              <Check strokeWidth={2} />
+              {t("c2.preApproved.cta")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

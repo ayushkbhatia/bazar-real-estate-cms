@@ -1419,3 +1419,104 @@ the calculator it was)
   sections and checks the panel's links; the 390px geometry gate passes;
   RTL: arrows and the route mirror, links carry `site=ar`. Every mortgage e2e
   spec, 22/22.
+
+## Light CRM: the banks and the decision page go · 13 Oct 2026
+
+The owner decided (13 Oct) that the mortgage team's CMS is a light CRM: the
+client shares applications with its partner banks by hand, so the site keeps
+no bank list, packages or letters.
+
+**Built** (migration `0156_mortgage_light_crm.sql`, its header has the model)
+- **A Fast Pre-Approval ends** `in_review → accepted → pre_approved | declined`.
+  `with_banks` is renamed `accepted` (`alter type … rename value`), mirrored in
+  `L/state.ts`; `mortgage_transition()` is redefined.
+  - **Accept application** (C2, owner or Head; `mortgage_accept_application()`,
+    transition event `application_accepted`, logged `application.accepted`):
+    every document accepted and consent on file, as sending did, without the
+    bank step. It is the team's answer, so the clock stops (clock effect
+    `answer`), but the file stays open: `closed_at` and the decision come with
+    the outcome.
+  - **Mark pre-approved** (`mortgage_record_pre_approval()`, logged
+    `decision.pre_approved`): an optional note for the team, at most 1,000
+    characters. It closes the file and **sends nothing**; the team tells the
+    applicant.
+  - **Decline** is `0147`'s without the banks to withdraw, and still emails the
+    applicant. "No bank made an offer" is offered only on an accepted file.
+  - Neither outcome touches the stopped clock, so the promise is measured to
+    the acceptance. Files that were With banks became Accepted, their clock
+    stopped at the moment they were sent.
+- **C1:** the With banks tab is Accepted. **Board:** an Accepted column;
+  dropping In review → Accepted opens C2's Accept dialog (`?do=accept`),
+  Accepted → Pre-approved asks for the note on the board; a pre-approval
+  before acceptance is refused ("Accept the application first").
+- **Consent withdrawal** stays (`mortgage_withdraw_consent()`, redefined
+  without the links to stop). C2's Consent card then says "Don't share this
+  file with the banks.", and Accept is refused.
+- **DSR:** the export no longer has `shared_with_banks`; an erasure names the
+  requests that had been accepted (accepted, pre-approved, or declined with
+  `no_bank_offer`) as possibly shared with banks by hand
+  (`MortgageErasure.accepted`, `reachedBanks()` in `L/server/dsr.ts`), and the
+  subject's archive says so. Retention and erasure functions are redefined
+  without the bank tables.
+- **Server actions:** `A/_outcome-actions.ts` (accept, mark pre-approved,
+  decline, record a withdrawal) replaces `A/_decision-actions.ts`.
+- **Local seed and demo:** Liam Walsh (BZM-26-0404) is accepted, Arjun Mehta
+  (BZM-26-0398) accepted then pre-approved; no banks, packages or letters.
+  `scripts/mortgage-demo/clear.ts` no longer deletes sample banks.
+
+**Removed**
+- Pages: C5 (`A/[reference]/decision`), `A/banks`,
+  `/admin/settings/partner-banks` (and its settings tab), the package page
+  `M/mortgages/p/[token]`.
+- Routes: `/api/mortgage/packages/[token]/files/[fileId]`,
+  `/api/admin/mortgages/letters` (+ `/[fileId]/complete`).
+- Code: `A/_banks-actions.ts`, `A/_decision-actions.ts`,
+  `A/_components/{banks-view,decision-view}.tsx`, `L/payments.ts`,
+  `L/pre-approval.ts`, `L/server/{banks,letters,decision}.ts`, and the
+  outbox's pre-approval email with the bank's letter.
+- Database: `mortgage_partner_banks`, `mortgage_bank_submissions`,
+  `mortgage_bank_sub_status`, `mortgage_rate_type`,
+  `mortgage_requests.lead_bank_submission_id`,
+  `mortgage_files.bank_submission_id` (and the letters' rows), the six bank
+  functions, the outbox kinds `bank_package` / `bank_reminder` /
+  `decision_pre_approved` (their rows deleted).
+- Emails: the system emails `mortgage_bank_package`, `mortgage_bank_reminder`
+  and `mortgage_decision_pre_approved` (rows deleted with the protect trigger
+  off, as 0132 did). The gallery now holds 29 emails, 28 rewritable.
+- Docs: `docs/mortgage/cms/C5-decision/`.
+- Tests: `L/banks.db.test.ts`, `L/payments.test.ts`, `L/pre-approval.test.ts`,
+  `lib/content-assets/mortgage-bank-emails.test.ts`,
+  `e2e/mortgage-decision.spec.ts`; the state, board, decline, DSR and
+  database tests follow the new model.
+- Kept: `lib/secure-link-redaction.ts` still redacts `/mortgages/p/<token>`
+  and `/api/mortgage/packages/<token>/…`, because links already emailed to
+  banks carry tokens. The activity log keeps its `bank.*` rows (append-only);
+  the `bank` actor kind stays for them.
+
+**Deviations from SPEC** (SPEC.md now carries an "Amended 13 Oct 2026" note
+and corrected sections)
+- §1, §2.4: no bank packages or recorded responses; `accepted` replaces
+  `with_banks`.
+- §2.5: the clock stops at acceptance, not at the decision.
+- §5, §6: no pre-approval notification; the decline is the only outcome email.
+- §7: no "Manage partner banks"; §8's bank-package control is retired
+  (SECURITY-REVIEW marks the rows).
+- D3, CMS-2 (banks) and CMS-6 (pre-approval) are superseded (DECISIONS.md,
+  "Decided 13 Oct 2026").
+
+**Open TODOs**
+- **Applying 0156 to production:** delete the banks' letter objects from the
+  private `mortgage-files` bucket first, with the service role (their keys:
+  `select storage_key from mortgage_files where bank_submission_id is not
+  null`). SQL can't delete a storage object, and 0156 deletes the rows that
+  point to them. Then apply 0156 at the batch merge and compare `db/types.ts`.
+- **Production's sample banks** (FAB, ADCB, Mashreq, `@example.com` inboxes)
+  go with the tables when 0156 is applied; sample files that were With banks
+  become Accepted. Nothing else to clear for them.
+- **Old bank rows in the activity log** aren't shown on C2 any more
+  (`L/activity.ts` returns nothing for `bank.*`), while 0156's header says the
+  CMS still reads them. Decide which is meant, and fix the other.
+- New CMS copy (accept, mark pre-approved, the board's dialog) is listed in
+  `PENDING_CMS_COPY` for the client to confirm.
+- The draft WhatsApp template `bazar_mortgage_preapproved` (DECISIONS
+  appendix) isn't needed; don't submit it to Meta.

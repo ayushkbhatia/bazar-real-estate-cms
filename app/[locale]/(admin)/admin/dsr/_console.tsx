@@ -70,7 +70,7 @@ export function DsrConsole({
     }
     if (
       !confirm(
-        `Erase every personal-data field held for ${email}${mobile.trim() ? ` (and mortgage requests for ${mobile.trim()})` : ""}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright. Mortgage requests (Fast Pre-Approval and Consultancy) are deleted outright, documents included; copies already sent to partner banks can't be recalled.\n\nOnly do this once you have verified the requester's identity.`,
+        `Erase every personal-data field held for ${email}${mobile.trim() ? ` (and mortgage requests for ${mobile.trim()})` : ""}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright. Mortgage requests (Fast Pre-Approval and Consultancy) are deleted outright, documents included; copies the mortgage team shared with partner banks can't be recalled.\n\nOnly do this once you have verified the requester's identity.`,
       )
     )
       return;
@@ -190,8 +190,9 @@ export function DsrConsole({
           </li>
           <li>
             Mortgage requests are the exception: they are deleted outright,
-            documents included. If a request went to partner banks, the result
-            names them — their copies can&apos;t be recalled, so say so in your
+            documents included. If a request had been accepted, the result
+            names it: the mortgage team may have shared it with partner banks,
+            whose copies can&apos;t be recalled, so ask them and say so in your
             reply.
           </li>
           <li>

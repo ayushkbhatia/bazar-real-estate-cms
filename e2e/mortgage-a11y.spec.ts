@@ -4,9 +4,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * Axe on every mortgage screen (PLAN Phase 7, step 5): the website flow W1–W8
- * and the bank's package page, then the team's CMS C1–C6 with its dialogs,
- * the partner banks page and the settings. WCAG 2.1 A and AA, as e2e/a11y.spec.ts
+ * Axe on every mortgage screen (PLAN Phase 7, step 5): the website flow W1–W8,
+ * then the team's CMS (C1–C4, C6) with its dialogs and the settings. WCAG 2.1 A and AA, as e2e/a11y.spec.ts
  * holds the rest of the site to; every violation fails the screen it's on.
  *
  * The flow submits applications and the CMS needs the seed's staff, so it
@@ -214,20 +213,6 @@ test("W8: the code, then the re-upload", async ({ page }) => {
   await audit(page, "W8 unavailable");
 });
 
-test("A bank's package page", async ({ page }) => {
-  const token = `a11y${randomUUID().replace(/-/g, "")}`;
-  const id = sql(`
-    update public.mortgage_bank_submissions s set package_token_hash = encode(sha256(convert_to('${token}', 'UTF8')), 'hex'),
-           package_expires_at = now() + interval '7 days'
-      from public.mortgage_requests r, public.mortgage_partner_banks b
-     where r.id = s.request_id and b.id = s.bank_id and r.reference = 'BZM-26-0404' and b.code = 'MSQ'
-    returning s.id`);
-  expect(id).toMatch(/^[0-9a-f-]{36}$/);
-  await page.goto(`/mortgages/p/${token}`);
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await audit(page, "Package");
-});
-
 // ── The team's CMS ───────────────────────────────────────────────
 
 async function signIn(page: Page) {
@@ -238,7 +223,7 @@ async function signIn(page: Page) {
   await page.waitForURL((url) => url.pathname.startsWith("/admin") && !url.pathname.startsWith("/admin/login"));
 }
 
-test("C1–C6, their dialogs, the banks page and the settings", async ({ page }) => {
+test("C1–C6, their dialogs and the settings", async ({ page }) => {
   test.setTimeout(180_000);
   await signIn(page);
 
@@ -268,22 +253,19 @@ test("C1–C6, their dialogs, the banks page and the settings", async ({ page })
   await expect(page.getByRole("button", { name: /Send request to Priya/ })).toBeVisible();
   await audit(page, "C4");
 
-  await page.goto("/admin/mortgages/BZM-26-0398/decision");
-  await expect(page.getByRole("button", { name: "Confirm pre-approval & notify Arjun" })).toBeVisible();
-  await audit(page, "C5");
-  await page.getByTestId("bank-row-MSQ").getByRole("button", { name: "Record response" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await audit(page, "C5 · Record response");
-  await page.keyboard.press("Escape");
-  await page.getByRole("tab", { name: "Decline" }).click();
-  await audit(page, "C5 · Decline tab");
+  // An accepted file waits on the banks: its outcome is recorded from C2 (0156).
+  await page.goto("/admin/mortgages/BZM-26-0404");
+  await expect(page.getByRole("button", { name: "Mark pre-approved" })).toBeVisible();
+  await audit(page, "C2 · Accepted");
+  await page.getByRole("button", { name: "Mark pre-approved" }).click();
+  await expect(page.getByRole("dialog", { name: /Mark Liam pre-approved/ })).toBeVisible();
+  await audit(page, "C2 · Mark pre-approved");
+  await page.getByRole("dialog").getByRole("button", { name: "Cancel" }).click();
 
   await page.goto("/admin/mortgages/BZM-26-0415");
   await expect(page.getByRole("heading", { name: "Contact log" })).toBeVisible();
   await audit(page, "C6");
 
-  await page.goto("/admin/mortgages/banks");
-  await audit(page, "Partner banks");
   await page.goto("/admin/mortgages/settings");
   await audit(page, "Settings");
 });

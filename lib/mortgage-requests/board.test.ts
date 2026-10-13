@@ -4,7 +4,7 @@ import { nextStatus, TRANSITIONS, type MortgageStatus } from "./state";
 
 describe("the queue board's drops", () => {
   it("lays each service out in the order a file travels", () => {
-    expect(BOARD_COLUMNS.pre_approval).toEqual(["new", "in_review", "awaiting_applicant", "with_banks", "pre_approved", "declined"]);
+    expect(BOARD_COLUMNS.pre_approval).toEqual(["new", "in_review", "awaiting_applicant", "accepted", "pre_approved", "declined"]);
     expect(BOARD_COLUMNS.consultancy).toEqual(["new", "contacted", "consultation_booked", "completed"]);
   });
 
@@ -13,9 +13,9 @@ describe("the queue board's drops", () => {
     expect(boardMove("pre_approval", "in_review", "awaiting_applicant")).toEqual({ kind: "request_reupload" });
     expect(boardMove("pre_approval", "new", "awaiting_applicant")).toEqual({ kind: "request_reupload" });
     expect(boardMove("pre_approval", "awaiting_applicant", "in_review")).toEqual({ kind: "cancel_reupload" });
-    expect(boardMove("pre_approval", "in_review", "with_banks")).toEqual({ kind: "send_to_banks" });
-    expect(boardMove("pre_approval", "with_banks", "pre_approved")).toEqual({ kind: "decide" });
-    for (const from of ["new", "in_review", "awaiting_applicant", "with_banks"] as const) {
+    expect(boardMove("pre_approval", "in_review", "accepted")).toEqual({ kind: "accept" });
+    expect(boardMove("pre_approval", "accepted", "pre_approved")).toEqual({ kind: "pre_approve" });
+    for (const from of ["new", "in_review", "awaiting_applicant", "accepted"] as const) {
       expect(boardMove("pre_approval", from, "declined")).toEqual({ kind: "decline" });
     }
   });
@@ -28,12 +28,12 @@ describe("the queue board's drops", () => {
 
   it("refuses what SPEC §2.4 doesn't allow, and says why", () => {
     expect(boardMove("pre_approval", "declined", "in_review")).toEqual({ kind: "illegal", why: "closed" });
-    expect(boardMove("pre_approval", "pre_approved", "with_banks")).toEqual({ kind: "illegal", why: "closed" });
-    expect(boardMove("pre_approval", "with_banks", "in_review")).toEqual({ kind: "illegal", why: "backwards" });
+    expect(boardMove("pre_approval", "pre_approved", "accepted")).toEqual({ kind: "illegal", why: "closed" });
+    expect(boardMove("pre_approval", "accepted", "in_review")).toEqual({ kind: "illegal", why: "backwards" });
     expect(boardMove("pre_approval", "in_review", "new")).toEqual({ kind: "illegal", why: "backwards" });
-    expect(boardMove("pre_approval", "new", "with_banks")).toEqual({ kind: "illegal", why: "needsReview" });
-    expect(boardMove("pre_approval", "in_review", "pre_approved")).toEqual({ kind: "illegal", why: "needsBanks" });
-    expect(boardMove("pre_approval", "awaiting_applicant", "with_banks")).toEqual({ kind: "illegal", why: "reuploadOpen" });
+    expect(boardMove("pre_approval", "new", "accepted")).toEqual({ kind: "illegal", why: "needsReview" });
+    expect(boardMove("pre_approval", "in_review", "pre_approved")).toEqual({ kind: "illegal", why: "needsAccept" });
+    expect(boardMove("pre_approval", "awaiting_applicant", "accepted")).toEqual({ kind: "illegal", why: "reuploadOpen" });
     expect(boardMove("consultancy", "new", "consultation_booked")).toEqual({ kind: "illegal", why: "needsContact" });
     expect(boardMove("consultancy", "contacted", "completed")).toEqual({ kind: "illegal", why: "needsBooking" });
     expect(boardMove("consultancy", "completed", "contacted")).toEqual({ kind: "illegal", why: "closed" });
@@ -53,7 +53,6 @@ describe("the queue board's drops", () => {
               acceptedDocuments: 4,
               requiredDocuments: 4,
               consentOnFile: true,
-              bankSubmissions: 1,
             }).to,
           );
         } catch {

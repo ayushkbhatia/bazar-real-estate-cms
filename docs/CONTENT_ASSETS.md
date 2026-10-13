@@ -6,7 +6,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 
 | Tab | Route | What it is |
 |---|---|---|
-| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 32 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
+| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 29 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
 | **Form replies** | `/admin/content-assets/replies` | Every public form, the email its visitor receives, and which reply answers which form |
 | **Outreach** | `?view=outreach` | Email and WhatsApp copy an advisor sends by hand from the enquiry composer |
 | **Email design** | `/admin/content-assets/design` | The logo, colours and footer every email is wrapped in |
@@ -19,7 +19,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 | | **Outreach** | **Site emails** |
 |---|---|---|
 | Who sends it | an advisor, by hand | the site, with nobody watching |
-| Where it is used | the enquiry composer | thirty-one send paths (below) |
+| Where it is used | the enquiry composer | twenty-eight send paths (below) |
 | Channels | email + WhatsApp | email only |
 | Body is | plain text, the **middle** of a message — `staffReplyTemplate` adds greeting and signature | rich text (HTML), the **whole** message; only the brand header and footer are added |
 | Draft means | it does not appear in the composer | Bazar's built-in wording sends |
@@ -164,16 +164,16 @@ and the `sampleAr` the preview uses.
 
 **The built-in templates are English.** An Arabic lead whose email has no
 Arabic — and no published row at all — gets the English built-in. Arabic
-built-ins would mean a second copy of thirty-one templates in code; the Arabic
+built-ins would mean a second copy of twenty-eight templates in code; the Arabic
 first draft in the rows (below) is the answer instead.
 
 ### The Arabic first draft
 
 `lib/content-assets/system-defaults-ar.ts` holds an Arabic draft of all
-thirty-one system emails, and migrations 0129, 0135, 0142, 0144, 0146, 0148
-and 0150 write it into the rows **only where nobody had written one**. A
+twenty-eight system emails, and migrations 0129, 0135, 0142, 0144, 0146 and
+0148 write it into the rows **only where nobody had written one**. A
 machine first draft the client edits, per ADR-0008 — the alternative was
-thirty-one empty Arabic tabs. Every row stays a draft, so this changed nothing
+twenty-eight empty Arabic tabs. Every row stays a draft, so this changed nothing
 that sends.
 `arabic.test.ts` checks each draft is Arabic, uses exactly the tokens its
 English uses, and appears in the migration verbatim.
@@ -223,7 +223,7 @@ route around them:
 - the system rows **cannot be deleted or trashed** — a trigger refuses;
 - their `slug`, `kind` and `system_key` **cannot change**;
 - a system row **must have a subject**, and `system_key` is one of the
-  thirty-one known values;
+  twenty-eight known values (the latest rewrite of the list is 0156's);
 - `body_format = 'html'` only on system rows — outreach stays plain text.
 
 ### Reading past RLS
@@ -426,26 +426,20 @@ braces left over.
   starting wording, which cannot branch, names it twice. The Arabic draft
   isolates the team's phone number so it reads left to right. Seeded as a
   draft; wording provisional (D29).
-- **0150** — partner banks and the pre-approval, three more. To a partner
-  bank's package inbox: `mortgage_bank_package`, sent when an adviser sends a
-  file to the banks — who has shared it, `{{mortgage_document_count}}` ("4
-  documents", plural-aware in Arabic) and `{{mortgage_package_url}}`, an
-  expiring link to the structured summary and the documents, where every open
-  and download is recorded, with `{{mortgage_link_expires}}`; and
-  `mortgage_bank_reminder`, for a bank that has not answered — the day the
-  package went (`{{mortgage_package_sent}}`, a Dubai date) and a fresh link,
-  since the first is stored only as its hash. Both greet "the team at
-  `{{mortgage_bank}}`", require the reference and the link, and carry nothing
-  about the applicant: no applicant token is in their scope. They are filed
-  with the client emails, the gallery's only group for anyone outside the
-  team, and send in English. To the applicant:
-  `mortgage_decision_pre_approved`, the decline's twin — the adviser's message
-  as the same panel (required), "Your pre-approval letter from
-  `{{mortgage_bank}}` is attached" (the send path attaches it; attachments may
-  now be bytes, so a PDF survives), the reply and call line, and the decline's
-  subject word for word, so a lock screen tells the two outcomes apart by
-  nothing. Seeded as drafts with an Arabic first draft each; wording
-  provisional (D29).
+- **0150** — partner banks and the pre-approval, three more:
+  `mortgage_bank_package` and `mortgage_bank_reminder` to a partner bank's
+  package inbox, and `mortgage_decision_pre_approved` to the applicant with
+  the bank's letter attached. Retired by 0156.
+- **0156** — the mortgage CMS becomes a light CRM, three fewer. The team
+  shares a file with its partner banks by hand, so the partner-bank list,
+  packages, reminders and letters go, and with them `mortgage_bank_package`,
+  `mortgage_bank_reminder` and `mortgage_decision_pre_approved`: their rows
+  (the delete trigger disabled for the statement, as 0132 did for
+  `viewing_confirmation`), their keys in `content_assets_system_key_known`,
+  their outbox kinds, and the four tokens only they filled
+  (`mortgage_bank`, `mortgage_document_count`, `mortgage_package_sent`,
+  `mortgage_package_url`). Recording a pre-approval sends nothing: the team
+  tells the applicant itself. The decline is unchanged.
 - **0129** — Arabic: `subject_ar`/`body_ar` on every asset, an Arabic first
   draft of all seventeen system emails, `valuation_requests.locale`, RTL
   rendering, and the EN/AR toggle across the four screens.

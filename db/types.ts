@@ -2691,98 +2691,6 @@ export type Database = {
           },
         ]
       }
-      mortgage_bank_submissions: {
-        Row: {
-          bank_id: string
-          fixed_years: number | null
-          id: string
-          max_amount_aed: number | null
-          notes: string | null
-          package_expires_at: string | null
-          package_manifest: Json
-          package_token_hash: string | null
-          rate_pct: number | null
-          rate_type: Database["public"]["Enums"]["mortgage_rate_type"] | null
-          recorded_by: string | null
-          reminder_sent_at: string | null
-          request_id: string
-          responded_at: string | null
-          sent_at: string
-          sent_by: string | null
-          status: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          valid_until: string | null
-        }
-        Insert: {
-          bank_id: string
-          fixed_years?: number | null
-          id?: string
-          max_amount_aed?: number | null
-          notes?: string | null
-          package_expires_at?: string | null
-          package_manifest?: Json
-          package_token_hash?: string | null
-          rate_pct?: number | null
-          rate_type?: Database["public"]["Enums"]["mortgage_rate_type"] | null
-          recorded_by?: string | null
-          reminder_sent_at?: string | null
-          request_id: string
-          responded_at?: string | null
-          sent_at?: string
-          sent_by?: string | null
-          status?: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          valid_until?: string | null
-        }
-        Update: {
-          bank_id?: string
-          fixed_years?: number | null
-          id?: string
-          max_amount_aed?: number | null
-          notes?: string | null
-          package_expires_at?: string | null
-          package_manifest?: Json
-          package_token_hash?: string | null
-          rate_pct?: number | null
-          rate_type?: Database["public"]["Enums"]["mortgage_rate_type"] | null
-          recorded_by?: string | null
-          reminder_sent_at?: string | null
-          request_id?: string
-          responded_at?: string | null
-          sent_at?: string
-          sent_by?: string | null
-          status?: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          valid_until?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mortgage_bank_submissions_bank_id_fkey"
-            columns: ["bank_id"]
-            isOneToOne: false
-            referencedRelation: "mortgage_partner_banks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "mortgage_bank_submissions_recorded_by_fkey"
-            columns: ["recorded_by"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "mortgage_bank_submissions_request_id_fkey"
-            columns: ["request_id"]
-            isOneToOne: false
-            referencedRelation: "mortgage_requests"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "mortgage_bank_submissions_sent_by_fkey"
-            columns: ["sent_by"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       mortgage_consents: {
         Row: {
           given_at: string
@@ -3033,7 +2941,6 @@ export type Database = {
       }
       mortgage_files: {
         Row: {
-          bank_submission_id: string | null
           document_id: string | null
           draft_id: string | null
           id: string
@@ -3053,7 +2960,6 @@ export type Database = {
           uploaded_at: string
         }
         Insert: {
-          bank_submission_id?: string | null
           document_id?: string | null
           draft_id?: string | null
           id?: string
@@ -3073,7 +2979,6 @@ export type Database = {
           uploaded_at?: string
         }
         Update: {
-          bank_submission_id?: string | null
           document_id?: string | null
           draft_id?: string | null
           id?: string
@@ -3093,13 +2998,6 @@ export type Database = {
           uploaded_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "mortgage_files_bank_submission_id_fkey"
-            columns: ["bank_submission_id"]
-            isOneToOne: false
-            referencedRelation: "mortgage_bank_submissions"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "mortgage_files_document_id_fkey"
             columns: ["document_id"]
@@ -3200,39 +3098,6 @@ export type Database = {
           },
         ]
       }
-      mortgage_partner_banks: {
-        Row: {
-          active: boolean
-          brand_color: string | null
-          code: string
-          created_at: string
-          id: string
-          name: string
-          package_emails: string[]
-          sort_order: number
-        }
-        Insert: {
-          active?: boolean
-          brand_color?: string | null
-          code: string
-          created_at?: string
-          id?: string
-          name: string
-          package_emails?: string[]
-          sort_order?: number
-        }
-        Update: {
-          active?: boolean
-          brand_color?: string | null
-          code?: string
-          created_at?: string
-          id?: string
-          name?: string
-          package_emails?: string[]
-          sort_order?: number
-        }
-        Relationships: []
-      }
       mortgage_reference_counters: {
         Row: {
           last_number: number
@@ -3267,7 +3132,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -3309,7 +3173,6 @@ export type Database = {
           first_contact_at?: string | null
           full_name: string
           id?: string
-          lead_bank_submission_id?: string | null
           locale?: string
           mobile_e164: string
           owner_staff_id?: string | null
@@ -3351,7 +3214,6 @@ export type Database = {
           first_contact_at?: string | null
           full_name?: string
           id?: string
-          lead_bank_submission_id?: string | null
           locale?: string
           mobile_e164?: string
           owner_staff_id?: string | null
@@ -3382,13 +3244,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "staff"
             referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "mortgage_requests_lead_bank_submission_fkey"
-            columns: ["lead_bank_submission_id"]
-            isOneToOne: false
-            referencedRelation: "mortgage_bank_submissions"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "mortgage_requests_owner_staff_id_fkey"
@@ -4890,6 +4745,58 @@ export type Database = {
       functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      mortgage_accept_application: {
+        Args: {
+          p_expected_updated_at?: string
+          p_request_id: string
+        }
+        Returns: {
+          assigned_at: string | null
+          closed_at: string | null
+          created_at: string
+          date_of_birth: string
+          decided_at: string | null
+          decided_by: string | null
+          decision: Database["public"]["Enums"]["mortgage_decision"] | null
+          decision_message: string | null
+          decline_reason:
+            | Database["public"]["Enums"]["mortgage_decline_reason"]
+            | null
+          email: string
+          employment_type: Database["public"]["Enums"]["mortgage_employment"]
+          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
+          first_contact_at: string | null
+          full_name: string
+          id: string
+          locale: string
+          mobile_e164: string
+          owner_staff_id: string | null
+          parent_request_id: string | null
+          property_id: string | null
+          property_ref: string | null
+          reference: string
+          residency: Database["public"]["Enums"]["mortgage_residency"]
+          service: Database["public"]["Enums"]["mortgage_service"]
+          sla_breach_notified_at: string | null
+          sla_due_at: string | null
+          sla_paused_at: string | null
+          sla_paused_seconds: number
+          sla_remaining_seconds: number | null
+          sla_risk_notified_at: string | null
+          sla_started_at: string | null
+          sla_stopped_at: string | null
+          status: Database["public"]["Enums"]["mortgage_status"]
+          submission_key: string | null
+          submitted_at: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "mortgage_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mortgage_accept_document: {
         Args: { p_document_id: string; p_required_checks: string[] }
         Returns: {
@@ -4933,45 +4840,6 @@ export type Database = {
           p_request: Database["public"]["Tables"]["mortgage_requests"]["Row"]
         }
         Returns: string
-      }
-      mortgage_bank_label: {
-        Args: {
-          b: Database["public"]["Tables"]["mortgage_partner_banks"]["Row"]
-        }
-        Returns: string
-      }
-      mortgage_bank_reminder: {
-        Args: {
-          p_expires_at: string
-          p_submission_id: string
-          p_token_hash: string
-        }
-        Returns: {
-          bank_id: string
-          fixed_years: number | null
-          id: string
-          max_amount_aed: number | null
-          notes: string | null
-          package_expires_at: string | null
-          package_manifest: Json
-          package_token_hash: string | null
-          rate_pct: number | null
-          rate_type: Database["public"]["Enums"]["mortgage_rate_type"] | null
-          recorded_by: string | null
-          reminder_sent_at: string | null
-          request_id: string
-          responded_at: string | null
-          sent_at: string
-          sent_by: string | null
-          status: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          valid_until: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_bank_submissions"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
       mortgage_book_consultation: {
         Args: {
@@ -5027,7 +4895,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5077,7 +4944,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5152,7 +5018,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5257,7 +5122,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5313,7 +5177,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5371,7 +5234,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5427,35 +5289,6 @@ export type Database = {
         }
         Returns: Json
       }
-      mortgage_letter_presign: {
-        Args: { p_name: string; p_size_bytes: number; p_submission_id: string }
-        Returns: {
-          bank_submission_id: string | null
-          document_id: string | null
-          draft_id: string | null
-          id: string
-          kind: Database["public"]["Enums"]["mortgage_doc_kind"] | null
-          mime: string
-          original_name: string
-          page_count: number | null
-          period_from: string | null
-          period_to: string | null
-          replaces: string[] | null
-          scan_status: Database["public"]["Enums"]["mortgage_scan_status"]
-          sha256: string | null
-          size_bytes: number
-          state: Database["public"]["Enums"]["mortgage_file_state"]
-          storage_key: string
-          upload_round: number
-          uploaded_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_files"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
       mortgage_link_issue_code: {
         Args: {
           p_at?: string
@@ -5504,7 +5337,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5573,62 +5405,6 @@ export type Database = {
         Returns: string
       }
       mortgage_next_owner: { Args: never; Returns: string }
-      mortgage_pre_approve: {
-        Args: {
-          p_channels: string[]
-          p_expected_updated_at?: string
-          p_lead_submission_id: string
-          p_message: string
-          p_request_id: string
-        }
-        Returns: {
-          assigned_at: string | null
-          closed_at: string | null
-          created_at: string
-          date_of_birth: string
-          decided_at: string | null
-          decided_by: string | null
-          decision: Database["public"]["Enums"]["mortgage_decision"] | null
-          decision_message: string | null
-          decline_reason:
-            | Database["public"]["Enums"]["mortgage_decline_reason"]
-            | null
-          email: string
-          employment_type: Database["public"]["Enums"]["mortgage_employment"]
-          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
-          first_contact_at: string | null
-          full_name: string
-          id: string
-          lead_bank_submission_id: string | null
-          locale: string
-          mobile_e164: string
-          owner_staff_id: string | null
-          parent_request_id: string | null
-          property_id: string | null
-          property_ref: string | null
-          reference: string
-          residency: Database["public"]["Enums"]["mortgage_residency"]
-          service: Database["public"]["Enums"]["mortgage_service"]
-          sla_breach_notified_at: string | null
-          sla_due_at: string | null
-          sla_paused_at: string | null
-          sla_paused_seconds: number
-          sla_remaining_seconds: number | null
-          sla_risk_notified_at: string | null
-          sla_started_at: string | null
-          sla_stopped_at: string | null
-          status: Database["public"]["Enums"]["mortgage_status"]
-          submission_key: string | null
-          submitted_at: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_requests"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
       mortgage_reassign: {
         Args: {
           p_expected_updated_at?: string
@@ -5653,7 +5429,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -5683,41 +5458,55 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      mortgage_record_bank_response: {
+      mortgage_record_pre_approval: {
         Args: {
-          p_fixed_years: number
-          p_letter_file_id: string
-          p_max_amount_aed: number
-          p_notes: string
-          p_rate_pct: number
-          p_rate_type: Database["public"]["Enums"]["mortgage_rate_type"]
-          p_status: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          p_submission_id: string
-          p_valid_until: string
+          p_expected_updated_at?: string
+          p_note?: string
+          p_request_id: string
         }
         Returns: {
-          bank_id: string
-          fixed_years: number | null
+          assigned_at: string | null
+          closed_at: string | null
+          created_at: string
+          date_of_birth: string
+          decided_at: string | null
+          decided_by: string | null
+          decision: Database["public"]["Enums"]["mortgage_decision"] | null
+          decision_message: string | null
+          decline_reason:
+            | Database["public"]["Enums"]["mortgage_decline_reason"]
+            | null
+          email: string
+          employment_type: Database["public"]["Enums"]["mortgage_employment"]
+          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
+          first_contact_at: string | null
+          full_name: string
           id: string
-          max_amount_aed: number | null
-          notes: string | null
-          package_expires_at: string | null
-          package_manifest: Json
-          package_token_hash: string | null
-          rate_pct: number | null
-          rate_type: Database["public"]["Enums"]["mortgage_rate_type"] | null
-          recorded_by: string | null
-          reminder_sent_at: string | null
-          request_id: string
-          responded_at: string | null
-          sent_at: string
-          sent_by: string | null
-          status: Database["public"]["Enums"]["mortgage_bank_sub_status"]
-          valid_until: string | null
+          locale: string
+          mobile_e164: string
+          owner_staff_id: string | null
+          parent_request_id: string | null
+          property_id: string | null
+          property_ref: string | null
+          reference: string
+          residency: Database["public"]["Enums"]["mortgage_residency"]
+          service: Database["public"]["Enums"]["mortgage_service"]
+          sla_breach_notified_at: string | null
+          sla_due_at: string | null
+          sla_paused_at: string | null
+          sla_paused_seconds: number
+          sla_remaining_seconds: number | null
+          sla_risk_notified_at: string | null
+          sla_started_at: string | null
+          sla_stopped_at: string | null
+          status: Database["public"]["Enums"]["mortgage_status"]
+          submission_key: string | null
+          submitted_at: string
+          updated_at: string
         }
         SetofOptions: {
           from: "*"
-          to: "mortgage_bank_submissions"
+          to: "mortgage_requests"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -5755,88 +5544,6 @@ export type Database = {
       mortgage_role: {
         Args: never
         Returns: Database["public"]["Enums"]["mortgage_team_role"]
-      }
-      mortgage_save_bank: {
-        Args: {
-          p_active: boolean
-          p_brand_color: string
-          p_code: string
-          p_id: string
-          p_name: string
-          p_package_emails: string[]
-          p_sort_order: number
-        }
-        Returns: {
-          active: boolean
-          brand_color: string | null
-          code: string
-          created_at: string
-          id: string
-          name: string
-          package_emails: string[]
-          sort_order: number
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_partner_banks"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      mortgage_send_to_banks: {
-        Args: {
-          p_expected_updated_at?: string
-          p_manifest: Json
-          p_packages: Json
-          p_request_id: string
-        }
-        Returns: {
-          assigned_at: string | null
-          closed_at: string | null
-          created_at: string
-          date_of_birth: string
-          decided_at: string | null
-          decided_by: string | null
-          decision: Database["public"]["Enums"]["mortgage_decision"] | null
-          decision_message: string | null
-          decline_reason:
-            | Database["public"]["Enums"]["mortgage_decline_reason"]
-            | null
-          email: string
-          employment_type: Database["public"]["Enums"]["mortgage_employment"]
-          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
-          first_contact_at: string | null
-          full_name: string
-          id: string
-          lead_bank_submission_id: string | null
-          locale: string
-          mobile_e164: string
-          owner_staff_id: string | null
-          parent_request_id: string | null
-          property_id: string | null
-          property_ref: string | null
-          reference: string
-          residency: Database["public"]["Enums"]["mortgage_residency"]
-          service: Database["public"]["Enums"]["mortgage_service"]
-          sla_breach_notified_at: string | null
-          sla_due_at: string | null
-          sla_paused_at: string | null
-          sla_paused_seconds: number
-          sla_remaining_seconds: number | null
-          sla_risk_notified_at: string | null
-          sla_started_at: string | null
-          sla_stopped_at: string | null
-          status: Database["public"]["Enums"]["mortgage_status"]
-          submission_key: string | null
-          submitted_at: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_requests"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
       mortgage_set_check: {
         Args: { p_document_id: string; p_key: string; p_value: boolean }
@@ -5885,7 +5592,6 @@ export type Database = {
       mortgage_set_statement_period: {
         Args: { p_file_id: string; p_from: string; p_to: string }
         Returns: {
-          bank_submission_id: string | null
           document_id: string | null
           draft_id: string | null
           id: string
@@ -5941,7 +5647,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -6001,7 +5706,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -6082,7 +5786,6 @@ export type Database = {
           first_contact_at: string | null
           full_name: string
           id: string
-          lead_bank_submission_id: string | null
           locale: string
           mobile_e164: string
           owner_staff_id: string | null
@@ -6260,11 +5963,6 @@ export type Database = {
       message_direction: "inbound" | "outbound"
       mortgage_actor: "applicant" | "staff" | "system" | "bank"
       mortgage_assignment_mode: "round_robin" | "claim"
-      mortgage_bank_sub_status:
-        | "sent"
-        | "pre_approved"
-        | "declined"
-        | "withdrawn"
       mortgage_consult_format: "phone" | "video" | "office"
       mortgage_consult_status: "booked" | "held" | "no_show" | "cancelled"
       mortgage_contact_channel: "call" | "whatsapp" | "email"
@@ -6304,7 +6002,6 @@ export type Database = {
       mortgage_file_state: "pending" | "active" | "removed"
       mortgage_flag: "off" | "staff" | "public"
       mortgage_link_purpose: "reupload" | "preapproval_invite"
-      mortgage_rate_type: "fixed" | "variable"
       mortgage_residency: "uae_national" | "uae_resident_expat"
       mortgage_reupload_reason:
         | "unreadable"
@@ -6319,7 +6016,7 @@ export type Database = {
         | "new"
         | "in_review"
         | "awaiting_applicant"
-        | "with_banks"
+        | "accepted"
         | "pre_approved"
         | "declined"
         | "contacted"
@@ -6664,12 +6361,6 @@ export const Constants = {
       message_direction: ["inbound", "outbound"],
       mortgage_actor: ["applicant", "staff", "system", "bank"],
       mortgage_assignment_mode: ["round_robin", "claim"],
-      mortgage_bank_sub_status: [
-        "sent",
-        "pre_approved",
-        "declined",
-        "withdrawn",
-      ],
       mortgage_consult_format: ["phone", "video", "office"],
       mortgage_consult_status: ["booked", "held", "no_show", "cancelled"],
       mortgage_contact_channel: ["call", "whatsapp", "email"],
@@ -6713,7 +6404,6 @@ export const Constants = {
       mortgage_file_state: ["pending", "active", "removed"],
       mortgage_flag: ["off", "staff", "public"],
       mortgage_link_purpose: ["reupload", "preapproval_invite"],
-      mortgage_rate_type: ["fixed", "variable"],
       mortgage_residency: ["uae_national", "uae_resident_expat"],
       mortgage_reupload_reason: [
         "unreadable",
@@ -6729,7 +6419,7 @@ export const Constants = {
         "new",
         "in_review",
         "awaiting_applicant",
-        "with_banks",
+        "accepted",
         "pre_approved",
         "declined",
         "contacted",

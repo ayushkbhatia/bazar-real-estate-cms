@@ -2,6 +2,8 @@
 
 The contract for the mortgage module. Screens W1–W8 (website) and C1–C6 (CMS) are in `design-references/`. If this spec and a design disagree, raise it rather than guess.
 
+> **Amended 13 Oct 2026 (migration 0156): the CMS is a light CRM.** The team shares an application with its partner banks by hand, so the banks' side of this spec is withdrawn: the partner-bank list, bank packages and their links, reminders, bank responses and letters, the C5 decision screen and the pre-approval email with the bank's letter. A Fast Pre-Approval now goes `in_review → accepted → pre_approved | declined`; `with_banks` was renamed `accepted`. The sections below are corrected where they said otherwise; DECISIONS.md and PROGRESS.md (13 Oct 2026) have the detail.
+
 **Stack assumed:** the Bazar platform stack in `design_handoff_bazar_website_cms/docs/09-architecture-and-stack.md` (Next.js App Router, TypeScript, Postgres + Drizzle, Better Auth, Cloudflare R2, Inngest, Resend, WhatsApp Business Cloud API). Phase 0 maps these names onto the real repo.
 
 ---
@@ -11,11 +13,11 @@ The contract for the mortgage module. Screens W1–W8 (website) and C1–C6 (CMS
 **In v1**
 - Public flow at `/mortgages/apply`: choose service → personal details → (Consultancy) review & submit, or (Fast Pre-Approval) documents & submit → confirmation.
 - Secure links with OTP: re-upload one document, and the Fast Pre-Approval invite sent from a consultancy request.
-- CMS: queue, request file, document viewer with checks, re-upload requests, partner-bank packages and responses, decision and notification, consultancy contact log and booking.
+- CMS: queue, request file, document viewer with checks, re-upload requests, accepting the application and recording its outcome (0156: no bank packages or responses), consultancy contact log and booking.
 - The 24-hour promise clock, alerts, append-only activity/audit log.
 
 **Not in v1**
-- Bank APIs. Staff record bank responses by hand.
+- Bank APIs. Staff share applications with banks outside the site and record only the outcome (0156).
 - OCR / auto-extraction. Staff type the recorded fields and statement periods.
 - Applicant accounts. Applicants never sign in; they use links + OTP.
 - Calendar sync (Google/Microsoft). Adviser slots come from working hours minus bookings.
@@ -72,7 +74,7 @@ Rules:
 
 ### 2.4 Statuses and transitions
 
-Fast Pre-Approval: `new → in_review → with_banks → pre_approved | declined`, with `in_review ⇄ awaiting_applicant` while a re-upload is outstanding.
+Fast Pre-Approval: `new → in_review → accepted → pre_approved | declined` (0156; was `with_banks`), with `in_review ⇄ awaiting_applicant` while a re-upload is outstanding.
 Mortgage Consultancy: `new → contacted → consultation_booked → completed`.
 
 | From | To | Trigger | Actor | Side effects |
@@ -81,9 +83,9 @@ Mortgage Consultancy: `new → contacted → consultation_booked → completed`.
 | `new` | `in_review` | Owner opens the first document | system | — |
 | `in_review` | `awaiting_applicant` | Re-upload request sent | owner, head | SLA pauses; access link created; WhatsApp + email |
 | `awaiting_applicant` | `in_review` | Applicant sends the re-upload | applicant | SLA resumes; that document → `to_review`; owner notified |
-| `in_review` | `with_banks` | Accept application (4 of 4 accepted) and send to ≥1 bank | owner, head | Packages sent |
-| `with_banks` | `pre_approved` | Confirm pre-approval & notify | owner, head | SLA stops; email + bank letter; WhatsApp |
-| `with_banks` | `declined` | Decline & notify | owner, head | SLA stops; notify |
+| `in_review` | `accepted` | Accept application (every document accepted, consent on file) | owner, head | SLA stops (the team's answer); the file stays open (0156) |
+| `accepted` | `pre_approved` | Mark pre-approved (optional team note) | owner, head | File closes; nothing sent to the applicant (0156) |
+| `new` · `in_review` · `awaiting_applicant` · `accepted` | `declined` | Decline & notify | owner, head | SLA stops (unless accepting already stopped it); email (D19, 0156) |
 | `new` | `contacted` | First contact attempt logged (any outcome) | staff | `first_contact_at` set |
 | `contacted` | `consultation_booked` | Consultation booked | staff | Invite by email (.ics) + WhatsApp |
 | `consultation_booked` | `completed` | Consultation marked held | staff | — |
@@ -95,7 +97,7 @@ Mortgage Consultancy: `new → contacted → consultation_booked → completed`.
 
 - **Starts** at submission ("when the applicant presses Get Fast Pre-Approval").
 - **Pauses** on entering `awaiting_applicant`; **resumes** on leaving it.
-- **Stops** on `pre_approved` or `declined`. `met` = stopped before due.
+- **Stops** on `accepted` (0156) or on `declined` before acceptance. `met` = stopped before due.
 - **Due** = start + 24h + total paused time.
 - **At risk** = running with ≤ 4h left (C1 banner and red bar). **Breached** = running and past due.
 - Wall-clock hours, nights and weekends included — W7 shows the applicant an exact time. Confirm (§9).
@@ -106,7 +108,7 @@ Columns: `sla_started_at`, `sla_due_at` (null while paused), `sla_paused_at`, `s
 
 One pure function drives every display: `slaStatus(request, now) → { state: none | running | at_risk | paused | met | breached, remainingSeconds, elapsedSeconds, dueAt, pct }`. UI never computes deadlines.
 
-Display formats from the designs: "17h 42m left" · "Paused · 9h 13m left" · "Due Wed 23 Sep, 10:14" · C5 button note "stops the clock at 8h 41m" (elapsed time) · W7 "Wed 23 Sep, 10:14".
+Display formats from the designs: "17h 42m left" · "Paused · 9h 13m left" · "Due Wed 23 Sep, 10:14" · W7 "Wed 23 Sep, 10:14".
 
 ### 2.6 Reference numbers
 
@@ -126,7 +128,7 @@ Conventions from `docs/06-data-model.md`: UUID v7 ids, `timestamptz`, snake_case
 
 ```
 mortgage_service           consultancy | pre_approval
-mortgage_status            new | in_review | awaiting_applicant | with_banks | pre_approved | declined
+mortgage_status            new | in_review | awaiting_applicant | accepted | pre_approved | declined
                            | contacted | consultation_booked | completed
 mortgage_residency         uae_national | uae_resident_expat
 mortgage_employment        salaried | business_owner
@@ -143,9 +145,8 @@ mortgage_contact_channel   call | whatsapp | email
 mortgage_contact_outcome   reached | no_answer | left_message | sent | received
 mortgage_consult_format    phone | video | office
 mortgage_consult_status    booked | held | no_show | cancelled
-mortgage_bank_sub_status   sent | pre_approved | declined | withdrawn
 mortgage_decision          pre_approved | declined
-mortgage_actor             applicant | staff | system | bank
+mortgage_actor             applicant | staff | system | bank   (bank: old log lines only, 0156)
 ```
 
 Staff roles: add `mortgage_head` and `mortgage_adviser` to the existing staff role model (or a team membership, whichever the repo uses).
@@ -158,7 +159,7 @@ Staff roles: add `mortgage_head` and `mortgage_adviser` to the existing staff ro
 `entry_point`, `property_id` (fk, null), `parent_request_id` (fk self, null),
 `owner_staff_id` (fk, null), `assigned_at`, `submitted_at`, `first_contact_at`,
 `sla_started_at`, `sla_due_at`, `sla_paused_at`, `sla_paused_seconds` (int, default 0), `sla_stopped_at`, `sla_risk_notified_at`, `sla_breach_notified_at`,
-`decision`, `decided_at`, `decided_by`, `lead_bank_submission_id` (fk, null), `decision_message`,
+`decision`, `decided_at`, `decided_by`, `decision_message`,
 `closed_at`, `created_at`, `updated_at`.
 Indexes: `(service, status)`, `(owner_staff_id)`, `(sla_due_at) WHERE sla_stopped_at IS NULL`, `(mobile_e164)`, `(email)`.
 Applicant details are a snapshot of what was submitted. `employment_type` is read-only once a pre-approval is submitted.
@@ -169,8 +170,8 @@ C2 shows it as "Given Tue 22 Sep, 10:14 · 94.203.•.• · Chrome, macOS" with
 **`mortgage_documents`** — one row per required kind, created at submit.
 `id`, `request_id`, `kind`, `state`, `checks` (jsonb `{ key: boolean }`), `recorded` (jsonb, e.g. `{ monthly_gross_aed, employed_since, employer }`), `accepted_by`, `accepted_at`, `updated_at`. Unique `(request_id, kind)`.
 
-**`mortgage_files`** — applicant uploads and bank letters. Never overwritten; replacing = new row + old row `removed`.
-`id`, `draft_id` (null), `document_id` (null), `bank_submission_id` (null), `state`, `storage_key`, `original_name`, `mime`, `size_bytes`, `page_count`, `sha256`, `scan_status`, `period_from` (date, statements), `period_to`, `upload_round` (0 = with the application, n = nth re-upload), `uploaded_at`.
+**`mortgage_files`** — applicant uploads (bank letters went with 0156). Never overwritten; replacing = new row + old row `removed`.
+`id`, `draft_id` (null), `document_id` (null), `state`, `storage_key`, `original_name`, `mime`, `size_bytes`, `page_count`, `sha256`, `scan_status`, `period_from` (date, statements), `period_to`, `upload_round` (0 = with the application, n = nth re-upload), `uploaded_at`.
 
 **`mortgage_upload_drafts`** — upload sessions before submit.
 `id`, `token_hash`, `ip`, `created_at`, `expires_at` (24h), `claimed_request_id`.
@@ -187,16 +188,11 @@ C2 shows it as "Given Tue 22 Sep, 10:14 · 94.203.•.• · Chrome, macOS" with
 **`mortgage_consultations`**
 `id`, `request_id`, `adviser_staff_id`, `format`, `starts_at`, `duration_minutes` (default 20, from the C6 message), `invite_channels`, `status`, `created_by`, `created_at`.
 
-**`mortgage_partner_banks`**
-`id`, `code` (FAB), `name`, `brand_color`, `active`, `package_emails` (text[]), `sort_order`, `created_at`.
-
-**`mortgage_bank_submissions`**
-`id`, `request_id`, `bank_id`, `status`, `sent_at`, `sent_by`, `package_manifest` (jsonb), `package_expires_at`, `responded_at`, `recorded_by`, `max_amount_aed` numeric(14,2), `rate_pct` numeric(5,3), `rate_type` (fixed | variable), `fixed_years`, `valid_until` (date), `reminder_sent_at`, `notes`.
-The 25-year monthly payment is computed, not stored — use the mortgage calculator's formula `M = P·r(1+r)^n / ((1+r)^n − 1)`. Check: AED 2,150,000 at 3.99% over 25 years = AED 11,337 (C5).
+**`mortgage_partner_banks`**, **`mortgage_bank_submissions`** — dropped in 0156 (banks are contacted outside the site).
 
 **`mortgage_events`** — append-only activity and access log.
 `id`, `request_id`, `actor_kind`, `actor_id`, `type`, `data` (jsonb), `ip`, `created_at`.
-Types include: `request.submitted`, `status.changed`, `owner.assigned`, `document.viewed`, `document.downloaded`, `document.accepted`, `reupload.requested`, `reupload.fulfilled`, `link.otp_sent`, `link.verified`, `file.scan_failed`, `bank.package_sent`, `bank.package_opened`, `bank.response_recorded`, `bank.reminder_sent`, `decision.sent`, `contact.logged`, `consultation.booked`.
+Types include: `request.submitted`, `status.changed`, `owner.assigned`, `document.viewed`, `document.downloaded`, `document.accepted`, `reupload.requested`, `reupload.fulfilled`, `link.otp_sent`, `link.verified`, `file.scan_failed`, `application.accepted`, `decision.pre_approved`, `decision.declined`, `contact.logged`, `consultation.booked`.
 Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them. Only the retention job's role may delete.
 
 ---
@@ -245,13 +241,11 @@ Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them.
 | `/admin/mortgages` | C1 queue |
 | `/admin/mortgages/[reference]` | C2 (pre-approval) or C6 (consultancy) |
 | `/admin/mortgages/[reference]/documents/[kind]` | C3 / C4 viewer |
-| `/admin/mortgages/[reference]/decision` | C5 |
-| `/admin/mortgages/banks` | Partner banks (not designed — use the CMS table pattern) |
 | `/admin/mortgages/files/[fileId]` | Authorised file stream. Writes `document.viewed` / `document.downloaded` first |
 
 **C1 behaviour**
 - Nav: "Mortgages" item in the CMS shell; breadcrumb "Inbox · 31 open · 5 new".
-- Tabs: Open · New · In review · Awaiting applicant · With banks · Contacted & booked · Closed (= pre_approved, declined, completed). Counts on each.
+- Tabs: Open · New · In review · Awaiting applicant · Accepted (0156; was With banks) · Contacted & booked · Closed (= pre_approved, declined, completed). Counts on each.
 - Service filter: All · Fast Pre-Approval · Mortgage Consultancy, with counts. Search "Name, reference or mobile". Owner filter. Sort default "promise due".
 - Promise-due order: pre-approvals by time remaining (paused ones by their frozen remaining time), then consultancy — New by longest waiting, then Contacted, then Booked by appointment time.
 - Mobile numbers masked in the list (+971 50 ••• 3321). Full number on the file page.
@@ -259,7 +253,7 @@ Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them.
 - Pagination 25 per page. Poll every 15–30s; no realtime needed in v1.
 
 **CMS server actions** — each one: authorise → validate (zod) → write in one transaction (via `transition()` if status changes) → event → enqueue notifications.
-`claimRequest`, `reassignOwner`, `editApplicant`, `setCheck`, `setRecordedFields`, `setStatementPeriod`, `acceptDocument`, `requestReupload` (also behind C2's "Request documents", starting with a document picker), `cancelReupload`, `acceptApplicationAndSend(bankIds)`, `recordBankResponse`, `sendBankReminder`, `decide`, `logContactAttempt`, `bookConsultation`, `markConsultationHeld`, `sendPreapprovalInvite`.
+`claimRequest`, `reassignOwner`, `editApplicant`, `setCheck`, `setRecordedFields`, `setStatementPeriod`, `acceptDocument`, `requestReupload` (also behind C2's "Request documents", starting with a document picker), `cancelReupload`, `acceptApplication`, `recordPreApproval(note?)`, `decline` (0156 replaced `acceptApplicationAndSend(bankIds)`, `recordBankResponse`, `sendBankReminder`, `decide`), `logContactAttempt`, `bookConsultation`, `markConsultationHeld`, `sendPreapprovalInvite`.
 
 ---
 
@@ -272,8 +266,7 @@ Revoke UPDATE/DELETE from the app's DB role and add a trigger that rejects them.
 | `sla.tick` | cron, every 5 min | At-risk and breach notifications to owner + head. Idempotent via `*_notified_at`; reset on resume |
 | `reupload.requested` | action | WhatsApp + email with the secure link |
 | `reupload.fulfilled` | link submit | Notify owner |
-| `bank.package` | accept & send | Email each bank's package address one expiring, logged link (no attachments) |
-| `decision.sent` | decide | Email with bank letter PDF + WhatsApp |
+| `decision.declined` | decline | Email to the applicant, plus WhatsApp when chosen (0156: no bank packages, and a pre-approval sends nothing) |
 | `consultation.booked` | booking | Email with .ics + WhatsApp |
 | `retention.purge` | daily | Delete files N months after `closed_at` (N in §9) |
 
@@ -291,10 +284,10 @@ Unclaimed drafts: a bucket lifecycle rule deletes `drafts/` objects after 24h. N
 | Pre-approval invite | applicant | WhatsApp + email — secure link |
 | OTP | applicant | WhatsApp authentication template or SMS |
 | Consultation booked | applicant | Email (.ics) + WhatsApp |
-| Decision | applicant | Email (with letter) + WhatsApp |
+| Decline | applicant | Email, plus WhatsApp when chosen (0156: a pre-approval is recorded, not sent) |
 | New request · at risk · breached · re-upload received | owner, head | In-app + email |
 
-**WhatsApp constraint.** Business-initiated messages outside WhatsApp's 24-hour customer-service window must use pre-approved templates. The free-text messages staff write in C4 and C5 therefore go out as a template carrying a short notice and the link (full text in the email and on the secure page), and as free text only when the applicant has messaged within 24 hours. Submit templates to Meta in Phase 0 — approval takes time.
+**WhatsApp constraint.** Business-initiated messages outside WhatsApp's 24-hour customer-service window must use pre-approved templates. The free-text messages staff write in C4 and the decline therefore go out as a template carrying a short notice and the link (full text in the email and on the secure page), and as free text only when the applicant has messaged within 24 hours. Submit templates to Meta in Phase 0 — approval takes time.
 
 ---
 
@@ -306,9 +299,8 @@ Unclaimed drafts: a bucket lifecycle rule deletes `drafts/` objects after 24h. N
 | Open / download documents (always logged) | ✓ | ✓ | — |
 | Claim an unassigned request | ✓ | ✓ | — |
 | Review, request re-upload, contact, book | owner | ✓ | — |
-| Send to banks, record responses, decide | owner | ✓ | — |
+| Accept, mark pre-approved, decline | owner | ✓ | — |
 | Reassign | — | ✓ | — |
-| Manage partner banks | — | ✓ | admin ✓ |
 
 The website says only the mortgage team can open documents, so admins without a mortgage role get no document access. Any break-glass access must be logged and reviewed.
 
@@ -330,7 +322,7 @@ Also:
 - **Links:** 256-bit random tokens, stored hashed, one purpose and one request each, expiry (proposed 7 days), revocable. OTP: 6 digits, 10-minute expiry, 5 attempts, rate-limited per link and per IP. W8 shows the masked mobile ("verified with a code sent to +971 55 ••• 2290").
 - **Public endpoints:** Turnstile + rate limits; size enforced in the presign conditions and re-checked on complete.
 - **Malware scan** before any staff member can open a file.
-- **Bank packages:** expiring, logged download links per bank — not email attachments.
+- ~~**Bank packages:** expiring, logged download links per bank — not email attachments.~~ Retired in 0156: the team shares files with banks by hand.
 - **No PII** in logs, Sentry or PostHog.
 - **DSR:** export and delete by email/mobile across all mortgage tables, hooked into the platform's PDPL flow.
 
@@ -343,7 +335,7 @@ Also:
 | 1 | Region for mortgage documents and DB (UAE data residency for financial data) | Bazar + engineering | Phase 2 |
 | 2 | Consent wording (currently v0.1, "to be confirmed by compliance") | Compliance | Launch |
 | 3 | Sign-off on the security copy, once §8 is built | Engineering | Launch |
-| 4 | Partner-bank list, package contacts, delivery method | Head of mortgages | Phase 6 |
+| 4 | Partner-bank list, package contacts, delivery method — moot since 0156 (shared by hand) | Head of mortgages | Phase 6 |
 | 5 | 24-hour clock: wall-clock (as designed) or working hours? | Bazar | Phase 1 |
 | 6 | Assignment: round-robin on submit, or claim from the queue? | Head of mortgages | Phase 4 |
 | 7 | Checks for Emirates ID, passport, trade licence, 3-month statements | Head of mortgages | Phase 5 |
