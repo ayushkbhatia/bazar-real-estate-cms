@@ -202,6 +202,12 @@ async function resolveAreaId(
  * today, so `.eq('mode', 'buy')` renders /buy/search and the home page's
  * featured rail empty against a perfectly healthy catalogue.
  *
+ * Off-plan is the same umbrella, at the client's request (Oct 2026): the
+ * catalogue's `mode` split between `buy` and `off_plan` is not one the
+ * client keeps consistently, so /off-plan/search narrowed to a fraction of
+ * the sale stock /buy/search showed (12 apartments against 65). Both routes
+ * now list the same rows; each keeps its own heading.
+ *
  * Deliberately not `neq('rent')` — that is what the area guide's sale band
  * uses (`lib/queries/area-inventory.ts`), and it sweeps in `commercial`,
  * which has its own mode tab on the search surfaces.
@@ -211,6 +217,7 @@ async function resolveAreaId(
  */
 const MODE_UMBRELLA: Partial<Record<Mode, readonly Mode[]>> = {
   buy: ["buy", "off_plan"],
+  off_plan: ["buy", "off_plan"],
 };
 
 /** Apply a mode filter, expanding the umbrella modes to the rows they cover. */

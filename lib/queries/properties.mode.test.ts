@@ -67,8 +67,14 @@ describe("listPublishedProperties mode filter", () => {
     expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
   });
 
+  it("expands off-plan to the same sale stock as buy", async () => {
+    // /off-plan/search and /buy/search list the same rows (client, Oct 2026).
+    await listPublishedProperties({ mode: "off_plan" });
+    expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
+  });
+
   it("leaves the narrow modes exact", async () => {
-    for (const mode of ["rent", "commercial", "off_plan"] as const) {
+    for (const mode of ["rent", "commercial"] as const) {
       calls = [];
       await listPublishedProperties({ mode });
       expect(modeFilter()).toEqual({ method: "eq", value: mode });
