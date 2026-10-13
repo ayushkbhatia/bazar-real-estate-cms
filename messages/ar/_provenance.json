@@ -6828,22 +6828,10 @@
     "sourceHash": "4c673021df7b",
     "reviewed": false
   },
-  "mortgage.residency.expat.sub": {
-    "by": "machine",
-    "model": "claude-opus-5-5",
-    "sourceHash": "08d2a0b0c4a3",
-    "reviewed": false
-  },
   "mortgage.residency.expat.title": {
     "by": "machine",
     "model": "claude-opus-5-5",
     "sourceHash": "8ad5c24ba8a1",
-    "reviewed": false
-  },
-  "mortgage.residency.uaeNational.sub": {
-    "by": "machine",
-    "model": "claude-opus-5-5",
-    "sourceHash": "08d2a0b0c4a3",
     "reviewed": false
   },
   "mortgage.residency.uaeNational.title": {

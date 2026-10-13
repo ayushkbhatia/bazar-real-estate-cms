@@ -105,7 +105,7 @@ export function ChoiceTile({
   checked: boolean;
   onSelect: (value: string) => void;
   title: string;
-  sub: ReactNode;
+  sub?: ReactNode;
   invalid?: boolean;
   describedBy?: string;
 }) {
@@ -130,16 +130,18 @@ export function ChoiceTile({
         onChange={() => onSelect(value)}
         className="sr-only"
         aria-labelledby={`${id}-title`}
-        aria-describedby={[`${id}-sub`, describedBy].filter(Boolean).join(" ")}
+        aria-describedby={[sub ? `${id}-sub` : null, describedBy].filter(Boolean).join(" ") || undefined}
       />
       <RadioMark on={checked} />
       <span>
         <span id={`${id}-title`} className="block text-[15px] font-medium">
           {title}
         </span>
-        <span id={`${id}-sub`} className="mt-0.5 block text-[12.5px] text-bz-muted">
-          {sub}
-        </span>
+        {sub ? (
+          <span id={`${id}-sub`} className="mt-0.5 block text-[12.5px] text-bz-muted">
+            {sub}
+          </span>
+        ) : null}
       </span>
     </label>
   );

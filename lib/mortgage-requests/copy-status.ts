@@ -55,8 +55,6 @@ export const PENDING_COPY: readonly PendingCopy[] = [
   { key: "upload.retry", gap: "FE-1", note: "Retry after a network error" },
   // Decided deviations from the handoff's text.
   { key: "doc.tradeLicense.name", gap: "D28", note: "\"license\" → \"licence\" (decided: UAE spelling everywhere)" },
-  { key: "residency.uaeNational.sub", gap: "D23", note: "\"Up to 85% LTV\" with the figure from mortgage_settings" },
-  { key: "residency.expat.sub", gap: "D23", note: "\"Up to 80% LTV\" with the figure from mortgage_settings" },
   { key: "docs.note.attention", gap: "i18n", note: "Split from docs.note.progress: the catalogue forbids a plural inside a sentence" },
   // W8 and the invite landing (Phase 5): only W8's verified state is designed.
   { key: "w8.code.*", gap: "FE-2", note: "Enter-code state; the code goes by email until WhatsApp (D1, D5)" },
