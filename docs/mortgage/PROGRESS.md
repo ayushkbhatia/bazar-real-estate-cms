@@ -1520,3 +1520,125 @@ and corrected sections)
   `PENDING_CMS_COPY` for the client to confirm.
 - The draft WhatsApp template `bazar_mortgage_preapproved` (DECISIONS
   appendix) isn't needed; don't submit it to Meta.
+
+---
+
+## Mortgage stages · 13 Oct 2026
+
+The client asked (13 Oct) for stages the team moves mortgage enquiries
+between — "New, In Review, Accepted, Pre-Approved, Valuation, Final Offer
+Letter, Registration, Disbursed" — editable in Pages & blocks. The owner
+decided the model the same day (DECISIONS.md, "Decided 13 Oct 2026 —
+mortgage stages"). It replaces 0156's Accept application / Mark pre-approved.
+
+**Built** (migrations `0157_mortgage_status_open.sql` and
+`0158_mortgage_stages.sql`; 0158's header has the model)
+- **Stages are rows:** `mortgage_stages` (name 1–40 characters and unique,
+  position 1…n, `stops_clock`, `closes_file`), seeded with the client's eight;
+  `mortgage_requests.stage_id` (on delete restrict), set exactly when the
+  request is a Fast Pre-Approval. `L/stages.ts` reads them.
+- **Status:** a Fast Pre-Approval is `open` or `declined` (0157 adds the enum
+  value `open`); the old values stay in the enum, unused. Consultancy keeps
+  `new → contacted → consultation_booked → completed` and has no stage.
+  `L/state.ts` mirrors `mortgage_transition()` (redefined in 0158): one
+  `stage_changed` event, from `open` or `declined`, clock effect `stage`.
+- **Moves are free:** `mortgage_move_stage()` (owner or Head) moves a file
+  from any stage to any other with no document or consent checks, logged
+  `stage.changed` with both stage names. From C2's "Move to stage" menu
+  (`A/_outcome-actions.ts` `moveStage`; "Reopen at a stage" on a declined
+  file) or a board drop. A declined file moved onto a stage is reopened and
+  its decision cleared (the log keeps it).
+- **The switches:** a stage marked *Answers the applicant* (`stops_clock`;
+  seeded Accepted onwards) stops the 24-hour clock the first time a file
+  reaches one, for good; *Closes the file* (`closes_file`; Disbursed) sets
+  `closed_at`, and moving off reopens. New requests land on the first stage
+  (trigger `mortgage_requests_place_on_stage`; `mortgage_create_request()`
+  still writes `new`, which the trigger turns into `open`).
+- **Re-uploads:** Awaiting applicant is gone. A re-upload request keeps the
+  stage and only pauses a running clock; the last one back (or cancelled)
+  resumes it.
+- **Opening a document no longer moves the file;** `first_document_opened`
+  is accepted and does nothing. The board's "start review" action and its
+  move context (`loadBoardMoveContext`) are removed from `A/_board-actions.ts`.
+- **Decline** (`mortgage_decline()`, redefined): from any stage while open,
+  still emails the applicant, logs the stage it was declined from. "No bank
+  made an offer" needs a stopped clock (`declineReasonsFor(answered)` in
+  `L/decline.ts`).
+- **Queue (C1):** Open / Closed tabs (closed = declined, completed, or on a
+  closing stage) and a Stage filter (`?stage=<id>`, `L/queue.ts`). **Board:**
+  a Fast Pre-Approval's columns are the stages plus Declined; a drop on a
+  stage is the move, a drop on Declined opens the decline dialog
+  (`L/board.ts`).
+- **The stage editor:** Pages & blocks → **Mortgage stages**
+  (`/admin/pages/mortgage-stages`; `app/[locale]/(admin)/admin/pages/mortgage-stages/`):
+  rename, the two switches, add (at the end), move up/down, delete. Every
+  change is a SQL function called with the editor's session —
+  `mortgage_save_stage()`, `mortgage_reorder_stages()`,
+  `mortgage_delete_stage()` — gated by `mortgage_can_edit_stages()` (role
+  admin, editor or marketing, or the Head of mortgages); each is audited
+  (`mortgage.stage_add|update|reorder|delete`). Deleting is refused while files
+  are on the stage (declined ones count: they remember their stage) and for
+  the last stage. The Pages index shows the card only to those who may edit.
+  Anyone else gets a 404.
+- **Activity (C2):** "{actor} moved it to {stage}" / "reopened it at
+  {stage}"; old `application.accepted` / `decision.pre_approved` lines still
+  read.
+- **DSR:** the export carries each request's stage and
+  `may_have_been_shared_with_banks`; `reachedBanks()` (`L/server/dsr.ts`) is
+  now "open with a stopped clock, or declined for `no_bank_offer`", and the
+  archive's wording says "may have shared".
+- **Data:** 0158 places every existing Fast Pre-Approval: New → New, In review
+  and Awaiting applicant → In Review, Accepted → Accepted, Pre-approved →
+  Pre-Approved (reopened: `closed_at` and the decision cleared, since it no
+  longer closes a file); a declined file keeps the stage it was declined from
+  (from its last `status.changed` row). `db/types.ts` regenerated.
+- **Tests:** state, board, decline, cms and DSR unit tests follow the model;
+  `…/mortgage-stages/_logic.test.ts`; e2e `e2e/mortgage-stages-editor.spec.ts`
+  (local stack only) and the board/a11y specs updated. New CMS copy is in
+  `PENDING_CMS_COPY`.
+
+**Applying to production** — at the batch merge, in this order:
+1. `0157` on its own, **committed** first: Postgres can't use a new enum value
+   in the transaction that adds it, and 0158 does.
+2. `0158`. It drops `mortgage_accept_application()` and
+   `mortgage_record_pre_approval()`, and the new code calls
+   `mortgage_move_stage()`, so apply it as the deploy goes live; in between,
+   one side's buttons fail.
+3. Compare `db/types.ts` with the generated types.
+The sample requests (`BZM-26-9xxx`) are placed on stages by 0158 like any
+other; `scripts/mortgage-demo/clear.ts --yes` still erases them.
+
+**Deviations from SPEC** (SPEC.md carries an "Amended 13 Oct 2026 (0157,
+0158)" note and corrected sections)
+- §2.4: the Fast Pre-Approval's statuses are `open` / `declined`; where an
+  open file stands is client-kept data, and moves are unchecked. No Awaiting
+  applicant; no system move on first open.
+- §2.5: the clock stops on the first stage that answers the applicant, not on
+  acceptance; it pauses without the file moving.
+- §3: `mortgage_stages`, `stage_id`; `stage.changed` replaces
+  `application.accepted` / `decision.pre_approved` for new rows.
+- §4: C1's tabs are Open / Closed plus a Stage filter; `moveStage` replaces
+  `acceptApplication` / `recordPreApproval`.
+- §7: keeping the stages is open to admin, editor and marketing staff as well
+  as the Head (no request or document access comes with it).
+
+**Open TODOs**
+- **Local seed and database tests:** `scripts/db-local/seed-mortgage.ts`
+  (and its demo mode) still writes the pre-0158 statuses and events, and the
+  `*.db.test.ts` files that drive `mortgage_transition()` through
+  `in_review` / `awaiting_applicant` / `pre_approved` (database, decline,
+  DSR, links, storage) need moving to `open` + stages; run
+  `npm run db:local:reset && npm run test:db` once they are. Add database
+  tests for the four new functions and `mortgage_can_edit_stages()`.
+- **Consent withdrawal no longer blocks anything:** Accept refused a file
+  without consent; a stage move checks nothing (as decided). The team has to
+  read C2's Consent card before sharing a file.
+- **Renaming a stage** renames it everywhere at once; the activity log keeps
+  the name a move used at the time. A stage whose switches change doesn't
+  re-evaluate files already on it (a stopped clock stays stopped; `closed_at`
+  changes only on the next move).
+- **Metrics:** the Head's met-rate (30 days) counts a file as answered when
+  its clock stopped, which is now the first answering stage; check the
+  figures read sensibly once the team uses stages.
+- New CMS copy (stage menu, filter, activity lines) awaits the client's
+  confirmation (`PENDING_CMS_COPY`).

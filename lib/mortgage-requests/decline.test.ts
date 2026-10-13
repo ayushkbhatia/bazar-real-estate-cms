@@ -13,13 +13,12 @@ describe("decline reasons (D19)", () => {
     expect(declineReasonLabel("debt_burden")).toBe("Monthly debts too high (DBR)");
   });
 
-  it("offers 'no bank made an offer' only once the banks were asked", () => {
-    expect(declineReasonsFor("accepted")).toContain("no_bank_offer");
-    for (const status of ["new", "in_review", "awaiting_applicant"] as const) {
-      expect(declineReasonsFor(status)).not.toContain("no_bank_offer");
-      expect(declineReasonsFor(status)).toHaveLength(DECLINE_REASONS.length - 1);
-    }
+  it("offers 'no bank made an offer' only once the team has answered (a stage stopped the clock)", () => {
+    expect(declineReasonsFor(true)).toContain("no_bank_offer");
+    expect(declineReasonsFor(false)).not.toContain("no_bank_offer");
+    expect(declineReasonsFor(false)).toHaveLength(DECLINE_REASONS.length - 1);
   });
+
 
   it("is declinable exactly where the state machine allows it", () => {
     for (const status of PRE_APPROVAL_STATUSES) {

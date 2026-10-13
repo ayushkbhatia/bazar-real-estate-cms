@@ -79,18 +79,7 @@ export async function openStaffFile(
     data: { file_id: row.id, kind: row.kind },
   });
 
-  if (
-    request.service === "pre_approval" &&
-    request.status === "new" &&
-    request.owner_staff_id === caller.userId
-  ) {
-    // Best effort: someone may have moved it a moment ago, which is fine.
-    await deps.db.rpc("mortgage_transition", {
-      p_request_id: request.id,
-      p_event: "first_document_opened",
-      p_actor_kind: "system",
-    });
-  }
+  // Opening a document no longer moves the file (0158): its stage is the team's to set.
 
   const bytes = await deps.storage.read(row.storage_key);
   if (!bytes) throw notFound();

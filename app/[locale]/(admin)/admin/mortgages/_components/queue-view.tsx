@@ -18,11 +18,6 @@ const t = cmsT as unknown as (key: string, values?: Record<string, string | numb
 
 const TAB_KEY: Record<QueueTab, string> = {
   open: "c1.tab.open",
-  new: "c1.tab.new",
-  in_review: "c1.tab.inReview",
-  awaiting: "c1.tab.awaiting",
-  accepted: "c1.tab.accepted",
-  contacted_booked: "c1.tab.contactedBooked",
   closed: "c1.tab.closed",
 };
 
@@ -261,6 +256,23 @@ export function QueueView({
           </select>
           <ChevronDown size={14} aria-hidden className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-bz-muted" />
         </label>
+        {/* A Fast Pre-Approval's stage (0158): one stage's files, or every request. */}
+        <label className={cn("relative w-[180px]", board && "hidden")}>
+          <span className="sr-only">{t("c1.aria.stage")}</span>
+          <select
+            value={params.stage ?? ""}
+            onChange={(e) => go({ stage: e.target.value || null })}
+            className={cn(FIELD, "w-full appearance-none ps-2.5 pe-7")}
+          >
+            <option value="">{t("c1.stage.all")}</option>
+            {(result?.stages ?? []).map((s) => (
+              <option key={s.id} value={s.id}>
+                {t("c1.stage.option", { stage: s.name, count: s.count })}
+              </option>
+            ))}
+          </select>
+          <ChevronDown size={14} aria-hidden className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-bz-muted" />
+        </label>
         <label className={cn("relative w-[170px]", board && "hidden")}>
           <span className="sr-only">{t("c1.aria.sort")}</span>
           <select value="promise_due" onChange={() => undefined} className={cn(FIELD, "w-full appearance-none ps-2.5 pe-7")}>
@@ -388,7 +400,7 @@ export function QueueView({
                         <DocumentBar states={row.docs} />
                       </td>
                       <td className="px-3.5 py-3 align-middle">
-                        <StatusPill status={row.status} small />
+                        <StatusPill status={row.status} stage={row.stage} closed={row.closed} small />
                       </td>
                       <td className="px-3.5 py-3 align-middle">
                         {row.sla ? <PromiseClock sla={row.sla} width={176} /> : row.consult ? <ConsultCell {...row.consult} /> : null}

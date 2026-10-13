@@ -253,14 +253,12 @@ test("C1–C6, their dialogs and the settings", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Send request to Priya/ })).toBeVisible();
   await audit(page, "C4");
 
-  // An accepted file waits on the banks: its outcome is recorded from C2 (0156).
+  // The stage menu (0158): every stage the client keeps, the file's own ticked.
   await page.goto("/admin/mortgages/BZM-26-0404");
-  await expect(page.getByRole("button", { name: "Mark pre-approved" })).toBeVisible();
-  await audit(page, "C2 · Accepted");
-  await page.getByRole("button", { name: "Mark pre-approved" }).click();
-  await expect(page.getByRole("dialog", { name: /Mark Liam pre-approved/ })).toBeVisible();
-  await audit(page, "C2 · Mark pre-approved");
-  await page.getByRole("dialog").getByRole("button", { name: "Cancel" }).click();
+  await page.getByRole("button", { name: "Move to stage" }).click();
+  await expect(page.getByRole("menuitem", { name: /Valuation/ })).toBeVisible();
+  await audit(page, "C2 · Move to stage");
+  await page.keyboard.press("Escape");
 
   await page.goto("/admin/mortgages/BZM-26-0415");
   await expect(page.getByRole("heading", { name: "Contact log" })).toBeVisible();

@@ -138,7 +138,9 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     expect(result.reference).toMatch(/^BZM-\d{2}-\d{4,}$/);
 
     const r = await request(result.requestId);
-    expect(r).toMatchObject({ status: "new", property_ref: "BAZ-TEST-1", entry_point: "property_detail", locale: "en" });
+    // Open, on the first stage (0158).
+    const { data: first } = await service.from("mortgage_stages").select("id").order("position").limit(1).single();
+    expect(r).toMatchObject({ status: "open", stage_id: (first as { id: string }).id, property_ref: "BAZ-TEST-1", entry_point: "property_detail", locale: "en" });
 
     // The promise, from sla.ts on the settings in force.
     const [{ data: settings }, { data: holidays }] = await Promise.all([

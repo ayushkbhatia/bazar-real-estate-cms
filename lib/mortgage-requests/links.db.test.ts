@@ -11,7 +11,8 @@
  *     Accept needs every required check;
  *   · a re-upload request pauses the promise, and sending the re-upload
  *     resumes it with exactly the working time that was left, however long
- *     the applicant took, leaving the accepted documents as they were;
+ *     the applicant took, leaving the accepted documents as they were; the
+ *     file stays open on its stage throughout (0158);
  *   · the link: a code first; five wrong codes lock it for good; a code
  *     expires, and a new one can't be sent within a minute; expired, revoked
  *     and used links open nothing; a session for one link opens no other;
@@ -59,6 +60,7 @@ type Request = {
   id: string;
   reference: string;
   status: string;
+  stage_id: string | null;
   owner_staff_id: string | null;
   updated_at: string;
   sla_due_at: string | null;
@@ -209,20 +211,11 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
   }
 
   /**
-   * C4, as the action does it: the owner's first open moves New to In review,
-   * the promise pauses with the working time left, and the link is made.
+   * C4, as the action does it: the promise pauses with the working time left,
+   * and the link is made. The file stays on its stage (0158).
    */
   async function askAgain(staff: TestStaff, requestId: string, doc: Doc, reason: string, at = new Date()) {
-    let request = await read(requestId);
-    if (request.status === "new") {
-      const { error } = await service.rpc("mortgage_transition", {
-        p_request_id: requestId,
-        p_event: "first_document_opened",
-        p_actor_kind: "system",
-      });
-      expect(error).toBeNull();
-      request = await read(requestId);
-    }
+    const request = await read(requestId);
     const token = newToken();
     const { data, error } = await staff.client.rpc("mortgage_request_reupload", {
       p_document_id: doc.id,
@@ -330,7 +323,7 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
     const pausedAt = new Date();
     const { token, link_id } = await askAgain(adviserA, request.id, statements, "period_incomplete", pausedAt);
     const paused = await read(request.id);
-    expect(paused.status).toBe("awaiting_applicant");
+    expect(paused).toMatchObject({ status: "open", stage_id: request.stage_id });
     expect(paused.sla_paused_at).not.toBeNull();
     const leftAtPause = paused.sla_remaining_seconds!;
     expect(leftAtPause).toBeGreaterThan(0);
@@ -351,7 +344,7 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
     await fulfilReupload({ ...deps, now: () => answeredAt }, link, [fileId]);
 
     const resumed = await read(request.id);
-    expect(resumed.status).toBe("in_review");
+    expect(resumed).toMatchObject({ status: "open", stage_id: request.stage_id });
     expect(resumed.sla_paused_at).toBeNull();
     expect(resumed.sla_paused_seconds).toBeGreaterThan(0);
     // The paused time doesn't count: what's left now is what was left then.
@@ -407,7 +400,8 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
       p_expected_updated_at: paused.updated_at,
     });
     expect(error).toBeNull();
-    expect(await read(request.id)).toMatchObject({ status: "in_review", sla_paused_at: null });
+    expect(await read(request.id)).toMatchObject({ status: "open", stage_id: request.stage_id, sla_paused_at: null });
+    expect((await read(request.id)).sla_due_at).not.toBeNull();
     expect((await documents(request.id)).passport!.state).toBe("to_review");
     expect(linkState(await findLink(service, token), new Date(), null)).toBe("unavailable");
     expect((await refusal(sendLinkCode(linkDeps(), token))).code).toBe("link_unavailable");
@@ -492,7 +486,8 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
     await uploadThrough(a.token, sa.session, "passport");
     const e = await refusal(fulfilReupload(deps, await requireSession(deps, a.token, () => sa.session), [fromB]));
     expect(e.code).toBe("files_not_ready");
-    expect((await read(one.request.id)).status).toBe("awaiting_applicant");
+    expect(await read(one.request.id)).toMatchObject({ status: "open", sla_due_at: null });
+    expect((await read(one.request.id)).sla_paused_at).not.toBeNull();
   }, 120_000);
 
   // ── The invite ──────────────────────────────────────────────
@@ -537,9 +532,11 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
     });
 
     const { data: child } = await service.from("mortgage_requests").select("*").eq("id", made.requestId).single();
+    const { data: first } = await service.from("mortgage_stages").select("id").order("position").limit(1).single();
     expect(child).toMatchObject({
       service: "pre_approval",
-      status: "new",
+      status: "open",
+      stage_id: (first as { id: string }).id,
       entry_point: "consult_invite",
       parent_request_id: parent.id,
       owner_staff_id: adviserA.id,

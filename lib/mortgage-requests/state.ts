@@ -16,14 +16,11 @@
 export const MORTGAGE_SERVICES = ["consultancy", "pre_approval"] as const;
 export type MortgageService = (typeof MORTGAGE_SERVICES)[number];
 
-export const PRE_APPROVAL_STATUSES = [
-  "new",
-  "in_review",
-  "awaiting_applicant",
-  "accepted",
-  "pre_approved",
-  "declined",
-] as const;
+/**
+ * A Fast Pre-Approval is open or declined (0158); where an open one stands is
+ * its stage (`stages.ts`), which the team moves freely.
+ */
+export const PRE_APPROVAL_STATUSES = ["open", "declined"] as const;
 export const CONSULTANCY_STATUSES = ["new", "contacted", "consultation_booked", "completed"] as const;
 
 export type MortgageStatus =
@@ -35,8 +32,12 @@ export const STATUSES_BY_SERVICE: Record<MortgageService, readonly MortgageStatu
   consultancy: CONSULTANCY_STATUSES,
 };
 
-/** C1's Closed tab. */
-export const CLOSED_STATUSES: readonly MortgageStatus[] = ["pre_approved", "declined", "completed"];
+/**
+ * Statuses that close a request by themselves. A Fast Pre-Approval on a
+ * closing stage (Disbursed) is closed too, though its status is `open`: read
+ * `closed_at` for that.
+ */
+export const CLOSED_STATUSES: readonly MortgageStatus[] = ["declined", "completed"];
 
 export function isClosed(status: MortgageStatus): boolean {
   return CLOSED_STATUSES.includes(status);
@@ -50,8 +51,7 @@ export const TRANSITION_EVENTS = [
   "reupload_requested",
   "reupload_fulfilled",
   "reupload_cancelled",
-  "application_accepted",
-  "pre_approved",
+  "stage_changed",
   "declined",
   "contact_logged",
   "consultation_booked",
@@ -60,11 +60,11 @@ export const TRANSITION_EVENTS = [
 export type TransitionEvent = (typeof TRANSITION_EVENTS)[number];
 
 /**
- * What a move does to the 24-hour promise (SPEC §2.5). `answer` stops the
- * clock on a file that stays open (Accept application); `stop` closes it,
- * keeping a clock an earlier answer already stopped.
+ * What a move does to the 24-hour promise (SPEC §2.5). `stage` is a stage
+ * move: the clock stops if the stage answers the applicant, and the file
+ * closes or reopens with the stage. `stop` closes the file (a decline).
  */
-export type ClockEffect = "pause" | "resume" | "answer" | "stop" | null;
+export type ClockEffect = "pause" | "resume" | "stage" | "stop" | null;
 
 export type TransitionOutcome = { to: MortgageStatus; clock: ClockEffect };
 
@@ -75,9 +75,10 @@ export type TransitionOutcome = { to: MortgageStatus; clock: ClockEffect };
 export type TransitionContext = {
   /** Re-upload requests still open once this event's own bookkeeping is done. */
   outstandingReuploads?: number;
-  acceptedDocuments?: number;
-  requiredDocuments?: number;
-  consentOnFile?: boolean;
+  /** The clock is counting: started, not paused, not stopped. */
+  clockRunning?: boolean;
+  /** The clock is paused for a re-upload. */
+  clockPaused?: boolean;
 };
 
 export class IllegalTransitionError extends Error {
@@ -101,44 +102,31 @@ const to =
   (status: MortgageStatus, clock: ClockEffect = null) =>
   (): TransitionOutcome => ({ to: status, clock });
 
+/** A re-upload request pauses a running clock; the file stays where it is. */
+function pauseIfRunning(from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
+  return { to: from, clock: ctx.clockRunning ? "pause" : null };
+}
+
 /** The applicant sent the re-upload, or staff cancelled the request for it. */
-function leaveAwaiting(_from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
+function resumeWhenDone(from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
   if (ctx.outstandingReuploads === undefined) {
-    throw new Error("leaving awaiting_applicant needs outstandingReuploads");
+    throw new Error("a re-upload's end needs outstandingReuploads");
   }
   // Two documents flagged, one returned: still waiting on the other, clock still paused.
-  return ctx.outstandingReuploads > 0
-    ? { to: "awaiting_applicant", clock: null }
-    : { to: "in_review", clock: "resume" };
+  return { to: from, clock: ctx.outstandingReuploads === 0 && ctx.clockPaused ? "resume" : null };
 }
 
-/**
- * Accept application: every document accepted and consent on file. The team
- * shares the file with the banks itself (0156), so accepting is its answer.
- */
-function acceptApplication(_from: MortgageStatus, ctx: TransitionContext): TransitionOutcome {
-  const required = ctx.requiredDocuments ?? 0;
-  if (required === 0 || (ctx.acceptedDocuments ?? 0) < required) {
-    throw new IllegalTransitionError("every document must be accepted first");
-  }
-  if (!ctx.consentOnFile) throw new IllegalTransitionError("consent is not on file");
-  return { to: "accepted", clock: "answer" };
-}
-
-/** Must match the table in `mortgage_transition()`: migration 0139, last redefined in 0156. */
+/** Must match the table in `mortgage_transition()`: migration 0139, last redefined in 0158. */
 export const TRANSITIONS: readonly Rule[] = [
-  // Fast Pre-Approval
-  { service: "pre_approval", from: ["new"], event: "first_document_opened", actor: "system", outcome: to("in_review") },
-  { service: "pre_approval", from: ["in_review"], event: "reupload_requested", actor: "staff", outcome: to("awaiting_applicant", "pause") },
-  // A second document flagged while the first is still out: the clock is already paused.
-  { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_requested", actor: "staff", outcome: to("awaiting_applicant") },
-  { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_fulfilled", actor: "applicant", outcome: leaveAwaiting },
-  { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_cancelled", actor: "staff", outcome: leaveAwaiting },
-  { service: "pre_approval", from: ["in_review"], event: "application_accepted", actor: "staff", outcome: acceptApplication },
-  // The outcome, recorded once the banks have answered the team.
-  { service: "pre_approval", from: ["accepted"], event: "pre_approved", actor: "staff", outcome: to("pre_approved", "stop") },
-  // D19: a file can be declined before it is accepted as well as after; it closes the file.
-  { service: "pre_approval", from: ["new", "in_review", "awaiting_applicant", "accepted"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
+  // Fast Pre-Approval. Opening a document doesn't move the file since 0158.
+  { service: "pre_approval", from: ["open"], event: "first_document_opened", actor: "system", outcome: to("open") },
+  { service: "pre_approval", from: ["open"], event: "reupload_requested", actor: "staff", outcome: pauseIfRunning },
+  { service: "pre_approval", from: ["open"], event: "reupload_fulfilled", actor: "applicant", outcome: resumeWhenDone },
+  { service: "pre_approval", from: ["open"], event: "reupload_cancelled", actor: "staff", outcome: resumeWhenDone },
+  // Any stage to any stage; onto a stage, a declined file is reopened.
+  { service: "pre_approval", from: ["open", "declined"], event: "stage_changed", actor: "staff", outcome: to("open", "stage") },
+  // D19: a file can be declined from any stage; it closes the file.
+  { service: "pre_approval", from: ["open"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
   // Mortgage Consultancy
   { service: "consultancy", from: ["new"], event: "contact_logged", actor: "staff", outcome: to("contacted") },
   // Later attempts are logged without moving the request.

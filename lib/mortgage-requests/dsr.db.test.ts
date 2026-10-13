@@ -13,8 +13,9 @@
  *   · erasure finds a subject by email and by mobile, exports what's held,
  *     then deletes the requests with everything hanging off them (the
  *     activity log and a secure link's unsent uploads included), objects
- *     first, and names the requests the team had accepted (it may have shared
- *     them with banks by hand, 0156);
+ *     first, and names the requests the team may have shared with banks by
+ *     hand (0156): open with the clock stopped by a stage that answers the
+ *     applicant (0158), or declined because no bank made an offer;
  *   · only the service role may do either, and the activity log stays
  *     append-only everywhere else.
  */
@@ -172,17 +173,28 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
     const phone = mobile();
     const first = await request({ email });
     const second = await request({ mobile: phone }); // another address, the same mobile
+    const third = await request({ email });
     const bystander = await request();
     const firstKeys = await files(first.id, "emirates-id.pdf");
     const secondKeys = await files(second.id);
+    const thirdKeys = await files(third.id);
     const bystanderKeys = await files(bystander.id);
 
-    // The team accepted the first request, so it may have shared it with banks.
-    await service.from("mortgage_documents").update({ state: "accepted" }).eq("request_id", first.id);
-    for (const [event, actor] of [["first_document_opened", "system"], ["application_accepted", "staff"]] as const) {
-      const { error: moveError } = await service.rpc("mortgage_transition", { p_request_id: first.id, p_event: event, p_actor_kind: actor });
+    const transition = async (id: string, event: string, data: Record<string, unknown>) => {
+      const { error: moveError } = await service.rpc("mortgage_transition", { p_request_id: id, p_event: event, p_actor_kind: "staff", p_data: data });
       expect(moveError).toBeNull();
-    }
+    };
+    const { data: stages } = await service.from("mortgage_stages").select("id, name");
+    const stage = Object.fromEntries(((stages ?? []) as { id: string; name: string }[]).map((s) => [s.name, s.id]));
+
+    // The team accepted the first request (a stage that stops the clock), so it may have shared it with banks.
+    await transition(first.id, "stage_changed", { stage_id: stage["In Review"] });
+    await transition(first.id, "stage_changed", { stage_id: stage["Accepted"] });
+    // The second it declined from review: never shared.
+    await transition(second.id, "declined", { decline_reason: "debt_burden", message: "No." });
+    // The third it accepted, then declined because no bank made an offer.
+    await transition(third.id, "stage_changed", { stage_id: stage["Accepted"] });
+    await transition(third.id, "declined", { decline_reason: "no_bank_offer", message: "No offer." });
 
     // A secure link whose upload was never sent: its draft doesn't hang off the request.
     const { data: draft, error: draftError } = await service
@@ -214,13 +226,15 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
     expect(unsent.error).toBeNull();
 
     const found = await findMortgageRequests(service, { email: ` ${email.toUpperCase()} `, mobile: phone.replace("+971", "0") });
-    expect(found.map((r) => r.id).sort()).toEqual([first.id, second.id].sort());
+    expect(found.map((r) => r.id).sort()).toEqual([first.id, second.id, third.id].sort());
 
     const exported = await mortgageExport(service, [first.id]);
     expect(exported).toHaveLength(1);
     expect(exported[0]).toMatchObject({
       reference: first.reference,
-      status: "accepted",
+      status: "open",
+      stage: "Accepted",
+      may_have_been_shared_with_banks: true,
       applicant: { email, full_name: "Test Applicant" },
       consents: [expect.objectContaining({ wording_version: "v0.1" })],
     });
@@ -229,13 +243,13 @@ describe.skipIf(!stack)("retention and erasure (local Supabase)", () => {
 
     const mem = memoryStorage();
     const erased = await eraseMortgageRequests({ db: service, storage: mem.storage }, found.map((r) => r.id));
-    expect(erased.requests.sort()).toEqual([first.reference, second.reference].sort());
-    expect(erased.files).toBe(firstKeys.length + secondKeys.length + 1);
+    expect(erased.requests.sort()).toEqual([first.reference, second.reference, third.reference].sort());
+    expect(erased.files).toBe(firstKeys.length + secondKeys.length + thirdKeys.length + 1);
     expect(erased.events).toBeGreaterThan(0);
-    expect(erased.accepted).toEqual([first.reference]);
-    expect(mem.removed.sort()).toEqual([...firstKeys, ...secondKeys, `f/${unsentId}`].sort());
+    expect(erased.accepted.sort()).toEqual([first.reference, third.reference].sort());
+    expect(mem.removed.sort()).toEqual([...firstKeys, ...secondKeys, ...thirdKeys, `f/${unsentId}`].sort());
 
-    for (const id of [first.id, second.id]) {
+    for (const id of [first.id, second.id, third.id]) {
       expect((await service.from("mortgage_requests").select("id").eq("id", id)).data).toEqual([]);
       expect((await service.from("mortgage_events").select("id").eq("request_id", id)).data).toEqual([]);
       expect((await service.from("mortgage_consents").select("id").eq("request_id", id)).data).toEqual([]);

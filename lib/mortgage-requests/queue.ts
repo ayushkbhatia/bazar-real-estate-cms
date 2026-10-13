@@ -6,34 +6,18 @@
 
 import type { SlaStatus } from "./sla";
 
-export const QUEUE_TABS = ["open", "new", "in_review", "awaiting", "accepted", "contacted_booked", "closed"] as const;
+/**
+ * Open or closed. Where an open Fast Pre-Approval stands is its stage (0158),
+ * which the queue filters on instead of a tab per status.
+ */
+export const QUEUE_TABS = ["open", "closed"] as const;
 export type QueueTab = (typeof QUEUE_TABS)[number];
 
-export type RequestStatus =
-  | "new"
-  | "in_review"
-  | "awaiting_applicant"
-  | "accepted"
-  | "pre_approved"
-  | "declined"
-  | "contacted"
-  | "consultation_booked"
-  | "completed";
+export type RequestStatus = "open" | "declined" | "new" | "contacted" | "consultation_booked" | "completed";
 
-export const CLOSED_STATUSES: readonly RequestStatus[] = ["pre_approved", "declined", "completed"];
-
-const TAB_STATUSES: Record<Exclude<QueueTab, "open" | "closed">, readonly RequestStatus[]> = {
-  new: ["new"],
-  in_review: ["in_review"],
-  awaiting: ["awaiting_applicant"],
-  accepted: ["accepted"],
-  contacted_booked: ["contacted", "consultation_booked"],
-};
-
-export function inTab(status: RequestStatus, tab: QueueTab): boolean {
-  if (tab === "open") return !CLOSED_STATUSES.includes(status);
-  if (tab === "closed") return CLOSED_STATUSES.includes(status);
-  return TAB_STATUSES[tab].includes(status);
+/** A request is closed when it is declined or completed, or sits on a closing stage (its `closed_at`). */
+export function inTab(row: { closed: boolean }, tab: QueueTab): boolean {
+  return tab === "closed" ? row.closed : !row.closed;
 }
 
 export type ServiceFilter = "all" | "pre_approval" | "consultancy";
@@ -51,13 +35,15 @@ export type QueueParams = {
   page: number;
   /** "Show only these": the at-risk files alone. */
   risk: boolean;
-  /** The list (C1 as designed) or the board, its columns the statuses (Bazar, 9 Oct 2026). */
+  /** The list (C1 as designed) or the board, its columns the stages (Bazar, 9 and 13 Oct 2026). */
   view: QueueView;
+  /** One Fast Pre-Approval stage's files only (a stage id), or every request. */
+  stage: string | null;
 };
 
 export type QueueView = "list" | "board";
 
-export const DEFAULT_QUEUE_PARAMS: QueueParams = { tab: "open", service: "all", owner: "anyone", page: 1, risk: false, view: "list" };
+export const DEFAULT_QUEUE_PARAMS: QueueParams = { tab: "open", service: "all", owner: "anyone", page: 1, risk: false, view: "list", stage: null };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -71,6 +57,7 @@ export function parseQueueParams(sp: Record<string, string | string[] | undefine
   const service = one("service");
   const owner = one("owner");
   const page = Number(one("page"));
+  const stage = one("stage");
   return {
     tab: QUEUE_TABS.includes(tab as QueueTab) ? (tab as QueueTab) : "open",
     service: SERVICE_FILTERS.includes(service as ServiceFilter) ? (service as ServiceFilter) : "all",
@@ -78,6 +65,7 @@ export function parseQueueParams(sp: Record<string, string | string[] | undefine
     page: Number.isInteger(page) && page > 1 ? page : 1,
     risk: one("risk") === "1",
     view: one("view") === "board" ? "board" : "list",
+    stage: stage && UUID.test(stage) ? stage : null,
   };
 }
 
@@ -90,6 +78,7 @@ export function queueQuery(params: QueueParams): string {
   if (params.risk) out.set("risk", "1");
   if (params.page > 1) out.set("page", String(params.page));
   if (params.view === "board") out.set("view", "board");
+  if (params.stage) out.set("stage", params.stage);
   const s = out.toString();
   return s ? `?${s}` : "";
 }

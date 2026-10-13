@@ -29,7 +29,8 @@ export const DECLINE_REASONS = [
 export type DeclineReason = (typeof DECLINE_REASONS)[number];
 
 /** Where a file can be declined from (state.ts has the same rule). */
-export const DECLINABLE: readonly MortgageStatus[] = ["new", "in_review", "awaiting_applicant", "accepted"];
+/** A Fast Pre-Approval is declined from any stage while it is open (0158). */
+export const DECLINABLE: readonly MortgageStatus[] = ["open"];
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
 
@@ -48,9 +49,13 @@ export function isDeclineReason(value: unknown): value is DeclineReason {
   return typeof value === "string" && (DECLINE_REASONS as readonly string[]).includes(value);
 }
 
-/** The reasons a file in `status` can be declined for, in the order the form lists them. */
-export function declineReasonsFor(status: MortgageStatus): readonly DeclineReason[] {
-  return status === "accepted" ? DECLINE_REASONS : DECLINE_REASONS.filter((r) => r !== "no_bank_offer");
+/**
+ * The reasons a file can be declined for, in the order the form lists them.
+ * "No bank made an offer" only once the team has answered (a stage stopped
+ * the clock): only then is the file with the banks.
+ */
+export function declineReasonsFor(answered: boolean): readonly DeclineReason[] {
+  return answered ? DECLINE_REASONS : DECLINE_REASONS.filter((r) => r !== "no_bank_offer");
 }
 
 /** The reason as the team reads it (the form, C2's decision card, the activity log). */

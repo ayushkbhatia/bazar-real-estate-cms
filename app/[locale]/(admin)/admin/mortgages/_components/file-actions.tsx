@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState, useTransition, type KeyboardEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Ban, Calendar, Check, Send } from "lucide-react";
+import { ArrowRightLeft, Ban, Calendar, Check, ChevronDown, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { ActivityLine } from "@/lib/mortgage-requests/activity";
 import { declineMessage, declineReasonLabel, declineReasonsFor, type DeclineReason } from "@/lib/mortgage-requests/decline";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
-import type { MortgageStatus } from "@/lib/mortgage-requests/state";
 import type { TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
 import type { Slot } from "@/lib/mortgage-requests/slots";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
@@ -33,7 +39,7 @@ import {
   sendPreapprovalInvite,
   type MortgageActionResult,
 } from "../_actions";
-import { acceptApplication, declineApplication, recordPreApproval, withdrawConsent } from "../_outcome-actions";
+import { declineApplication, moveStage, withdrawConsent } from "../_outcome-actions";
 import { cancelReupload } from "../_review-actions";
 import { ActivityList, Card, roleLabel } from "./ui";
 
@@ -945,7 +951,7 @@ export function DeclineFields({
  */
 export function DeclineButton({
   target,
-  status,
+  answered,
   firstName,
   myFirstName,
   elapsed,
@@ -953,7 +959,8 @@ export function DeclineButton({
   canAct,
 }: {
   target: Target;
-  status: MortgageStatus;
+  /** The team has answered (a stage stopped the clock): "no bank made an offer" is offered. */
+  answered: boolean;
   firstName: string;
   myFirstName: string;
   /** The clock's elapsed time, "8h 41m" (slaStatus), or null with no clock. */
@@ -980,7 +987,7 @@ export function DeclineButton({
             <DialogTitle>{t("decline.title", { firstName })}</DialogTitle>
             <DialogDescription>{t("decline.lede", { firstName })}</DialogDescription>
           </DialogHeader>
-          <DeclineFields draft={draft} reasons={declineReasonsFor(status)} firstName={firstName} pending={pending} />
+          <DeclineFields draft={draft} reasons={declineReasonsFor(answered)} firstName={firstName} pending={pending} />
           <p className="rounded-lg bg-bz-surface-2 px-3 py-2.5 text-[11.5px] leading-[1.5] text-bz-ink-2">
             {elapsed ? t("decline.note", { elapsed }) : t("decline.noteNoClock")}
             {awaiting ? <> {t("decline.noteAwaiting")}</> : null}
@@ -1016,126 +1023,50 @@ export function DeclineButton({
 }
 
 /**
- * "Accept application" (C2): enabled at every document accepted with consent
- * on file. It stops the 24-hour clock and leaves the file open as Accepted;
- * the team shares it with the banks itself and later records the outcome.
+ * "Move to stage" (C2, 0158): every stage the client keeps, the current one
+ * ticked. A move happens at once — any stage to any other, a declined or
+ * closed file included (reopened there) — and the file page re-reads.
  */
-export function AcceptApplicationButton({
-  enabled,
-  why,
+export function StageMenu({
   target,
-  firstName,
-  documents,
-  consentGiven,
-  defaultOpen,
+  stages,
+  current,
+  declined,
 }: {
-  enabled: boolean;
-  why: string;
   target: Target;
-  firstName: string;
-  documents: number;
-  consentGiven: string | null;
-  /** Start open (the queue board's In review → Accepted drop), when it can be used. */
-  defaultOpen?: boolean;
+  stages: readonly { id: string; name: string }[];
+  current: string | null;
+  declined: boolean;
 }) {
   const { pending, run } = useAction();
-  const [open, setOpen] = useState(() => !!defaultOpen && enabled);
   return (
-    <>
-      <Reason why={enabled ? null : why}>
-        <Button className="text-[13px]" disabled={!enabled} onClick={() => setOpen(true)} aria-describedby={enabled ? undefined : "accept-why"}>
-          <Check strokeWidth={2} />
-          {t("c2.action.acceptApplication")}
+    // Not modal: a modal menu hides the page from assistive tech while focus can still reach it (axe aria-hidden-focus).
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button className="text-[13px]" disabled={pending}>
+          <ArrowRightLeft strokeWidth={1.8} />
+          {declined ? t("stage.reopen") : t("stage.move")}
+          <ChevronDown strokeWidth={1.8} />
         </Button>
-      </Reason>
-      {enabled ? null : (
-        <span id="accept-why" className="sr-only">
-          {why}
-        </span>
-      )}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>{t("c2.accept.title", { firstName })}</DialogTitle>
-            <DialogDescription>{t("c2.accept.lede", { count: documents })}</DialogDescription>
-          </DialogHeader>
-          {consentGiven ? <p className="text-[11.5px] text-bz-muted">{t("c2.accept.consent", { given: consentGiven })}</p> : null}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button
-              disabled={pending}
-              onClick={() => run(() => acceptApplication({ ...target, firstName }), (r) => r.ok && setOpen(false))}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[220px]">
+        <DropdownMenuLabel className="text-[11px] font-normal text-bz-muted">{t("stage.menuLabel")}</DropdownMenuLabel>
+        {stages.map((s, i) => {
+          const here = !declined && s.id === current;
+          return (
+            <DropdownMenuItem
+              key={s.id}
+              disabled={here || pending}
+              onSelect={() => run(() => moveStage({ ...target, stageId: s.id }))}
+              className="text-[13px]"
             >
-              <Check strokeWidth={2} />
-              {t("c2.accept.cta")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-/**
- * "Mark pre-approved" (C2, on an accepted file): a bank said yes. Closes the
- * file with an optional note for the team; nothing is sent to the applicant.
- */
-export function RecordPreApprovalButton({
-  target,
-  firstName,
-  defaultOpen,
-}: {
-  target: Target;
-  firstName: string;
-  /** Start open (the board's Accepted → Pre-approved drop). */
-  defaultOpen?: boolean;
-}) {
-  const { pending, run } = useAction();
-  const [open, setOpen] = useState(() => !!defaultOpen);
-  const [note, setNote] = useState("");
-  const noteId = useId();
-  return (
-    <>
-      <Button className="text-[13px]" onClick={() => setOpen(true)}>
-        <Check strokeWidth={2} />
-        {t("c2.action.markPreApproved")}
-      </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>{t("c2.preApproved.title", { firstName })}</DialogTitle>
-            <DialogDescription>{t("c2.preApproved.lede", { firstName })}</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor={noteId} className="text-[12px] font-medium text-bz-ink-2">
-              {t("c2.preApproved.noteLabel")}
-            </label>
-            <textarea
-              id={noteId}
-              value={note}
-              maxLength={1000}
-              rows={3}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t("c2.preApproved.notePlaceholder")}
-              className="rounded-md border border-bz-border bg-bz-surface px-3 py-2 text-[13px]"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button
-              disabled={pending}
-              onClick={() => run(() => recordPreApproval({ ...target, note, firstName }), (r) => r.ok && setOpen(false))}
-            >
-              <Check strokeWidth={2} />
-              {t("c2.preApproved.cta")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+              <span className="mono w-4 text-[11px] text-bz-muted">{i + 1}</span>
+              <span className="flex-1">{s.name}</span>
+              {here ? <Check size={14} aria-hidden /> : null}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

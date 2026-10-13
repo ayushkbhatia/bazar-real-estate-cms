@@ -21,6 +21,8 @@ Then **Phase 1**: schema and domain rules. Every screen depends on them, and the
 
 \*One developer working with Claude Code. About 4–5 weeks in total, if the platform foundations below already exist.
 
+> **Amended 13 Oct 2026 (0157, 0158): mortgage stages.** After the phases, at the client's request, a Fast Pre-Approval's progress became **stages** the client keeps in Pages & blocks → Mortgage stages (`/admin/pages/mortgage-stages`): its status is only `open` or `declined`, and the team moves a file freely between stages from C2 or the board. The phases below are kept as the plan they were; where they describe In review, Awaiting applicant, Accept application or Pre-approved as statuses, read PROGRESS.md ("Mortgage stages · 13 Oct 2026").
+
 **Prerequisites from the platform build** (`design_handoff_bazar_website_cms/docs/11`, Phase 0): auth with staff roles, Postgres + migrations, object storage, a job runner, an email sender, and the CMS shell. If any are missing, Phase 0 will list them. Build them first.
 
 ## How to run each phase in Claude Code
@@ -244,11 +246,13 @@ Tests: expired and revoked links, the OTP attempt limit, access to another reque
 
 **Done when:** Karim's seeded file completes the loop, and time remaining after resume equals time remaining at pause.
 
+> **Amended 13 Oct 2026 (0158).** The owner's first open no longer moves the file, and there is no Awaiting applicant: a re-upload request keeps the file on its stage and only pauses a running clock, and the applicant's re-upload resumes it. C2's Accept application is gone; the team moves the file to a stage instead.
+
 ---
 
 ## Phase 6 — Partner banks & decision (C5)
 
-> **Amended 13 Oct 2026 (0156).** Built on 29 Sep, then removed at the owner's request: the CMS is a light CRM and the team shares applications with its banks by hand. There is no banks page, no package or reminder, no C5 and no pre-approval email. Accept application (C2) needs every document accepted and consent on file, stops the clock and moves the file to Accepted (formerly With banks); "Mark pre-approved" (an optional team note, nothing sent) or Decline closes it. This phase is kept as the plan it was; PROGRESS.md (13 Oct 2026) has what replaced it.
+> **Amended 13 Oct 2026 (0156).** Built on 29 Sep, then removed at the owner's request: the CMS is a light CRM and the team shares applications with its banks by hand. There is no banks page, no package or reminder, no C5 and no pre-approval email. Accept application (C2) needs every document accepted and consent on file, stops the clock and moves the file to Accepted (formerly With banks); "Mark pre-approved" (an optional team note, nothing sent) or Decline closes it. This phase is kept as the plan it was; PROGRESS.md (13 Oct 2026) has what replaced it. *Later the same day (0158), Accept application and Mark pre-approved were removed too: the file moves between the client's stages (Accepted, Pre-Approved, … Disbursed) with no checks, and Decline stays beside them.*
 
 **Goal:** accepted files go to banks, responses are recorded, and the applicant hears back within the 24 hours.
 

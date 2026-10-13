@@ -69,11 +69,8 @@ export function Pill({
 }
 
 export const STATUS: Record<RequestStatus, { key: string; tone: Tone }> = {
+  open: { key: "status.open", tone: "accent" },
   new: { key: "status.new", tone: "accent" },
-  in_review: { key: "status.inReview", tone: "warn" },
-  awaiting_applicant: { key: "status.awaitingApplicant", tone: "muted" },
-  accepted: { key: "status.accepted", tone: "info" },
-  pre_approved: { key: "status.preApproved", tone: "success" },
   declined: { key: "status.declined", tone: "danger" },
   contacted: { key: "status.contacted", tone: "warn" },
   consultation_booked: { key: "status.consultationBooked", tone: "info" },
@@ -82,7 +79,28 @@ export const STATUS: Record<RequestStatus, { key: string; tone: Tone }> = {
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
 
-export function StatusPill({ status, small }: { status: RequestStatus; small?: boolean }) {
+/**
+ * Where a request stands: an open Fast Pre-Approval by its stage's name (a
+ * closing stage in green), anything else by its status.
+ */
+export function StatusPill({
+  status,
+  stage,
+  closed,
+  small,
+}: {
+  status: RequestStatus;
+  stage?: { name: string } | null;
+  closed?: boolean;
+  small?: boolean;
+}) {
+  if (status === "open" && stage) {
+    return (
+      <Pill tone={closed ? "success" : "accent"} dot small={small}>
+        {stage.name}
+      </Pill>
+    );
+  }
   const s = STATUS[status];
   return (
     <Pill tone={s.tone} dot small={small}>

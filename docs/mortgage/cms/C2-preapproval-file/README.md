@@ -13,6 +13,8 @@
 
 > **Amended 13 Oct 2026 (0156): the light CRM.** There is no bank step. "Accept application" opens a confirmation (`c2.accept.*`) and, once every document is accepted and consent is on file, moves the file to **Accepted** (was With banks): the 24-hour clock stops, the file stays open, and the team shares it with its banks by hand. On an accepted file C2 offers **"Mark pre-approved"** (`c2.preApproved.*`: an optional note for the team, nothing sent to the applicant) and Decline, which close it. C5 is gone. The stage rail reads New · In review · Accepted · Pre-approved.
 
+> **Amended 13 Oct 2026 (0158): stages.** "Accept application" and "Mark pre-approved" are gone. The header has **"Move to stage"** (`stage.*`), a menu of the client's stages (Pages & blocks → Mortgage stages) for the owner or the Head: any stage, forwards or back, no document or consent checks; on a declined file it reads "Reopen at a stage". The **stage rail** is the client's stages with the file's own current; a declined file keeps the stage it was declined from. The header pill shows the stage name. Opening the first document no longer moves the file, and there is no Awaiting applicant: a re-upload request pauses the clock and the file stays on its stage. Decline stays, from any stage; "No bank made an offer" only once a stage has stopped the clock. The Accept rules in the build notes and checklist below are the design that was.
+
 ## Purpose
 The home page of one Fast Pre-Approval application: where it is, how long is left, which documents are accepted, who owns it, the applicant's consent, and what has happened so far.
 
@@ -135,11 +137,11 @@ Verbatim from the design. `{braces}` are runtime values; `<b>` marks bold (00-fo
 - **Contact buttons:** Call is a `tel:` link, WhatsApp opens the team's WhatsApp tool, Email is a `mailto:`. Logging these for pre-approvals isn't designed.
 - **Activity** shows the latest five events. "View all" opens the full log, which isn't designed.
 - After a re-upload, the new files appear on the document's row. Marking which files are new isn't designed; proposal: a small "New" pill on files from the latest round.
-- The first time the owner opens a document, the server moves the request from New to In review.
+- The first time the owner opens a document, the server moves the request from New to In review. *(Since 0158 it doesn't: the team moves the file.)*
 
 ## Data and actions
 - `getFile(reference)` → request, `slaStatus()`, documents (state, files, accepted by and at), consent, owner, the latest five events and the event count.
-- Actions: `reassignOwner` (head), `editApplicant`, `requestReupload` (Phase 5), `acceptApplicationAndSend(bankIds)` (Phase 6; since 0156 `acceptApplication`, `recordPreApproval(note?)` and `declineApplication`, in `_outcome-actions.ts`).
+- Actions: `reassignOwner` (head), `editApplicant`, `requestReupload` (Phase 5), `acceptApplicationAndSend(bankIds)` (Phase 6; since 0156 `acceptApplication`, `recordPreApproval(note?)` and `declineApplication`, in `_outcome-actions.ts`; since 0158 `moveStage(stageId)` and `declineApplication`).
 - Activity lines are templates filled from `mortgage_events` (see the copy deck).
 
 ## Permissions
@@ -151,7 +153,7 @@ Owners and the Head of mortgages can act. Other advisers see the page with actio
 
 ## Edge cases
 - A file with an unscanned upload: the file tag shows a scanning state, and opening it is blocked (not designed).
-- Consent withdrawn (DSR): "Accept application" stays disabled. Copy needed.
+- Consent withdrawn (DSR): "Accept application" stays disabled. Copy needed. *(Since 0158 there is no Accept and stage moves don't check consent; the Consent card shows the withdrawal.)*
 - Someone else accepts a document while you're on the page: it updates on focus or after your next action.
 
 ## Acceptance criteria

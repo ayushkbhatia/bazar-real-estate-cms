@@ -61,7 +61,7 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
     db
       .from("mortgage_requests")
       .select(
-        "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, property_ref, locale, site_locale, submitted_at, closed_at, decision, decline_reason, decision_message, decided_at",
+        "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, property_ref, locale, site_locale, submitted_at, closed_at, sla_stopped_at, decision, decline_reason, decision_message, decided_at, stage:mortgage_stages(name)",
       )
       .in("id", list),
     db.from("mortgage_consents").select("request_id, kind, wording_version, wording_text, given_at, withdrawn_at, ip, user_agent").in("request_id", list),
@@ -91,6 +91,8 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
         reference: r.reference,
         service: r.service,
         status: r.status,
+        stage: (r.stage as { name?: string } | null)?.name ?? null,
+        may_have_been_shared_with_banks: reachedBanks({ status: r.status, decline_reason: r.decline_reason, sla_stopped_at: r.sla_stopped_at }),
         submitted_at: r.submitted_at,
         closed_at: r.closed_at,
         applicant: {
@@ -152,9 +154,13 @@ export type MortgageErasure = {
 
 const NOTHING: MortgageErasure = { requests: [], files: 0, events: 0, accepted: [] };
 
-/** Whether the team got as far as sharing the request with banks: accepted, or an outcome after it. */
-export function reachedBanks(r: { status: unknown; decline_reason?: unknown }): boolean {
-  return r.status === "accepted" || r.status === "pre_approved" || (r.status === "declined" && r.decline_reason === "no_bank_offer");
+/**
+ * Whether the team may have shared the request with banks: it was answered (a
+ * stage stopped its clock, 0158) and is still open, or it was declined
+ * because no bank made an offer.
+ */
+export function reachedBanks(r: { status: unknown; decline_reason?: unknown; sla_stopped_at?: unknown }): boolean {
+  return (r.status === "open" && !!r.sla_stopped_at) || (r.status === "declined" && r.decline_reason === "no_bank_offer");
 }
 
 /**
@@ -169,10 +175,10 @@ export async function eraseMortgageRequests(
   if (ids.length === 0) return NOTHING;
   const { data: rows, error: readError } = await deps.db
     .from("mortgage_requests")
-    .select("reference, status, decline_reason")
+    .select("reference, status, decline_reason, sla_stopped_at")
     .in("id", [...ids]);
   if (readError) throw new Error(`erasure read failed: ${readError.code}`);
-  const accepted = ((rows ?? []) as { reference: string; status: string; decline_reason: string | null }[])
+  const accepted = ((rows ?? []) as { reference: string; status: string; decline_reason: string | null; sla_stopped_at: string | null }[])
     .filter(reachedBanks)
     .map((r) => r.reference)
     .sort();

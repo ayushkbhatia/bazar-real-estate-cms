@@ -68,7 +68,7 @@ export async function getViewer(
   if (!/^BZM-\d{2}-\d{4,}$/.test(reference)) return null;
   const { data: found, error } = await db
     .from("mortgage_requests")
-    .select("id, reference, service, status, full_name, updated_at, submitted_at, employment_type, owner_staff_id")
+    .select("id, reference, service, status, full_name, updated_at, submitted_at, employment_type, owner_staff_id, closed_at")
     .eq("reference", reference)
     .maybeSingle();
   if (error) throw new Error(`request read failed: ${error.message}`);
@@ -82,6 +82,7 @@ export async function getViewer(
     submitted_at: string;
     employment_type: keyof typeof DOCUMENT_SETS;
     owner_staff_id: string | null;
+    closed_at: string | null;
   } | null;
   if (!r || r.service !== "pre_approval" || !DOCUMENT_SETS[r.employment_type].includes(kind)) return null;
 
@@ -159,7 +160,8 @@ export async function getViewer(
   const open = (reuploads.data as { id: string; document_id: string; reason: string; message: string; requested_at: string }[]).find(
     (u) => u.document_id === doc.id,
   );
-  const closed = r.status === "accepted" || r.status === "pre_approved" || r.status === "declined";
+  // Documents are reviewed while the file is open and not on a closing stage (0158).
+  const closed = r.status === "declined" || r.closed_at !== null;
 
   return {
     request: {

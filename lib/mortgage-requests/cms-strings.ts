@@ -18,10 +18,6 @@ import { createTranslator } from "next-intl";
 export const CMS_MESSAGES = {
   "activity": {
     "accepted": "{actor} accepted {document}",
-    "applicationAccepted": {
-      "sub": "Ready to share with the partner banks",
-      "title": "{actor} accepted the application"
-    },
     "assigned": {
       "invite": "Sent the pre-approval link",
       "roundRobin": "Round-robin · mortgage team",
@@ -75,6 +71,11 @@ export const CMS_MESSAGES = {
     "reuploadReceived": "{firstName} sent {document}",
     "reuploadRequested": "{actor} asked for {document} again",
     "reviewStarted": "{actor} started the review from the board",
+    "stageChanged": {
+      "sub": "From {stage}",
+      "title": "{actor} moved it to {stage}"
+    },
+    "stageReopened": "{actor} reopened it at {stage}",
     "statusChanged": "Moved to {status}",
     "submitted": {
       "sub": "Confirmation shown · email sent",
@@ -88,20 +89,10 @@ export const CMS_MESSAGES = {
     "closedMore": "Newest {shown} of {total}",
     "column": "{status}, {count, plural, one {# file} other {# files}}",
     "dialog": {
-      "accept": {
-        "cta": "Open the file to accept",
-        "lede": "Every document must be accepted and consent on file. You accept on the file, beside the documents.",
-        "title": "Accept {firstName}'s application"
-      },
       "book": {
         "cta": "Open the file to book",
         "lede": "Choose the adviser, the format and the slot on {firstName}'s file. It moves to Consultation booked when you book.",
         "title": "Book {firstName}'s consultation"
-      },
-      "cancel": {
-        "cta": "Cancel the request for {document}",
-        "lede": "{firstName}'s file goes back to In review, and its clock runs again, once no re-upload request is left open.",
-        "title": "Cancel the re-upload request?"
       },
       "contact": {
         "lede": "Logging the attempt moves {firstName}'s request to Contacted.",
@@ -111,39 +102,19 @@ export const CMS_MESSAGES = {
         "cta": "Mark it held",
         "lede": "{firstName}'s request moves to Completed.",
         "title": "Was the consultation held?"
-      },
-      "loading": "Reading the file…",
-      "preApprove": {
-        "cta": "Mark pre-approved",
-        "lede": "Record that a partner bank pre-approved {firstName}. This closes the file. Nothing is sent: tell {firstName} yourself.",
-        "title": "Mark {firstName} pre-approved?"
-      },
-      "reupload": {
-        "lede": "Choose the document. You write the reason and the message on the next screen, and the file moves to Awaiting applicant when you send it.",
-        "requested": "Already requested",
-        "title": "Which of {firstName}'s documents needs a re-upload?"
       }
-    },
-    "done": {
-      "startReview": "{reference} is in review."
     },
     "empty": "No files",
     "hint": "Drag a card to another column, or use its Move menu.",
     "illegal": {
       "backwards": "A file can't go back a stage. Its activity shows what happened.",
       "closed": "A closed file stays closed.",
-      "needsAccept": "Accept the application first: a pre-approval comes after it is shared with the banks.",
       "needsBooking": "Book the consultation first.",
-      "needsContact": "Log a contact first: a request is contacted before it's booked.",
-      "needsReview": "Review the documents first: every one must be accepted before the application is.",
-      "reuploadOpen": "A re-upload request is still open. Cancel it, or wait for the applicant, first."
+      "needsContact": "Log a contact first: a request is contacted before it's booked."
     },
     "lane": "{service} · {count, plural, one {# open} other {# open}}",
     "move": "Move",
-    "moveTo": "Move {reference} to",
-    "refused": {
-      "startReview": "Only a new Fast Pre-Approval can start its review."
-    }
+    "moveTo": "Move {reference} to"
   },
   "c1": {
     "aria": {
@@ -153,6 +124,7 @@ export const CMS_MESSAGES = {
       "search": "Search requests",
       "service": "Service",
       "sort": "Sort order",
+      "stage": "Stage",
       "tabs": "Request status"
     },
     "breached": "{overdue} overdue",
@@ -213,16 +185,14 @@ export const CMS_MESSAGES = {
     "sort": {
       "promiseDue": "Sort: promise due"
     },
+    "stage": {
+      "all": "All stages",
+      "option": "{stage} ({count})"
+    },
     "tab": {
-      "accepted": "Accepted",
-      "awaiting": "Awaiting applicant",
       "closed": "Closed",
-      "contactedBooked": "Contacted & booked",
-      "inReview": "In review",
-      "new": "New",
       "open": "Open"
     },
-    "tabFooter": "Showing {shown} of {total} requests · sorted by promise due",
     "title": "Mortgage requests",
     "view": {
       "board": "Board",
@@ -238,19 +208,8 @@ export const CMS_MESSAGES = {
     }
   },
   "c2": {
-    "accept": {
-      "consent": "Consent to share with partner banks · {given}",
-      "cta": "Accept application",
-      "done": "{firstName}'s application is accepted.",
-      "lede": "All {count} documents are accepted. Accepting stops the 24-hour clock; you then share the file with the partner banks yourself and record the outcome here.",
-      "needsConsent": "Consent isn't on file, so the application can't be accepted.",
-      "needsDocuments": "Accept every document first.",
-      "title": "Accept {firstName}'s application?"
-    },
     "action": {
-      "acceptApplication": "Accept application",
       "decline": "Decline",
-      "markPreApproved": "Mark pre-approved",
       "requestDocuments": "Request documents"
     },
     "activity": {
@@ -283,7 +242,6 @@ export const CMS_MESSAGES = {
       "by": "{name} · {when}",
       "declined": "Declined",
       "message": "Message sent to {firstName}",
-      "note": "Note",
       "title": "Decision"
     },
     "docs": {
@@ -298,14 +256,6 @@ export const CMS_MESSAGES = {
     "owner": {
       "reassign": "Reassign",
       "title": "Owner"
-    },
-    "preApproved": {
-      "cta": "Mark pre-approved",
-      "done": "{firstName} is marked pre-approved.",
-      "lede": "Record that a partner bank pre-approved {firstName}. This closes the file. Nothing is sent: tell {firstName} yourself.",
-      "noteLabel": "Note for the team (optional)",
-      "notePlaceholder": "Which bank, the amount, anything worth keeping",
-      "title": "Mark {firstName} pre-approved"
     },
     "request": {
       "continue": "Continue",
@@ -705,16 +655,19 @@ export const CMS_MESSAGES = {
     "saved": "Saved.",
     "title": "Mortgage settings"
   },
+  "stage": {
+    "menuLabel": "Move to stage",
+    "move": "Move to stage",
+    "moved": "{reference} moved to {stage}.",
+    "reopen": "Reopen at a stage"
+  },
   "status": {
-    "accepted": "Accepted",
-    "awaitingApplicant": "Awaiting applicant",
     "completed": "Completed",
     "consultationBooked": "Consultation booked",
     "contacted": "Contacted",
     "declined": "Declined",
-    "inReview": "In review",
     "new": "New",
-    "preApproved": "Pre-approved"
+    "open": "Open"
   },
   "viewer": {
     "breadcrumbs": "Mortgage requests › {reference} · {applicant} › Documents",
@@ -740,8 +693,6 @@ export const CMS_MESSAGES = {
 
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
-  "activity.applicationAccepted.sub",
-  "activity.applicationAccepted.title",
   "activity.assigned.invite",
   "activity.atRisk",
   "activity.booked.sub",
@@ -771,51 +722,37 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "activity.reuploadReceived",
   "activity.reuploadRequested",
   "activity.reviewStarted",
+  "activity.stageChanged.sub",
+  "activity.stageChanged.title",
+  "activity.stageReopened",
   "activity.statusChanged",
   "board.closedAll",
   "board.closedMore",
   "board.column",
-  "board.dialog.accept.cta",
-  "board.dialog.accept.lede",
-  "board.dialog.accept.title",
   "board.dialog.book.cta",
   "board.dialog.book.lede",
   "board.dialog.book.title",
-  "board.dialog.cancel.cta",
-  "board.dialog.cancel.lede",
-  "board.dialog.cancel.title",
   "board.dialog.contact.lede",
   "board.dialog.contact.title",
   "board.dialog.held.cta",
   "board.dialog.held.lede",
   "board.dialog.held.title",
-  "board.dialog.loading",
-  "board.dialog.preApprove.cta",
-  "board.dialog.preApprove.lede",
-  "board.dialog.preApprove.title",
-  "board.dialog.reupload.lede",
-  "board.dialog.reupload.requested",
-  "board.dialog.reupload.title",
-  "board.done.startReview",
   "board.empty",
   "board.hint",
   "board.illegal.backwards",
   "board.illegal.closed",
-  "board.illegal.needsAccept",
   "board.illegal.needsBooking",
   "board.illegal.needsContact",
-  "board.illegal.needsReview",
-  "board.illegal.reuploadOpen",
   "board.lane",
   "board.move",
   "board.moveTo",
-  "board.refused.startReview",
   "c1.aria.next",
   "c1.aria.owner",
   "c1.aria.prev",
   "c1.aria.search",
   "c1.aria.service",
   "c1.aria.sort",
+  "c1.aria.stage",
   "c1.aria.tabs",
   "c1.breached",
   "c1.claim",
@@ -834,8 +771,8 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.owner.unassigned",
   "c1.risk.more",
   "c1.risk.showAll",
-  "c1.tab.accepted",
-  "c1.tabFooter",
+  "c1.stage.all",
+  "c1.stage.option",
   "c1.view.board",
   "c1.view.label",
   "c1.view.list",
@@ -844,15 +781,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.website.en",
   "c1.website.enLabel",
   "c1.website.unknown",
-  "c2.accept.consent",
-  "c2.accept.cta",
-  "c2.accept.done",
-  "c2.accept.lede",
-  "c2.accept.needsConsent",
-  "c2.accept.needsDocuments",
-  "c2.accept.title",
   "c2.action.decline",
-  "c2.action.markPreApproved",
   "c2.activity.showLatest",
   "c2.consent.withdraw.body",
   "c2.consent.withdraw.button",
@@ -865,14 +794,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c2.decision.by",
   "c2.decision.declined",
   "c2.decision.message",
-  "c2.decision.note",
   "c2.decision.title",
-  "c2.preApproved.cta",
-  "c2.preApproved.done",
-  "c2.preApproved.lede",
-  "c2.preApproved.noteLabel",
-  "c2.preApproved.notePlaceholder",
-  "c2.preApproved.title",
   "c2.request.continue",
   "c2.request.label",
   "c2.request.none",
@@ -1035,7 +957,11 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "settings.save",
   "settings.saved",
   "settings.title",
-  "status.accepted",
+  "stage.menuLabel",
+  "stage.move",
+  "stage.moved",
+  "stage.reopen",
+  "status.open",
   "viewer.loadFailed",
   "viewer.noFiles",
   "viewer.required",

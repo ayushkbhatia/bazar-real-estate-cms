@@ -16,28 +16,24 @@ import {
   type TransitionEvent,
 } from "./state";
 
-const READY_TO_ACCEPT: TransitionContext = {
-  acceptedDocuments: 4,
-  requiredDocuments: 4,
-  consentOnFile: true,
-};
+const RUNNING: TransitionContext = { clockRunning: true };
+const PAUSED: TransitionContext = { clockPaused: true, outstandingReuploads: 0 };
 
-// Every allowed move in SPEC §2.4, after creation.
+// Every allowed move in SPEC §2.4 as amended by 0158, after creation.
 const ALLOWED: [MortgageService, MortgageStatus, TransitionEvent, ActorKind, TransitionContext, MortgageStatus, ClockEffect][] = [
-  ["pre_approval", "new", "first_document_opened", "system", {}, "in_review", null],
-  ["pre_approval", "in_review", "reupload_requested", "staff", {}, "awaiting_applicant", "pause"],
-  ["pre_approval", "awaiting_applicant", "reupload_requested", "staff", {}, "awaiting_applicant", null],
-  ["pre_approval", "awaiting_applicant", "reupload_fulfilled", "applicant", { outstandingReuploads: 0 }, "in_review", "resume"],
-  ["pre_approval", "awaiting_applicant", "reupload_fulfilled", "applicant", { outstandingReuploads: 1 }, "awaiting_applicant", null],
-  ["pre_approval", "awaiting_applicant", "reupload_cancelled", "staff", { outstandingReuploads: 0 }, "in_review", "resume"],
-  // Accepting answers the applicant (the clock stops) but leaves the file open (0156).
-  ["pre_approval", "in_review", "application_accepted", "staff", READY_TO_ACCEPT, "accepted", "answer"],
-  ["pre_approval", "accepted", "pre_approved", "staff", {}, "pre_approved", "stop"],
-  // D19: declining before acceptance, as well as after.
-  ["pre_approval", "new", "declined", "staff", {}, "declined", "stop"],
-  ["pre_approval", "in_review", "declined", "staff", {}, "declined", "stop"],
-  ["pre_approval", "awaiting_applicant", "declined", "staff", {}, "declined", "stop"],
-  ["pre_approval", "accepted", "declined", "staff", {}, "declined", "stop"],
+  // Opening a document no longer moves the file.
+  ["pre_approval", "open", "first_document_opened", "system", {}, "open", null],
+  // A re-upload request pauses a running clock and leaves the stage alone.
+  ["pre_approval", "open", "reupload_requested", "staff", RUNNING, "open", "pause"],
+  ["pre_approval", "open", "reupload_requested", "staff", {}, "open", null],
+  ["pre_approval", "open", "reupload_fulfilled", "applicant", PAUSED, "open", "resume"],
+  ["pre_approval", "open", "reupload_fulfilled", "applicant", { clockPaused: true, outstandingReuploads: 1 }, "open", null],
+  ["pre_approval", "open", "reupload_cancelled", "staff", PAUSED, "open", "resume"],
+  // Any stage to any stage; a declined file moved onto a stage is reopened.
+  ["pre_approval", "open", "stage_changed", "staff", {}, "open", "stage"],
+  ["pre_approval", "declined", "stage_changed", "staff", {}, "open", "stage"],
+  // D19: declined from any stage.
+  ["pre_approval", "open", "declined", "staff", {}, "declined", "stop"],
   ["consultancy", "new", "contact_logged", "staff", {}, "contacted", null],
   ["consultancy", "contacted", "contact_logged", "staff", {}, "contacted", null],
   ["consultancy", "consultation_booked", "contact_logged", "staff", {}, "consultation_booked", null],
@@ -45,50 +41,42 @@ const ALLOWED: [MortgageService, MortgageStatus, TransitionEvent, ActorKind, Tra
   ["consultancy", "consultation_booked", "consultation_held", "staff", {}, "completed", null],
 ];
 
-describe("allowed transitions (SPEC §2.4)", () => {
+describe("allowed transitions (SPEC §2.4, 0158)", () => {
   it.each(ALLOWED)("%s: %s --%s (%s)-->", (service, from, event, actor, ctx, to, clock) => {
     expect(nextStatus(service, from, event, actor, ctx)).toEqual({ to, clock });
   });
 
-  it("pauses the clock only on entering awaiting_applicant, resumes it only on leaving, stops it only on a decision", () => {
-    const effects = ALLOWED.map(([, from, , , , to, clock]) => ({ from, to, clock }));
-    for (const { from, to, clock } of effects) {
-      if (clock === "pause") expect([from, to]).toEqual(["in_review", "awaiting_applicant"]);
-      if (clock === "resume") expect([from, to]).toEqual(["awaiting_applicant", "in_review"]);
-      if (clock === "stop") expect(["pre_approved", "declined"]).toContain(to);
+  it("pauses only for a re-upload, resumes only at its end, and stops only on a stage or a decline", () => {
+    for (const [, , event, , , to, clock] of ALLOWED) {
+      if (clock === "pause") expect(event).toBe("reupload_requested");
+      if (clock === "resume") expect(["reupload_fulfilled", "reupload_cancelled"]).toContain(event);
+      if (clock === "stage") expect([event, to]).toEqual(["stage_changed", "open"]);
+      if (clock === "stop") expect(to).toBe("declined");
     }
   });
 });
 
 describe("illegal transitions", () => {
   const ILLEGAL: [MortgageService, MortgageStatus, TransitionEvent, ActorKind, TransitionContext?][] = [
-    // Skipping steps.
-    ["pre_approval", "new", "application_accepted", "staff", READY_TO_ACCEPT],
-    ["pre_approval", "awaiting_applicant", "application_accepted", "staff", READY_TO_ACCEPT],
-    ["pre_approval", "new", "pre_approved", "staff"],
-    ["pre_approval", "in_review", "pre_approved", "staff"],
+    // A decision is final until the file is moved onto a stage again.
+    ["pre_approval", "declined", "declined", "staff"],
+    ["pre_approval", "declined", "reupload_requested", "staff"],
+    ["pre_approval", "open", "declined", "system"],
+    // Events from the other service.
+    ["pre_approval", "open", "contact_logged", "staff"],
+    ["consultancy", "new", "first_document_opened", "system"],
+    ["consultancy", "new", "stage_changed", "staff"],
+    ["consultancy", "contacted", "declined", "staff"],
+    // Consultancy order.
     ["consultancy", "new", "consultation_booked", "staff"],
     ["consultancy", "contacted", "consultation_held", "staff"],
-    // A decision is final, and only the team makes it.
-    ["pre_approval", "declined", "declined", "staff"],
-    ["pre_approval", "pre_approved", "declined", "staff"],
-    ["pre_approval", "in_review", "declined", "system"],
-    ["consultancy", "contacted", "declined", "staff"],
-    // Nothing moves a closed request.
-    ["pre_approval", "pre_approved", "reupload_requested", "staff"],
-    ["pre_approval", "declined", "application_accepted", "staff", READY_TO_ACCEPT],
     ["consultancy", "completed", "contact_logged", "staff"],
-    // Events from the other service.
-    ["pre_approval", "new", "contact_logged", "staff"],
-    ["consultancy", "new", "first_document_opened", "system"],
-    // Re-uploads only while in review or awaiting.
-    ["pre_approval", "accepted", "reupload_requested", "staff"],
-    ["pre_approval", "in_review", "reupload_fulfilled", "applicant", { outstandingReuploads: 0 }],
     // The wrong actor.
-    ["pre_approval", "awaiting_applicant", "reupload_fulfilled", "staff", { outstandingReuploads: 0 }],
-    ["pre_approval", "in_review", "reupload_requested", "applicant"],
-    ["pre_approval", "new", "first_document_opened", "staff"],
-    ["pre_approval", "accepted", "pre_approved", "bank"],
+    ["pre_approval", "open", "reupload_fulfilled", "staff", { outstandingReuploads: 0 }],
+    ["pre_approval", "open", "reupload_requested", "applicant"],
+    ["pre_approval", "open", "first_document_opened", "staff"],
+    ["pre_approval", "open", "stage_changed", "bank"],
+    ["pre_approval", "open", "stage_changed", "applicant"],
   ];
 
   it.each(ILLEGAL)("%s: %s --%s (%s)--> refused", (service, from, event, actor, ctx) => {
@@ -96,19 +84,8 @@ describe("illegal transitions", () => {
     expect(canTransition(service, from, event, actor, ctx ?? {})).toBe(false);
   });
 
-  it("guards accepting: all documents accepted and consent on file, no bank needed", () => {
-    const accept = (ctx: TransitionContext) => () =>
-      nextStatus("pre_approval", "in_review", "application_accepted", "staff", ctx);
-    expect(accept({ ...READY_TO_ACCEPT, acceptedDocuments: 3 })).toThrow("every document must be accepted first");
-    expect(accept({ ...READY_TO_ACCEPT, requiredDocuments: 0, acceptedDocuments: 0 })).toThrow(
-      "every document must be accepted first",
-    );
-    expect(accept({ ...READY_TO_ACCEPT, consentOnFile: false })).toThrow("consent is not on file");
-    expect(accept(READY_TO_ACCEPT)()).toEqual({ to: "accepted", clock: "answer" });
-  });
-
   it("answers every status × event × actor with an outcome or IllegalTransitionError, nothing else", () => {
-    const ctx: TransitionContext = { ...READY_TO_ACCEPT, outstandingReuploads: 0 };
+    const ctx: TransitionContext = { outstandingReuploads: 0 };
     let allowed = 0;
     for (const service of ["pre_approval", "consultancy"] as const) {
       for (const from of STATUSES_BY_SERVICE[service]) {
@@ -119,8 +96,9 @@ describe("illegal transitions", () => {
         }
       }
     }
-    // The rows of ALLOWED, less the one that differs only by outstanding re-uploads.
-    expect(allowed).toBe(ALLOWED.length - 1);
+    // One per (service, status, event) row of ALLOWED.
+    const distinct = new Set(ALLOWED.map(([s, f, e]) => `${s}:${f}:${e}`));
+    expect(allowed).toBe(distinct.size);
   });
 });
 
@@ -132,19 +110,17 @@ describe("helpers", () => {
         "consultation_held",
         "contact_logged",
         "declined",
-        "pre_approved",
         "reupload_cancelled",
         "reupload_requested",
-        "application_accepted",
+        "stage_changed",
       ].sort(),
     );
   });
 
-  it("closes pre_approved, declined and completed", () => {
-    expect(isClosed("pre_approved")).toBe(true);
+  it("closes declined and completed by status; a closing stage closes an open file through closed_at", () => {
     expect(isClosed("declined")).toBe(true);
     expect(isClosed("completed")).toBe(true);
-    // Accepted waits on the banks' answer: open, though its clock has stopped.
-    expect(isClosed("accepted")).toBe(false);
+    expect(isClosed("open")).toBe(false);
+    expect(isClosed("contacted")).toBe(false);
   });
 });

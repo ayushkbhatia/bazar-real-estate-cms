@@ -86,14 +86,9 @@ export function buildDataExport(input: {
       ...(input.mortgage_requests?.length
         ? [
             "The `mortgage_requests` section lists your Fast Pre-Approval and Mortgage Consultancy requests: your details, consents, each document's status and what was recorded from it, and its files by name and size. The documents themselves aren't in this archive; ask for copies at the address below.",
-            ...(input.mortgage_requests.some(
-              (r) =>
-                r.status === "accepted" ||
-                r.status === "pre_approved" ||
-                (r.status === "declined" && (r.decision as { reason?: unknown } | null)?.reason === "no_bank_offer"),
-            )
+            ...(input.mortgage_requests.some((r) => r.may_have_been_shared_with_banks === true)
               ? [
-                  "With your consent, Bazar's mortgage team shared an accepted request with its partner banks. Those banks hold their own copies, which Bazar can't recall or erase; ask us which banks, or contact them directly.",
+                  "With your consent, Bazar's mortgage team may have shared your request with its partner banks. Those banks hold their own copies, which Bazar can't recall or erase; ask us which banks, or contact them directly.",
                 ]
               : []),
           ]

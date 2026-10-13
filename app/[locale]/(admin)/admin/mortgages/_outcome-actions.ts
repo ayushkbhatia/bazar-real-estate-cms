@@ -18,10 +18,9 @@ import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * The answer to a Fast Pre-Approval, all from C2 and the board (SPEC §2.4, as
- * amended by 0156): accept the application, then record the outcome — pre-
- * approved, or declined (D19), which can also come before it is accepted.
- * The team shares an accepted file with the banks by hand.
+ * Where a Fast Pre-Approval stands, from C2 and the board (SPEC §2.4, as
+ * amended by 0158): its stage, moved freely, or declined (D19), from any
+ * stage. The team shares a file with the banks by hand.
  */
 
 const t = cmsT as unknown as (key: string, values?: Record<string, string | number>) => string;
@@ -35,8 +34,8 @@ const declineInput = targetSchema.extend({
 
 /**
  * Decline a Fast Pre-Approval, through the adviser's own session: the database
- * decides who may (the owner or the Head) and from where (any open status; "no
- * bank made an offer" only once the file was accepted), closes the file,
+ * decides who may (the owner or the Head) and from where (any stage; "no bank
+ * made an offer" only once the team has answered), closes the file,
  * cancels an open re-upload and queues the applicant's email. It goes after
  * the answer; the worker retries a failure.
  */
@@ -87,61 +86,32 @@ export async function declineApplication(input: z.input<typeof declineInput>): P
   return { ok: true, message: t("decline.done", { firstName: b.firstName }) };
 }
 
-// ── Accepting and the outcome ────────────────────────────────────
+// ── Stages ───────────────────────────────────────────────────────
 
-const acceptInput = targetSchema.extend({ firstName: z.string().max(80) });
+const moveInput = targetSchema.extend({ stageId: z.string().uuid() });
 
 /**
- * C2's "Accept application": every document accepted and consent on file (the
- * database checks both, and that the caller is the owner or the Head). The
- * file is Accepted and the 24-hour clock stops; the team then shares it with
- * the banks itself (0156). Nothing is sent to anyone.
+ * Move a Fast Pre-Approval to a stage (0158): any stage to any other, a
+ * closed or declined file included (reopened there). The database checks
+ * the caller is the owner or the Head, stops the clock on a stage that
+ * answers the applicant and closes the file on a closing one. Nothing is
+ * sent to anyone.
  */
-export async function acceptApplication(input: z.input<typeof acceptInput>): Promise<MortgageActionResult> {
-  const parsed = acceptInput.safeParse(input);
+export async function moveStage(input: z.input<typeof moveInput>): Promise<MortgageActionResult> {
+  const parsed = moveInput.safeParse(input);
   if (!parsed.success) return INVALID;
   const s = await teamSession();
   if (!s) return NOT_ALLOWED;
   const b = parsed.data;
-  const { error } = await s.supabase.rpc("mortgage_accept_application", {
+  const { error } = await s.supabase.rpc("mortgage_move_stage", {
     p_request_id: b.requestId,
+    p_stage_id: b.stageId,
     p_expected_updated_at: b.updatedAt,
   });
-  if (error) {
-    if (error.code === "MR422" && error.message.includes("consent")) {
-      return { ok: false, code: "invalid", message: t("c2.accept.needsConsent") };
-    }
-    if (error.code === "MR422") return { ok: false, code: "invalid", message: t("c2.accept.needsDocuments") };
-    return refused(error, "mortgage.cms.accept");
-  }
+  if (error) return refused(error, "mortgage.cms.stage");
+  const { data: stage } = await s.supabase.from("mortgage_stages").select("name").eq("id", b.stageId).maybeSingle();
   refreshMortgagePaths(b.reference);
-  return { ok: true, message: t("c2.accept.done", { firstName: b.firstName }) };
-}
-
-const preApprovalInput = targetSchema.extend({
-  note: z.string().trim().max(1000).optional(),
-  firstName: z.string().max(80),
-});
-
-/**
- * "Mark pre-approved": the outcome of an accepted file, once a bank has said
- * yes. It closes the file; the clock stays stopped at the acceptance. No email
- * goes — the adviser tells the applicant.
- */
-export async function recordPreApproval(input: z.input<typeof preApprovalInput>): Promise<MortgageActionResult> {
-  const parsed = preApprovalInput.safeParse(input);
-  if (!parsed.success) return INVALID;
-  const s = await teamSession();
-  if (!s) return NOT_ALLOWED;
-  const b = parsed.data;
-  const { error } = await s.supabase.rpc("mortgage_record_pre_approval", {
-    p_request_id: b.requestId,
-    p_note: b.note || undefined,
-    p_expected_updated_at: b.updatedAt,
-  });
-  if (error) return refused(error, "mortgage.cms.preapprove");
-  refreshMortgagePaths(b.reference);
-  return { ok: true, message: t("c2.preApproved.done", { firstName: b.firstName }) };
+  return { ok: true, message: t("stage.moved", { reference: b.reference, stage: (stage as { name: string } | null)?.name ?? "" }) };
 }
 
 const withdrawInput = targetSchema.extend({ firstName: z.string().max(80) });

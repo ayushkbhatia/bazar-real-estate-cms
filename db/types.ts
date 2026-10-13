@@ -3142,6 +3142,7 @@ export type Database = {
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
           site_locale: string | null
+          stage_id: string | null
           sla_breach_notified_at: string | null
           sla_due_at: string | null
           sla_paused_at: string | null
@@ -3183,6 +3184,7 @@ export type Database = {
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
           site_locale?: string | null
+          stage_id?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null
           sla_paused_at?: string | null
@@ -3224,6 +3226,7 @@ export type Database = {
           residency?: Database["public"]["Enums"]["mortgage_residency"]
           service?: Database["public"]["Enums"]["mortgage_service"]
           site_locale?: string | null
+          stage_id?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null
           sla_paused_at?: string | null
@@ -3338,6 +3341,36 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      mortgage_stages: {
+        Row: {
+          closes_file: boolean
+          created_at: string
+          id: string
+          name: string
+          position: number
+          stops_clock: boolean
+          updated_at: string
+        }
+        Insert: {
+          closes_file?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          position: number
+          stops_clock?: boolean
+          updated_at?: string
+        }
+        Update: {
+          closes_file?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+          stops_clock?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
       mortgage_settings: {
         Row: {
@@ -4745,10 +4778,11 @@ export type Database = {
       functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
-      mortgage_accept_application: {
+      mortgage_move_stage: {
         Args: {
           p_expected_updated_at?: string
           p_request_id: string
+          p_stage_id: string
         }
         Returns: {
           assigned_at: string | null
@@ -5151,6 +5185,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      mortgage_can_edit_stages: { Args: never; Returns: boolean }
+      mortgage_delete_stage: { Args: { p_id: string }; Returns: undefined }
+      mortgage_reorder_stages: { Args: { p_ids: string[] }; Returns: undefined }
+      mortgage_save_stage: {
+        Args: {
+          p_closes_file: boolean
+          p_id: string | null
+          p_name: string
+          p_stops_clock: boolean
+        }
+        Returns: Database["public"]["Tables"]["mortgage_stages"]["Row"]
+      }
       mortgage_decline: {
         Args: {
           p_channels: string[]
@@ -5409,59 +5455,6 @@ export type Database = {
         Args: {
           p_expected_updated_at?: string
           p_owner: string
-          p_request_id: string
-        }
-        Returns: {
-          assigned_at: string | null
-          closed_at: string | null
-          created_at: string
-          date_of_birth: string
-          decided_at: string | null
-          decided_by: string | null
-          decision: Database["public"]["Enums"]["mortgage_decision"] | null
-          decision_message: string | null
-          decline_reason:
-            | Database["public"]["Enums"]["mortgage_decline_reason"]
-            | null
-          email: string
-          employment_type: Database["public"]["Enums"]["mortgage_employment"]
-          entry_point: Database["public"]["Enums"]["mortgage_entry_point"]
-          first_contact_at: string | null
-          full_name: string
-          id: string
-          locale: string
-          mobile_e164: string
-          owner_staff_id: string | null
-          parent_request_id: string | null
-          property_id: string | null
-          property_ref: string | null
-          reference: string
-          residency: Database["public"]["Enums"]["mortgage_residency"]
-          service: Database["public"]["Enums"]["mortgage_service"]
-          sla_breach_notified_at: string | null
-          sla_due_at: string | null
-          sla_paused_at: string | null
-          sla_paused_seconds: number
-          sla_remaining_seconds: number | null
-          sla_risk_notified_at: string | null
-          sla_started_at: string | null
-          sla_stopped_at: string | null
-          status: Database["public"]["Enums"]["mortgage_status"]
-          submission_key: string | null
-          submitted_at: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "mortgage_requests"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      mortgage_record_pre_approval: {
-        Args: {
-          p_expected_updated_at?: string
-          p_note?: string
           p_request_id: string
         }
         Returns: {
@@ -6013,6 +6006,7 @@ export type Database = {
       mortgage_scan_status: "pending" | "clean" | "infected" | "failed"
       mortgage_service: "consultancy" | "pre_approval"
       mortgage_status:
+        | "open"
         | "new"
         | "in_review"
         | "awaiting_applicant"
@@ -6416,6 +6410,7 @@ export const Constants = {
       mortgage_scan_status: ["pending", "clean", "infected", "failed"],
       mortgage_service: ["consultancy", "pre_approval"],
       mortgage_status: [
+        "open",
         "new",
         "in_review",
         "awaiting_applicant",

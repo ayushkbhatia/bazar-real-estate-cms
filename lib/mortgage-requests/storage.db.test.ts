@@ -365,15 +365,17 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
       ]);
     });
 
-    it("moves a new request into review on its owner's first open, and not on anyone else's", async () => {
+    it("leaves the file where it stands when anyone opens a document, its owner included (0158)", async () => {
       const { request, files } = await attachedRequest(owner.id);
-      await openStaffFile(accessDeps(otherAdviser), { caller: callerOf(otherAdviser, "adviser"), fileId: files.passport.fileId, download: false });
-      const afterOther = await service.from("mortgage_requests").select("status").eq("id", request.id).single();
-      expect(afterOther.data!.status).toBe("new");
-
-      await openStaffFile(accessDeps(owner), { caller: callerOf(owner, "adviser"), fileId: files.passport.fileId, download: false });
-      const afterOwner = await service.from("mortgage_requests").select("status").eq("id", request.id).single();
-      expect(afterOwner.data!.status).toBe("in_review");
+      const before = await service.from("mortgage_requests").select("status, stage_id, updated_at").eq("id", request.id).single();
+      expect(before.data!.status).toBe("open");
+      for (const who of [otherAdviser, owner]) {
+        await openStaffFile(accessDeps(who), { caller: callerOf(who, "adviser"), fileId: files.passport.fileId, download: false });
+        const after = await service.from("mortgage_requests").select("status, stage_id, updated_at").eq("id", request.id).single();
+        expect(after.data).toEqual(before.data);
+      }
+      const { data: moves } = await service.from("mortgage_events").select("type").eq("request_id", request.id).in("type", ["status.changed", "stage.changed"]);
+      expect(moves).toEqual([]);
     });
 
     it("refuses admins and other staff without a mortgage role (403), and signed-out callers (401)", async () => {
