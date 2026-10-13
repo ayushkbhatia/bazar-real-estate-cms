@@ -52,7 +52,11 @@ export type LeadPayload = {
   Lead_Source__c?: string;
   Description__c?: string;
   Inquiry_Type__c?: string;
-  Property_Reference__c?: string;
+  /** The listing page, for an enquiry about a listing. Replaced
+   *  `Property_Reference__c`, which Levarus removed from Lead__c at Bazar's
+   *  request on 13 Oct 2026. The API name is assumed from the listing
+   *  object's own field; see OPTIONAL_LEAD_FIELDS. */
+  Website_Listing_URL__c?: string;
 };
 
 /**
@@ -68,7 +72,7 @@ export type LeadPayload = {
 const MAX_NAME = 255;
 const MAX_EMAIL = 80;
 const MAX_PHONE = 40;
-const MAX_REFERENCE = 255;
+const MAX_URL = 255;
 const MAX_DESCRIPTION = 131072;
 
 function clamp(value: string | null | undefined, max: number): string | undefined {
@@ -270,8 +274,9 @@ export function buildDescription(row: LeadSourceRow): string | undefined {
 
   const meta: string[] = [];
   if (row.page_url) meta.push(`Page: ${row.page_url}`);
-  // Also in Property_Reference__c; repeated here so a lead sent without that
-  // field (see pushLead) still says which listing it is about.
+  // The reference has no field of its own on Lead__c any more; the listing
+  // URL does, and this says which listing it is in words a CRM user can
+  // search for.
   if (row.property_reference) meta.push(`Property: ${row.property_reference}`);
   if (row.project_name) meta.push(`Project: ${row.project_name}`);
   if (row.website_reference) meta.push(`Website listing: ${row.website_reference}`);
@@ -331,10 +336,11 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
     set("Phone__c", clamp(phone.national, MAX_PHONE));
   }
 
-  // "pass this value when enquiry about property" — so a general contact-form
-  // lead sends no reference at all rather than an empty string.
-  const reference = clamp(row.property_reference, MAX_REFERENCE);
-  if (reference) payload.Property_Reference__c = reference;
+  // Only for an enquiry about a listing, where the page IS the listing. A
+  // general contact-form lead sends no URL here at all rather than an empty
+  // string; its page is in the description.
+  const listingUrl = row.property_reference ? clamp(row.page_url, MAX_URL) : undefined;
+  if (listingUrl) payload.Website_Listing_URL__c = listingUrl;
 
   return payload;
 }
@@ -400,6 +406,14 @@ export type PushResult =
  * The upsert path is written and tested now so that the fix is an env var
  * rather than a sprint.
  */
+/**
+ * Fields a lead can do without. `Website_Listing_URL__c`'s API name on
+ * Lead__c is assumed (Levarus named the new field "website listing url"; the
+ * listing object's is `Website_Listing_URL__c`), so a wrong guess costs one
+ * extra call, not the lead.
+ */
+const OPTIONAL_LEAD_FIELDS = ["Website_Listing_URL__c"] as const;
+
 export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
   const payload = buildLeadPayload(row);
   const object = leadObjectName();
@@ -416,18 +430,15 @@ export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
   }
 
   const first = await send(row.id, object, externalIdField, payload);
-  // `Property_Reference__c` vanished from Lead__c in production on
-  // 13 Oct 2026 (INVALID_FIELD on every property enquiry). One field the org
-  // drops must not lose the lead: send it again without, the reference is in
-  // the description too.
-  if (
-    !first.ok &&
-    first.errorCode === "INVALID_FIELD" &&
-    /Property_Reference__c/.test(first.message) &&
-    "Property_Reference__c" in payload
-  ) {
-    const { Property_Reference__c: _ref, ...rest } = payload;
-    void _ref;
+  // A field the org does not have — renamed, removed, its access withdrawn —
+  // must not lose the lead. Send it again without; what it carried is in the
+  // description too. Only fields in OPTIONAL_LEAD_FIELDS, and only once.
+  const dropped = !first.ok && first.errorCode === "INVALID_FIELD"
+    ? OPTIONAL_LEAD_FIELDS.find((f) => f in payload && first.message.includes(f))
+    : undefined;
+  if (dropped) {
+    const rest = { ...payload };
+    delete rest[dropped];
     return send(row.id, object, externalIdField, rest);
   }
   return first;
