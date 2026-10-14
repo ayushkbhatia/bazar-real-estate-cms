@@ -195,7 +195,7 @@ function PreApproval({
         file.can.move ? <StageMenu target={target} stages={file.stages} current={file.stage?.id ?? null} declined={declined} /> : null
       }
     >
-      <FileRefresher />
+      <FileRefresher requestId={file.id} />
       <FileHeader
         chips={[
           { label: t("service.preApproval"), tone: "ink" },
@@ -498,7 +498,7 @@ function Consultancy({
       secondary={file.status !== "completed" ? <InviteButton target={target} canAct={file.can.act} variant="outline" /> : null}
       primary={open ? <BookScrollButton /> : null}
     >
-      <FileRefresher />
+      <FileRefresher requestId={file.id} />
       {startBooking && open ? <ScrollToBooking /> : null}
       <FileHeader
         chips={[

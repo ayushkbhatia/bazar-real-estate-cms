@@ -27,6 +27,7 @@ import {
   inTab,
   isAtRisk,
   matchesSearch,
+  newestFirstCompare,
   PAGE_SIZE,
   promiseDueCompare,
   QUEUE_TABS,
@@ -339,7 +340,9 @@ export async function listQueue(
   const visible = base.filter(
     (p) => matchesService(p, params.service) && inTab(p.row, params.tab) && (!params.risk || isAtRisk(p.row.sla)),
   );
-  if (params.tab === "closed") {
+  if (params.sort === "newest") {
+    visible.sort((a, b) => newestFirstCompare({ submittedAt: a.submittedAt, reference: a.row.reference }, { submittedAt: b.submittedAt, reference: b.row.reference }));
+  } else if (params.tab === "closed") {
     visible.sort((a, b) => (b.closedAt ?? b.submittedAt).localeCompare(a.closedAt ?? a.submittedAt));
   } else {
     visible.sort(byPromise);

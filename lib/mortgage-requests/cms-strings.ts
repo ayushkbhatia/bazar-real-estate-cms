@@ -183,6 +183,7 @@ export const CMS_MESSAGES = {
       "placeholder": "Name, reference or mobile"
     },
     "sort": {
+      "newest": "Sort: newest first",
       "promiseDue": "Sort: promise due"
     },
     "stage": {
@@ -771,6 +772,7 @@ export const PENDING_CMS_COPY: readonly string[] = [
   "c1.owner.unassigned",
   "c1.risk.more",
   "c1.risk.showAll",
+  "c1.sort.newest",
   "c1.stage.all",
   "c1.stage.option",
   "c1.view.board",

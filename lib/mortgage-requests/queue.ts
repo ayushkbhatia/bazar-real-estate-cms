@@ -39,11 +39,25 @@ export type QueueParams = {
   view: QueueView;
   /** One Fast Pre-Approval stage's files only (a stage id), or every request. */
   stage: string | null;
+  /** The list's order: newest first (Bazar, 14 Oct 2026), or the designs' promise due. */
+  sort: QueueSort;
 };
+
+export const QUEUE_SORTS = ["newest", "promise_due"] as const;
+export type QueueSort = (typeof QUEUE_SORTS)[number];
 
 export type QueueView = "list" | "board";
 
-export const DEFAULT_QUEUE_PARAMS: QueueParams = { tab: "open", service: "all", owner: "anyone", page: 1, risk: false, view: "list", stage: null };
+export const DEFAULT_QUEUE_PARAMS: QueueParams = {
+  tab: "open",
+  service: "all",
+  owner: "anyone",
+  page: 1,
+  risk: false,
+  view: "list",
+  stage: null,
+  sort: "newest",
+};
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -58,6 +72,7 @@ export function parseQueueParams(sp: Record<string, string | string[] | undefine
   const owner = one("owner");
   const page = Number(one("page"));
   const stage = one("stage");
+  const sort = one("sort");
   return {
     tab: QUEUE_TABS.includes(tab as QueueTab) ? (tab as QueueTab) : "open",
     service: SERVICE_FILTERS.includes(service as ServiceFilter) ? (service as ServiceFilter) : "all",
@@ -66,6 +81,7 @@ export function parseQueueParams(sp: Record<string, string | string[] | undefine
     risk: one("risk") === "1",
     view: one("view") === "board" ? "board" : "list",
     stage: stage && UUID.test(stage) ? stage : null,
+    sort: QUEUE_SORTS.includes(sort as QueueSort) ? (sort as QueueSort) : "newest",
   };
 }
 
@@ -79,8 +95,14 @@ export function queueQuery(params: QueueParams): string {
   if (params.page > 1) out.set("page", String(params.page));
   if (params.view === "board") out.set("view", "board");
   if (params.stage) out.set("stage", params.stage);
+  if (params.sort !== "newest") out.set("sort", params.sort);
   const s = out.toString();
   return s ? `?${s}` : "";
+}
+
+/** Newest first: the latest submission at the top, ties by reference so a page never reshuffles. */
+export function newestFirstCompare(a: { submittedAt: string; reference: string }, b: { submittedAt: string; reference: string }): number {
+  return b.submittedAt.localeCompare(a.submittedAt) || b.reference.localeCompare(a.reference);
 }
 
 /** What the promise-due order needs of a row. */

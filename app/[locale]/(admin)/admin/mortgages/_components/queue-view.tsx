@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import { queueQuery, QUEUE_TABS, type QueueParams, type QueueTab, type ServiceFilter } from "@/lib/mortgage-requests/queue";
 import type { BoardResult, QueueResult, QueueRow, TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
+import { usePostgresChanges } from "@/lib/realtime/use-postgres-changes";
 import { cn } from "@/lib/utils";
 import { loadQueue } from "../_actions";
 import { BoardView } from "./board-view";
@@ -124,8 +125,20 @@ export function QueueView({
     void runSearch();
   }, [runSearch]);
 
-  // SPEC §4.3: the queue refreshes every 30 seconds. The server page is
-  // re-rendered in place (the nav's count with it); a search is re-run.
+  // Live: any change to a request — a board drop, another adviser's action,
+  // another tab — re-reads the queue at once (Supabase Realtime, 0161): the
+  // server page re-renders in place (counts and banner with it) and a search
+  // is re-run; the board listens for itself. SPEC §4.3's 30-second refresh
+  // stays as the fallback for a dropped connection.
+  usePostgresChanges({
+    channel: "mortgage-queue",
+    table: "mortgage_requests",
+    refresh: () => {
+      router.refresh();
+      void runSearch();
+    },
+  });
+
   useEffect(() => {
     const id = setInterval(() => {
       router.refresh();
@@ -275,7 +288,13 @@ export function QueueView({
         </label>
         <label className={cn("relative w-[170px]", board && "hidden")}>
           <span className="sr-only">{t("c1.aria.sort")}</span>
-          <select value="promise_due" onChange={() => undefined} className={cn(FIELD, "w-full appearance-none ps-2.5 pe-7")}>
+          <select
+            id="mortgage-queue-sort"
+            value={params.sort}
+            onChange={(e) => go({ sort: e.target.value === "promise_due" ? "promise_due" : "newest" })}
+            className={cn(FIELD, "w-full appearance-none ps-2.5 pe-7")}
+          >
+            <option value="newest">{t("c1.sort.newest")}</option>
             <option value="promise_due">{t("c1.sort.promiseDue")}</option>
           </select>
           <ChevronDown size={14} aria-hidden className="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 text-bz-muted" />

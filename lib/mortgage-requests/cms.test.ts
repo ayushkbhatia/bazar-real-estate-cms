@@ -19,6 +19,7 @@ import {
   DEFAULT_QUEUE_PARAMS,
   inTab,
   matchesSearch,
+  newestFirstCompare,
   parseQueueParams,
   promiseDueCompare,
   queueQuery,
@@ -236,6 +237,7 @@ describe("the queue's URL", () => {
       risk: true,
       view: "list",
       stage: "3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c",
+      sort: "promise_due",
     } as const;
     expect(parseQueueParams(Object.fromEntries(new URLSearchParams(queueQuery(view).slice(1))))).toEqual(view);
     const board = { ...DEFAULT_QUEUE_PARAMS, service: "consultancy", view: "board" } as const;
@@ -245,11 +247,38 @@ describe("the queue's URL", () => {
 
   it("falls back to the defaults for anything it doesn't know", () => {
     expect(
-      parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes", view: "gantt", stage: "Valuation" }),
+      parseQueueParams({ tab: "archived", service: "loans", owner: "robert'); drop", page: "-3", risk: "yes", view: "gantt", stage: "Valuation", sort: "oldest" }),
     ).toEqual(
       DEFAULT_QUEUE_PARAMS,
     );
     expect(parseQueueParams({ owner: "3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c" }).owner).toBe("3f1c2a4e-9b7d-4c1e-8a2b-5d6e7f8a9b0c");
+  });
+});
+
+describe("the queue's order", () => {
+  it("lists the newest request first by default (Bazar, 14 Oct 2026)", () => {
+    expect(DEFAULT_QUEUE_PARAMS.sort).toBe("newest");
+    const rows = [
+      { reference: "BZM-26-0401", submittedAt: "2026-10-13T09:15:00Z" },
+      { reference: "BZM-26-0418", submittedAt: "2026-10-14T10:33:00Z" },
+      { reference: "BZM-26-0405", submittedAt: "2026-10-07T08:00:00Z" },
+      { reference: "BZM-26-0417", submittedAt: "2026-10-14T09:26:00Z" },
+    ];
+    expect([...rows].sort(newestFirstCompare).map((r) => r.reference)).toEqual([
+      "BZM-26-0418",
+      "BZM-26-0417",
+      "BZM-26-0401",
+      "BZM-26-0405",
+    ]);
+  });
+
+  it("breaks a tie by reference, so a page never reshuffles", () => {
+    const at = "2026-10-14T10:00:00Z";
+    const rows = [
+      { reference: "BZM-26-0002", submittedAt: at },
+      { reference: "BZM-26-0003", submittedAt: at },
+    ];
+    expect([...rows].sort(newestFirstCompare).map((r) => r.reference)).toEqual(["BZM-26-0003", "BZM-26-0002"]);
   });
 });
 
