@@ -390,7 +390,11 @@ Status changes an editor makes anywhere else — the bulk bar, a CSV import —
 are caught by a trigger (`properties_salesforce_editor_status_tr`, 0136):
 taking a Salesforce listing off the website **hides** it (the sync keeps it
 off), publishing it approves and allows it. Only a person's change counts; the
-sync's own writes, as the service role, do not.
+sync's own writes, as the service role, do not. Since 0159 the trigger writes
+the same audit row the screen's buttons do (`salesforce.listing_hidden`,
+`_allowed`, `_approved`, target the Salesforce listing id) whenever the change
+flips the listing, with the property, its reference and the status that caused
+it in `after`.
 
 ### Mapping
 
