@@ -1,5 +1,6 @@
 /**
- * Salesforce lead sync — drains the enquiry queue into `Lead__c`.
+ * Salesforce lead sync — drains the enquiry and mortgage-request queues into
+ * `Lead__c`.
  *
  * ── Why a cron and not a call at submit time ─────────────────────────────
  * A lead is the one thing on this site that must never be lost. Calling
@@ -36,7 +37,13 @@ import {
   LOCAL_BLOCK_PREFIX,
   type LeadSourceRow,
 } from "@/lib/salesforce/leads";
-import { drainCrmErasures } from "@/lib/salesforce/erasure-queue";
+import { drainCrmErasures, drainLeadErasureQueue } from "@/lib/salesforce/erasure-queue";
+import {
+  isSampleMortgageRequest,
+  pushMortgageLead,
+  type MortgageLeadRow,
+} from "@/lib/salesforce/mortgage-leads";
+import type { PushResult } from "@/lib/salesforce/leads";
 import type { Database } from "@/db/types";
 
 /** Per invocation. Keeps the run inside the function timeout and inside any
@@ -126,6 +133,142 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
   };
 }
 
+type MortgageQueueRow = {
+  id: string;
+  reference: string;
+  service: MortgageLeadRow["service"];
+  full_name: string;
+  email: string;
+  mobile_e164: string;
+  residency: MortgageLeadRow["residency"];
+  employment_type: MortgageLeadRow["employment_type"];
+  entry_point: MortgageLeadRow["entry_point"];
+  crm_attempts: number;
+  properties: QueueMortgageProperty | QueueMortgageProperty[] | null;
+  parent: { reference: string } | { reference: string }[] | null;
+};
+
+type QueueMortgageProperty = {
+  reference: string;
+  slug: string;
+  salesforce_listings:
+    | { sf_listing_name: string | null }
+    | { sf_listing_name: string | null }[]
+    | null;
+};
+
+function toMortgageLeadRow(row: MortgageQueueRow): MortgageLeadRow {
+  const property = one(row.properties);
+  const crmName = one(property?.salesforce_listings)?.sf_listing_name ?? null;
+  return {
+    id: row.id,
+    reference: row.reference,
+    service: row.service,
+    full_name: row.full_name,
+    email: row.email,
+    mobile_e164: row.mobile_e164,
+    residency: row.residency,
+    employment_type: row.employment_type,
+    entry_point: row.entry_point,
+    property_reference: crmName ?? property?.reference ?? null,
+    property_slug: property?.slug ?? null,
+    parent_reference: one(row.parent)?.reference ?? null,
+  };
+}
+
+type QueueTable = "enquiries" | "mortgage_requests";
+
+type Tally = {
+  pushed: number;
+  failed: number;
+  exhausted: number;
+  blocked: number;
+  lastError: string | null;
+};
+
+/**
+ * Write one push's outcome back onto its row. Both queues carry the same six
+ * `crm_*` columns (0130, 0160), so one settle serves both.
+ */
+async function settle(
+  admin: ReturnType<typeof adminClient>,
+  table: QueueTable,
+  id: string,
+  attempts: number,
+  result: PushResult,
+  tally: Tally,
+): Promise<void> {
+  // Typed through one table: the columns written are identical on both.
+  const from = () => admin.from(table as "enquiries");
+
+  if (result.ok) {
+    const { data } = await from()
+      .update({
+        crm_sync_state: "synced",
+        crm_external_id: result.id,
+        crm_synced_at: new Date().toISOString(),
+        crm_attempts: attempts,
+        crm_last_error: null,
+      })
+      .eq("id", id)
+      .select("id");
+    // Deleted while the push was in flight — a mortgage request erased
+    // between this run's select and Salesforce's answer. The record now
+    // exists for a subject who asked to be forgotten; queue it for the scrub
+    // the delete would have queued.
+    if (table === "mortgage_requests" && (data ?? []).length === 0) {
+      await admin
+        .from("salesforce_lead_erasures")
+        .upsert({ sf_record_id: result.id, source: "mortgage_request" }, { onConflict: "sf_record_id", ignoreDuplicates: true });
+    }
+    tally.pushed += 1;
+    return;
+  }
+
+  // A non-retryable error — a rejected picklist, a field that is too long,
+  // a required field the doc never named — will fail identically forever.
+  // Park it now so an operator sees the real reason rather than an
+  // attempt counter, and so the org's API allocation is not spent
+  // rediscovering it four more times.
+  const giveUp = !result.retryable || attempts >= MAX_ATTEMPTS;
+  const message = result.errorCode
+    ? `${result.errorCode}: ${result.message}`
+    : result.message;
+
+  await from()
+    .update({
+      crm_sync_state: giveUp ? "failed" : "pending",
+      crm_attempts: attempts,
+      crm_last_error: message,
+      crm_next_attempt_at: backoffFrom(attempts),
+    })
+    .eq("id", id);
+
+  // A lead we refused to send says nothing about whether Salesforce is
+  // reachable, and letting it set `last_error` would leave the
+  // integrations card permanently red while the org is perfectly
+  // healthy — a third of this site's leads have no phone number. Counted
+  // on its own instead.
+  const isLocalBlock = message.startsWith(LOCAL_BLOCK_PREFIX);
+  if (isLocalBlock) tally.blocked += 1;
+  else tally.lastError = message;
+
+  if (giveUp) {
+    tally.exhausted += 1;
+    // A lead that will never reach the CRM is worth an alert on its own —
+    // the row is safe in Postgres, but the sales team works out of
+    // Salesforce and would never know it existed.
+    await reportIssue("Salesforce lead push gave up", {
+      source: "cron/salesforce-lead-sync",
+      context: {
+        [table === "enquiries" ? "enquiry" : "mortgage_request"]: { id, attempts, error: message },
+      },
+    });
+  } else {
+    tally.failed += 1;
+  }
+}
+
 
 /**
  * Mirror the run onto the integrations row so
@@ -185,6 +328,12 @@ export async function GET(req: NextRequest) {
   // unconfigured, which is precisely today, and turn the "outstanding
   // erasures" triage query into a permanent false alarm.
   const erasures = await drainCrmErasures(admin);
+  // Records whose row is already gone (mortgage requests, 0160).
+  const queued = await drainLeadErasureQueue(admin);
+  erasures.scrubbed += queued.scrubbed;
+  erasures.remaining += queued.remaining;
+  erasures.cleared += queued.cleared;
+  erasures.lastError = erasures.lastError ?? queued.lastError;
 
   // The expected state on preview, on a local machine, and in production
   // until the client's credentials are in Vercel. Not an error: the queue
@@ -205,11 +354,8 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  let pushed = 0;
-  let failed = 0;
-  let exhausted = 0;
-  let blocked = 0;
-  let lastError: string | null = null;
+  const tally: Tally = { pushed: 0, failed: 0, exhausted: 0, blocked: 0, lastError: null };
+  let skippedSamples = 0;
 
   try {
     const { data, error } = await admin
@@ -228,70 +374,36 @@ export async function GET(req: NextRequest) {
     for (const row of rows) {
       const attempts = row.crm_attempts + 1;
       const result = await pushLead(toLeadRow(row));
+      await settle(admin, "enquiries", row.id, attempts, result, tally);
+    }
 
-      if (result.ok) {
-        await admin
-          .from("enquiries")
-          .update({
-            crm_sync_state: "synced",
-            crm_external_id: result.id,
-            crm_synced_at: new Date().toISOString(),
-            crm_attempts: attempts,
-            crm_last_error: null,
-          })
-          .eq("id", row.id);
-        pushed += 1;
+    // Mortgage requests (0160), the same way. Oldest first, own batch.
+    const { data: mortgageData, error: mortgageError } = await admin
+      .from("mortgage_requests")
+      .select(
+        "id, reference, service, full_name, email, mobile_e164, residency, employment_type, entry_point, crm_attempts, properties:property_id(reference, slug, salesforce_listings(sf_listing_name)), parent:parent_request_id(reference)",
+      )
+      .eq("crm_sync_state", "pending")
+      .lte("crm_next_attempt_at", new Date().toISOString())
+      .order("created_at", { ascending: true })
+      .limit(BATCH_SIZE);
+    if (mortgageError) throw mortgageError;
+
+    const mortgageRows = (mortgageData ?? []) as unknown as MortgageQueueRow[];
+    for (const row of mortgageRows) {
+      if (isSampleMortgageRequest(row.email)) {
+        await admin.from("mortgage_requests").update({ crm_sync_state: "skipped" }).eq("id", row.id);
+        skippedSamples += 1;
         continue;
       }
-
-      // A non-retryable error — a rejected picklist, a field that is too long,
-      // a required field the doc never named — will fail identically forever.
-      // Park it now so an operator sees the real reason rather than an
-      // attempt counter, and so the org's API allocation is not spent
-      // rediscovering it four more times.
-      const giveUp = !result.retryable || attempts >= MAX_ATTEMPTS;
-      const message = result.errorCode
-        ? `${result.errorCode}: ${result.message}`
-        : result.message;
-
-      await admin
-        .from("enquiries")
-        .update({
-          crm_sync_state: giveUp ? "failed" : "pending",
-          crm_attempts: attempts,
-          crm_last_error: message,
-          crm_next_attempt_at: backoffFrom(attempts),
-        })
-        .eq("id", row.id);
-
-      // A lead we refused to send says nothing about whether Salesforce is
-      // reachable, and letting it set `last_error` would leave the
-      // integrations card permanently red while the org is perfectly
-      // healthy — a third of this site's leads have no phone number. Counted
-      // on its own instead.
-      const isLocalBlock = message.startsWith(LOCAL_BLOCK_PREFIX);
-      if (isLocalBlock) blocked += 1;
-      else lastError = message;
-
-      if (giveUp) {
-        exhausted += 1;
-        // A lead that will never reach the CRM is worth an alert on its own —
-        // the enquiry is safe in Postgres, but the sales team works out of
-        // Salesforce and would never know it existed.
-        await reportIssue("Salesforce lead push gave up", {
-          source: "cron/salesforce-lead-sync",
-          context: {
-            enquiry: { id: row.id, attempts, error: message },
-          },
-        });
-      } else {
-        failed += 1;
-      }
+      const attempts = row.crm_attempts + 1;
+      const result = await pushMortgageLead(toMortgageLeadRow(row), env.NEXT_PUBLIC_SITE_URL);
+      await settle(admin, "mortgage_requests", row.id, attempts, result, tally);
     }
 
     // An outstanding erasure is the more serious of the two failure modes, so
     // it wins the single `last_error` slot the integrations card shows.
-    const surfaced = erasures.lastError ?? lastError;
+    const surfaced = erasures.lastError ?? tally.lastError;
     await recordIntegrationStatus(admin, {
       ok: !surfaced,
       error: surfaced,
@@ -299,15 +411,16 @@ export async function GET(req: NextRequest) {
 
     await recordHeartbeat("salesforce-lead-sync", {
       ok: true,
-      detail: `pushed ${pushed}, blocked ${blocked}, erasures ${erasures.scrubbed}`,
+      detail: `pushed ${tally.pushed}, blocked ${tally.blocked}, erasures ${erasures.scrubbed}`,
     });
     return NextResponse.json({
       ok: true,
-      considered: rows.length,
-      pushed,
-      retrying: failed,
-      exhausted,
-      blocked,
+      considered: rows.length + mortgageRows.length,
+      pushed: tally.pushed,
+      retrying: tally.failed,
+      exhausted: tally.exhausted,
+      blocked: tally.blocked,
+      skippedSamples,
       erasures,
     });
   } catch (err) {

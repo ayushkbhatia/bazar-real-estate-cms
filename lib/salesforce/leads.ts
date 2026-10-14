@@ -57,6 +57,11 @@ export type LeadPayload = {
    *  request on 13 Oct 2026. The API name is assumed from the listing
    *  object's own field; see OPTIONAL_LEAD_FIELDS. */
   Website_Listing_URL__c?: string;
+  /** A mortgage request's service: "Fast Pre-Approval (24-hour)" or
+   *  "Mortgage Consultancy". Not on Lead__c yet — asked of Levarus on
+   *  14 Oct 2026 — so it is optional: an org without it drops it and the
+   *  description still says which. See OPTIONAL_LEAD_FIELDS. */
+  Mortgage_Service__c?: string;
 };
 
 /**
@@ -69,13 +74,13 @@ export type LeadPayload = {
  * characters is unusual but entirely legal, and it would have lost that lead
  * permanently rather than truncating it.
  */
-const MAX_NAME = 255;
-const MAX_EMAIL = 80;
+export const MAX_NAME = 255;
+export const MAX_EMAIL = 80;
 const MAX_PHONE = 40;
-const MAX_URL = 255;
-const MAX_DESCRIPTION = 131072;
+export const MAX_URL = 255;
+export const MAX_DESCRIPTION = 131072;
 
-function clamp(value: string | null | undefined, max: number): string | undefined {
+export function clamp(value: string | null | undefined, max: number): string | undefined {
   if (!value) return undefined;
   const trimmed = value.trim();
   if (!trimmed) return undefined;
@@ -320,21 +325,7 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
     row.source,
   );
 
-  const phone = splitPhone(row.phone);
-  if (phone) {
-    // `Country_Code__c` is a restricted picklist of 206 values, which no
-    // vendor doc mentioned. A code outside it fails the whole record, so an
-    // unmatched one is left unset — `missingRequiredFields` then refuses the
-    // lead locally with a reason, instead of spending a round trip to be
-    // told the same thing less clearly.
-    const bare = phone.countryCode.replace(/^\+/, "");
-    if (SALESFORCE_COUNTRY_CODES.has(bare)) {
-      payload.Country_Code__c = phone.countryCode;
-    }
-    // The national part keeps its own field either way: a blocked lead is
-    // still readable in the CMS, and no digits are thrown away.
-    set("Phone__c", clamp(phone.national, MAX_PHONE));
-  }
+  applyPhone(payload, row.phone);
 
   // Only for an enquiry about a listing, where the page IS the listing. A
   // general contact-form lead sends no URL here at all rather than an empty
@@ -343,6 +334,26 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
   if (listingUrl) payload.Website_Listing_URL__c = listingUrl;
 
   return payload;
+}
+
+/**
+ * `Country_Code__c` + `Phone__c` from one free-text number, onto a payload.
+ * Shared by every kind of lead so the split is made one way.
+ */
+export function applyPhone(payload: LeadPayload, raw: string | null): void {
+  const phone = splitPhone(raw);
+  if (!phone) return;
+  // `Country_Code__c` is a restricted picklist of 206 values, which no
+  // vendor doc mentioned. A code outside it fails the whole record, so an
+  // unmatched one is left unset rather than sent and rejected.
+  const bare = phone.countryCode.replace(/^\+/, "");
+  if (SALESFORCE_COUNTRY_CODES.has(bare)) {
+    payload.Country_Code__c = phone.countryCode;
+  }
+  // The national part keeps its own field either way: no digits are thrown
+  // away.
+  const national = clamp(phone.national, MAX_PHONE);
+  if (national) payload.Phone__c = national;
 }
 
 /**
@@ -407,15 +418,27 @@ export type PushResult =
  * rather than a sprint.
  */
 /**
- * Fields a lead can do without. `Website_Listing_URL__c`'s API name on
- * Lead__c is assumed (Levarus named the new field "website listing url"; the
- * listing object's is `Website_Listing_URL__c`), so a wrong guess costs one
- * extra call, not the lead.
+ * Fields a lead can do without. Both API names are assumed:
+ * `Website_Listing_URL__c` (Levarus named the new field "website listing url";
+ * the listing object's is `Website_Listing_URL__c`) and `Mortgage_Service__c`
+ * (asked for on 14 Oct 2026, not yet created). A wrong guess or a missing
+ * field costs one extra call, not the lead.
  */
-const OPTIONAL_LEAD_FIELDS = ["Website_Listing_URL__c"] as const;
+const OPTIONAL_LEAD_FIELDS = ["Website_Listing_URL__c", "Mortgage_Service__c"] as const;
 
 export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
-  const payload = buildLeadPayload(row);
+  return pushLeadPayload(row.id, buildLeadPayload(row), "enquiry");
+}
+
+/**
+ * Upsert one built payload under `externalId` — the row's own uuid, enquiry
+ * or mortgage request. `noun` only words the local refusal.
+ */
+export async function pushLeadPayload(
+  externalId: string,
+  payload: LeadPayload,
+  noun: string,
+): Promise<PushResult> {
   const object = leadObjectName();
   const externalIdField = leadExternalIdField();
 
@@ -424,28 +447,33 @@ export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
     return {
       ok: false,
       retryable: false,
-      message: `${LOCAL_BLOCK_PREFIX}: Salesforce requires ${missing.join(", ")}, and this enquiry has none. Not sent.`,
+      message: `${LOCAL_BLOCK_PREFIX}: Salesforce requires ${missing.join(", ")}, and this ${noun} has none. Not sent.`,
       errorCode: "REQUIRED_FIELD_MISSING",
     };
   }
 
-  const first = await send(row.id, object, externalIdField, payload);
-  // A field the org does not have — renamed, removed, its access withdrawn —
-  // must not lose the lead. Send it again without; what it carried is in the
-  // description too. Only fields in OPTIONAL_LEAD_FIELDS, and only once.
-  const dropped = !first.ok && first.errorCode === "INVALID_FIELD"
-    ? OPTIONAL_LEAD_FIELDS.find((f) => f in payload && first.message.includes(f))
-    : undefined;
-  if (dropped) {
-    const rest = { ...payload };
+  // A field the org does not have — renamed, removed, its access withdrawn,
+  // not created yet — must not lose the lead. Send it again without; what it
+  // carried is in the description too. Only fields in OPTIONAL_LEAD_FIELDS,
+  // each at most once.
+  let current = payload;
+  let result = await send(externalId, object, externalIdField, current);
+  for (let i = 0; i < OPTIONAL_LEAD_FIELDS.length && !result.ok; i++) {
+    const failed = result;
+    const dropped = failed.errorCode === "INVALID_FIELD"
+      ? OPTIONAL_LEAD_FIELDS.find((f) => f in current && failed.message.includes(f))
+      : undefined;
+    if (!dropped) break;
+    const rest = { ...current };
     delete rest[dropped];
-    return send(row.id, object, externalIdField, rest);
+    current = rest;
+    result = await send(externalId, object, externalIdField, current);
   }
-  return first;
+  return result;
 }
 
 async function send(
-  enquiryId: string,
+  externalId: string,
   object: string,
   externalIdField: string | null,
   payload: LeadPayload,
@@ -462,10 +490,10 @@ async function send(
       // which the vendor doc does not mention; falling back to the enquiry id
       // keeps that case from looking like a failure.)
       const res = await salesforceRequest<{ id?: string; created?: boolean }>(
-        `sobjects/${object}/${externalIdField}/${encodeURIComponent(enquiryId)}`,
+        `sobjects/${object}/${externalIdField}/${encodeURIComponent(externalId)}`,
         { method: "PATCH", body: payload },
       );
-      return { ok: true, id: res?.id ?? enquiryId };
+      return { ok: true, id: res?.id ?? externalId };
     }
 
     const res = await salesforceRequest<{ id?: string; success?: boolean }>(

@@ -132,3 +132,63 @@ export async function drainCrmErasures(
 
   return out;
 }
+
+/**
+ * Salesforce records whose source row is already deleted — a mortgage request
+ * erased or past retention (0160). The row is gone, so the record id waits in
+ * `salesforce_lead_erasures` instead of on the row, and the record is
+ * pseudonymised exactly as an erased enquiry's is. The queue row goes once the
+ * CRM confirms (or the record is already gone).
+ */
+export async function drainLeadErasureQueue(
+  admin: SupabaseClient<Database>,
+  opts: { limit?: number } = {},
+): Promise<ErasureDrainResult> {
+  const out: ErasureDrainResult = { scrubbed: 0, remaining: 0, cleared: 0, lastError: null };
+
+  const { data, error } = await admin
+    .from("salesforce_lead_erasures")
+    .select("sf_record_id, source, attempts")
+    .order("queued_at", { ascending: true })
+    .limit(opts.limit ?? ERASURE_BATCH);
+  if (error) {
+    out.lastError = error.message;
+    return out;
+  }
+  const rows = data ?? [];
+  if (rows.length === 0) return out;
+
+  if (!isSalesforceConfigured) {
+    out.remaining = rows.length;
+    out.lastError = "Salesforce is not configured";
+    return out;
+  }
+
+  for (const row of rows) {
+    const result = await scrubLead(row.sf_record_id, erasedPseudonym());
+    if (result.ok) {
+      await admin.from("salesforce_lead_erasures").delete().eq("sf_record_id", row.sf_record_id);
+      out.scrubbed += 1;
+      continue;
+    }
+    out.remaining += 1;
+    out.lastError = result.message;
+    await admin
+      .from("salesforce_lead_erasures")
+      .update({ attempts: row.attempts + 1, last_error: result.message })
+      .eq("sf_record_id", row.sf_record_id);
+    if (!result.retryable) {
+      await reportIssue("Salesforce erasure cannot complete", {
+        source: "salesforce/erasure",
+        context: { record: { id: row.sf_record_id, source: row.source, error: result.message } },
+      });
+    }
+  }
+  return out;
+}
+
+/** The shape migration 0067 gives an erased name: `deleted-` + 12 hex. */
+function erasedPseudonym(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  return `deleted-${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
