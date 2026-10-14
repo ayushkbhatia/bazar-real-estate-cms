@@ -6,6 +6,7 @@ import { ArrowRightLeft, Ban, Calendar, Check, ChevronDown, Send } from "lucide-
 import { toast } from "sonner";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
+import { usePostgresChanges } from "@/lib/realtime/use-postgres-changes";
 import {
   Dialog,
   DialogContent,
@@ -70,9 +71,15 @@ export function useAction() {
   return { pending, run };
 }
 
-/** The page re-reads itself on focus and every minute (cms/00-foundations §8). */
-export function FileRefresher() {
+/**
+ * The page re-reads itself the moment the request changes anywhere — a board
+ * drop, another adviser's action, another tab (Supabase Realtime, 0161) — and
+ * on focus and every minute as before (cms/00-foundations §8), in case the
+ * live connection drops.
+ */
+export function FileRefresher({ requestId }: { requestId: string }) {
   const router = useRouter();
+  usePostgresChanges({ channel: "mortgage-file", table: "mortgage_requests", filter: `id=eq.${requestId}` });
   useEffect(() => {
     const refresh = () => router.refresh();
     const id = setInterval(refresh, 60_000);

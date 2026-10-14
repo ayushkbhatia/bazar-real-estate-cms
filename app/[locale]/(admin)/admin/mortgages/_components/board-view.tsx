@@ -41,6 +41,7 @@ import { formatDuration } from "@/lib/mortgage-requests/sla";
 import type { QueueParams } from "@/lib/mortgage-requests/queue";
 import type { BoardCard, BoardColumn, BoardResult } from "@/lib/mortgage-requests/server/cms-queries";
 import { DECLINED_KEY } from "@/lib/mortgage-requests/stages";
+import { usePostgresChanges } from "@/lib/realtime/use-postgres-changes";
 import { cn } from "@/lib/utils";
 import { logContactAttempt, markConsultationHeld, type MortgageActionResult } from "../_actions";
 import { loadBoard } from "../_board-actions";
@@ -135,6 +136,11 @@ export function BoardView({
       window.removeEventListener("focus", onFocus);
     };
   }, [reload]);
+
+  // A change anywhere — another adviser, another tab, the file page — moves
+  // the card here too, at once (Realtime, 0161). The 30 s poll stays as the
+  // fallback for a dropped connection.
+  usePostgresChanges({ channel: "mortgage-board", table: "mortgage_requests", refresh: () => void reload() });
 
   const sensors = useSensors(
     // A short travel before a drag starts, so a click still opens the file.

@@ -1666,3 +1666,31 @@ production 14 Oct 2026; docs/SALESFORCE.md "Mortgage requests")
 **Open TODOs:** Levarus to add `Mortgage_Service__c` on `Lead__c`. Stage
 changes are not mirrored to the CRM (create-only, as for enquiries).
 
+## The queue: newest first, and live everywhere · 14 Oct 2026
+
+The client asked (14 Oct) for the list view to run latest first, and for a
+move on the board to show everywhere in the mortgage CMS at once, 1:1.
+
+**Built** (migration `0161_mortgage_requests_realtime.sql`, applied to
+production 14 Oct 2026)
+- **Newest first:** C1's list defaults to the newest request at the top
+  (`newestFirstCompare` in `L/queue.ts`, ties by reference). The sort control,
+  until now a fixed "Sort: promise due", is real: "Sort: newest first" (the
+  default, left out of the URL) or "Sort: promise due" (`?sort=promise_due`,
+  the designs' order). The board's columns keep promise-due order.
+- **Live:** `mortgage_requests` joins the `supabase_realtime` publication. The
+  list (`queue-view.tsx`), the board (`board-view.tsx`) and the file page
+  (`FileRefresher`, filtered to its request) each listen through
+  `usePostgresChanges` and re-read the moment a request changes — the server
+  page re-renders, a search re-runs, the board reloads. Realtime applies the
+  subscriber's RLS, so only the mortgage team hears; nothing renders from the
+  payload. The 30 s queue poll and the file page's 60 s refresh stay, as the
+  fallback for a dropped connection.
+- Verified on the local stack with realtime switched on (it is off in
+  `scripts/db-local/supabase/config.toml`): a board move showed in a list open
+  in another tab about a second later, and a file-page move on a board in
+  another tab in under two.
+
+**Deviations from SPEC:** SPEC §4.3 orders the queue by promise due; newest
+first is now the default, promise due one choice away.
+
