@@ -870,6 +870,11 @@ export const DOMAINS: Domain[] = [
     excluded: "One row of sync settings and run telemetry for the staff-only Salesforce listings screen.",
   },
   {
+    table: "salesforce_lead_erasures",
+    columns: [],
+    excluded: "Salesforce record ids still to pseudonymise after their mortgage request was deleted. Service role only; ids only.",
+  },
+  {
     table: "cta_clicks",
     columns: [],
     excluded:

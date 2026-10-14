@@ -1642,3 +1642,27 @@ other; `scripts/mortgage-demo/clear.ts --yes` still erases them.
   figures read sensibly once the team uses stages.
 - New CMS copy (stage menu, filter, activity lines) awaits the client's
   confirmation (`PENDING_CMS_COPY`).
+
+## Mortgage requests reach Salesforce as leads · 14 Oct 2026
+
+The client asked (14 Oct) for mortgage enquiries to show up as leads in
+Salesforce with the basic details, no documents, and the service named.
+
+**Built** (migration `0160_mortgage_requests_crm_sync.sql`, applied to
+production 14 Oct 2026; docs/SALESFORCE.md "Mortgage requests")
+- `mortgage_requests.crm_*` queue columns, default `pending`; the 11 sample
+  requests set `skipped`, BZM-26-0001 (the team's own test) left pending.
+- The lead-sync cron pushes them to `Lead__c` after the enquiries
+  (`lib/salesforce/mortgage-leads.ts`): name, email, mobile, service, reference,
+  residency, employment, where they started, listing, parent consultation and a
+  link to the file. No documents, consents or date of birth.
+- The service: `Mortgage_Service__c` (optional, sent and dropped until Levarus
+  add it) and the description's first line.
+- Erasure: deleting a request that reached Salesforce queues its record id in
+  `salesforce_lead_erasures`; the cron pseudonymises it.
+
+**Deviations from SPEC:** SPEC had no CRM integration for mortgage requests.
+
+**Open TODOs:** Levarus to add `Mortgage_Service__c` on `Lead__c`. Stage
+changes are not mirrored to the CRM (create-only, as for enquiries).
+

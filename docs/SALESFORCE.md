@@ -157,6 +157,37 @@ org that renamed it.
 Two success shapes, both handled: `201` with `created: true` for a new record,
 `200` with `created: false` for an update.
 
+### Mortgage requests (0160, 14 Oct 2026)
+
+Every mortgage request — Fast Pre-Approval or Mortgage Consultancy — goes to
+the same `Lead__c` object, through the same cron and the same upsert, on its
+own queue columns (`mortgage_requests.crm_*`, defaulting to `pending`). The
+request's uuid is the External ID. `lib/salesforce/mortgage-leads.ts` maps it:
+
+| Lead__c | From the request |
+|---|---|
+| `Name__c`, `Email__c` | `full_name`, `email` |
+| `Country_Code__c`, `Phone__c` | `mobile_e164`, split as an enquiry's phone is |
+| `Lead_Source__c` | `Website` |
+| `Inquiry_Type__c` | `Buy` (financing a purchase) |
+| `Mortgage_Service__c` | `Fast Pre-Approval (24-hour)` or `Mortgage Consultancy` — **optional, not on the object yet**; dropped and resent without while the org lacks it |
+| `Website_Listing_URL__c` | the listing page, when the applicant started from one |
+| `Description__c` | first line `Mortgage request: <service>`, then reference, residency, employment, where they started, the listing and parent consultation if any, a link to the file in /admin/mortgages, and the request id |
+
+Nothing from the file goes: no document, upload, consent or date of birth.
+The walkthrough samples (applicants at `@example.com`) are skipped, never sent.
+The lead is created once, at submission; later stage changes stay on the
+website.
+
+Erasure: a mortgage request is deleted outright by a DSR or retention, so a
+`before delete` trigger queues its Salesforce record id in
+`salesforce_lead_erasures`, and the cron pseudonymises that record as it does an
+erased enquiry's (Phase 2) before deleting the queue row.
+
+**Ask of Levarus:** a field `Mortgage_Service__c` on `Lead__c` — Text, or a
+picklist holding exactly the two values above — so the service has its own
+column in list views. Until then it is the description's first line.
+
 ## Phase 2 — erasure reaches the CRM
 
 The privacy notice names Salesforce as a processor and tells the public their

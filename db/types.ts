@@ -3118,6 +3118,12 @@ export type Database = {
           assigned_at: string | null
           closed_at: string | null
           created_at: string
+          crm_attempts: number
+          crm_external_id: string | null
+          crm_last_error: string | null
+          crm_next_attempt_at: string
+          crm_sync_state: string
+          crm_synced_at: string | null
           date_of_birth: string
           decided_at: string | null
           decided_by: string | null
@@ -3142,7 +3148,6 @@ export type Database = {
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
           site_locale: string | null
-          stage_id: string | null
           sla_breach_notified_at: string | null
           sla_due_at: string | null
           sla_paused_at: string | null
@@ -3151,6 +3156,7 @@ export type Database = {
           sla_risk_notified_at: string | null
           sla_started_at: string | null
           sla_stopped_at: string | null
+          stage_id: string | null
           status: Database["public"]["Enums"]["mortgage_status"]
           submission_key: string | null
           submitted_at: string
@@ -3160,6 +3166,12 @@ export type Database = {
           assigned_at?: string | null
           closed_at?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_external_id?: string | null
+          crm_last_error?: string | null
+          crm_next_attempt_at?: string
+          crm_sync_state?: string
+          crm_synced_at?: string | null
           date_of_birth: string
           decided_at?: string | null
           decided_by?: string | null
@@ -3184,7 +3196,6 @@ export type Database = {
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
           site_locale?: string | null
-          stage_id?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null
           sla_paused_at?: string | null
@@ -3193,6 +3204,7 @@ export type Database = {
           sla_risk_notified_at?: string | null
           sla_started_at?: string | null
           sla_stopped_at?: string | null
+          stage_id?: string | null
           status?: Database["public"]["Enums"]["mortgage_status"]
           submission_key?: string | null
           submitted_at?: string
@@ -3202,6 +3214,12 @@ export type Database = {
           assigned_at?: string | null
           closed_at?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_external_id?: string | null
+          crm_last_error?: string | null
+          crm_next_attempt_at?: string
+          crm_sync_state?: string
+          crm_synced_at?: string | null
           date_of_birth?: string
           decided_at?: string | null
           decided_by?: string | null
@@ -3226,7 +3244,6 @@ export type Database = {
           residency?: Database["public"]["Enums"]["mortgage_residency"]
           service?: Database["public"]["Enums"]["mortgage_service"]
           site_locale?: string | null
-          stage_id?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null
           sla_paused_at?: string | null
@@ -3235,6 +3252,7 @@ export type Database = {
           sla_risk_notified_at?: string | null
           sla_started_at?: string | null
           sla_stopped_at?: string | null
+          stage_id?: string | null
           status?: Database["public"]["Enums"]["mortgage_status"]
           submission_key?: string | null
           submitted_at?: string
@@ -3267,6 +3285,13 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mortgage_requests_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "mortgage_stages"
             referencedColumns: ["id"]
           },
         ]
@@ -4064,6 +4089,30 @@ export type Database = {
           name?: string
           permissions?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      salesforce_lead_erasures: {
+        Row: {
+          attempts: number
+          last_error: string | null
+          queued_at: string
+          sf_record_id: string
+          source: string
+        }
+        Insert: {
+          attempts?: number
+          last_error?: string | null
+          queued_at?: string
+          sf_record_id: string
+          source: string
+        }
+        Update: {
+          attempts?: number
+          last_error?: string | null
+          queued_at?: string
+          sf_record_id?: string
+          source?: string
         }
         Relationships: []
       }
