@@ -10,10 +10,33 @@
  * server component — only these three leaves are client.
  */
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useTranslations } from "next-intl";
+import { seededShuffle } from "@/lib/shuffle";
 import type { FeaturedCardProps } from "./map-listing";
 import { FeaturedListings } from "./featured-listings";
+
+/** Cards the featured grid shows — one row of four. */
+const FEATURED_COUNT = 4;
+
+/*
+ * One seed per page load, drawn in the browser. The page is ISR-cached, so a
+ * shuffle on the server would hand every visitor in a five-minute window the
+ * same "random" four; drawing it here gives each visit its own. The server
+ * snapshot is null, so the server HTML and the hydrating render agree (the
+ * newest four), and the shuffled four replace them straight after — the grid
+ * sits below the hero, so that happens out of sight.
+ */
+const VISIT_SEED = typeof window === "undefined" ? null : Math.random();
+const noSubscribe = () => () => {};
+const getSeed = () => VISIT_SEED;
+const getServerSeed = () => null;
 
 export type BuyCategory = { key: string; label: string };
 
@@ -102,9 +125,16 @@ export function CategoryFeatured({
   ctaHrefByCategory?: Record<string, string>;
 }) {
   const { active } = useBuyCategory();
+  const seed = useSyncExternalStore(noSubscribe, getSeed, getServerSeed);
   const bucket = byCategory[active];
   const hasBucket = !!(bucket && bucket.length > 0);
-  const items = hasBucket ? bucket : fallback;
+  // Each bucket is a pool larger than the row; the visit's seed decides which
+  // four of it show, and in what order — not always the newest four.
+  const items = useMemo(() => {
+    const pool = hasBucket ? bucket : fallback;
+    const ordered = seed === null ? pool : seededShuffle(pool, seed);
+    return ordered.slice(0, FEATURED_COUNT);
+  }, [hasBucket, bucket, fallback, seed]);
   // When the active category has no listings we show the general fallback
   // row, so the CTA must point at the general search — not the empty
   // category filter that would land on a zero-results page.

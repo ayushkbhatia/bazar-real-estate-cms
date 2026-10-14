@@ -21,6 +21,13 @@ import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
+/**
+ * How many listings each featured category hands the grid. The grid shows
+ * four, picked at random per visit from this pool (`CategoryFeatured`), so a
+ * bucket bigger than four rotates instead of always showing its newest.
+ */
+const FEATURED_POOL = 24;
+
 export async function generateMetadata({
   params,
 }: {
@@ -63,10 +70,10 @@ export default async function BuyPage({
   ] = await Promise.all([
     getMasterPageContent("buy"),
     listExclusiveProperties({ limit: 4 }),
-    listFeaturedByType({ mode: "buy", type: "apartment", limit: 4 }),
-    listFeaturedByType({ mode: "buy", type: "villa", limit: 4 }),
-    listFeaturedByType({ mode: "buy", type: "penthouse", limit: 4 }),
-    listFeaturedByType({ segment: "commercial", limit: 4 }),
+    listFeaturedByType({ mode: "buy", type: "apartment", limit: FEATURED_POOL }),
+    listFeaturedByType({ mode: "buy", type: "villa", limit: FEATURED_POOL }),
+    listFeaturedByType({ mode: "buy", type: "penthouse", limit: FEATURED_POOL }),
+    listFeaturedByType({ segment: "commercial", limit: FEATURED_POOL }),
     listAreaPins("abu-dhabi"),
     listAreaPins("dubai"),
     listAreaListingDots(),
@@ -80,10 +87,10 @@ export default async function BuyPage({
   const featured = fallbackRows.slice(0, 4).map(listingRowToCard);
 
   const featuredByCategory: Record<string, ReturnType<typeof listingRowToCard>[]> = {
-    apartment: apartmentRows.slice(0, 4).map(listingRowToCard),
-    villa: villaRows.slice(0, 4).map(listingRowToCard),
-    penthouse: penthouseRows.slice(0, 4).map(listingRowToCard),
-    commercial: commercialRows.slice(0, 4).map(listingRowToCard),
+    apartment: apartmentRows.map(listingRowToCard),
+    villa: villaRows.map(listingRowToCard),
+    penthouse: penthouseRows.map(listingRowToCard),
+    commercial: commercialRows.map(listingRowToCard),
   };
 
   const mapAreas = [...abuDhabiPins, ...dubaiPins];
