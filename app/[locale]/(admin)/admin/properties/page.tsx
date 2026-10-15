@@ -11,11 +11,14 @@ import { listActiveAgents } from "@/lib/queries/staff-agents";
 import { PropertiesTable } from "./_table";
 import { BulkToolbar } from "./_toolbar";
 import { StatusTabs } from "./_status-tabs";
+import { PropertyTypeFilter, propertyTypeLabel } from "./_filter-dropdowns";
+import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import type { Database } from "@/db/types";
 
 export const dynamic = "force-dynamic"; // auth-aware fetch
 
 type Status = Database["public"]["Enums"]["property_status"];
+type PropertyType = Database["public"]["Enums"]["property_type"];
 const VALID_STATUSES: readonly (Status | "all")[] = [
   "all",
   "draft",
@@ -28,9 +31,13 @@ const VALID_STATUSES: readonly (Status | "all")[] = [
 export default async function AdminPropertiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; type?: string }>;
 }) {
   const params = await searchParams;
+  // An unknown `?type=` reads as "all types" rather than an empty grid.
+  const type = (PROPERTY_TYPES as readonly string[]).includes(params.type ?? "")
+    ? (params.type as PropertyType)
+    : undefined;
   const status = VALID_STATUSES.includes(
     (params.status ?? "all") as Status | "all",
   )
@@ -41,9 +48,10 @@ export default async function AdminPropertiesPage({
     listAllPropertiesForAdmin({
       limit: 100,
       status: status === "all" ? undefined : status,
+      type,
     }),
     listActiveAgents(),
-    countAdminPropertiesByStatus(),
+    countAdminPropertiesByStatus({ type }),
   ]);
 
   return (
@@ -75,7 +83,7 @@ export default async function AdminPropertiesPage({
       }
     >
       <div className="flex flex-col gap-6">
-        <StatusTabs active={status} counts={counts} />
+        <StatusTabs active={status} counts={counts} type={type} />
         <BulkToolbar
           rows={rows.map((r) => ({ id: r.id, reference: r.reference }))}
           agents={agents.map((a) => ({
@@ -84,9 +92,13 @@ export default async function AdminPropertiesPage({
             title: a.title,
           }))}
         />
-        <div className="flex items-baseline justify-between">
-          <div className="text-[13px] text-bz-muted">
-            {total} {total === 1 ? "property" : "properties"}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4 flex-wrap">
+            <PropertyTypeFilter />
+            <div className="text-[13px] text-bz-muted">
+              {total} {total === 1 ? "property" : "properties"}
+              {type ? ` · ${propertyTypeLabel(type).toLowerCase()}` : null}
+            </div>
           </div>
           <div className="text-[12px] text-bz-muted">
             Click a row to open the editor.

@@ -21,9 +21,12 @@ const TABS: { value: Status | "all"; label: string }[] = [
 export function StatusTabs({
   active,
   counts,
+  type,
 }: {
   active: Status | "all";
   counts: Record<Status | "all", number>;
+  /** The Type filter, kept across tabs: switching status doesn't drop it. */
+  type?: string;
 }) {
   return (
     <nav
@@ -33,10 +36,12 @@ export function StatusTabs({
     >
       {TABS.map((tab) => {
         const isActive = active === tab.value;
-        const href =
-          tab.value === "all"
-            ? "/admin/properties"
-            : `/admin/properties?status=${tab.value}`;
+        const query = new URLSearchParams();
+        if (tab.value !== "all") query.set("status", tab.value);
+        if (type) query.set("type", type);
+        const href = query.size
+          ? `/admin/properties?${query.toString()}`
+          : "/admin/properties";
         return (
           <Link
             key={tab.value}

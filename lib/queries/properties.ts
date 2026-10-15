@@ -11,6 +11,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
 type Form = Database["public"]["Enums"]["property_form"];
+type PropertyType = Database["public"]["Enums"]["property_type"];
 
 /*
  * The Arabic twins ride here rather than being fetched separately, which is
@@ -457,6 +458,8 @@ export async function listAllPropertiesForAdmin(opts: {
   limit?: number;
   offset?: number;
   status?: Status;
+  /** The admin grid's Type filter. */
+  type?: PropertyType;
 }): Promise<{ rows: ListingRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
@@ -465,6 +468,7 @@ export async function listAllPropertiesForAdmin(opts: {
     .select(LISTING_FIELDS, { count: "exact" })
     .is("deleted_at", null);
   if (opts.status) query = query.eq("status", opts.status);
+  if (opts.type) query = query.eq("type", opts.type);
   query = query
     .order("created_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 50) - 1);
@@ -484,10 +488,14 @@ export async function listAllPropertiesForAdmin(opts: {
   return { rows, total: count ?? 0 };
 }
 
-/** Admin: count properties per status. Sprint 7b — for status-tab badges. */
-export async function countAdminPropertiesByStatus(): Promise<
-  Record<Status | "all", number>
-> {
+/**
+ * Admin: count properties per status. Sprint 7b — for status-tab badges.
+ * With `type`, counts within that property type, so the tabs agree with the
+ * filtered grid.
+ */
+export async function countAdminPropertiesByStatus(
+  opts: { type?: PropertyType } = {},
+): Promise<Record<Status | "all", number>> {
   const empty: Record<Status | "all", number> = {
     all: 0,
     draft: 0,
@@ -498,10 +506,12 @@ export async function countAdminPropertiesByStatus(): Promise<
   };
   if (!isSupabaseConfigured) return empty;
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("properties")
     .select("status")
     .is("deleted_at", null);
+  if (opts.type) query = query.eq("type", opts.type);
+  const { data, error } = await query;
   if (error || !data) {
     if (error) console.error("[countAdminPropertiesByStatus]", error);
     return empty;
