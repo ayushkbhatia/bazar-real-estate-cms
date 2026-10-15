@@ -598,11 +598,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         >
           {property.title}
         </h1>
-        <div className="flex items-baseline justify-between mt-4 flex-wrap gap-x-8 gap-y-4">
-          <div className="text-[14px] text-bz-muted">
-            {property.areas?.name ?? t("fallbackArea")} ·{" "}
-            <span className="mono text-bz-ink-2">{property.reference}</span>
-          </div>
+        <div className="mt-4">
           <PriceBlock
             priceAed={property.price_aed}
             aedPerFt2={aedPerFt}
@@ -610,13 +606,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           />
         </div>
         {/*
-          Into the mortgage application flow with this listing attached, for
-          sale listings, once the flow is open to the public. Not designed;
-          kept quiet beside the price rather than competing with the
-          enquiry card.
+          Area and reference, with the way into the mortgage application flow
+          across from them — this listing attached, for sale listings, once
+          the flow is open to the public. Kept quiet on the reference line
+          rather than competing with the price above or the enquiry card.
         */}
-        {mortgageFlowOpen && property.mode !== "rent" ? (
-          <div className="mt-4 flex justify-end">
+        <div className="flex items-center justify-between mt-5 flex-wrap gap-x-8 gap-y-3">
+          <div className="text-[14px] text-bz-muted">
+            {property.areas?.name ?? t("fallbackArea")} ·{" "}
+            <span className="mono text-bz-ink-2">{property.reference}</span>
+          </div>
+          {mortgageFlowOpen && property.mode !== "rent" ? (
             <Link
               href={MORTGAGE_ENTRY_LINKS.propertyDetail(property.reference)}
               data-testid="mortgage-pre-approval"
@@ -624,8 +624,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             >
               {t("actions.mortgagePreApproval")}
             </Link>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </section>
 
       {/* Key facts */}
