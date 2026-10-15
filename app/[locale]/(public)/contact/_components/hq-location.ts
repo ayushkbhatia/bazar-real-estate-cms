@@ -14,7 +14,9 @@
 export const HQ_LAT = 24.468113844266917;
 export const HQ_LNG = 54.339882834551275;
 
-// "Get directions" → Google Maps directions to the office. The api=1 URL
-// scheme opens the native Maps app on mobile (in directions mode) and the web
-// app on desktop, so it works wherever it's opened or shared.
-export const HQ_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${HQ_LAT},${HQ_LNG}`;
+// "Get directions" → the office's own Google Maps listing, the link the
+// client shares (it resolves to the "Bazar Real Estate" place, ~10m from the
+// pin above). A place link rather than a bare coordinate, so the visitor lands
+// on the business — its name, hours and reviews — with directions one tap
+// away, and the native Maps app opens it on a phone.
+export const HQ_DIRECTIONS_URL = "https://maps.app.goo.gl/seUTWRQP63H69fEd6";
