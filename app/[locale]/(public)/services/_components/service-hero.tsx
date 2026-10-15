@@ -49,6 +49,13 @@ export function ServiceHero({
   formFirstOnMobile = true,
 }: Props) {
   const lines = (title ?? "").split("\n");
+  // The headline's last two words never part: "…in Abu Dhabi" wraps as
+  // "…in / Abu Dhabi", not "…in Abu / Dhabi". Only when the italic tail
+  // isn't there to end the line instead, and only past two words, so a short
+  // title still wraps where it must.
+  if (!titleEmphasis && lines.length > 0) {
+    lines[lines.length - 1] = bindLastWords(lines[lines.length - 1]!);
+  }
 
   return (
     <section
@@ -146,4 +153,12 @@ export function ServiceHero({
       </div>
     </section>
   );
+}
+
+/** Join a line's last two words with a no-break space, when it has three or more. */
+export function bindLastWords(line: string): string {
+  const words = line.trim().split(/\s+/);
+  if (words.length < 3) return line;
+  const last = words.pop()!;
+  return `${words.join(" ")}\u00A0${last}`;
 }
