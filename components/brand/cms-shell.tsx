@@ -14,6 +14,7 @@ import {
   Layers,
   LayoutTemplate,
   Mails,
+  Newspaper,
   Menu,
   PanelBottom,
   Settings,
@@ -86,6 +87,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
       { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
       { label: "Footer", href: "/admin/footer", icon: PanelBottom },
       { label: "Content assets", href: "/admin/content-assets", icon: Mails },
+      { label: "Newsletter", href: "/admin/newsletter", icon: Newspaper },
     ],
   },
   {
@@ -186,6 +188,7 @@ function activeCmsTab(pathname: string | null): string {
       "/admin/forms",
       "/admin/floating-ctas",
       "/admin/content-assets",
+      "/admin/newsletter",
     ].some((m) => p.startsWith(m))
   )
     return "content";

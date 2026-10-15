@@ -29,6 +29,12 @@ export type SendEmailInput = {
   replyTo?: string;
   /** Files sent with the message, e.g. a generated PDF. */
   attachments?: EmailAttachment[];
+  /**
+   * Extra message headers. The newsletter's `List-Unsubscribe` and
+   * `List-Unsubscribe-Post` ride here — mailbox providers expect both on
+   * bulk mail and show their own one-click unsubscribe for it.
+   */
+  headers?: Record<string, string>;
 };
 
 export type SendEmailResult =
@@ -147,6 +153,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       subject: input.subject,
       text: input.text,
       html: input.html,
+      ...(input.headers ? { headers: input.headers } : {}),
       ...(input.attachments?.length
         ? {
             attachments: input.attachments.map((a) => ({
@@ -173,6 +180,75 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.warn("[email] Resend threw", scrubPii(message));
+    return { status: "error", message };
+  }
+}
+
+/** One message of a batch: no attachments, which Resend's batch endpoint refuses. */
+export type BatchEmailInput = Omit<SendEmailInput, "attachments">;
+
+export type SendEmailBatchResult =
+  /** One id per message, in the order sent. */
+  | { status: "ok"; ids: string[] }
+  | { status: "skipped"; reason: string }
+  | { status: "error"; message: string };
+
+/** Resend's ceiling for one batch call. */
+export const EMAIL_BATCH_LIMIT = 100;
+
+/**
+ * Up to 100 messages in one Resend call — the newsletter's sender.
+ *
+ * All or nothing: Resend validates the whole batch strictly and either
+ * accepts every message or none, so the caller can treat the batch as one
+ * unit and retry it as one. `idempotencyKey` makes that retry safe — a batch
+ * Resend already accepted under the same key is not sent twice.
+ *
+ * Same dry-run rule as `sendEmail`: outside production nothing leaves unless
+ * `EMAIL_DRY_RUN=false`.
+ */
+export async function sendEmailBatch(
+  inputs: BatchEmailInput[],
+  opts: { idempotencyKey?: string } = {},
+): Promise<SendEmailBatchResult> {
+  if (inputs.length === 0) return { status: "ok", ids: [] };
+  if (inputs.length > EMAIL_BATCH_LIMIT) {
+    return { status: "error", message: `A batch holds at most ${EMAIL_BATCH_LIMIT} messages.` };
+  }
+  if (isEmailDryRun()) {
+    console.warn(
+      `[email] DRY RUN — not sending a batch of ${inputs.length} "${scrubPii(inputs[0]!.subject)}". Set EMAIL_DRY_RUN=false to send.`,
+    );
+    return { status: "skipped", reason: "dry run — set EMAIL_DRY_RUN=false to send" };
+  }
+  const resend = getClient();
+  if (!resend) return { status: "skipped", reason: "RESEND_API_KEY not set" };
+
+  try {
+    const result = await resend.batch.send(
+      inputs.map((input) => ({
+        from: input.from ?? env.RESEND_FROM_ADDRESS ?? DEFAULT_FROM,
+        to: [input.to],
+        replyTo: input.replyTo ?? env.RESEND_REPLY_TO ?? DEFAULT_REPLY_TO,
+        subject: input.subject,
+        text: input.text,
+        html: input.html,
+        ...(input.headers ? { headers: input.headers } : {}),
+      })),
+      opts.idempotencyKey ? { idempotencyKey: opts.idempotencyKey } : undefined,
+    );
+    if (result.error) {
+      console.warn("[email] Resend batch error", scrubPii(result.error.message));
+      return { status: "error", message: explainResendError(result.error.message) };
+    }
+    const ids = (result.data?.data ?? []).map((d) => d.id);
+    if (ids.length !== inputs.length) {
+      return { status: "error", message: `Resend accepted ${ids.length} of ${inputs.length} messages.` };
+    }
+    return { status: "ok", ids };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn("[email] Resend batch threw", scrubPii(message));
     return { status: "error", message };
   }
 }

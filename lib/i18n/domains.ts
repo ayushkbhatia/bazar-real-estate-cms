@@ -812,6 +812,35 @@ export const DOMAINS: Domain[] = [
     ],
   },
 
+  {
+    table: "newsletter_campaigns",
+    columns: [
+      {
+        column: "subject",
+        strategy: "hand",
+        evidence: "lib/newsletter/campaign.ts:renderNewsletter",
+        note: "Read in a subscriber's inbox, not on a page. An Arabic subscriber gets the _ar edition when both its subject and body are written (docs/NEWSLETTER.md), the English otherwise. Hand: each newsletter is written once, by marketing, for that send.",
+      },
+      {
+        column: "preheader",
+        strategy: "hand",
+        evidence: "lib/newsletter/campaign.ts:renderNewsletter",
+        note: "The hidden preview line inboxes show after the subject. Same send path as `subject`.",
+      },
+      {
+        column: "body",
+        strategy: "hand",
+        evidence: "lib/newsletter/campaign.ts:renderNewsletter",
+        note: "Same send path as `subject`; sanitised rich text with {{tokens}} a translation pass would mangle.",
+      },
+    ],
+  },
+  {
+    table: "newsletter_deliveries",
+    columns: [],
+    excluded: "The send queue: one row per recipient per newsletter. Ids, statuses and Resend message ids only.",
+  },
+
   // ── No public text ───────────────────────────────────────────────────────
   {
     table: "developer_profiles",
@@ -1073,6 +1102,9 @@ export const WIRED_EDITOR: string[] = [
   // /admin/content-assets?lang=ar — the same editor, right to left.
   "content_assets.subject",
   "content_assets.body",
+  "newsletter_campaigns.subject",
+  "newsletter_campaigns.preheader",
+  "newsletter_campaigns.body",
   "media_assets.alt_text",
   "development_units.unit_type",
   "development_units.lagoon_access",
@@ -1143,6 +1175,9 @@ export const WIRED_READ: string[] = [
   // Not a page fold: the send path picks the half by the lead's own locale.
   "content_assets.subject",
   "content_assets.body",
+  "newsletter_campaigns.subject",
+  "newsletter_campaigns.preheader",
+  "newsletter_campaigns.body",
   "areas.name",
   "areas.description",
   "properties.title",

@@ -3494,9 +3494,130 @@ export type Database = {
           },
         ]
       }
+      newsletter_campaigns: {
+        Row: {
+          audience: string
+          body: string
+          body_ar: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          preheader: string
+          preheader_ar: string | null
+          recipient_count: number
+          scheduled_at: string | null
+          sent_at: string | null
+          sent_by: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["newsletter_campaign_status"]
+          subject: string
+          subject_ar: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          audience?: string
+          body?: string
+          body_ar?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          preheader?: string
+          preheader_ar?: string | null
+          recipient_count?: number
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["newsletter_campaign_status"]
+          subject?: string
+          subject_ar?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          audience?: string
+          body?: string
+          body_ar?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          preheader?: string
+          preheader_ar?: string | null
+          recipient_count?: number
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["newsletter_campaign_status"]
+          subject?: string
+          subject_ar?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_deliveries: {
+        Row: {
+          attempts: number
+          campaign_id: string
+          claimed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          locale: string
+          resend_id: string | null
+          sent_at: string | null
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          attempts?: number
+          campaign_id: string
+          claimed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          locale?: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id: string
+        }
+        Update: {
+          attempts?: number
+          campaign_id?: string
+          claimed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          locale?: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_deliveries_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_deliveries_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           account_id: string | null
+          confirmation_sent_at: string | null
           confirmation_token: string | null
           confirmed_at: string | null
           created_at: string
@@ -3506,11 +3627,13 @@ export type Database = {
           source: string | null
           status: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at: string
+          unsubscribe_token: string
           unsubscribed_at: string | null
           updated_at: string
         }
         Insert: {
           account_id?: string | null
+          confirmation_sent_at?: string | null
           confirmation_token?: string | null
           confirmed_at?: string | null
           created_at?: string
@@ -3520,11 +3643,13 @@ export type Database = {
           source?: string | null
           status?: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at?: string
+          unsubscribe_token?: string
           unsubscribed_at?: string | null
           updated_at?: string
         }
         Update: {
           account_id?: string | null
+          confirmation_sent_at?: string | null
           confirmation_token?: string | null
           confirmed_at?: string | null
           created_at?: string
@@ -3534,6 +3659,7 @@ export type Database = {
           source?: string | null
           status?: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at?: string
+          unsubscribe_token?: string
           unsubscribed_at?: string | null
           updated_at?: string
         }
@@ -5857,6 +5983,32 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      newsletter_claim_deliveries: {
+        Args: { p_limit: number }
+        Returns: {
+          attempts: number
+          campaign_id: string
+          claimed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          locale: string
+          resend_id: string | null
+          sent_at: string | null
+          status: string
+          subscriber_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "newsletter_deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      newsletter_start_campaign: {
+        Args: { p_campaign: string }
+        Returns: number
+      }
       release_salesforce_listing_lease: {
         Args: { p_holder: string }
         Returns: undefined
@@ -6066,6 +6218,12 @@ export type Database = {
         | "consultation_booked"
         | "completed"
       mortgage_team_role: "head" | "adviser"
+      newsletter_campaign_status:
+        | "draft"
+        | "scheduled"
+        | "sending"
+        | "sent"
+        | "cancelled"
       newsletter_status: "pending" | "confirmed" | "unsubscribed" | "bounced"
       notification_kind:
         | "new_enquiry"
@@ -6471,6 +6629,13 @@ export const Constants = {
         "completed",
       ],
       mortgage_team_role: ["head", "adviser"],
+      newsletter_campaign_status: [
+        "draft",
+        "scheduled",
+        "sending",
+        "sent",
+        "cancelled",
+      ],
       newsletter_status: ["pending", "confirmed", "unsubscribed", "bounced"],
       notification_kind: [
         "new_enquiry",

@@ -51,6 +51,7 @@ const EXPECTED_INTERVAL_MINUTES: Record<string, number> = {
   "health-digest": 1440,
   "mortgage-worker": 5,
   "mortgage-retention": 1440,
+  "newsletter-send": 1,
 };
 
 export function staleAfterMinutes(job: string): number {
