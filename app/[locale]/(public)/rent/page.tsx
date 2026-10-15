@@ -95,6 +95,10 @@ export default async function RentPage({
             className="mt-5"
             successStyle="soft"
             allowAnother
+            // Opens on where and what — location, category, property type —
+            // and unfolds bedrooms, price and the contact details once they
+            // start answering. About half the card's height, as on /buy.
+            foldAfterRows={3}
           />
         ) : null
       }
