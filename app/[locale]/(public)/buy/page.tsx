@@ -142,6 +142,10 @@ export default async function BuyPage({
             className="mt-5"
             successStyle="soft"
             allowAnother
+            // Opens on who they are and what they want — name, phone and
+            // email, purpose, type and bedrooms — and unfolds the rest of the
+            // brief once they start answering. About half the card's height.
+            foldAfterRows={4}
           />
         ) : null
       }

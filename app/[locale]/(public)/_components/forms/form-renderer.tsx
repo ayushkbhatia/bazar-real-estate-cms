@@ -75,6 +75,16 @@ export type FormRendererProps = {
    * click; the gate also renders a real link for the popup-blocker case.
    */
   onSuccess?: () => void;
+  /**
+   * Show only the first N rows until the visitor starts answering; the rest
+   * stays folded beneath and opens on their first answer (or on submit).
+   *
+   * Counted in rendered rows rather than named fields, so an editor who
+   * renames, reorders or pairs fields in the Forms Manager moves the fold
+   * with them instead of breaking it. A required field below the fold still
+   * validates: submitting unfolds the form first, so its error is on screen.
+   */
+  foldAfterRows?: number;
   className?: string;
 };
 
@@ -119,6 +129,7 @@ export function FormRenderer({
   successToast = null,
   toastErrors = false,
   onSuccess,
+  foldAfterRows,
   className,
 }: FormRendererProps) {
   const stacked = form.def.variant === "stacked";
@@ -148,6 +159,10 @@ export function FormRenderer({
   // own state, so clearing `values` alone would leave it showing a range the
   // form no longer has an answer for; remounting the tree is the honest reset.
   const [attempt, setAttempt] = useState(0);
+  // Whether the rows past `foldAfterRows` are showing. Only ever opens within
+  // an attempt — folding back up under a visitor mid-answer would hide what
+  // they just typed.
+  const [unfolded, setUnfolded] = useState(!foldAfterRows);
 
   // Started in an effect rather than at render: `Date.now()` is impure, and a
   // clock that only starts once the browser has actually painted is the one
@@ -179,6 +194,9 @@ export function FormRenderer({
   };
 
   function set(key: string, value: unknown) {
+    // A real answer, not an echo: the range slider reports its untouched
+    // empty range once on mount, and that must not open the fold.
+    if (value !== values[key]) setUnfolded(true);
     setValues((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => {
       if (!prev[key]) return prev;
@@ -191,6 +209,7 @@ export function FormRenderer({
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setFormError(null);
+    setUnfolded(true);
 
     const normalised = normaliseSubmission(form, values);
     const parsed = buildFormSchema(form, dynamicOptions, normalised).safeParse(
@@ -256,6 +275,7 @@ export function FormRenderer({
             ? () => {
                 setAttempt((n) => n + 1);
                 setDone(false);
+                setUnfolded(!foldAfterRows);
               }
             : null
         }
@@ -263,6 +283,52 @@ export function FormRenderer({
       />
     );
   }
+
+  const renderRow = (row: FormFieldDef[], index: number) =>
+    row.length > 1 ? (
+      <div
+        key={row.map((f) => f.key).join("-")}
+        className={cn(
+          "grid gap-3",
+          stacked
+            ? // Two-up on a PHONE, not just from `sm`. `rows()` above pairs
+              // only fields the registry marked `width: "half"`, so the
+              // decision that these two are short enough to share a line
+              // has already been made — honouring it below `sm` costs
+              // nothing and saved 84px on the home card, where First and
+              // Last Name were two full-width 68px blocks stacked.
+              "grid-cols-2 sm:gap-4"
+            : "grid-cols-1 sm:grid-cols-2",
+        )}
+      >
+        {row.map((f) => (
+          <FieldControl
+            key={f.key}
+            field={withTokens(f, tokens)}
+            stacked={stacked}
+            value={values[f.key]}
+            error={errors[f.key]}
+            options={optionsFor(f, dynamicOptions)}
+            onChange={(v) => set(f.key, v)}
+          />
+        ))}
+      </div>
+    ) : (
+      <FieldControl
+        key={row[0]?.key ?? index}
+        field={withTokens(row[0]!, tokens)}
+        stacked={stacked}
+        value={values[row[0]!.key]}
+        error={errors[row[0]!.key]}
+        options={optionsFor(row[0]!, dynamicOptions)}
+        onChange={(v) => set(row[0]!.key, v)}
+      />
+    );
+
+  const allRows = rows(fields);
+  const fold = Math.min(foldAfterRows ?? allRows.length, allRows.length);
+  const headRows = allRows.slice(0, fold);
+  const tailRows = allRows.slice(fold);
 
   return (
     <form
@@ -313,47 +379,43 @@ export function FormRenderer({
         </p>
       ) : null}
 
-      {rows(fields).map((row, index) =>
-        row.length > 1 ? (
-          <div
-            key={row.map((f) => f.key).join("-")}
-            className={cn(
-              "grid gap-3",
-              stacked
-                ? // Two-up on a PHONE, not just from `sm`. `rows()` above pairs
-                  // only fields the registry marked `width: "half"`, so the
-                  // decision that these two are short enough to share a line
-                  // has already been made — honouring it below `sm` costs
-                  // nothing and saved 84px on the home card, where First and
-                  // Last Name were two full-width 68px blocks stacked.
-                  "grid-cols-2 sm:gap-4"
-                : "grid-cols-1 sm:grid-cols-2",
-            )}
-          >
-            {row.map((f) => (
-              <FieldControl
-                key={f.key}
-                field={withTokens(f, tokens)}
-                stacked={stacked}
-                value={values[f.key]}
-                error={errors[f.key]}
-                options={optionsFor(f, dynamicOptions)}
-                onChange={(v) => set(f.key, v)}
-              />
-            ))}
+      {headRows.map(renderRow)}
+
+      {tailRows.length ? (
+        /*
+          The folded rows. A grid row animating 0fr → 1fr is the one way to
+          ease a box open to its natural height without measuring it. The
+          negative margin cancels the form's own gap while closed, and the
+          inner padding hands it back once open, so a closed fold costs the
+          card nothing. `inert` keeps the hidden fields out of the tab order
+          and away from screen readers until they are on screen.
+
+          The side padding is room for the slider's handles, which sit
+          half outside their track at either end, inside the clip.
+        */
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows,opacity] duration-500 ease-out motion-reduce:transition-none",
+            stacked ? "-mt-3 md:-mt-4" : "-mt-3.5",
+            unfolded
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0",
+          )}
+          inert={!unfolded}
+          data-folded={unfolded ? undefined : ""}
+        >
+          <div className="min-h-0 overflow-hidden -mx-2 px-2">
+            <div
+              className={cn(
+                "flex flex-col pb-1",
+                stacked ? "gap-3 md:gap-4 pt-3 md:pt-4" : "gap-3.5 pt-3.5",
+              )}
+            >
+              {tailRows.map((row, index) => renderRow(row, fold + index))}
+            </div>
           </div>
-        ) : (
-          <FieldControl
-            key={row[0]?.key ?? index}
-            field={withTokens(row[0]!, tokens)}
-            stacked={stacked}
-            value={values[row[0]!.key]}
-            error={errors[row[0]!.key]}
-            options={optionsFor(row[0]!, dynamicOptions)}
-            onChange={(v) => set(row[0]!.key, v)}
-          />
-        ),
-      )}
+        </div>
+      ) : null}
 
       {formError ? (
         <p className="text-[13px] text-bz-danger" role="alert">
