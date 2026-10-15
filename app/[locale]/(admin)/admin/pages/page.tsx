@@ -96,12 +96,10 @@ export default async function AdminPagesPage() {
   // same kind of page and the same editor, but they sit under /services in the
   // site — grouping them keeps the top grid to the routes in the main nav
   // instead of mixing sixteen cards of two different depths.
-  const servicePages = MASTER_PAGES.filter((p) =>
-    p.path.startsWith("/services/"),
-  );
-  const topLevelPages = MASTER_PAGES.filter(
-    (p) => !p.path.startsWith("/services/"),
-  );
+  const isServicePage = (p: (typeof MASTER_PAGES)[number]) =>
+    p.path.startsWith("/services/") || p.group === "services";
+  const servicePages = MASTER_PAGES.filter(isServicePage);
+  const topLevelPages = MASTER_PAGES.filter((p) => !isServicePage(p));
 
   return (
     <CmsShell
@@ -139,9 +137,9 @@ export default async function AdminPagesPage() {
               <h2 className="text-[14px] font-medium">Service pages</h2>
               <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
                 The individual service landings under{" "}
-                <span className="mono">/services</span>. Same editor as the
-                master pages above — reorder sections, hide them, and edit copy,
-                links and images.
+                <span className="mono">/services</span>, and the mortgage
+                landing. Same editor as the master pages above — reorder
+                sections, hide them, and edit copy, links and images.
               </p>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

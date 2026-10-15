@@ -463,7 +463,7 @@ export function MortgageForm({ initial }: { initial: MortgageSettings }) {
   return (
     <SectionCard
       title="Mortgage calculator"
-      subtitle="What /tools/mortgage computes with. The words around the calculator live in Pages & blocks → Mortgage calculator; the pre-approval form's own fields live in Forms."
+      subtitle="What /tools/mortgage computes with. Every word on the page, the calculator's own labels included, lives in Pages & blocks → Service pages → Mortgage; the pre-approval form's own fields live in Forms."
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-7">
         {MORTGAGE_GROUPS.map((group) => (

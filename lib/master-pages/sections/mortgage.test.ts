@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getMasterPage, resolveSections, str } from "../index";
 import type { MasterPageDef, SectionValues } from "../types";
 import { arabicTwins, baseKey } from "../twins";
+import { isCalculatorCopySection } from "./mortgage-calculator-copy";
 
 /**
  * /tools/mortgage is the first master page whose English was NOT hardcoded in
@@ -16,13 +17,15 @@ import { arabicTwins, baseKey } from "../twins";
  * switched off without taking the calculator with them are all asserted.
  */
 const page = getMasterPage("mortgage") as MasterPageDef;
+/** The page's bands, without the calculator copy sections that follow them. */
+const bands = (keys: string[]) => keys.filter((key) => !isCalculatorCopySection(key));
 const values = (key: string): SectionValues =>
   resolveSections(page, null).find((s) => s.key === key)?.values ?? {};
 
 describe("mortgage master page", () => {
   it("ships the sections in the order the redesign specifies", () => {
     expect(page.path).toBe("/tools/mortgage");
-    expect(page.sections.map((s) => s.key)).toEqual([
+    expect(bands(page.sections.map((s) => s.key))).toEqual([
       "hero",
       "journey",
       "scenario",
@@ -43,7 +46,7 @@ describe("mortgage master page", () => {
       enabled: true,
       values: {},
     }));
-    expect(resolveSections(page, saved).map((s) => s.key)).toEqual([
+    expect(bands(resolveSections(page, saved).map((s) => s.key))).toEqual([
       "hero",
       "journey",
       "scenario",
@@ -62,7 +65,7 @@ describe("mortgage master page", () => {
     // the hero leaves a calculator with no title; losing the scenario leaves
     // outputs with nothing to compute from.
     const locked = page.sections.filter((s) => s.locked).map((s) => s.key);
-    expect(locked).toEqual(["hero", "scenario"]);
+    expect(bands(locked)).toEqual(["hero", "scenario"]);
   });
 
   it("carries an Arabic default for every translatable field that has English", () => {

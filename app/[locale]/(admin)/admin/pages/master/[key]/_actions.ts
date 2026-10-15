@@ -21,6 +21,10 @@ import {
 } from "@/lib/schemas/seo";
 import { unknownTokenIssues } from "@/lib/master-pages/tokens";
 import { AGENTS_PAGE_TOKENS } from "@/lib/master-pages/sections/agents";
+import {
+  calculatorCopyIssues,
+  calculatorCopyStoredValues,
+} from "@/lib/master-pages/sections/mortgage-calculator-copy";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -49,6 +53,10 @@ async function persist(
 ): Promise<SaveMasterPageResult> {
   const def = getMasterPage(key);
   if (!def) return { status: "error", message: "Unknown page." };
+
+  // The mortgage calculator's labels are catalogue messages: store only what
+  // an editor changed, so the rest keeps following the catalogue.
+  if (key === "mortgage") sections = calculatorCopyStoredValues(sections);
 
   const supabase = await createSupabaseServerClient();
   const slug = masterSlug(key);
@@ -131,6 +139,17 @@ export async function saveMasterPage(
         issues: tokenIssues.map(
           (i) => `${i.section} · ${i.field}: ${i.message}`,
         ),
+      };
+    }
+  }
+
+  if (key === "mortgage") {
+    const copyIssues = calculatorCopyIssues(result.sections);
+    if (copyIssues.length > 0) {
+      return {
+        status: "invalid",
+        message: "A calculator label can't be shown as written.",
+        issues: copyIssues.map((i) => `${i.section} · ${i.field}: ${i.message}`),
       };
     }
   }
