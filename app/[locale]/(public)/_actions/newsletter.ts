@@ -22,10 +22,6 @@ import {
   extractClientIp,
   rateLimitMessage,
 } from "@/lib/rate-limit";
-import {
-  subscribeToNewsletter as syncToMailchimp,
-  unsubscribeFromNewsletter as removeFromMailchimp,
-} from "@/lib/mailchimp";
 
 function siteUrl(): string {
   return (
@@ -96,6 +92,7 @@ export async function subscribeToNewsletter(
         locale,
         confirmation_token: token,
         subscribed_at: new Date().toISOString(),
+        confirmation_sent_at: new Date().toISOString(),
         confirmed_at: null,
         unsubscribed_at: null,
       },
@@ -158,7 +155,7 @@ export async function confirmNewsletterToken(
   const { data: row } = await admin
     .from("newsletter_subscribers")
     .select(
-      "id, email, status, subscribed_at, confirmation_token, locale",
+      "id, email, status, subscribed_at, confirmation_token, locale, unsubscribe_token",
     )
     .eq("confirmation_token", token)
     .maybeSingle();
@@ -182,7 +179,9 @@ export async function confirmNewsletterToken(
       .eq("id", row.id);
     if (error) return { status: "error", message: error.message };
 
-    const unsubscribeUrl = `${siteUrl()}/newsletter/unsubscribe/${token}`;
+    // The subscriber's permanent token, not the confirmation one: confirming
+    // clears that, which left every welcome email's unsubscribe link dead.
+    const unsubscribeUrl = `${siteUrl()}${row.locale === "ar" ? "/ar" : ""}/newsletter/unsubscribe/${row.unsubscribe_token}`;
     // The subscriber signed up in one language and clicked a link minutes
     // later; the welcome follows the signup, not the click.
     const template = await newsletterWelcomeEmail(
@@ -194,16 +193,6 @@ export async function confirmNewsletterToken(
       subject: template.subject,
       text: template.text,
       html: template.html,
-    });
-
-    // BF-6: sync confirmed subscriber to Mailchimp. Fire-and-forget so
-    // a failed Mailchimp call doesn't block the welcome email. With
-    // doubleOptIn=false because Bazar's own confirm step is the
-    // double-opt-in checkpoint.
-    void syncToMailchimp({
-      email: row.email,
-      doubleOptIn: false,
-      tags: ["bazar-confirmed"],
     });
   }
 
@@ -225,11 +214,22 @@ export async function unsubscribeNewsletterToken(
   const admin = await adminSupabase();
   if (!admin) return { status: "error", message: "Subscriptions are offline." };
 
-  const { data: row } = await admin
+  // The permanent unsubscribe token first (every newsletter and welcome email
+  // since 0162); then the confirmation token, for a link sent before it.
+  const { data: byUnsubscribe } = await admin
     .from("newsletter_subscribers")
     .select("id, email, status")
-    .eq("confirmation_token", token)
+    .eq("unsubscribe_token", token)
     .maybeSingle();
+  const row =
+    byUnsubscribe ??
+    (
+      await admin
+        .from("newsletter_subscribers")
+        .select("id, email, status")
+        .eq("confirmation_token", token)
+        .maybeSingle()
+    ).data;
   if (!row) return { status: "not_found" };
 
   if (row.status !== "unsubscribed") {
@@ -241,9 +241,6 @@ export async function unsubscribeNewsletterToken(
       })
       .eq("id", row.id);
     if (error) return { status: "error", message: error.message };
-
-    // BF-6: mirror the opt-out to Mailchimp. Fire-and-forget.
-    void removeFromMailchimp(row.email);
   }
 
   return { status: "ok", email: row.email };

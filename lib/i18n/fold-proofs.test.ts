@@ -116,6 +116,10 @@ const FOLD_PROOFS: Record<string, string> = {
   // runs the renderer at both and asserts on the message it produces.
   "content_assets.subject": "lib/content-assets/system-resolve.fold.test.ts",
   "content_assets.body": "lib/content-assets/system-resolve.fold.test.ts",
+  // Same shape: the newsletter's send path folds to the SUBSCRIBER's locale.
+  "newsletter_campaigns.subject": "lib/newsletter/campaign.fold.test.ts",
+  "newsletter_campaigns.preheader": "lib/newsletter/campaign.fold.test.ts",
+  "newsletter_campaigns.body": "lib/newsletter/campaign.fold.test.ts",
 };
 
 describe("WIRED_READ fold proofs", () => {

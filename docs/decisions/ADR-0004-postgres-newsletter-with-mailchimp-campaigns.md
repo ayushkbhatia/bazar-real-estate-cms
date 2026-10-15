@@ -1,7 +1,7 @@
 # ADR-0004: Postgres as the newsletter source of truth; Mailchimp as the campaign surface
 
 Date: 2026-05-22 · Revised 2026-05-24
-Status: Accepted
+Status: Accepted · campaign half superseded by [ADR-0009](ADR-0009-own-newsletter-sender-over-mailchimp.md) (2026-10-15)
 Deciders: Engineering, Marketing
 
 ## Context
