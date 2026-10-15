@@ -2,101 +2,49 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { PROPERTY_TYPES } from "@/lib/schemas/property";
+
+/** "hotel_apartment" → "Hotel apartment". */
+export function propertyTypeLabel(type: string): string {
+  const words = type.replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
 
 /**
- * Sprint 7b (backfilled): agent / area / type filter dropdowns above the
- * properties table. URL-state driven so deep-links work.
+ * The Type filter above the properties table. URL-state driven (`?type=`), so
+ * a filtered list deep-links, and it keeps whatever status tab is open: the
+ * two narrow the same list.
  */
-export function PropertiesFilterDropdowns({
-  agents,
-  areas,
-}: {
-  agents: { user_id: string; display_name: string }[];
-  areas: { slug: string; name: string }[];
-}) {
+export function PropertyTypeFilter() {
   const router = useRouter();
   const sp = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const value = sp.get("type") ?? "";
 
-  function setParam(key: string, value: string) {
+  function setType(next: string) {
     const params = new URLSearchParams(sp.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
+    if (next) params.set("type", next);
+    else params.delete("type");
+    const query = params.toString();
     startTransition(() => {
-      router.push(`?${params.toString()}`);
+      router.push(query ? `?${query}` : "?");
     });
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <Picker
-        label="Agent"
-        value={sp.get("agent") ?? ""}
-        options={[
-          { value: "", label: "All agents" },
-          { value: "unassigned", label: "Unassigned" },
-          ...agents.map((a) => ({
-            value: a.user_id,
-            label: a.display_name,
-          })),
-        ]}
-        onChange={(v) => setParam("agent", v)}
-        disabled={pending}
-      />
-      <Picker
-        label="Area"
-        value={sp.get("area") ?? ""}
-        options={[
-          { value: "", label: "All areas" },
-          ...areas.map((a) => ({ value: a.slug, label: a.name })),
-        ]}
-        onChange={(v) => setParam("area", v)}
-        disabled={pending}
-      />
-      <Picker
-        label="Type"
-        value={sp.get("type") ?? ""}
-        options={[
-          { value: "", label: "All types" },
-          { value: "apartment", label: "Apartment" },
-          { value: "villa", label: "Villa" },
-          { value: "penthouse", label: "Penthouse" },
-          { value: "townhouse", label: "Townhouse" },
-          { value: "commercial", label: "Commercial" },
-          { value: "land", label: "Land" },
-        ]}
-        onChange={(v) => setParam("type", v)}
-        disabled={pending}
-      />
-    </div>
-  );
-}
-
-function Picker({
-  label,
-  value,
-  options,
-  onChange,
-  disabled,
-}: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (v: string) => void;
-  disabled?: boolean;
-}) {
-  return (
     <label className="inline-flex items-center gap-1.5 text-[11.5px] text-bz-muted">
-      {label}
+      Type
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
+        onChange={(e) => setType(e.target.value)}
+        disabled={pending}
+        data-testid="property-type-filter"
         className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-accent"
       >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
+        <option value="">All types</option>
+        {PROPERTY_TYPES.map((t) => (
+          <option key={t} value={t}>
+            {propertyTypeLabel(t)}
           </option>
         ))}
       </select>
