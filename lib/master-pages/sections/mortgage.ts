@@ -34,16 +34,20 @@
  */
 import type { MasterPageDef } from "../types";
 import { area, eyebrow, faqList, heading, image, link, text, toggle } from "../fields";
+import { MORTGAGE_CALCULATOR_COPY_SECTIONS } from "./mortgage-calculator-copy";
 
 /** Where the closing CTA jumps back to, and what the hero's form card anchors. */
 export const MORTGAGE_FORM_ANCHOR = "pre-approval";
 
 export const MORTGAGE_PAGE: MasterPageDef = {
   key: "mortgage",
-  label: "Mortgage calculator",
+  label: "Mortgage",
   path: "/tools/mortgage",
+  // A service Bazar sells, so Pages & blocks lists it with the service pages
+  // even though its route is under /tools.
+  group: "services",
   description:
-    "The mortgage tool — the hero and its pre-approval form, then the calculator and each of its outputs as its own section.",
+    "The mortgage landing — the hero and its pre-approval form, then the calculator and each of its outputs as its own section, and every word the calculator itself says.",
   sections: [
     {
       key: "hero",
@@ -415,5 +419,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "طلبات التمويل عبر الإنترنت متاحة للمواطنين الإماراتيين والمقيمين في دولة الإمارات. تقيم خارج الدولة؟ تواصل معنا وسيساعدك أحد مستشارينا.",
       },
     },
+    // The calculator's own labels — see mortgage-calculator-copy.ts.
+    ...MORTGAGE_CALCULATOR_COPY_SECTIONS,
   ],
 };

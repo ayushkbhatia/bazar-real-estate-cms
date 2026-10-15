@@ -29,8 +29,15 @@
 
 import enMortgage from "@/messages/en/mortgage.json";
 import arMortgage from "@/messages/ar/mortgage.json";
-import { createTranslator } from "next-intl";
-import { icuArguments, parseMessage } from "@/lib/i18n/icu";
+import {
+  catalogueCopyIssues,
+  catalogueStoredValues,
+  flattenCatalogue,
+  isCountedMessage,
+  isDataMessage,
+  type Catalogue,
+  type CatalogueCopyIssue,
+} from "./catalogue-copy";
 import { PENDING_COPY } from "@/lib/mortgage-requests/copy-status";
 import { area, text, toggle } from "./fields";
 import { SUBPAGE_SLUG_PREFIX } from "./subpages";
@@ -53,22 +60,10 @@ export const WIZARD_ADMIN_PATH = (key: WizardKey) => `/admin/pages/wizards/${key
 
 // ── The catalogue, flattened ─────────────────────────────────────
 
-type Catalogue = { [key: string]: string | Catalogue };
+const EN = new Map(flattenCatalogue(enMortgage as Catalogue));
+const AR = new Map(flattenCatalogue(arMortgage as Catalogue));
 
-function flatten(tree: Catalogue, prefix = ""): [string, string][] {
-  return Object.entries(tree).flatMap(([k, v]) => {
-    const path = prefix ? `${prefix}.${k}` : k;
-    return typeof v === "string" ? [[path, v] as [string, string]] : flatten(v, path);
-  });
-}
-
-const EN = new Map(flatten(enMortgage as Catalogue));
-const AR = new Map(flatten(arMortgage as Catalogue));
-
-/** A counted phrase: an ICU plural or select anywhere in the message. */
-export function isCountedMessage(message: string): boolean {
-  return parseMessage(message).kind === "plural" || /\{\s*\w+\s*,\s*(plural|select|selectordinal)\s*,/.test(message);
-}
+export { isCountedMessage };
 
 /** Every mortgage message the wizard editor offers, by catalogue path. */
 export const MORTGAGE_EDITABLE_KEYS: readonly string[] = [...EN.entries()]
@@ -190,18 +185,11 @@ function labelFor(path: string): string {
 
 // ── Fields ───────────────────────────────────────────────────────
 
-/** Copy that is data, not prose: kept the same in Arabic, with no Arabic twin to fill. */
-function isData(message: string): boolean {
-  const bare = message.replace(/\{\w+\}|<\/?\w+>/g, "").trim();
-  if (/^\S+@\S+\.\S+$/.test(bare) || /^https?:\/\//.test(bare)) return true; // an email or a link
-  return !/\p{L}{3,}/u.test(bare);
-}
-
 function fieldFor(path: string): SimpleFieldDef {
   const message = EN.get(path)!;
   const long = message.length > 90 || message.includes("<");
   const max = Math.max(long ? 600 : 160, Math.ceil(message.length * 2));
-  const extra: Partial<SimpleFieldDef> = { max, optional: false, ...(isData(message) ? { i18n: false } : {}) };
+  const extra: Partial<SimpleFieldDef> = { max, optional: false, ...(isDataMessage(message) ? { i18n: false } : {}) };
   return long ? area(path, labelFor(path), extra) : text(path, labelFor(path), extra);
 }
 
@@ -320,68 +308,22 @@ export function catalogueArabic(path: string): string | undefined {
 
 // ── Saving ───────────────────────────────────────────────────────
 
-const TAG = /<\/?([a-z]+)>/g;
-
-function tagsOf(message: string): string[] {
-  return [...message.matchAll(TAG)].map((m) => m[0]).sort();
-}
-
-function formats(message: string, args: readonly string[]): boolean {
-  let failed = false;
-  const t = createTranslator({
-    locale: "en",
-    messages: { check: { message } },
-    namespace: "check",
-    onError: () => {
-      failed = true;
-    },
-    getMessageFallback: () => "",
-  });
-  const sample = Object.fromEntries(args.map((a) => [a, "x"]));
-  const tag = (chunks: string) => chunks;
-  t.markup("message", { ...sample, b: tag, ink: tag, link: tag });
-  return !failed;
-}
-
-export type WizardCopyIssue = { section: string; field: string; message: string };
+export type WizardCopyIssue = CatalogueCopyIssue;
 
 /**
- * What a save must keep of each message, English and Arabic: the same
- * `{placeholders}` (the flow fills them in — a dropped `{firstName}` greets
- * nobody, a new `{name}` goes live in braces), the same `<b>`/`<ink>`/`<link>`
- * marks, and a message next-intl can format at all (an unbalanced brace
- * would render the key path instead of the sentence).
+ * What a save must keep of each message, English and Arabic — see
+ * `catalogueCopyIssues`. The Flow switches aren't messages and aren't checked.
  */
 export function wizardCopyIssues(key: WizardKey, sections: readonly { key: string; values: SectionValues }[]): WizardCopyIssue[] {
   const def = wizardPageDef(key);
-  const issues: WizardCopyIssue[] = [];
-  for (const section of sections) {
-    const sectionDef = def.sections.find((s) => s.key === section.key);
-    if (!sectionDef || section.key === "flow") continue;
-    for (const field of sectionDef.fields) {
-      const english = EN.get(field.key);
-      if (english === undefined) continue;
-      const args = icuArguments(english);
-      for (const [lang, value] of [
-        ["English", section.values[field.key]],
-        ["Arabic", section.values[`${field.key}_ar`]],
-      ] as const) {
-        if (typeof value !== "string" || !value.trim()) continue;
-        const where = { section: sectionDef.label, field: lang === "Arabic" ? `${field.label} (Arabic)` : field.label };
-        const kept = icuArguments(value);
-        const missing = args.filter((a) => !kept.includes(a));
-        const extra = kept.filter((a) => !args.includes(a));
-        if (missing.length) issues.push({ ...where, message: `Keep ${missing.map((a) => `{${a}}`).join(", ")}: it's filled in as the applicant reads it.` });
-        if (extra.length) issues.push({ ...where, message: `${extra.map((a) => `{${a}}`).join(", ")} isn't something this message can fill in.` });
-        if (tagsOf(value).join() !== tagsOf(english).join()) {
-          issues.push({ ...where, message: "Keep the <b>…</b>, <ink>…</ink> and <link>…</link> marks exactly as the default has them." });
-        } else if (!missing.length && !extra.length && !formats(value, args)) {
-          issues.push({ ...where, message: "This can't be shown as written: check for a stray { or }." });
-        }
-      }
-    }
-  }
-  return issues;
+  return catalogueCopyIssues(
+    sections.flatMap((section) => {
+      const sectionDef = def.sections.find((s) => s.key === section.key);
+      if (!sectionDef || section.key === "flow") return [];
+      return [{ label: sectionDef.label, fields: sectionDef.fields, values: section.values }];
+    }),
+    EN,
+  );
 }
 
 /**
@@ -390,16 +332,7 @@ export function wizardCopyIssues(key: WizardKey, sections: readonly { key: strin
  * code. The Flow switches are kept as set.
  */
 export function wizardStoredValues<T extends { key: string; enabled: boolean; values: SectionValues }>(sections: readonly T[]): T[] {
-  return sections.map((section) => {
-    if (section.key === "flow") return section;
-    const values: SectionValues = {};
-    for (const [k, v] of Object.entries(section.values)) {
-      const isAr = k.endsWith("_ar");
-      const path = isAr ? k.slice(0, -3) : k;
-      const base = isAr ? AR.get(path) : EN.get(path);
-      if (v === null || v === undefined || v === "" || v === base) continue;
-      values[k] = v;
-    }
-    return { ...section, values };
-  });
+  return sections.map((section) =>
+    section.key === "flow" ? section : { ...section, values: catalogueStoredValues(section.values, EN, AR) },
+  );
 }

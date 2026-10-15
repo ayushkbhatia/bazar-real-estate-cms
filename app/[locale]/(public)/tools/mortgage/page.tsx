@@ -11,6 +11,11 @@ import {
 import { asLocale } from "@/lib/i18n/locales";
 import type { SectionValues } from "@/lib/master-pages";
 import { MortgageCalculator } from "./mortgage-calculator";
+import { RouteMessages } from "@/lib/i18n/route-messages";
+import {
+  calculatorCopyOverlay,
+  isCalculatorCopySection,
+} from "@/lib/master-pages/sections/mortgage-calculator-copy";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 
 export async function generateMetadata({
@@ -77,99 +82,110 @@ export default async function MortgagePage({
   const faqV = v("faq");
   const heroImage = img(heroV, "image");
 
+  // The calculator's labels an editor changed in Pages & blocks, laid over the
+  // `tools` catalogue for this subtree only. Its client components read them
+  // through `useTranslations` as before, with no idea they were edited.
+  const calculatorCopy = calculatorCopyOverlay(content.sections, locale);
+
   return (
-    <div className="bg-bz-bg">
-      {/*
-        Every section — the hero included — is rendered by the client component
-        rather than assembled here. The pre-approval form carries the visitor's
-        live scenario as submit context, and the hero is one of the two places
-        it can be drawn, so the hero has to sit inside the component that holds
-        the scenario. Splitting it would mean lifting that state to a provider
-        for the sake of one heading.
-      */}
-      <MortgageCalculator
-        order={content.order}
-        hero={{
-          eyebrow: str(heroV, "eyebrow"),
-          title: str(heroV, "title"),
-          titleEmphasis: str(heroV, "title_emphasis"),
-          sub: str(heroV, "sub"),
-          imageUrl: heroImage?.url ?? null,
-          imageAlt: heroImage?.alt ?? null,
-          showForm: heroV.show_form !== false,
-        }}
-        scenario={head(v("scenario"))}
-        affordabilityCopy={head(v("affordability"))}
-        compare={head(v("compare"))}
-        amortization={head(v("amortization"))}
-        cashToCloseCopy={head(v("cash_to_close"))}
-        preApproval={{
-          eyebrow: str(bandV, "eyebrow"),
-          title: str(bandV, "title"),
-          sub: str(bandV, "sub"),
-          scenarioLabel: str(bandV, "scenario_label"),
-          scenarioNote: str(bandV, "scenario_note"),
-          talkLabel: str(bandV, "talk_label"),
-          advisorCtaLabel: str(bandV, "advisor_cta_label"),
-          advisorCtaHref: advisorHref(str(bandV, "advisor_cta_href"), flowOpen),
-          flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.startPreApproval : null,
-          flowNote: str(bandV, "flow_note"),
-          whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
-          fallbackCtaLabel: str(bandV, "fallback_cta_label"),
-          jumpCtaLabel: str(bandV, "jump_cta_label"),
-        }}
-        preApprovalForm={preApprovalForm}
-        apply={
-          flowOpen
-            ? {
-                hrefs: {
-                  preApproval: MORTGAGE_ENTRY_LINKS.startPreApproval,
-                  consultancy: MORTGAGE_ENTRY_LINKS.startConsultancy,
-                  start: MORTGAGE_ENTRY_LINKS.calculatorPreApproval,
-                },
-                panel: {
-                  step: str(heroV, "panel_step"),
-                  title: str(heroV, "panel_title"),
-                  sub: str(heroV, "panel_sub"),
-                  preApprovalTitle: str(heroV, "preapproval_title"),
-                  preApprovalDesc: str(heroV, "preapproval_desc"),
-                  consultancyTitle: str(heroV, "consultancy_title"),
-                  consultancyDesc: str(heroV, "consultancy_desc"),
-                  note: str(heroV, "panel_note"),
-                },
-                journey: {
-                  ...head(journeyV),
-                  steps: [1, 2, 3, 4].map((n) => ({
-                    title: str(journeyV, `step${n}_title`),
-                    body: str(journeyV, `step${n}_body`),
-                  })),
-                  ctaLabel: str(journeyV, "cta_label"),
-                },
-                bridge: {
-                  title: str(bridgeV, "title"),
-                  body: str(bridgeV, "body"),
-                  primaryLabel: str(bridgeV, "primary_label"),
-                  secondaryLabel: str(bridgeV, "secondary_label"),
-                },
-                startBar: { text: str(heroV, "sticky_text"), cta: str(heroV, "sticky_cta") },
-              }
-            : null
-        }
-        questions={{
-          ...head(faqV),
-          items: list(faqV, "items")
-            .filter((item) => str(item, "q") && str(item, "a"))
-            .map((item) => [str(item, "q")!, str(item, "a")!] as [string, string]),
-        }}
-        assumptions={toMortgageAssumptions(mortgage)}
-        opening={{
-          priceAed: mortgage.default_price_aed,
-          downPaymentPct: mortgage.default_down_payment_pct / 100,
-          ratePct: mortgage.default_rate_pct,
-          termYears: mortgage.default_term_years,
-          annualIncomeAed: mortgage.default_annual_income_aed,
-        }}
-      />
-    </div>
+    <RouteMessages
+      locale={locale}
+      namespaces={["tools"]}
+      overrides={{ tools: { mortgage: calculatorCopy } }}
+    >
+      <div className="bg-bz-bg">
+        {/*
+          Every section — the hero included — is rendered by the client component
+          rather than assembled here. The pre-approval form carries the visitor's
+          live scenario as submit context, and the hero is one of the two places
+          it can be drawn, so the hero has to sit inside the component that holds
+          the scenario. Splitting it would mean lifting that state to a provider
+          for the sake of one heading.
+        */}
+        <MortgageCalculator
+          order={content.order.filter((key) => !isCalculatorCopySection(key))}
+          hero={{
+            eyebrow: str(heroV, "eyebrow"),
+            title: str(heroV, "title"),
+            titleEmphasis: str(heroV, "title_emphasis"),
+            sub: str(heroV, "sub"),
+            imageUrl: heroImage?.url ?? null,
+            imageAlt: heroImage?.alt ?? null,
+            showForm: heroV.show_form !== false,
+          }}
+          scenario={head(v("scenario"))}
+          affordabilityCopy={head(v("affordability"))}
+          compare={head(v("compare"))}
+          amortization={head(v("amortization"))}
+          cashToCloseCopy={head(v("cash_to_close"))}
+          preApproval={{
+            eyebrow: str(bandV, "eyebrow"),
+            title: str(bandV, "title"),
+            sub: str(bandV, "sub"),
+            scenarioLabel: str(bandV, "scenario_label"),
+            scenarioNote: str(bandV, "scenario_note"),
+            talkLabel: str(bandV, "talk_label"),
+            advisorCtaLabel: str(bandV, "advisor_cta_label"),
+            advisorCtaHref: advisorHref(str(bandV, "advisor_cta_href"), flowOpen),
+            flowHref: flowOpen ? MORTGAGE_ENTRY_LINKS.startPreApproval : null,
+            flowNote: str(bandV, "flow_note"),
+            whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
+            fallbackCtaLabel: str(bandV, "fallback_cta_label"),
+            jumpCtaLabel: str(bandV, "jump_cta_label"),
+          }}
+          preApprovalForm={preApprovalForm}
+          apply={
+            flowOpen
+              ? {
+                  hrefs: {
+                    preApproval: MORTGAGE_ENTRY_LINKS.startPreApproval,
+                    consultancy: MORTGAGE_ENTRY_LINKS.startConsultancy,
+                    start: MORTGAGE_ENTRY_LINKS.calculatorPreApproval,
+                  },
+                  panel: {
+                    step: str(heroV, "panel_step"),
+                    title: str(heroV, "panel_title"),
+                    sub: str(heroV, "panel_sub"),
+                    preApprovalTitle: str(heroV, "preapproval_title"),
+                    preApprovalDesc: str(heroV, "preapproval_desc"),
+                    consultancyTitle: str(heroV, "consultancy_title"),
+                    consultancyDesc: str(heroV, "consultancy_desc"),
+                    note: str(heroV, "panel_note"),
+                  },
+                  journey: {
+                    ...head(journeyV),
+                    steps: [1, 2, 3, 4].map((n) => ({
+                      title: str(journeyV, `step${n}_title`),
+                      body: str(journeyV, `step${n}_body`),
+                    })),
+                    ctaLabel: str(journeyV, "cta_label"),
+                  },
+                  bridge: {
+                    title: str(bridgeV, "title"),
+                    body: str(bridgeV, "body"),
+                    primaryLabel: str(bridgeV, "primary_label"),
+                    secondaryLabel: str(bridgeV, "secondary_label"),
+                  },
+                  startBar: { text: str(heroV, "sticky_text"), cta: str(heroV, "sticky_cta") },
+                }
+              : null
+          }
+          questions={{
+            ...head(faqV),
+            items: list(faqV, "items")
+              .filter((item) => str(item, "q") && str(item, "a"))
+              .map((item) => [str(item, "q")!, str(item, "a")!] as [string, string]),
+          }}
+          assumptions={toMortgageAssumptions(mortgage)}
+          opening={{
+            priceAed: mortgage.default_price_aed,
+            downPaymentPct: mortgage.default_down_payment_pct / 100,
+            ratePct: mortgage.default_rate_pct,
+            termYears: mortgage.default_term_years,
+            annualIncomeAed: mortgage.default_annual_income_aed,
+          }}
+        />
+      </div>
+    </RouteMessages>
   );
 }

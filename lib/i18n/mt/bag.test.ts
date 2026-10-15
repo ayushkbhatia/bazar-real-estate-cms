@@ -231,8 +231,9 @@ describe("the whole registry", () => {
     // Every slot is addressable and writable.
     expect(all.every((s) => s.pathKey.length > 0)).toBe(true);
     expect(all.every((s) => s.arKey.endsWith("_ar"))).toBe(true);
-    // No slot points at a twin — that would be title_ar_ar.
-    expect(all.some((s) => s.pathKey.includes("_ar"))).toBe(false);
+    // No slot points at a twin — that would be title_ar_ar. A suffix, not a
+    // substring: the calculator's `cashLine.bank_arrangement` is a real key.
+    expect(all.some((s) => s.pathKey.endsWith("_ar"))).toBe(false);
   });
 
   it("gives every slot a register, and none of them a listing register", () => {

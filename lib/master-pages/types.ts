@@ -323,6 +323,12 @@ export type MasterPageDef = {
   label: string;
   /** Public path, for the "View page" link. */
   path: string;
+  /**
+   * Where Pages & blocks lists it, when its path doesn't say. A page under
+   * `/services/` is a service page already; this is for one that is a service
+   * but lives elsewhere (the mortgage landing, at /tools/mortgage).
+   */
+  group?: "services";
   description: string;
   sections: SectionDef[];
 };

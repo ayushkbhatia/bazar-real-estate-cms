@@ -163,9 +163,14 @@ const ALLOWED: Readonly<Record<string, string>> = {
   // for exactly that reason.
   'master/contact·hq_map.eyebrow': "an abbreviation that does have an Arabic form",
 
+  // The mortgage calculator's note beside the registration fee. "DLD" names
+  // the authority that charges it, and the catalogue's Arabic spells it out
+  // (دائرة الأراضي والأملاك): an acronym with an Arabic form, like FAQ and HQ.
+  'master/mortgage·calc_closing.cashNote.mortgage_registration': "an acronym that does have an Arabic form",
+
 };
 
-const ALLOWED_CEILING = 13;
+const ALLOWED_CEILING = 14;
 
 describe("G-16 · translatable fields hold prose", () => {
   it("finds no data-shaped value outside the allowlist", () => {
