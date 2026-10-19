@@ -2,6 +2,7 @@ import "server-only";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { EntryPoint, Residency, Service } from "@/lib/mortgage-requests/details";
 import type { EmploymentType } from "@/lib/mortgage-requests/documents";
+import { formatAed } from "@/lib/mortgage-requests/format";
 import {
   applyPhone,
   clamp,
@@ -67,6 +68,8 @@ export type MortgageLeadRow = {
   mobile_e164: string;
   residency: Residency;
   employment_type: EmploymentType;
+  /** W2's optional desired property price, whole AED (0163). */
+  property_price_aed?: number | null;
   entry_point: EntryPoint;
   /** The listing the applicant started from, if any: the CRM's own name for
    *  it when it came from Salesforce, else our reference. */
@@ -97,6 +100,7 @@ export function buildMortgageDescription(row: MortgageLeadRow, siteUrl: string |
     `Employment: ${cmsT(EMPLOYMENT_KEY[row.employment_type])}`,
     `Started from: ${cmsT(ENTRY_KEY[row.entry_point])}`,
   ];
+  if (row.property_price_aed) lines.push(`Desired property price: ${formatAed(row.property_price_aed)}`);
   if (row.property_reference) lines.push(`Property: ${row.property_reference}`);
   if (row.parent_reference) lines.push(`Follows consultation: ${row.parent_reference}`);
   lines.push(`Mortgage file: ${origin(siteUrl)}/admin/mortgages/${row.reference}`);

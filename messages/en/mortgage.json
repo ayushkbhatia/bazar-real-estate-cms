@@ -77,7 +77,8 @@
     "dateOfBirth": "Date of birth",
     "email": "Email address",
     "fullName": "Full name",
-    "mobile": "Mobile number"
+    "mobile": "Mobile number",
+    "propertyPrice": "Desired property price"
   },
   "preNext": {
     "contact": "<b>We contact you within 24 hours</b> with your pre-approval.",
@@ -287,6 +288,12 @@
       "label": "{label}, {prefix}",
       "placeholder": "50 000 0000",
       "prefix": "+971"
+    },
+    "propertyPrice": {
+      "hint": "Optional. A rough figure is fine: it helps your adviser and doesn't affect your application.",
+      "label": "{label}, {prefix}",
+      "placeholder": "2,500,000",
+      "prefix": "AED"
     },
     "rail": {
       "employment": {

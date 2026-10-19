@@ -142,6 +142,7 @@ type MortgageQueueRow = {
   mobile_e164: string;
   residency: MortgageLeadRow["residency"];
   employment_type: MortgageLeadRow["employment_type"];
+  property_price_aed: number | null;
   entry_point: MortgageLeadRow["entry_point"];
   crm_attempts: number;
   properties: QueueMortgageProperty | QueueMortgageProperty[] | null;
@@ -169,6 +170,7 @@ function toMortgageLeadRow(row: MortgageQueueRow): MortgageLeadRow {
     mobile_e164: row.mobile_e164,
     residency: row.residency,
     employment_type: row.employment_type,
+    property_price_aed: row.property_price_aed,
     entry_point: row.entry_point,
     property_reference: crmName ?? property?.reference ?? null,
     property_slug: property?.slug ?? null,
@@ -381,7 +383,7 @@ export async function GET(req: NextRequest) {
     const { data: mortgageData, error: mortgageError } = await admin
       .from("mortgage_requests")
       .select(
-        "id, reference, service, full_name, email, mobile_e164, residency, employment_type, entry_point, crm_attempts, properties:property_id(reference, slug, salesforce_listings(sf_listing_name)), parent:parent_request_id(reference)",
+        "id, reference, service, full_name, email, mobile_e164, residency, employment_type, property_price_aed, entry_point, crm_attempts, properties:property_id(reference, slug, salesforce_listings(sf_listing_name)), parent:parent_request_id(reference)",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())

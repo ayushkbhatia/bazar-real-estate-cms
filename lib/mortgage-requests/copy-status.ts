@@ -33,6 +33,9 @@ export const PENDING_COPY: readonly PendingCopy[] = [
   { key: "w1.contact", gap: "D27 / FE-12", note: "Phone and WhatsApp numbers from the design" },
   // FE-1: never designed; written in the house style.
   { key: "w2.error.*", gap: "FE-1", note: "W2 validation messages" },
+  // Bazar asked for the field (19 Oct 2026); its wording was written here, not designed.
+  { key: "w2.propertyPrice.*", gap: "Bazar 19 Oct", note: "Desired property price: label, hint, placeholder" },
+  { key: "field.propertyPrice", gap: "Bazar 19 Oct", note: "Desired property price: label" },
   { key: "upload.error.*", gap: "FE-1", note: "Upload errors; only upload.error.tooLarge was designed" },
   { key: "submit.*", gap: "FE-1", note: "Submit errors and the sending state" },
   { key: "docs.error.*", gap: "FE-1", note: "The draft couldn't be created" },

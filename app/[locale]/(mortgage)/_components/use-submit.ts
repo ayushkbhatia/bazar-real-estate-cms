@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { validateDetails } from "@/lib/mortgage-requests/details";
+import { parsePropertyPrice, validateDetails } from "@/lib/mortgage-requests/details";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 import { ApiError, submitRequest, type SubmitBody } from "@/lib/mortgage-requests/client/api";
 import { afterSubmit, FLOW_PATHS, type ApplyState } from "@/lib/mortgage-requests/client/apply-state";
@@ -53,6 +53,7 @@ export function useSubmit() {
           entryPoint: state.entryPoint,
           ...(state.propertyRef ? { propertyRef: state.propertyRef } : {}),
           siteLocale: state.siteLocale ?? "en",
+          propertyPriceAed: parsePropertyPrice(state.details.propertyPrice),
         };
         const body: SubmitBody =
           extra.service === "consultancy"

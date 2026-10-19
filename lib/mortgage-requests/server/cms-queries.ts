@@ -22,7 +22,7 @@ import { cmsT } from "../cms-strings";
 import { isConsentVersion, PENDING_COMPLIANCE } from "../consent";
 import { isDeclineReason, type DeclineReason } from "../decline";
 import { DOCUMENT_SETS, type DocKind } from "../documents";
-import { formatDayTime, formatMobile, formatTime } from "../format";
+import { formatAed, formatDayTime, formatMobile, formatTime } from "../format";
 import {
   inTab,
   isAtRisk,
@@ -537,6 +537,8 @@ export type RequestFile = {
   employment: Employment;
   /** "UAE Resident / Expat · up to 80% LTV". */
   residencyWithLtv: string;
+  /** The applicant's desired property price, "AED 2,500,000" (0163); null when they didn't give one. */
+  propertyPrice: string | null;
   startedFrom: string;
   submittedAt: string;
   submittedDisplay: string;
@@ -588,6 +590,7 @@ type RequestDbRow = SlaFields & {
   email: string;
   residency: Residency;
   employment_type: Employment;
+  property_price_aed: number | null;
   entry_point: string;
   owner_staff_id: string | null;
   submitted_at: string;
@@ -629,7 +632,7 @@ export async function getRequestFile(
   const { data: found, error } = await db
     .from("mortgage_requests")
     .select(
-      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, stage_id, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
+      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, property_price_aed, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, stage_id, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
     )
     .eq("reference", reference)
     .maybeSingle();
@@ -811,6 +814,7 @@ export async function getRequestFile(
     residency: r.residency,
     employment: r.employment_type,
     residencyWithLtv: t("residency.withLtv", { residency: t(RESIDENCY_KEY[r.residency]), ltv }),
+    propertyPrice: r.property_price_aed ? t("propertyPrice.chip", { price: formatAed(r.property_price_aed) }) : null,
     startedFrom: t(ENTRY_KEY[r.entry_point] ?? "entry.direct"),
     submittedAt: r.submitted_at,
     submittedDisplay: formatDayTime(r.submitted_at),

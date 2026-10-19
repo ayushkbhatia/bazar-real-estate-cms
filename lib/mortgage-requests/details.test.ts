@@ -11,6 +11,9 @@ import {
   nameRule,
   normaliseName,
   parseDob,
+  maskPropertyPrice,
+  parsePropertyPrice,
+  propertyPriceSchema,
   toE164,
   validateDetails,
 } from "./details";
@@ -156,5 +159,47 @@ describe("the whole form", () => {
 
     expect(schema.safeParse({ ...valid.details, mobile: "+97142223333" }).success).toBe(false);
     expect(schema.safeParse({ ...valid.details, fullName: "P" }).success).toBe(false);
+  });
+});
+
+describe("desired property price", () => {
+  it("keeps digits only and groups them while typing", () => {
+    expect(maskPropertyPrice("2500000")).toBe("2,500,000");
+    expect(maskPropertyPrice("AED 1,250,000")).toBe("1,250,000");
+    expect(maskPropertyPrice("00750000")).toBe("750,000");
+    expect(maskPropertyPrice("abc")).toBe("");
+  });
+
+  it("cuts a figure past nine digits rather than refusing it", () => {
+    expect(parsePropertyPrice("12345678901")).toBe(123_456_789);
+  });
+
+  it("reads nothing usable as not given", () => {
+    expect(parsePropertyPrice(undefined)).toBeNull();
+    expect(parsePropertyPrice("")).toBeNull();
+    expect(parsePropertyPrice("0")).toBeNull();
+    expect(parsePropertyPrice("2,500,000")).toBe(2_500_000);
+  });
+
+  it("is optional and never blocks the details", () => {
+    const draft = {
+      residency: "uae_national" as const,
+      employmentType: "salaried" as const,
+      fullName: "Layla Haddad",
+      dateOfBirth: "14 / 03 / 1990",
+      mobileNational: "50 218 4417",
+      email: "layla@example.org",
+    };
+    expect(validateDetails(draft, NOW).ok).toBe(true);
+    expect(validateDetails({ ...draft, propertyPrice: "not a number" }, NOW).ok).toBe(true);
+  });
+
+  it("server side: a bad value is not given, not an error", () => {
+    expect(propertyPriceSchema.parse(2_500_000)).toBe(2_500_000);
+    expect(propertyPriceSchema.parse(undefined)).toBeUndefined();
+    expect(propertyPriceSchema.parse(-5)).toBeNull();
+    expect(propertyPriceSchema.parse(1.5)).toBeNull();
+    expect(propertyPriceSchema.parse("2500000")).toBeNull();
+    expect(propertyPriceSchema.parse(10 ** 12)).toBeNull();
   });
 });

@@ -77,7 +77,8 @@
     "dateOfBirth": "تاريخ الميلاد",
     "email": "البريد الإلكتروني",
     "fullName": "الاسم الكامل",
-    "mobile": "رقم الهاتف المتحرك"
+    "mobile": "رقم الهاتف المتحرك",
+    "propertyPrice": "سعر العقار المطلوب"
   },
   "preNext": {
     "contact": "<b>نتواصل معك خلال 24 ساعة</b> بشأن موافقتك المبدئية.",
@@ -287,6 +288,12 @@
       "label": "{label}، {prefix}",
       "placeholder": "50 000 0000",
       "prefix": "+971"
+    },
+    "propertyPrice": {
+      "hint": "اختياري. يكفي رقم تقريبي: يساعد مستشارك ولا يؤثر على طلبك.",
+      "label": "{label}، {prefix}",
+      "placeholder": "2,500,000",
+      "prefix": "درهم"
     },
     "rail": {
       "employment": {

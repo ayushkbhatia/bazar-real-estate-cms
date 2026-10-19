@@ -594,6 +594,9 @@ export const CMS_MESSAGES = {
     "submit": "Reassign",
     "title": "Reassign"
   },
+  "propertyPrice": {
+    "chip": "Property price {price}"
+  },
   "residency": {
     "expat": "UAE Resident / Expat",
     "expatShort": "Expat",
@@ -694,6 +697,7 @@ export const CMS_MESSAGES = {
 
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
+  "propertyPrice.chip",
   "activity.assigned.invite",
   "activity.atRisk",
   "activity.booked.sub",
