@@ -38,8 +38,25 @@ describe("HERO_TABS", () => {
 });
 
 describe("buildHeroSearchUrl", () => {
-  it("returns the bare route when nothing is set", () => {
-    expect(buildHeroSearchUrl(tab("buy"), base)).toBe("/buy");
+  it("goes to the search results, not the landing, when nothing is set", () => {
+    expect(buildHeroSearchUrl(tab("off-plan"), base)).toBe("/off-plan/search");
+    expect(buildHeroSearchUrl(tab("buy"), base)).toBe("/buy/search");
+    expect(buildHeroSearchUrl(tab("rent"), base)).toBe("/rent/search");
+    expect(buildHeroSearchUrl(tab("commercial"), base)).toBe(
+      "/buy/search?segment=commercial",
+    );
+  });
+
+  it("leaves a route an editor pointed elsewhere untouched", () => {
+    expect(
+      buildHeroSearchUrl({ ...tab("buy"), route: "/lp/spring" }, base),
+    ).toBe("/lp/spring");
+    expect(
+      buildHeroSearchUrl({ ...tab("off-plan"), route: "/off-plan/search" }, {
+        ...base,
+        q: "Yas",
+      }),
+    ).toBe("/off-plan/search?q=Yas");
   });
 
   it("emits only populated residential fields", () => {
@@ -50,7 +67,7 @@ describe("buildHeroSearchUrl", () => {
       beds: "3",
       price: { min: null, max: 5_000_000 },
     });
-    expect(url).toBe("/buy?q=Saadiyat&type=villa&beds=3&price_max=5000000");
+    expect(url).toBe("/buy/search?q=Saadiyat&type=villa&beds=3&price_max=5000000");
   });
 
   it("ignores beds for the commercial tab and uses ft² for size", () => {
@@ -62,7 +79,7 @@ describe("buildHeroSearchUrl", () => {
       price: { min: null, max: 50_000_000 },
     });
     expect(url).toBe(
-      "/commercial?type=office&price_max=50000000&ft2_min=1000&ft2_max=20000",
+      "/buy/search?type=office&price_max=50000000&ft2_min=1000&ft2_max=20000&segment=commercial",
     );
   });
 
@@ -71,6 +88,6 @@ describe("buildHeroSearchUrl", () => {
       ...base,
       price: { min: 50_000, max: 200_000 },
     });
-    expect(url).toBe("/rent?price_min=50000&price_max=200000");
+    expect(url).toBe("/rent/search?price_min=50000&price_max=200000");
   });
 });
