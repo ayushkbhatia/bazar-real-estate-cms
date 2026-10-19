@@ -17,7 +17,7 @@ import {
   renderNewsletter,
   type CampaignRow,
 } from "@/lib/newsletter/campaign";
-import { deliveryCounts } from "@/lib/newsletter/send";
+import { deliveryCounts, EMPTY_DELIVERY_COUNTS } from "@/lib/newsletter/send";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { subscriberCounts } from "../_data";
 import { CampaignStatusPill } from "../_shared";
@@ -83,7 +83,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
         <CampaignReport
           campaign={campaign}
-          counts={admin ? await deliveryCounts(id, admin) : { queued: 0, sending: 0, sent: 0, failed: 0, skipped: 0 }}
+          counts={admin ? await deliveryCounts(id, admin) : EMPTY_DELIVERY_COUNTS}
           english={renderNewsletter(draft, { brand, locale: "en", unsubscribeUrl: unsubscribe })}
           arabic={hasArabicEdition(draft) ? renderNewsletter(draft, { brand, locale: "ar", unsubscribeUrl: unsubscribe }) : null}
           from={sender.from}

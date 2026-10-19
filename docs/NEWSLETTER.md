@@ -58,6 +58,34 @@ Enforced twice: `requireRole` in every action, and RLS on the tables
 - **Done.** When nothing is left queued or in flight, the campaign is `sent`
   with its totals.
 
+## Delivery events
+
+"Delivered to Resend" only says Resend accepted a message. What happened next
+comes back from Resend's webhook, `POST /api/webhooks/resend`, subscribed to
+`email.delivered`, `email.bounced` and `email.complained` for every email the
+site sends:
+
+- The route checks the Svix signature (`svix-id`, `svix-timestamp`,
+  `svix-signature`, five minutes' tolerance) against `RESEND_WEBHOOK_SECRET`.
+  Without the secret it refuses everything.
+- Each event goes to `newsletter_record_email_event()` (0164, service role
+  only). It stamps `delivered_at` / `bounced_at` + `bounce_type` /
+  `complained_at` on the newsletter delivery whose `resend_id` matches, which
+  is where the campaign report's **Reached the inbox / Bounced / Marked as
+  spam** come from.
+- A **permanent** bounce on any email to a subscriber's address (the
+  confirmation email included) marks them `bounced`, so no campaign mails
+  them again. Transient bounces change nothing.
+- A **spam complaint** about a newsletter unsubscribes its reader.
+- Only `pending` and `confirmed` subscribers change. Every write is a
+  coalesce or a guarded status change, so Resend's retries are harmless. A
+  bounced address that signs up again goes back to `pending`.
+
+Setting it up (done once per Resend account): create the webhook for the
+production URL with those three events — the Resend dashboard, or
+`resend.webhooks.create` — then set its `whsec_…` signing secret as
+`RESEND_WEBHOOK_SECRET` in Vercel production and redeploy.
+
 ## Unsubscribing
 
 Every subscriber has a permanent `unsubscribe_token` (0162). It is what the
@@ -86,6 +114,9 @@ who never asked to go.
 | | |
 |---|---|
 | `supabase/migrations/0162_newsletter_campaigns.sql` | token column, campaigns, deliveries, the two SQL functions, RLS |
+| `supabase/migrations/0164_newsletter_delivery_events.sql` | delivery event columns, `newsletter_record_email_event()` |
+| `lib/newsletter/events.ts` | webhook signature check and event parsing |
+| `app/api/webhooks/resend/` | the delivery-event webhook |
 | `lib/newsletter/campaign.ts` | types, schema, audience, render (shared by preview, test and send) |
 | `lib/newsletter/send.ts` | start, drain, finish — the sender |
 | `lib/email.ts` | `headers` on a send; `sendEmailBatch` |
@@ -95,5 +126,7 @@ who never asked to go.
 
 ## Follow-ups
 
-- **Delivery events.** Resend webhooks (delivered, bounced, complained) could
-  mark subscribers `bounced` and show delivery rates per campaign.
+- **Opens and clicks.** Resend can report both (`email.opened`,
+  `email.clicked`), but open tracking adds a pixel and click tracking rewrites
+  every link through Resend's domain. Not switched on; a decision for the
+  client, and the privacy policy would need to say so.

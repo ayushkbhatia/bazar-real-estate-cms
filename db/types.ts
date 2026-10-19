@@ -3563,9 +3563,13 @@ export type Database = {
       newsletter_deliveries: {
         Row: {
           attempts: number
+          bounce_type: string | null
+          bounced_at: string | null
           campaign_id: string
           claimed_at: string | null
+          complained_at: string | null
           created_at: string
+          delivered_at: string | null
           error: string | null
           id: string
           locale: string
@@ -3576,9 +3580,13 @@ export type Database = {
         }
         Insert: {
           attempts?: number
+          bounce_type?: string | null
+          bounced_at?: string | null
           campaign_id: string
           claimed_at?: string | null
+          complained_at?: string | null
           created_at?: string
+          delivered_at?: string | null
           error?: string | null
           id?: string
           locale?: string
@@ -3589,9 +3597,13 @@ export type Database = {
         }
         Update: {
           attempts?: number
+          bounce_type?: string | null
+          bounced_at?: string | null
           campaign_id?: string
           claimed_at?: string | null
+          complained_at?: string | null
           created_at?: string
+          delivered_at?: string | null
           error?: string | null
           id?: string
           locale?: string
@@ -5990,9 +6002,13 @@ export type Database = {
         Args: { p_limit: number }
         Returns: {
           attempts: number
+          bounce_type: string | null
+          bounced_at: string | null
           campaign_id: string
           claimed_at: string | null
+          complained_at: string | null
           created_at: string
+          delivered_at: string | null
           error: string | null
           id: string
           locale: string
@@ -6007,6 +6023,16 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      newsletter_record_email_event: {
+        Args: {
+          p_at: string
+          p_email_id: string
+          p_permanent: boolean
+          p_recipients: string[]
+          p_type: string
+        }
+        Returns: string
       }
       newsletter_start_campaign: {
         Args: { p_campaign: string }

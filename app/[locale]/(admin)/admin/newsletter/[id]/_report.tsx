@@ -5,9 +5,8 @@ import { AUDIENCE_LABELS, type Audience, type CampaignRow } from "@/lib/newslett
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import { duplicateCampaign } from "../_actions";
 import { formatDubai } from "../_shared";
+import type { DeliveryCounts } from "@/lib/newsletter/send";
 import { ReportPreview, RefreshWhileSending } from "./_report-client";
-
-type Counts = Record<"queued" | "sending" | "sent" | "failed" | "skipped", number>;
 
 /** A campaign that has gone out (or is going): what was sent, to how many, and how it went. */
 export function CampaignReport({
@@ -20,7 +19,7 @@ export function CampaignReport({
   canWrite,
 }: {
   campaign: CampaignRow;
-  counts: Counts;
+  counts: DeliveryCounts;
   english: RenderedEmail;
   arabic: RenderedEmail | null;
   from: string;
@@ -68,6 +67,25 @@ export function CampaignReport({
           <p className="text-[12px] text-bz-muted">
             Skipped means the subscriber left the list before their copy went out, or email was switched off where
             this ran (a dry run). Failed means Resend refused it three times.
+          </p>
+          <dl className="grid grid-cols-3 gap-3">
+            {(
+              [
+                ["Reached the inbox", counts.delivered],
+                ["Bounced", counts.bounced],
+                ["Marked as spam", counts.complained],
+              ] as const
+            ).map(([label, value]) => (
+              <div key={label} className="rounded-md border border-bz-border p-3">
+                <dt className="text-[11px] text-bz-muted">{label}</dt>
+                <dd className="mt-1 serif text-[24px] leading-none">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="text-[12px] text-bz-muted">
+            Reported by the receiving mail servers, through Resend, usually within a minute of sending. A permanent
+            bounce marks the address Bounced and it gets no more newsletters; marking one as spam unsubscribes that
+            reader.
           </p>
           <dl className="grid grid-cols-[120px_1fr] gap-y-1.5 text-[12.5px]">
             <dt className="text-bz-muted">Audience</dt>
