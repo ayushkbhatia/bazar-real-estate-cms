@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   classifyRawSubmission,
   classifySubmission,
+  heldNote,
   HONEYPOT_FIELD,
+  LEGACY_HONEYPOT_FIELD,
   MIN_FILL_MS,
   RENDERED_AT_FIELD,
   withoutSpamControls,
@@ -171,5 +173,49 @@ describe("withoutSpamControls", () => {
     expect(withoutSpamControls({ name: "Real Person" })).toEqual({
       name: "Real Person",
     });
+  });
+});
+
+describe("the honeypot's name", () => {
+  // Chrome, Safari and the password managers pick what to autofill by matching
+  // these words in a field's name, and ignore autocomplete="off" while doing
+  // it. `_company_url` matched "company": every visitor who autofilled the form
+  // filled the trap and lost their lead (2026-10-19).
+  const AUTOFILL_WORDS = [
+    "name", "mail", "phone", "tel", "mobile", "company", "organi", "business",
+    "address", "street", "city", "zip", "postal", "country", "url", "website",
+    "user", "login", "pass", "card",
+  ];
+
+  it.each(AUTOFILL_WORDS)("contains no autofill word: %s", (word) => {
+    expect(HONEYPOT_FIELD.toLowerCase()).not.toContain(word);
+  });
+
+  it("still catches a page served before the rename", () => {
+    expect(
+      classifyRawSubmission({ [LEGACY_HONEYPOT_FIELD]: "filled" }, NOW),
+    ).toEqual({ spam: true, reason: "honeypot" });
+  });
+
+  it("strips both names from what reaches the schema", () => {
+    expect(
+      withoutSpamControls({
+        name: "Real Person",
+        [HONEYPOT_FIELD]: "",
+        [LEGACY_HONEYPOT_FIELD]: "",
+        [RENDERED_AT_FIELD]: NOW,
+      }),
+    ).toEqual({ name: "Real Person" });
+  });
+});
+
+describe("heldNote", () => {
+  it("tells the desk what tripped and that the lead can be restored", () => {
+    for (const reason of ["honeypot", "too-fast"] as const) {
+      const note = heldNote(reason);
+      expect(note).toMatch(/spam check/);
+      expect(note).toMatch(/restore/);
+    }
+    expect(heldNote("too-fast")).toContain(`${MIN_FILL_MS / 1000} seconds`);
   });
 });

@@ -85,7 +85,7 @@ already owned that lead type:
 
 | handler | goes to |
 |---|---|
-| `enquiry` | `createEnquiry` → `enquiries` (routing, trigger, Resend auto-reply) |
+| `enquiry` | `fileEnquiry` (`lib/enquiries/intake.ts`) → `enquiries` (routing, trigger, Resend auto-reply) |
 | `service_lead` | `submitServiceLead` → `enquiries` with community routing |
 | `newsletter` | `subscribeToNewsletter` → double opt-in |
 | `list_property`, `valuation` | bespoke components; they call their own actions |
@@ -109,6 +109,33 @@ a `new_enquiry` row in the admin bell, linking to the enquiry. Suspend an
 admin or change their role in /admin/users and they stop receiving them. A
 submission with no enquiry (a newsletter sign-up) goes to the form's list
 only.
+
+### The spam check holds; it never drops
+
+Before any of the above, `classifyRawSubmission` (`lib/forms/spam.ts`) looks at
+two control fields the renderer adds: a honeypot input off-screen, and the
+moment the form was drawn. A submission that fills the honeypot, or arrives
+under two seconds after the form appeared, is **held**, not discarded: it goes
+through `fileEnquiry` whatever the form's handler, filed straight into the
+archive with the reason in its internal notes and on
+`inferred_constraints.held`, and sets off nothing — no acknowledgement, no
+Salesforce push, no staff email, and its Responses row is already archived.
+Admins see "N enquiries … were held by the spam check" above the inbox, and a
+"Held by spam check" chip on each in Archived. **Restore** puts it in the inbox
+and queues it for Salesforce. A held newsletter sign-up is still dropped (it
+is not a lead).
+
+Until 2026-10-19 it was dropped, and the honeypot was named `_company_url`.
+Chrome, Safari and the password managers autofill any field with "company" in
+its name and ignore `autocomplete="off"` on contact forms, so every visitor who
+let their browser fill in their details was shown the thank-you while their
+lead was thrown away. The honeypot's name must contain no word an autofill
+heuristic knows — `lib/forms/spam.test.ts` enforces a list.
+
+If the server action itself fails — an action id from an earlier deploy, a
+dropped connection — the renderer retries the same `submitForm` through
+`POST /api/forms/<key>`, whose URL does not change between builds, and shows
+an error rather than nothing if that fails too.
 
 **Mappings** are how a field's answer finds its column. `name`, `email`,
 `phone`, `message`, `intent`, `timeline`, `development_id` and friends land in

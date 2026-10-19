@@ -44,13 +44,28 @@
 /**
  * The honeypot's field name.
  *
- * Chosen to be worth filling and safe to ignore. A bot scores fields by name,
- * so this has to read like something it wants; a password manager scores them
- * the same way, which rules out anything resembling `email`, `name`, `phone`
- * or `address` — an autofilled honeypot would reject the visitor whose
- * browser was only trying to help.
+ * It must mean nothing to a browser. The first name, `_company_url`, read as
+ * "company" to Chrome's, Safari's and the password managers' autofill, which
+ * ignore `autocomplete="off"` on contact forms: a visitor who let their
+ * browser fill in their details filled the trap too, was shown the thank-you,
+ * and their lead was thrown away (found 2026-10-19 — every renderer form was
+ * affected). A bot that fills every input fills this one whatever it is
+ * called, so a name with no word an autofill heuristic knows costs the trap
+ * nothing.
+ *
+ * Never put `name`, `email`, `phone`, `tel`, `company`, `organization`,
+ * `business`, `address`, `url`, `website`, `city`, `zip` or `country` in it.
  */
-export const HONEYPOT_FIELD = "_company_url";
+export const HONEYPOT_FIELD = "_bz_hp";
+
+/**
+ * The name the honeypot shipped under until 2026-10-19.
+ *
+ * Still read, so a tab opened on an older deployment is judged the same way,
+ * but no longer rendered. Safe to delete once no deployment that renders it
+ * can still be open (Vercel's skew protection keeps one for 12 hours).
+ */
+export const LEGACY_HONEYPOT_FIELD = "_company_url";
 
 /** The field carrying the moment the form was drawn. */
 export const RENDERED_AT_FIELD = "_rendered_at";
@@ -121,7 +136,7 @@ export function classifyRawSubmission(
   now?: number,
 ): SpamVerdict {
   return classifySubmission({
-    honeypot: raw[HONEYPOT_FIELD],
+    honeypot: raw[HONEYPOT_FIELD] || raw[LEGACY_HONEYPOT_FIELD],
     renderedAt: raw[RENDERED_AT_FIELD],
     now,
   });
@@ -133,6 +148,25 @@ export function withoutSpamControls(
 ): Record<string, unknown> {
   const rest = { ...raw };
   delete rest[HONEYPOT_FIELD];
+  delete rest[LEGACY_HONEYPOT_FIELD];
   delete rest[RENDERED_AT_FIELD];
   return rest;
+}
+
+/**
+ * What the desk reads on a lead the check held, in its internal notes.
+ *
+ * Written for the admin deciding whether to restore it, so it says what
+ * tripped and what to do, not how the trap works.
+ */
+export function heldNote(reason: "honeypot" | "too-fast"): string {
+  const why =
+    reason === "honeypot"
+      ? "a hidden field that only automated form-fillers can see was filled in"
+      : `it was sent less than ${MIN_FILL_MS / 1000} seconds after the form appeared`;
+  return (
+    `Held by the website's spam check: ${why}. ` +
+    "No acknowledgement was emailed and it was not sent to Salesforce. " +
+    "If this is a real person, restore it — it then goes to Salesforce like any other lead."
+  );
 }

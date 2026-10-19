@@ -43,6 +43,11 @@ export type EnquiryListRow = {
   /** Set when an admin archived the lead. Orthogonal to `status`. */
   archived_at: string | null;
   archived_by: string | null;
+  /**
+   * Why the spam check held it, when it did — the lead was filed straight
+   * into the archive (`lib/enquiries/intake.ts`). Null for every other lead.
+   */
+  held?: string | null;
   /** The lib/forms registry key of the form it came through (0128). */
   form_key: string | null;
   /** The language the lead wrote in — `ar` for a submission from `/ar`. */
@@ -58,6 +63,7 @@ const LIST_FIELDS = `
   id, name, email, phone, brief_raw, source, status, temperature,
   created_at, first_response_at, property_id, development_id, assigned_agent_id,
   archived_at, archived_by, form_key, locale,
+  held:inferred_constraints->>held,
   properties:property_id(reference, title, slug),
   developments:development_id(name, slug),
   staff:assigned_agent_id(display_name, slug),
@@ -159,6 +165,7 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
       unread_count,
       archived_at: row.archived_at,
       archived_by: row.archived_by,
+      held: row.held ?? null,
       form_key: row.form_key,
       locale: row.locale,
       origin: originLabel(row.form_key, row.source),
@@ -166,6 +173,27 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
   });
 
   return { rows, total: count ?? 0 };
+}
+
+/**
+ * How many leads the spam check held in the last `days` days.
+ *
+ * Shown above the inbox so a held lead is never only findable by someone who
+ * already knows to look in the archive. Zero on any read failure — a missing
+ * banner is the safe way for this to be wrong.
+ */
+export async function countHeldEnquiries(days = 30): Promise<number> {
+  if (!isSupabaseConfigured) return 0;
+  const supabase = await createSupabaseServerClient();
+  const since = new Date(Date.now() - days * 86_400_000).toISOString();
+  const { count, error } = await supabase
+    .from("enquiries")
+    .select("id", { count: "exact", head: true })
+    .not("archived_at", "is", null)
+    .not("inferred_constraints->>held", "is", null)
+    .gte("created_at", since);
+  if (error) return 0;
+  return count ?? 0;
 }
 
 export type EnquiryDetail = Omit<

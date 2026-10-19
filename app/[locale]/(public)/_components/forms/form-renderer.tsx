@@ -44,7 +44,11 @@ import { optionsFor } from "@/lib/forms/submission";
 import { buildSearchRedirect } from "@/lib/forms/search";
 import { HONEYPOT_FIELD, RENDERED_AT_FIELD } from "@/lib/forms/spam";
 import { DualRangeSlider } from "../dual-range-slider";
-import { submitForm, type FormSubmitContext } from "../../_actions/forms";
+import {
+  submitForm,
+  type FormSubmitContext,
+  type SubmitFormResult,
+} from "../../_actions/forms";
 
 export type FormRendererProps = {
   form: ResolvedForm;
@@ -136,6 +140,7 @@ export function FormRenderer({
   const style = successStyle ?? (stacked ? "note" : "soft");
 
   const router = useRouter();
+  const t = useTranslations("forms");
   // The locale the visitor is submitting in. Threaded to the action rather
   // than read there — see `FormSubmitContext.locale`.
   const locale = useLocale();
@@ -227,24 +232,27 @@ export function FormRenderer({
     setErrors({});
 
     startTransition(async () => {
-      const result = await submitForm(
+      const payload = {
+        ...normalised,
+        [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
+        // Null when the effect has not run — treated as "no opinion" by the
+        // classifier rather than as suspicious, so a visitor whose
+        // JavaScript is slow is never the one who pays.
+        [RENDERED_AT_FIELD]: renderedAtRef.current ?? "",
+      };
+      const submitContext: FormSubmitContext = {
+        ...context,
+        // The form renders under `[locale]`, so this IS the segment.
+        locale,
+        path:
+          context?.path ??
+          (typeof window === "undefined" ? null : window.location.pathname),
+      };
+      const result = await submitWithFallback(
         form.key,
-        {
-          ...normalised,
-          [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
-          // Null when the effect has not run — treated as "no opinion" by the
-          // classifier rather than as suspicious, so a visitor whose
-          // JavaScript is slow is never the one who pays.
-          [RENDERED_AT_FIELD]: renderedAtRef.current ?? "",
-        },
-        {
-          ...context,
-          // The form renders under `[locale]`, so this IS the segment.
-          locale,
-          path:
-            context?.path ??
-            (typeof window === "undefined" ? null : window.location.pathname),
-        },
+        payload,
+        submitContext,
+        t("field.sendFailed"),
       );
       if (result.status === "ok") {
         setDone(true);
@@ -360,8 +368,11 @@ export function FormRenderer({
         Moved off-screen rather than `display: none` or `type="hidden"`: the
         cheap bots skip both, and skipping is exactly what we do not want. The
         rest of the attributes keep it away from everyone else — `tabIndex`
-        from the keyboard, `aria-hidden` from screen readers, `autoComplete`
-        from the browser's autofill.
+        from the keyboard, `aria-hidden` from screen readers. Autofill is kept
+        off by the NAME, which no browser recognises — `autoComplete="off"` is
+        ignored by Chrome and Safari on contact forms, and was what let them
+        fill the old `_company_url` — and by the ignore flags 1Password,
+        LastPass, Bitwarden and Dashlane each read.
       */}
       <input
         ref={honeypotRef}
@@ -370,6 +381,10 @@ export function FormRenderer({
         defaultValue=""
         tabIndex={-1}
         autoComplete="off"
+        data-1p-ignore=""
+        data-lpignore="true"
+        data-bwignore=""
+        data-form-type="other"
         aria-hidden="true"
         className="absolute -start-[9999px] h-px w-px opacity-0"
       />
@@ -1009,4 +1024,44 @@ function SuccessPanel({
       </div>
     </div>
   );
+}
+
+/**
+ * Submit through the server action, and through `/api/forms/<key>` if the
+ * action itself fails.
+ *
+ * The action answers every expected outcome — validation, a closed form, the
+ * intake's own errors — as a result, so only an unexpected failure throws:
+ * an action id from a previous deploy ("Server Action was not found"), a
+ * dropped connection, a crashed function. Before this, that throw escaped the
+ * transition and the visitor's lead went nowhere. The route is the same
+ * `submitForm` behind a URL that does not change between builds.
+ *
+ * A retry after a failure the server had already written past could file the
+ * lead twice. Two copies of a lead are a merge on the desk; none is a client
+ * lost, so the retry stays.
+ */
+async function submitWithFallback(
+  formKey: string,
+  values: Record<string, unknown>,
+  context: FormSubmitContext,
+  failedMessage: string,
+): Promise<SubmitFormResult> {
+  try {
+    return await submitForm(formKey, values, context);
+  } catch (err) {
+    console.warn("[forms] server action failed, retrying via the route", err);
+  }
+  try {
+    const res = await fetch(`/api/forms/${encodeURIComponent(formKey)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ values, context }),
+    });
+    const body = (await res.json()) as SubmitFormResult;
+    if (body && (body.status === "ok" || body.status === "error")) return body;
+  } catch (err) {
+    console.warn("[forms] route fallback failed", err);
+  }
+  return { status: "error", message: failedMessage };
 }

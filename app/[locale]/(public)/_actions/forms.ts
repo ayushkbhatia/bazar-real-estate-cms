@@ -5,7 +5,9 @@ import { getForm } from "@/lib/queries/forms";
 import {
   buildFormBrief,
   buildSubmissionData,
+  clampBrief,
   extractLead,
+  onFormFields,
   type DynamicOptions,
 } from "@/lib/forms/submission";
 import { captureFormSubmission } from "@/lib/forms/record";
@@ -15,11 +17,15 @@ import {
   normaliseSubmission,
 } from "@/lib/forms/validate";
 import { visibleFields } from "@/lib/forms/resolve";
-import { classifyRawSubmission, withoutSpamControls } from "@/lib/forms/spam";
+import {
+  classifyRawSubmission,
+  heldNote,
+  withoutSpamControls,
+} from "@/lib/forms/spam";
 import type { FormOption, ResolvedForm } from "@/lib/forms/types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { list, type SectionValues } from "@/lib/master-pages";
-import { createEnquiry } from "../_actions";
+import { fileEnquiry } from "@/lib/enquiries/intake";
 import { subscribeToNewsletter } from "./newsletter";
 import { submitServiceLead } from "../services/_actions";
 
@@ -82,7 +88,7 @@ const MAX_SCENARIO = 800;
  * against the same current definition.
  *
  * Downstream it does not reinvent intake. Each handler is the action that
- * already owns that lead type — `createEnquiry` for the generic pipeline,
+ * already owns that lead type — `fileEnquiry` for the generic pipeline,
  * `submitServiceLead` for the two service landings, `subscribeToNewsletter`
  * for the double opt-in — so rate limiting, advisor routing, the
  * `on_enquiry_created` trigger and the Resend auto-reply keep working exactly
@@ -110,26 +116,28 @@ export async function submitForm(
   }
 
   /*
-   * Bot check, before anything is resolved or written.
+   * Bot check. It decides where the lead is filed, never whether it is.
    *
-   * It answers `ok` and files nothing. Telling a bot it failed is telling it
-   * what to change — the ones that get a hard error come back having dropped
-   * the field they were caught on, and the honeypot is worth exactly one
-   * round of that. A silent success spends nothing and teaches nothing.
+   * Until 2026-10-19 a flagged submission was answered "ok" and dropped, on
+   * the reasoning that telling a bot it failed teaches it what to change. The
+   * cost of that turned out to be every visitor whose browser autofilled the
+   * trap (`lib/forms/spam.ts`): they saw the thank-you and their lead existed
+   * nowhere — not in the inbox, not in Responses, not in a log. So a flagged
+   * submission now goes the whole way through, and is filed HELD: archived on
+   * arrival with the reason in its notes, no acknowledgement, no CRM push, no
+   * staff email. The bot still learns nothing (it gets the same "ok"); a real
+   * person the check got wrong is one Restore away.
    *
-   * Logged, not reported. `reportError` is the wrong home for this: it writes
-   * to `error_events`, which feeds /admin/settings/health and the daily admin
-   * digest that goes out "only when there is something to report" — so every
-   * bot the honeypot stopped would read as a fault and could mail every admin
-   * about a defence doing its job. That is how a defence gets muted. A line in
-   * the function logs answers "is it catching anything" without either.
+   * Logged, not reported. `reportError` writes to `error_events`, which feeds
+   * /admin/settings/health and the admin digest — every bot would read as a
+   * fault. The inbox shows the held count instead.
    */
   const verdict = classifyRawSubmission(rawValues);
-  if (verdict.spam) {
-    console.info(
-      `[forms.spam] dropped a ${verdict.reason} submission on ${formKey}`,
-    );
-    return { status: "ok", enquiryId: null };
+  const held = verdict.spam
+    ? { reason: verdict.reason, note: heldNote(verdict.reason) }
+    : null;
+  if (held) {
+    console.info(`[forms.spam] held a ${held.reason} submission on ${formKey}`);
   }
   // Stripped before validation so the control fields cannot be mistaken for
   // answers — by the schema, by the brief, or by Responses.
@@ -170,7 +178,18 @@ export async function submitForm(
       form.def.scenarioLabel ?? "Scenario";
   }
 
-  switch (form.def.handler) {
+  // A held newsletter signup is dropped as before: it is not a lead, and
+  // subscribing a bot's address would send that address a confirmation.
+  if (held && form.def.handler === "newsletter") {
+    return { status: "ok", enquiryId: null };
+  }
+
+  // Everything held goes through the generic intake, whatever the form's own
+  // handler: it is the one path that can file a lead as held, and a held lead
+  // only needs to be readable and restorable, not routed.
+  const handler = held ? "enquiry" : form.def.handler;
+
+  switch (handler) {
     case "newsletter": {
       const result = await subscribeToNewsletter({
         locale: context.locale ?? undefined,
@@ -229,8 +248,10 @@ export async function submitForm(
     }
 
     default: {
-      const brief = buildFormBrief(form, lead, values, tokens, dynamic);
-      const result = await createEnquiry({
+      const brief = clampBrief(
+        buildFormBrief(form, lead, values, tokens, dynamic),
+      );
+      const result = await fileEnquiry({
         name: leadName(lead.name, lead.email, lead.phone),
         email: lead.email,
         phone: lead.phone,
@@ -249,12 +270,14 @@ export async function submitForm(
         property_id: lead.propertyId ?? context.propertyId ?? null,
         development_id: lead.developmentId ?? context.developmentId ?? null,
         locale: context.locale ?? undefined,
-      });
+      }, { held });
       if (result.status === "error") {
         return {
           status: "error",
           message: result.message,
-          fieldErrors: result.fieldErrors,
+          fieldErrors: result.fieldErrors
+            ? onFormFields(form, result.fieldErrors)
+            : undefined,
         };
       }
       await captureFormSubmission({
@@ -262,8 +285,11 @@ export async function submitForm(
         data,
         enquiryId: result.id,
         sourcePath,
+        held: held !== null,
       });
-      return { status: "ok", enquiryId: result.id };
+      // A held lead's id stays on the server: the visitor's side needs none,
+      // and it answers exactly as the old drop did.
+      return { status: "ok", enquiryId: held ? null : result.id };
     }
   }
 }
