@@ -89,6 +89,7 @@
     "bathrooms": "Bathrooms",
     "builtUp": "Built-up",
     "type": "Type",
+    "plotSize": "Plot size",
     "tenure": "Tenure",
     "yearBuilt": "Year built"
   },

@@ -17,6 +17,7 @@ import {
   Home,
   Calendar,
   KeyRound,
+  LandPlot,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { CarouselGrid } from "@/components/brand/mobile";
@@ -165,6 +166,11 @@ import type { EnquiryDialogCopy } from "./_components/enquiry-dialog";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { PropertyFaq } from "./_components/property-faq";
 import { AreaText, PricePerAreaText } from "../../_components/area-text";
+import {
+  fifthKeyFact,
+  plotInSpecification,
+  tenureInSpecification,
+} from "./_components/key-facts";
 
 export const revalidate = 60;
 
@@ -443,7 +449,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             value: t("spec.parkingBays", { count: property.parking_bays }),
           }
         : null,
-      property.plot_ft2
+      property.plot_ft2 && plotInSpecification(property.type)
         ? {
             label: t("spec.plotSize"),
             value: <AreaText ft2={property.plot_ft2} />,
@@ -464,6 +470,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             note: t("spec.perYear"),
           }
         : null,
+      // A villa's key facts show its plot in tenure's place, so its tenure
+      // is listed here instead.
+      property.tenure && tenureInSpecification(property.type)
+        ? {
+            label: t("stat.tenure"),
+            value: tenureLabel(property.tenure, t),
+          }
+        : null,
       { label: t("spec.listingType"), value: t(`mode.${property.mode}`) },
       property.published_at
         ? {
@@ -473,6 +487,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         : null,
     ] as (SpecRow | null)[]
   ).filter((r): r is SpecRow => r !== null);
+
+  const fifthFact = fifthKeyFact(property);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -648,11 +664,19 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             label={t("stat.type")}
             value={term(property.type, locale)}
           />
-          <FactTile
-            icon={<KeyRound size={16} strokeWidth={1.6} />}
-            label={t("stat.tenure")}
-            value={tenureLabel(property.tenure, t)}
-          />
+          {fifthFact?.kind === "plot" ? (
+            <FactTile
+              icon={<LandPlot size={16} strokeWidth={1.6} />}
+              label={t("stat.plotSize")}
+              value={<AreaText ft2={fifthFact.ft2} />}
+            />
+          ) : fifthFact?.kind === "tenure" ? (
+            <FactTile
+              icon={<KeyRound size={16} strokeWidth={1.6} />}
+              label={t("stat.tenure")}
+              value={tenureLabel(property.tenure, t)}
+            />
+          ) : null}
           <FactTile
             icon={<Calendar size={16} strokeWidth={1.6} />}
             label={t("stat.yearBuilt")}
