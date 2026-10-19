@@ -5,8 +5,12 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { Locale } from "@/lib/i18n/locales";
 import { parseStoredSections, resolveSections, type ResolvedSection } from "@/lib/master-pages";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
+import { attachImageUrls } from "@/lib/queries/section-images";
 import {
+  DOC_ICONS_SECTION,
   MORTGAGE_FLOW_DEFAULTS,
+  docIconUrls,
   catalogueArabic,
   catalogueEnglish,
   wizardPageDef,
@@ -63,6 +67,8 @@ export type MortgageWizardOverlay = {
   /** The `mortgage` messages an editor changed, nested as the catalogue is; empty when nothing is. */
   messages: Messages;
   flow: MortgageFlowSettings;
+  /** The document icons an editor uploaded, by kind; a kind not here keeps the shipped one. */
+  docArt: Partial<Record<DocKind, string>>;
 };
 
 /**
@@ -72,6 +78,9 @@ export type MortgageWizardOverlay = {
  */
 export const getMortgageWizardOverlay = cache(async (locale: Locale): Promise<MortgageWizardOverlay> => {
   const content = await getWizardContent("mortgage-application", locale);
+  // The icons are media references; their public URLs are looked up here, once per request.
+  const icons = content.sections.filter((s) => s.key === DOC_ICONS_SECTION);
+  await attachImageUrls(icons);
   return wizardOverlay(content.sections, locale);
 });
 
@@ -79,7 +88,12 @@ export const getMortgageWizardOverlay = cache(async (locale: Locale): Promise<Mo
 export function wizardOverlay(sections: readonly ResolvedSection[], locale: Locale): MortgageWizardOverlay {
   const messages: Messages = {};
   const flow: MortgageFlowSettings = { ...MORTGAGE_FLOW_DEFAULTS };
+  let docArt: Partial<Record<DocKind, string>> = {};
   for (const section of sections) {
+    if (section.key === DOC_ICONS_SECTION) {
+      docArt = docIconUrls(section.values);
+      continue;
+    }
     if (section.key === "flow") {
       const first = section.values.w1_first;
       flow.w1_first = first === "pre_approval" ? "pre_approval" : "consultancy";
@@ -96,7 +110,7 @@ export function wizardOverlay(sections: readonly ResolvedSection[], locale: Loca
       if (value !== base) setPath(messages, field.key, value);
     }
   }
-  return { messages, flow };
+  return { messages, flow, docArt };
 }
 
 /** The catalogue's messages with an overlay laid on top, key by key. */
