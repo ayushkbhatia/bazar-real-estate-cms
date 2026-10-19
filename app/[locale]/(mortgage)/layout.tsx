@@ -54,7 +54,7 @@ export default async function MortgageLayout({
 
   return (
     <RouteMessages locale={locale} namespaces={["mortgage"]} overrides={{ mortgage: overlay.messages }}>
-      <WizardFlowProvider flow={overlay.flow}>
+      <WizardFlowProvider flow={overlay.flow} docArt={overlay.docArt}>
         <div className="mrq flex min-h-dvh flex-1 flex-col bg-bz-bg text-bz-ink">
           <FlowTopBar locale={locale} logo={logo} />
           {children}

@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { DOC_GLYPH, Glyph } from "@/components/mortgage/glyphs";
 import { CheckMark, FlowButton, Pill, Tick } from "./primitives";
+import { useDocArt } from "./wizard-flow";
 
 /**
  * The documents step's parts (00-foundations §5 and §7.3): the document
@@ -42,7 +43,8 @@ const TILE: Record<TileState, string> = {
 /**
  * The client's illustrations (Bazar, 13 Oct 2026), drawn on white, so their
  * tile is white and its border carries the state. A kind without one keeps
- * its line glyph on a tinted tile.
+ * its line glyph on a tinted tile. An icon uploaded in Pages & blocks →
+ * Wizards → Document icons replaces the one shipped here.
  */
 const DOC_ART: Partial<Record<DocKind, string>> = {
   emirates_id: "/mortgage/documents/emirates-id.webp",
@@ -60,7 +62,7 @@ const ART_BORDER: Record<TileState, string> = {
 };
 
 export function DocumentIcon({ kind, state = "empty", size = 44 }: { kind: DocKind; state?: TileState; size?: number }) {
-  const art = DOC_ART[kind];
+  const art = useDocArt()[kind] ?? DOC_ART[kind];
   return (
     <span
       aria-hidden

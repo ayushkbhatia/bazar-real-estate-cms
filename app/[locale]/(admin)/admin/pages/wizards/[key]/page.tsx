@@ -3,15 +3,38 @@ import { notFound } from "next/navigation";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { requireRole } from "@/lib/auth";
+import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getWizard, isWizardKey, MORTGAGE_EDITABLE_KEYS } from "@/lib/master-pages/wizards";
 import { getWizardContent } from "@/lib/queries/wizards";
 import { MasterPageEditor, type SectionActions } from "../../master/[key]/_editor";
 import { resetWizard, saveWizard } from "../_actions";
+import type { MediaOption } from "../../../_fields/types";
 
 export const dynamic = "force-dynamic";
 
 // By reference: wrapped in arrows here they'd be plain functions, which can't cross to the client editor.
 const ACTIONS: SectionActions = { save: saveWizard, reset: resetWizard };
+
+/** Images for the Document icons section's pickers: the library's image assets, newest first. */
+async function fetchMedia(): Promise<MediaOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("media_assets")
+    .select("id, filename, storage_key, mime_type")
+    .is("deleted_at", null)
+    .like("mime_type", "image/%")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  return (data ?? []).map((m) => ({
+    id: m.id,
+    filename: m.filename,
+    url: mediaPublicUrl(m.storage_key),
+    mime: m.mime_type,
+  }));
+}
 
 /** Pages & blocks → Wizards → one wizard: every screen's words, and the Flow switches. */
 export default async function WizardEditorPage({ params }: { params: Promise<{ key: string }> }) {
@@ -20,7 +43,7 @@ export default async function WizardEditorPage({ params }: { params: Promise<{ k
   if (!isWizardKey(key)) notFound();
   const wizard = getWizard(key);
   // "bilingual" keeps the Arabic twins in the values, or the next save would write them back blank.
-  const content = await getWizardContent(key, "bilingual");
+  const [content, media] = await Promise.all([getWizardContent(key, "bilingual"), fetchMedia()]);
 
   return (
     <CmsShell
@@ -65,6 +88,10 @@ export default async function WizardEditorPage({ params }: { params: Promise<{ k
             size limits, the 24-hour clock — is the form&apos;s rules, checked when it&apos;s sent, and isn&apos;t set
             here. Phrases with a count in them (&ldquo;3 files added&rdquo;) are kept as shipped.
           </p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-bz-ink-2">
+            <b>Document icons</b>{" "}replaces the picture on each document&apos;s tile: upload one, or pick it from the
+            media library. An empty one keeps the shipped illustration.
+          </p>
         </div>
 
         <MasterPageEditor
@@ -72,7 +99,7 @@ export default async function WizardEditorPage({ params }: { params: Promise<{ k
           pageLabel={wizard.label}
           path={wizard.path}
           usingDefaults={content.usingDefaults}
-          media={[]}
+          media={media}
           seeds={{}}
           actions={ACTIONS}
           // The screens' order is the flow's, which the wizard fixes.

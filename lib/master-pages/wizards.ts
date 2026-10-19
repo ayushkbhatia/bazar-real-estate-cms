@@ -24,7 +24,9 @@
  *    otherwise would be a lie the form then refuses.
  *
  * What the editor can switch is in the Flow section: the side panels and the
- * contact line on W1 and W2, and which service W1 shows first.
+ * contact line on W1 and W2, and which service W1 shows first. The Document
+ * icons section swaps the illustration on each document's tile for one the
+ * editor uploads; a blank field keeps the shipped one.
  */
 
 import enMortgage from "@/messages/en/mortgage.json";
@@ -39,10 +41,11 @@ import {
   type CatalogueCopyIssue,
 } from "./catalogue-copy";
 import { PENDING_COPY } from "@/lib/mortgage-requests/copy-status";
-import { area, text, toggle } from "./fields";
+import { DOC_KINDS, type DocKind } from "@/lib/mortgage-requests/documents";
+import { area, image, text, toggle } from "./fields";
 import { SUBPAGE_SLUG_PREFIX } from "./subpages";
 import { MORTGAGE_FLOW_DEFAULTS } from "./wizard-flow";
-import type { MasterPageDef, MasterPageKey, SectionDef, SectionValues, SimpleFieldDef } from "./types";
+import type { ImageValue, MasterPageDef, MasterPageKey, SectionDef, SectionValues, SimpleFieldDef } from "./types";
 
 export const WIZARD_KEYS = ["mortgage-application"] as const;
 export type WizardKey = (typeof WIZARD_KEYS)[number];
@@ -227,6 +230,43 @@ const FLOW_SECTION: SectionDef = {
   defaults: { ...MORTGAGE_FLOW_DEFAULTS },
 };
 
+/** The section of the document that holds the editor's document icons. */
+export const DOC_ICONS_SECTION = "icons";
+
+/** `emirates_id` → `emiratesId`: the kind's group in the message catalogue. */
+const docMessageKey = (kind: DocKind) => kind.replace(/_([a-z0-9])/g, (_, c: string) => c.toUpperCase());
+
+/**
+ * The picture on each document's tile (W5, W7, W8). Not words, so not built
+ * from the catalogue: one image per document kind, empty by default, and an
+ * empty one shows the illustration that ships with the site
+ * (`DocumentIcon`'s DOC_ART, or the line glyph for a kind that has none).
+ */
+const ICONS_SECTION: SectionDef = {
+  key: DOC_ICONS_SECTION,
+  label: "Fast Pre-Approval · Document icons",
+  description:
+    "The picture on each document's tile in the documents step, on the confirmation screen and on the secure link. Upload one to replace the shipped illustration; leave it empty to keep it.",
+  locked: true,
+  placeAfter: "documents",
+  dataNote:
+    "Square artwork reads best: the tile is white and the picture is drawn at about 84% of it, so a transparent PNG, WebP or SVG on no background, or one drawn on white, fits. Alt text isn't used: the tile sits beside the document's name, which is what a screen reader reads.",
+  fields: DOC_KINDS.map((kind) =>
+    image(kind, EN.get(`doc.${docMessageKey(kind)}.name`) ?? kind, "Empty shows the shipped illustration."),
+  ),
+  defaults: Object.fromEntries(DOC_KINDS.map((kind) => [kind, { media_id: null, alt: null, label: null }])),
+};
+
+/** The uploaded icons by document kind, from a resolved Document icons section whose URLs are attached. */
+export function docIconUrls(values: SectionValues): Partial<Record<DocKind, string>> {
+  const out: Partial<Record<DocKind, string>> = {};
+  for (const kind of DOC_KINDS) {
+    const value = values[kind] as ImageValue | undefined;
+    if (value && typeof value === "object" && value.media_id && value.url) out[kind] = value.url;
+  }
+  return out;
+}
+
 function buildSections(): SectionDef[] {
   const byScreen = new Map<string, string[]>(MORTGAGE_SCREENS.map((s) => [s.key, []]));
   for (const path of MORTGAGE_EDITABLE_KEYS) byScreen.get(screenOf(path))!.push(path);
@@ -249,7 +289,8 @@ function buildSections(): SectionDef[] {
       defaults,
     };
   });
-  return [FLOW_SECTION, ...copySections];
+  const afterDocuments = copySections.findIndex((section) => section.key === "documents") + 1;
+  return [FLOW_SECTION, ...copySections.slice(0, afterDocuments), ICONS_SECTION, ...copySections.slice(afterDocuments)];
 }
 
 const MORTGAGE_SECTIONS = buildSections();
@@ -319,7 +360,7 @@ export function wizardCopyIssues(key: WizardKey, sections: readonly { key: strin
   return catalogueCopyIssues(
     sections.flatMap((section) => {
       const sectionDef = def.sections.find((s) => s.key === section.key);
-      if (!sectionDef || section.key === "flow") return [];
+      if (!sectionDef || section.key === "flow" || section.key === DOC_ICONS_SECTION) return [];
       return [{ label: sectionDef.label, fields: sectionDef.fields, values: section.values }];
     }),
     EN,
@@ -329,10 +370,12 @@ export function wizardCopyIssues(key: WizardKey, sections: readonly { key: strin
 /**
  * The document as stored: only what differs from the catalogue, so a field
  * nobody edited keeps following the catalogue when its wording changes in
- * code. The Flow switches are kept as set.
+ * code. The Flow switches and the document icons are kept as set.
  */
 export function wizardStoredValues<T extends { key: string; enabled: boolean; values: SectionValues }>(sections: readonly T[]): T[] {
   return sections.map((section) =>
-    section.key === "flow" ? section : { ...section, values: catalogueStoredValues(section.values, EN, AR) },
+    section.key === "flow" || section.key === DOC_ICONS_SECTION
+      ? section
+      : { ...section, values: catalogueStoredValues(section.values, EN, AR) },
   );
 }

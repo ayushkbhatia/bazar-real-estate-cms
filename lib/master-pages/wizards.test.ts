@@ -12,6 +12,7 @@ import {
   wizardSections,
   wizardSlug,
   wizardStoredValues,
+  docIconUrls,
 } from "./wizards";
 import { overlayMessages, wizardOverlay } from "@/lib/queries/wizards";
 
@@ -38,7 +39,7 @@ describe("Wizards → Mortgage application", () => {
   });
 
   it("starts from the catalogue: English as the default, the catalogue's Arabic as the twin", () => {
-    for (const s of wizardSections().filter((s) => s.key !== "flow")) {
+    for (const s of wizardSections().filter((s) => s.key !== "flow" && s.key !== "icons")) {
       for (const field of s.fields) {
         expect(s.defaults[field.key], field.key).toBe(EN.get(field.key));
         if ("i18n" in field && field.i18n === false) expect(s.defaults[`${field.key}_ar`]).toBeUndefined();
@@ -48,7 +49,7 @@ describe("Wizards → Mortgage application", () => {
   });
 
   it("puts the flow's switches first and the screens in the order an applicant meets them", () => {
-    expect(def.sections.map((s) => s.key)).toEqual(["flow", "shell", "w1", "w2", "w3", "documents", "submit", "w7", "w8"]);
+    expect(def.sections.map((s) => s.key)).toEqual(["flow", "shell", "w1", "w2", "w3", "documents", "icons", "submit", "w7", "w8"]);
     expect(section("flow").defaults).toEqual(MORTGAGE_FLOW_DEFAULTS);
     expect(wizardSlug("mortgage-application")).toBe("subpage/wizard/mortgage-application");
   });
@@ -103,5 +104,46 @@ describe("Wizards → Mortgage application", () => {
     expect((merged.w1 as Tree).lede).toBe((en as unknown as Tree & { w1: Tree }).w1.lede);
     // Nothing stored: nothing laid over.
     expect(wizardOverlay(resolveSections(def, null, "en"), "en").messages).toEqual({});
+  });
+
+  it("offers an image per document kind, empty by default, kept as set on save", () => {
+    const icons = section("icons");
+    expect(icons.fields.map((f) => [f.key, f.kind])).toEqual([
+      ["emirates_id", "image"],
+      ["passport", "image"],
+      ["salary_certificate", "image"],
+      ["bank_statements_3m", "image"],
+      ["trade_license", "image"],
+      ["bank_statements_12m", "image"],
+    ]);
+    expect(icons.fields[0]!.label).toBe("Emirates ID");
+    expect(icons.defaults.passport).toEqual({ media_id: null, alt: null, label: null });
+    const upload = { media_id: "m-1", alt: null, label: null };
+    const stored = wizardStoredValues(docWith("icons", { passport: upload }));
+    expect(stored.find((s) => s.key === "icons")!.values.passport).toEqual(upload);
+    expect(wizardCopyIssues("mortgage-application", docWith("icons", { passport: upload }))).toEqual([]);
+  });
+
+  it("hands the flow only the icons that were uploaded and resolved", () => {
+    expect(
+      docIconUrls({
+        passport: { media_id: "m-1", alt: null, label: null, url: "https://cdn/passport.png" },
+        emirates_id: { media_id: null, alt: null, label: null },
+        // A deleted asset resolves to no URL: the shipped illustration stays.
+        salary_certificate: { media_id: "m-2", alt: null, label: null, url: null },
+      }),
+    ).toEqual({ passport: "https://cdn/passport.png" });
+    const stored = wizardStoredValues(docWith("icons", {}));
+    const sections = resolveSections(def, stored, "en").map((s) =>
+      s.key === "icons" ? { ...s, values: { ...s.values, trade_license: { media_id: "m-3", alt: null, label: null, url: "https://cdn/tl.webp" } } } : s,
+    );
+    const overlay = wizardOverlay(sections, "en");
+    expect(overlay.docArt).toEqual({ trade_license: "https://cdn/tl.webp" });
+    expect(overlay.messages).toEqual({});
+  });
+
+  it("places Document icons after the documents screen in a document saved before it existed", () => {
+    const old = defaultDocument(def).filter((s) => s.key !== "icons");
+    expect(resolveSections(def, old, "en").map((s) => s.key)).toEqual(def.sections.map((s) => s.key));
   });
 });
