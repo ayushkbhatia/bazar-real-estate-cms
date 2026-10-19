@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHead } from "./marketing/section-head";
 import { DeveloperMarquee } from "./developer-marquee";
-import { draftDirectorySlugs } from "../developers/_directory";
+import { marqueeTiles } from "../developers/_directory";
 
 /**
  * "Our Developers" — the developer logo marquee with its section header and
@@ -14,9 +14,8 @@ import { draftDirectorySlugs } from "../developers/_directory";
  * bz-surface-2 panel keeps the two carousels reading as separate sections
  * rather than one double-height block.
  */
-// Async because the marquee below has to know which developer profiles are
-// draft — that lives in Postgres and the tiles come from code. See
-// `draftDirectorySlugs`.
+// Async because the marquee's tiles are the live developer directory — the
+// code-owned set merged with the catalogue. See `marqueeTiles`.
 export async function DevelopersSection({
   eyebrow,
   heading,
@@ -47,7 +46,7 @@ export async function DevelopersSection({
           </Link>
         </Button>
       </div>
-      <DeveloperMarquee hiddenSlugs={await draftDirectorySlugs()} />
+      <DeveloperMarquee tiles={await marqueeTiles()} />
     </section>
   );
 }

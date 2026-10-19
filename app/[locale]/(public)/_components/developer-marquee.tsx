@@ -3,8 +3,7 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
-import { DEVELOPERS_SORTED } from "@/lib/developers/directory-data";
-import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
+import type { MarqueeTile } from "../developers/_directory";
 
 /**
  * "Our Developers" — a continuous logo marquee of the UAE developers Bazar
@@ -26,39 +25,24 @@ import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
  *    branch that used to freeze it there. See the note above that media query.
  */
 
-type Tile = { slug: string; name: string; logo: TrimmedLogo };
-
-// A developer with no trimmed asset is skipped rather than rendered at the
-// wrong optical weight — see `trimmedLogo`.
-const TILES: Tile[] = DEVELOPERS_SORTED.flatMap((d) => {
-  const logo = trimmedLogo(d.slug);
-  return logo ? [{ slug: d.slug, name: d.name, logo }] : [];
-});
-
 /**
- * Seconds of travel per tile, derived from the tuned full-set duration rather
- * than left as a constant, so hiding a draft developer changes the LENGTH of
- * the loop and not its speed. The two marquees on the home page have to read
- * as one system, and they only do that at equal px/s.
+ * Seconds of travel per tile, from the tuned full set (30 tiles over ~197s),
+ * so a longer roster lengthens the loop instead of speeding it up. The two
+ * marquees on the home page have to read as one system, and they only do
+ * that at equal px/s.
  */
-const SECONDS_PER_TILE = 197 / TILES.length;
+const SECONDS_PER_TILE = 197 / 30;
 
 export function DeveloperMarquee({
   /**
-   * Slugs whose `/developers/[slug]` page would 404 — draft catalogue rows,
-   * from `draftDirectorySlugs()`. This set is not knowable here: the tiles
-   * come from the code-owned directory and publication lives in Postgres, so
-   * the server parent reads it and passes it down. Omitted means "show
-   * everything", which is what the component did before and what a test or a
-   * Supabase-less preview still wants.
+   * The live developer directory — `marqueeTiles()`, read by the server
+   * parent because publication and CMS-added developers live in Postgres.
    */
-  hiddenSlugs,
+  tiles,
 }: {
-  hiddenSlugs?: readonly string[];
-} = {}) {
+  tiles: readonly MarqueeTile[];
+}) {
   const t = useTranslations("common");
-  const hidden = hiddenSlugs?.length ? new Set(hiddenSlugs) : null;
-  const tiles = hidden ? TILES.filter((tile) => !hidden.has(tile.slug)) : TILES;
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
   const loop = [...tiles, ...tiles];
@@ -71,27 +55,37 @@ export function DeveloperMarquee({
           animationDuration: `${(tiles.length * SECONDS_PER_TILE).toFixed(0)}s`,
         }}
       >
-        {loop.map((t, i) => {
+        {loop.map((tile, i) => {
           // The second copy is decorative: hidden from the accessibility tree,
           // and pulled out of the tab order so keyboard users don't land on a
           // focusable link inside an aria-hidden subtree.
           const duplicate = i >= tiles.length;
           return (
             <Link
-              key={`${t.slug}-${i}`}
-              href={`/developers/${t.slug}`}
+              key={`${tile.slug}-${i}`}
+              href={`/developers/${tile.slug}`}
               className="bz-devmarquee__tile"
               aria-hidden={duplicate || undefined}
               tabIndex={duplicate ? -1 : undefined}
             >
-              <Image
-                src={t.logo.src}
-                alt={t.name}
-                width={t.logo.w}
-                height={t.logo.h}
-                className="bz-devmarquee__logo"
-                sizes="160px"
-              />
+              {tile.logo ? (
+                <Image
+                  src={tile.logo.src}
+                  alt={tile.name}
+                  width={tile.logo.w}
+                  height={tile.logo.h}
+                  className={
+                    tile.tight
+                      ? "bz-devmarquee__logo"
+                      : "bz-devmarquee__logo bz-devmarquee__logo--padded"
+                  }
+                  sizes="160px"
+                />
+              ) : (
+                // A developer added in the CMS with no logo yet: its name,
+                // set in type, rather than a gap in the strip.
+                <span className="bz-devmarquee__name serif">{tile.name}</span>
+              )}
             </Link>
           );
         })}
@@ -160,10 +154,25 @@ export function DeveloperMarquee({
           height: 48px;
           object-fit: contain;
         }
+        /* An upload or padded master canvas carries its padding inside the
+           frame, so it needs a taller box for comparable weight — the same
+           split the /developers grid makes. */
+        .bz-devmarquee__logo--padded { width: 150px; height: 100px; }
+        .bz-devmarquee__name {
+          max-width: 160px;
+          font-size: 20px;
+          line-height: 1.15;
+          letter-spacing: -0.01em;
+          text-align: center;
+          white-space: normal;
+          color: var(--bz-ink, #1a1a1a);
+        }
         @media (min-width: 768px) {
           .bz-devmarquee__track { gap: 20px; }
           .bz-devmarquee__tile { min-width: 240px; height: 128px; padding: 0 40px; }
           .bz-devmarquee__logo { width: 160px; height: 56px; }
+          .bz-devmarquee__logo--padded { width: 180px; height: 120px; }
+          .bz-devmarquee__name { font-size: 22px; }
         }
         @keyframes bz-devmarquee-scroll {
           from { transform: translate3d(0, 0, 0); }
