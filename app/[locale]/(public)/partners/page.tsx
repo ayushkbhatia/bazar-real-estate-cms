@@ -192,7 +192,7 @@ export default async function PartnersPage({
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="bg-white text-bz-ink hover:bg-white/90">
-              <Link href="/contact">
+              <Link href="/services/consultation">
                 {str(ctaV, "cta_label") ?? "Talk to an advisor"}
                 <ArrowRight size={15} strokeWidth={1.7} />
               </Link>
