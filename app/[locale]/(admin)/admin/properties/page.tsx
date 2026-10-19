@@ -11,7 +11,8 @@ import { listActiveAgents } from "@/lib/queries/staff-agents";
 import { PropertiesTable } from "./_table";
 import { BulkToolbar } from "./_toolbar";
 import { StatusTabs } from "./_status-tabs";
-import { PropertyTypeFilter, propertyTypeLabel } from "./_filter-dropdowns";
+import { PropertyTypeFilter } from "./_filter-dropdowns";
+import { propertyTypeLabel } from "./_type-label";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import type { Database } from "@/db/types";
 

@@ -3,12 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
-
-/** "hotel_apartment" → "Hotel apartment". */
-export function propertyTypeLabel(type: string): string {
-  const words = type.replace(/_/g, " ");
-  return words.charAt(0).toUpperCase() + words.slice(1);
-}
+import { propertyTypeLabel } from "./_type-label";
 
 /**
  * The Type filter above the properties table. URL-state driven (`?type=`), so
