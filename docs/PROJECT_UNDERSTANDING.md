@@ -64,7 +64,7 @@ Slug-+-ref URLs (e.g. `/p/mamsha-3-bed-baz-ad-04891`) give SEO-friendly slugs wh
 - **pgvector** in Supabase Postgres for AI concierge semantic search (Phase 5)
 - **Anthropic Claude** for the concierge (Haiku for tool calls, Sonnet for synthesis)
 - **Inngest** for background jobs + cron (Phase 1+)
-- **Resend** (transactional email) + **Mailchimp** (newsletters)
+- **Resend** (transactional email and the newsletter; Mailchimp retired — ADR-0009)
 - **Meta WhatsApp Business Cloud API** (Phase 2)
 - **Sentry** + **PostHog** + Vercel Analytics for observability
 - **Vercel** for hosting (already wired), pushes to `main` auto-deploy

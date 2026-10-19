@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listIntegrations } from "@/lib/queries/integrations";
 import {
-  isMailchimpConfigured,
   isDocuSignConfigured,
   isMeilisearchConfigured,
   isVoyageConfigured,
@@ -18,8 +17,10 @@ import type {
 
 export const dynamic = "force-dynamic";
 
+// `mailchimp` stays in the database enum (0024) with an inert row, but the
+// site no longer talks to Mailchimp (ADR-0009), so it gets no card.
 const KIND_META: Record<
-  IntegrationKind,
+  Exclude<IntegrationKind, "mailchimp">,
   { label: string; blurb: string; href?: string; envVars: string[] }
 > = {
   mapbox: {
@@ -51,16 +52,6 @@ const KIND_META: Record<
     label: "Bayut",
     blurb: "Pull-based XML feed at /api/feeds/bayut.xml.",
     envVars: ["BAYUT_FEED_TOKEN"],
-  },
-  mailchimp: {
-    label: "Mailchimp",
-    blurb: "Newsletter subscribe + double-opt-in + unsubscribe webhook.",
-    envVars: [
-      "MAILCHIMP_API_KEY",
-      "MAILCHIMP_LIST_ID",
-      "MAILCHIMP_DC",
-      "MAILCHIMP_WEBHOOK_SECRET",
-    ],
   },
   whatsapp_cloud: {
     label: "WhatsApp Cloud API",
@@ -128,8 +119,6 @@ function envConfigured(kind: IntegrationKind): boolean {
       return isMeilisearchConfigured;
     case "voyage_ai":
       return isVoyageConfigured;
-    case "mailchimp":
-      return isMailchimpConfigured;
     case "docusign":
       return isDocuSignConfigured;
     case "resend":
@@ -146,7 +135,7 @@ export default async function AdminSettingsIntegrationsPage() {
   const byKind = new Map<IntegrationKind, IntegrationRow>(
     rows.map((r) => [r.kind, r]),
   );
-  const kinds = Object.keys(KIND_META) as IntegrationKind[];
+  const kinds = Object.keys(KIND_META) as (keyof typeof KIND_META)[];
 
   return (
     <div className="flex flex-col gap-10">

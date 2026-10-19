@@ -4,7 +4,7 @@ export default function AdminSettingsBillingPage() {
   return (
     <SettingsStub
       title="Billing"
-      intro="Vendor invoices (Vercel, Supabase, Resend, Mailchimp, Mapbox, Meilisearch, Voyage) and Bazar's outgoing client invoices."
+      intro="Vendor invoices (Vercel, Supabase, Resend, Mapbox, Meilisearch, Voyage) and Bazar's outgoing client invoices."
       willShipIn="Phase 8+ (post-launch finance ops)"
       bullets={[
         "Vendor invoice tracker — uploads + due-date alerts",

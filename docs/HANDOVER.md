@@ -52,7 +52,6 @@ Every key in `.env.example` is currently a development credential owned by us. *
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Property detail maps, commute-time isochrone | Falls back to MapLibre + open tiles |
 | `MEILISEARCH_HOST` + `MEILISEARCH_API_KEY` | Typo-tolerant search across listings | Falls back to Postgres full-text search |
 | `VOYAGE_API_KEY` | AI Concierge semantic similarity | Concierge falls back to text search |
-| `MAILCHIMP_API_KEY` + `MAILCHIMP_LIST_ID` + `MAILCHIMP_DC` + `MAILCHIMP_WEBHOOK_SECRET` | Newsletter campaign sync | DB remains source of truth; campaign tooling disabled |
 | `DOCUSIGN_*` (5 vars) | KYC and offer-letter e-signature | Manual document upload only |
 | `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | Per-IP rate limiting on public POSTs | No-op (no rate limit) |
 | `NEXT_PUBLIC_POSTHOG_KEY` + `NEXT_PUBLIC_POSTHOG_HOST` | Product analytics | Silently disabled |
