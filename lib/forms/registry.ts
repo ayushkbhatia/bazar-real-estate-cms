@@ -323,7 +323,9 @@ export const FORM_DEFS: FormDef[] = [
       sectionKey: "hero",
       note: "The heading and blurb around the subscribe box.",
     },
-    alsoOn: ["Home page teaser", "Article sidebar"],
+    // No `alsoOn`: the home teaser and the article rail both take this form,
+    // but neither is mounted on any page, and the editor reads `alsoOn` out
+    // to the client as where the box appears. Add them back when one ships.
     copy: copy({
       submit_label: "Subscribe",
       pending_label: "Subscribing…",

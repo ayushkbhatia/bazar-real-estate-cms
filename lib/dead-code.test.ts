@@ -73,19 +73,20 @@ const UNREFERENCED: Readonly<Record<string, string>> = {
   // Considered for the v1 section catalogue and left out for concrete
   // reasons. Read that entry before adopting any of them.
   "app/[locale]/(public)/_components/insights-teaser.tsx":
-    "page-builder candidate; FOLLOWUPS:68 also wants the newsletter form threaded through it",
+    "page-builder candidate; reads the insights_newsletter form, so mounting it needs nothing else",
   "app/[locale]/(public)/_components/advisor-of-month.tsx":
     "page-builder candidate",
   "app/[locale]/(public)/_components/areas-mosaic.tsx":
     "page-builder candidate — hardcodes five areas with INVENTED listing counts; a fabricated inventory claim on a DLD-regulated surface",
-  "app/[locale]/(public)/_components/client-words.tsx": "page-builder candidate",
+  "app/[locale]/(public)/_components/client-words.tsx":
+    "page-builder candidate",
   "app/[locale]/(public)/_components/awards-band.tsx": "page-builder candidate",
   "app/[locale]/(public)/_components/services-band.tsx":
     "page-builder candidate",
   "app/[locale]/(public)/_components/cta-banner.tsx":
     "page-builder candidate — imports ValuationLeadGate, so not a leaf",
   "app/[locale]/(public)/insights/[slug]/_components/article-rail.tsx":
-    "FOLLOWUPS:68 names it as where the newsletter form still needs threading",
+    "built for the article page and never mounted; takes the insights_newsletter form as a prop",
 
   // ── Built for the article page and never mounted ─────────────────────────
   // `insights/[slug]/page.tsx` imports none of the three. They are one line
@@ -223,21 +224,25 @@ function unreferencedNow(): string[] {
 const GRAPH_WALK_TIMEOUT = 120_000;
 
 describe("G-15 · no new unreferenced modules", () => {
-  it("finds none outside the inventory", { timeout: GRAPH_WALK_TIMEOUT }, () => {
-    const surprises = unreferencedNow().filter((f) => !(f in UNREFERENCED));
+  it(
+    "finds none outside the inventory",
+    { timeout: GRAPH_WALK_TIMEOUT },
+    () => {
+      const surprises = unreferencedNow().filter((f) => !(f in UNREFERENCED));
 
-    expect(
-      surprises,
-      `These modules are imported by nothing:\n${surprises.join("\n")}\n\n` +
-        `Either wire them up, delete them, or — if the park is deliberate — ` +
-        `add a line to UNREFERENCED in lib/dead-code.test.ts saying WHY, and ` +
-        `raise UNREFERENCED_CEILING.\n\n` +
-        `This matters to the message waves specifically: a string in a ` +
-        `component nothing mounts still gets extracted, translated and ` +
-        `reviewed, and then renders nowhere. Seventeen such components were ` +
-        `deleted in waves 4b and 4c.`,
-    ).toEqual([]);
-  });
+      expect(
+        surprises,
+        `These modules are imported by nothing:\n${surprises.join("\n")}\n\n` +
+          `Either wire them up, delete them, or — if the park is deliberate — ` +
+          `add a line to UNREFERENCED in lib/dead-code.test.ts saying WHY, and ` +
+          `raise UNREFERENCED_CEILING.\n\n` +
+          `This matters to the message waves specifically: a string in a ` +
+          `component nothing mounts still gets extracted, translated and ` +
+          `reviewed, and then renders nowhere. Seventeen such components were ` +
+          `deleted in waves 4b and 4c.`,
+      ).toEqual([]);
+    },
+  );
 
   it("keeps the inventory honest", { timeout: GRAPH_WALK_TIMEOUT }, () => {
     // An entry that IS referenced now is a component someone wired up and

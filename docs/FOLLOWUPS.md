@@ -336,14 +336,16 @@ quick grep can show "what's outstanding in my area."
   each is one component reading `getFormWithOverrides` instead of its own
   literals. See `docs/FORMS.md`.
 
-- [forms] Newsletter signups on the home teaser and article sidebar don't read
-  their CMS copy.
-  `NewsletterSignup` takes an optional `form` prop and only /insights passes
-  it, so the other two surfaces still show the built-in "Subscribe". They log
-  their submissions either way. "Done" is threading the form through
-  `insights-teaser.tsx` and `insights/[slug]/_components/article-rail.tsx`, or
-  giving each surface its own registry entry if the client wants them worded
-  differently.
+- [newsletter] The only newsletter box on the site is the /insights hero.
+  The home teaser (`insights-teaser.tsx`) and the article rail
+  (`insights/[slug]/_components/article-rail.tsx`) both carry one, and both
+  read the `insights_newsletter` form's copy now, but neither is mounted on
+  any page — both are in `lib/dead-code.test.ts`. With one confirmed
+  subscriber, more places to sign up is the lever. "Done" is a decision on
+  where a box goes (article pages are the obvious one: mount `ArticleRail`, or
+  just `NewsletterSignup`, in `insights/[slug]/page.tsx` with
+  `getForm("insights_newsletter")`), then restoring `alsoOn` on the registry
+  entry for each surface that ships.
 
 - [services] `/services/consulting` and `/services/consultation` both exist.
   The first is the old seed-driven "Consulting" page (senior-advisor hours,
