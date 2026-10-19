@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   staffInviteSchema,
-  STAFF_ROLES,
+  ALL_STAFF_ROLES,
   ROLE_LABEL,
   ROLE_DESCRIPTION,
   type StaffInviteInput,
@@ -98,7 +98,7 @@ export function InviteStaffButton() {
               {...form.register("role")}
               className="h-9 w-full rounded border border-bz-border bg-bz-bg px-2 text-[13px]"
             >
-              {STAFF_ROLES.map((r) => (
+              {ALL_STAFF_ROLES.map((r) => (
                 <option key={r} value={r}>
                   {ROLE_LABEL[r]} — {ROLE_DESCRIPTION[r]}
                 </option>

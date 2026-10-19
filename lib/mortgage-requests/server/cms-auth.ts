@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
-import { STAFF_ROLES } from "@/lib/schemas/staff";
+import { ALL_STAFF_ROLES } from "@/lib/schemas/staff";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type MortgageTeamRole = "head" | "adviser";
@@ -49,7 +49,7 @@ export async function getMortgageNav(): Promise<{ role: MortgageTeamRole; newCou
  * same 404 as a page that doesn't exist.
  */
 export async function requireMortgageRole() {
-  const { user, staff, supabase } = await requireRole(STAFF_ROLES);
+  const { user, staff, supabase } = await requireRole(ALL_STAFF_ROLES);
   const role = await getMortgageRole();
   if (!role) notFound();
   return { user, staff, supabase, role };

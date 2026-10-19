@@ -111,6 +111,7 @@ export async function countStaffByRole(): Promise<Record<StaffRole, number>> {
     agent: 0,
     marketing: 0,
     support: 0,
+    mortgage_admin: 0,
   };
   if (!isSupabaseConfigured) return fallback;
   const supabase = await createSupabaseServerClient();

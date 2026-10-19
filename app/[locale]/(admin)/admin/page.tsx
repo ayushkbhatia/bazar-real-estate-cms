@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { getStaffRole } from "@/lib/auth";
+import { isMortgageAdmin } from "@/lib/schemas/staff";
 import { fetchInboxKpis } from "@/lib/queries/enquiries";
 import { PipelineBarChart } from "./_components/pipeline-bar-chart";
 import { ActivityFeed } from "./_components/activity-feed";
@@ -163,6 +166,11 @@ function relativeTime(iso: string, nowMs: number): string {
 }
 
 export default async function AdminDashboardPage() {
+  // A Mortgage Admin has no dashboard: sign-in lands here, and their CMS is
+  // the mortgage queue.
+  if (isSupabaseConfigured && isMortgageAdmin(await getStaffRole()))
+    redirect("/admin/mortgages");
+
   const [{ active, drafts, total, pipeline }, inbox, activity] =
     await Promise.all([
       fetchKpis(),

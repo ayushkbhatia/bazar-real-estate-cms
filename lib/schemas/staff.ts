@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { uuidLike } from "@/lib/uuid";
 
+/**
+ * The roles that work in the CMS at large. `requireRole(STAFF_ROLES)` is the
+ * gate for "any member of staff", so it deliberately leaves out
+ * `mortgage_admin`, who sees the mortgage module and nothing else.
+ */
 export const STAFF_ROLES = [
   "admin",
   "editor",
@@ -9,6 +14,16 @@ export const STAFF_ROLES = [
   "support",
 ] as const;
 
+/**
+ * Mortgage Admin: the mortgage module only. Always Head of mortgages — the
+ * database pairs the two (0165) — and `is_staff()` doesn't count them, so
+ * every other table refuses them as well.
+ */
+export const MORTGAGE_ADMIN_ROLE = "mortgage_admin" as const;
+
+/** Every role a member of staff can hold: what an admin can invite or assign. */
+export const ALL_STAFF_ROLES = [...STAFF_ROLES, MORTGAGE_ADMIN_ROLE] as const;
+
 export const STAFF_STATUSES = [
   "active",
   "on_leave",
@@ -16,7 +31,7 @@ export const STAFF_STATUSES = [
   "suspended",
 ] as const;
 
-export type StaffRole = (typeof STAFF_ROLES)[number];
+export type StaffRole = (typeof ALL_STAFF_ROLES)[number];
 export type StaffStatus = (typeof STAFF_STATUSES)[number];
 
 export const ROLE_LABEL: Record<StaffRole, string> = {
@@ -25,6 +40,7 @@ export const ROLE_LABEL: Record<StaffRole, string> = {
   agent: "Agent",
   marketing: "Marketing",
   support: "Support",
+  mortgage_admin: "Mortgage Admin",
 };
 
 export const ROLE_DESCRIPTION: Record<StaffRole, string> = {
@@ -33,6 +49,7 @@ export const ROLE_DESCRIPTION: Record<StaffRole, string> = {
   agent: "Own listings only",
   marketing: "Pages, media, blog",
   support: "Read-only on enquiries",
+  mortgage_admin: "Mortgage requests only",
 };
 
 export const STATUS_LABEL: Record<StaffStatus, string> = {
@@ -50,7 +67,7 @@ export const staffInviteSchema = z.object({
     .trim()
     .min(2, "Name is too short")
     .max(80, "Name is too long"),
-  role: z.enum(STAFF_ROLES),
+  role: z.enum(ALL_STAFF_ROLES),
 });
 
 export type StaffInviteInput = z.infer<typeof staffInviteSchema>;
@@ -58,7 +75,7 @@ export type StaffInviteInput = z.infer<typeof staffInviteSchema>;
 /** Change-role payload. */
 export const staffRoleUpdateSchema = z.object({
   user_id: uuidLike(),
-  role: z.enum(STAFF_ROLES),
+  role: z.enum(ALL_STAFF_ROLES),
 });
 
 /** Change-status payload (used for suspend / restore). */
@@ -84,6 +101,11 @@ export function can(
 ): boolean {
   if (!role) return false;
   return (PERMISSIONS[permission] as readonly StaffRole[]).includes(role);
+}
+
+/** True for the role that sees the mortgage module and nothing else. */
+export function isMortgageAdmin(role: string | null | undefined): boolean {
+  return role === MORTGAGE_ADMIN_ROLE;
 }
 
 /** Short summary string shown in the table row. */

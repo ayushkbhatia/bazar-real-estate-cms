@@ -15,7 +15,7 @@ import {
   staffInviteSchema,
   staffRoleUpdateSchema,
   staffStatusUpdateSchema,
-  STAFF_ROLES,
+  ALL_STAFF_ROLES,
   ROLE_LABEL,
   type StaffRole,
 } from "@/lib/schemas/staff";
@@ -302,7 +302,7 @@ export async function updateStaffRole(
   if (!parsed.success) {
     return { status: "error", message: "Invalid role payload." };
   }
-  if (!STAFF_ROLES.includes(parsed.data.role as StaffRole)) {
+  if (!ALL_STAFF_ROLES.includes(parsed.data.role as StaffRole)) {
     return { status: "error", message: "Unknown role." };
   }
   const supabase = await createSupabaseServerClient();

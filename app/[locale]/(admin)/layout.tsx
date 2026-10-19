@@ -4,6 +4,12 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { listRecentNotifications } from "@/lib/notifications";
 import { getMortgageNav } from "@/lib/mortgage-requests/server/cms-auth";
 import {
+  ALL_STAFF_ROLES,
+  isMortgageAdmin,
+  type StaffRole,
+} from "@/lib/schemas/staff";
+import { MortgageAdminGuard } from "./_components/mortgage-admin-guard";
+import {
   AdminSessionProvider,
   type AdminSession,
 } from "./_components/admin-session";
@@ -15,14 +21,6 @@ import {
 // an error (e.g. the dashboard's kpis / recent-activity fetches). Mirrors the
 // existing admin/settings layout.
 export const dynamic = "force-dynamic";
-
-const STAFF_ROLES = [
-  "admin",
-  "editor",
-  "agent",
-  "marketing",
-  "support",
-] as const;
 
 const EMPTY_SESSION: AdminSession = {
   userId: null,
@@ -85,8 +83,7 @@ export default async function AdminLayout({
   // whether the route exists.
   if (!staff) notFound();
   if (staff.status !== "active") notFound();
-  if (!STAFF_ROLES.includes(staff.role as (typeof STAFF_ROLES)[number]))
-    notFound();
+  if (!ALL_STAFF_ROLES.includes(staff.role as StaffRole)) notFound();
 
   const { rows, unread } = seed;
 
@@ -105,7 +102,12 @@ export default async function AdminLayout({
         mortgage,
       }}
     >
-      {children}
+      {/* A Mortgage Admin sees the mortgage module and nothing else. */}
+      {isMortgageAdmin(staff.role) ? (
+        <MortgageAdminGuard>{children}</MortgageAdminGuard>
+      ) : (
+        children
+      )}
     </AdminSessionProvider>
   );
 }
