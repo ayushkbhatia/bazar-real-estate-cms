@@ -27,6 +27,10 @@ import { ChevronRight } from "lucide-react";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
 import { InternalLinkCard } from "./_components/internal-link-card";
+import { ArticleNewsletter } from "./_components/article-newsletter";
+import { getForm } from "@/lib/queries/forms";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
 import { ARTICLE_COVER_SIZES } from "../_components/article-hero";
 
 export const revalidate = 300;
@@ -119,10 +123,16 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   // (at most one query per kind) beside the related-articles read. On /ar the
   // body is the Arabic one when it exists, so the refs come from whichever
   // body is actually about to be drawn.
-  const [related, links] = await Promise.all([
+  //
+  // The newsletter box under the body borrows the /insights hero box's words
+  // (see ArticleNewsletter), so it reads the same two documents that page does.
+  const [related, links, newsletterForm, insightsPage] = await Promise.all([
     getRelatedArticles(article.id, article.category, 3),
     resolveInternalLinks(articleBodyLinkRefs(article.body_html), locale),
+    getForm("insights_newsletter"),
+    getMasterPageContent("insights", locale),
   ]);
+  const newsletterCopy = insightsPage.section("featured")?.values ?? {};
 
   const categoryLabel = article.category_label;
   const heroSrc = article.hero
@@ -277,6 +287,20 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               <InternalLinkCard link={link} variant={variant} />
             ),
           })}
+        </div>
+
+        <div className="mt-14">
+          <ArticleNewsletter
+            form={newsletterForm}
+            eyebrow={str(newsletterCopy, "eyebrow") ?? "Subscribe to the brief"}
+            heading={
+              str(newsletterCopy, "heading") ?? "One email every Wednesday."
+            }
+            body={
+              str(newsletterCopy, "body") ??
+              "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with."
+            }
+          />
         </div>
       </div>
 

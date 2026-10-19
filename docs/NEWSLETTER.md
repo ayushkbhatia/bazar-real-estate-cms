@@ -24,6 +24,16 @@ dates — filterable and searchable, with **Re-send confirmation** for anyone
 still pending (per row, or every pending address at once) and **Unsubscribe**
 for anyone who asks by other means.
 
+## Where people sign up
+
+Two boxes, one form: the /insights hero and the box under every article
+(`insights/[slug]/_components/article-newsletter.tsx`). Both take their
+button, placeholder and confirmation from the `insights_newsletter` form
+(/admin/forms) and their eyebrow, heading and blurb from the Insights master
+page's `featured` section (/admin/pages/master/insights), so an edit there
+words both, in English and Arabic. Their sign-ups are told apart by `source`:
+`insights_header` and `insights_article`.
+
 ## Who may do what
 
 | | admin | marketing | editor | others |

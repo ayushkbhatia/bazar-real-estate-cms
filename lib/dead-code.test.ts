@@ -85,8 +85,6 @@ const UNREFERENCED: Readonly<Record<string, string>> = {
     "page-builder candidate",
   "app/[locale]/(public)/_components/cta-banner.tsx":
     "page-builder candidate — imports ValuationLeadGate, so not a leaf",
-  "app/[locale]/(public)/insights/[slug]/_components/article-rail.tsx":
-    "built for the article page and never mounted; takes the insights_newsletter form as a prop",
 
   // ── Built for the article page and never mounted ─────────────────────────
   // `insights/[slug]/page.tsx` imports none of the three. They are one line

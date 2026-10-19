@@ -309,7 +309,7 @@ export const FORM_DEFS: FormDef[] = [
     surface: "Insights",
     path: "/insights",
     description:
-      "The double opt-in newsletter box in the Insights hero. Sends a confirmation email before anyone is added to the list.",
+      "The double opt-in newsletter box in the Insights hero and under every article. Sends a confirmation email before anyone is added to the list.",
     group: "master",
     handler: "newsletter",
     // One locked email box, by law and by design: a double opt-in signup that
@@ -323,9 +323,10 @@ export const FORM_DEFS: FormDef[] = [
       sectionKey: "hero",
       note: "The heading and blurb around the subscribe box.",
     },
-    // No `alsoOn`: the home teaser and the article rail both take this form,
-    // but neither is mounted on any page, and the editor reads `alsoOn` out
-    // to the client as where the box appears. Add them back when one ships.
+    // The editor reads `alsoOn` out to the client as where the box appears,
+    // so only mounted surfaces belong here. The home teaser takes this form
+    // too but is not on any page.
+    alsoOn: ["Every article page"],
     copy: copy({
       submit_label: "Subscribe",
       pending_label: "Subscribing…",
