@@ -51,7 +51,7 @@ custom, all documented in the vendor doc (v1.1) and nothing beyond them.
 | `Lead_Source__c` | enquiry `source` | `Website`, or `Others` for WhatsApp. Required. |
 | `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent` / `Other`. Required. |
 | `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
-| `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else `/p/<slug>`), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
+| `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else its canonical `/p/<slug>-<reference>` — slugs alone repeat), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
 | `Preferred_Languages__c` | `enquiries.locale` | Restricted picklist: `Arabic`, `Arabic & English` — no `English`. An `/ar` lead sends `Arabic`; an English one sends nothing until Levarus add `English` (asked 19 Oct 2026; `PREFERRED_LANGUAGE` in `leads.ts`). |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
@@ -264,6 +264,33 @@ order by crm_erasure_due_at;
 
 A non-empty result older than a few minutes means an erasure has not
 completed in the CRM. A permanent failure also raises a Sentry error.
+
+**Leads Salesforce filed as Re-Inquiries are not erased by this.** Levarus's
+duplicate rule (19 Oct 2026) takes a lead whose email matches an earlier
+inquiry (same email, same project) out of `Lead__c`: our upsert creates the
+record, their trigger copies it into a Re-Inquiry under the parent inquiry
+and deletes it about two seconds later. The integration user cannot see the
+Re-Inquiries object, so the personal data is out of reach. First seen with
+BZM-26-0002 → `LD-000074` (deleted), parent `LD-000032`; on 19 Oct it was the
+only one of the site's 18 synced records in that state.
+
+A gone record used to count as erased. Now `scrubLead` reads its
+recycle-bin copy (`findReInquiry`, through `queryAll`): deleted within two
+minutes of creation means the trigger took it, and the result carries
+`reInquiry` with the parent's name, found by the same address with
+re-enquiries or by the re-enquiry timestamp. The drain then retires the
+marker (no retry can reach it), writes the reason to `crm_last_error`,
+reports "Salesforce erasure incomplete: the lead became a Re-Inquiry" to
+`/admin/settings/health` with record ids only, and the DSR screen tells the
+staff member to ask Levarus — so the reply to the subject does not claim it
+was erased. If the lookup itself fails the erasure stays outstanding.
+
+Two limits. The recycle bin keeps a deleted record for fifteen days; past
+that, a Re-Inquiry and a lead someone deleted by hand look the same, and the
+erasure counts as done. And the parent is scrubbed only if it is one of
+this site's own leads with the same address, which the same erasure pass
+covers; a parent from another channel is the sales team's. The fix for both
+is on Levarus's side (ask 18).
 
 **Access requests** disclose the CRM copy too: when a subject's enquiry
 actually reached Salesforce, the export archive carries a note naming it as a
@@ -611,6 +638,13 @@ whole-number floor and the Arabic field lengths. Still open:
     same email + different project → new `Lead__c` on the same contact. The
     site sends no `Project__c`, so which "project" their rule compares is
     worth confirming.
+18. **Erasure of Re-Inquiries.** Either read/edit on the Re-Inquiries
+    object for the integration user (with the field that links one to its
+    parent and the personal fields it copies), so a website erasure can
+    pseudonymise it as it does a `Lead__c`, or a standing arrangement that
+    Levarus erase the Re-Inquiries of a parent we name. Until then each one
+    is reported on the health page and on the DSR screen for a person to
+    act on.
 
 ## Design rules that held
 

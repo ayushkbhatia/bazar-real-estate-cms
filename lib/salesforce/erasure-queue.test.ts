@@ -12,6 +12,8 @@ vi.mock("@/lib/env", () => ({
 }));
 vi.mock("./erasure", () => ({ scrubLead }));
 vi.mock("@sentry/nextjs", () => ({ captureMessage: vi.fn() }));
+const reportIssue = vi.fn();
+vi.mock("@/lib/observability", () => ({ reportIssue }));
 
 const { drainCrmErasures } = await import("./erasure-queue");
 
@@ -68,6 +70,7 @@ function cleared(writes: Write[]): string[] {
 
 beforeEach(() => {
   scrubLead.mockReset();
+  reportIssue.mockReset();
   configured = true;
 });
 
@@ -79,6 +82,7 @@ describe("drainCrmErasures", () => {
       scrubbed: 0,
       remaining: 0,
       cleared: 0,
+      reInquiries: [],
       lastError: null,
     });
     expect(writes).toHaveLength(0);
@@ -144,6 +148,25 @@ describe("drainCrmErasures", () => {
 
     expect(out).toMatchObject({ scrubbed: 1, remaining: 1 });
     expect(cleared(writes)).toEqual(["e2"]);
+  });
+
+  it("does not call a lead Salesforce turned into a Re-Inquiry erased", async () => {
+    // The duplicate trigger moved the data to an object this integration
+    // cannot see. Retired (no retry can reach it), but noted on the row,
+    // reported, and kept out of the scrubbed count.
+    scrubLead.mockResolvedValue({ ok: true, reInquiry: { record: "a04A", parent: "LD-000032" } });
+    const { client, writes } = fakeAdmin([
+      { id: "e1", name: "deleted-aaa", crm_external_id: "a04A" },
+    ]);
+
+    const out = await drainCrmErasures(client);
+
+    expect(out.scrubbed).toBe(0);
+    expect(out.reInquiries).toEqual([{ record: "a04A", parent: "LD-000032" }]);
+    expect(cleared(writes)).toEqual(["e1"]);
+    expect(String(writes[0].patch.crm_last_error)).toContain("Re-Inquiry under LD-000032");
+    expect(reportIssue).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify(reportIssue.mock.calls[0])).not.toMatch(/@/);
   });
 
   it("leaves the obligation standing when Salesforce is not configured", async () => {

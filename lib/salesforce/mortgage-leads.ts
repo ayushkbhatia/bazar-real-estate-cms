@@ -76,7 +76,8 @@ export type MortgageLeadRow = {
   /** The listing the applicant started from, if any: the CRM's own name for
    *  it when it came from Salesforce, else our reference. */
   property_reference: string | null;
-  property_slug: string | null;
+  /** Its canonical site path (`propertyUrl`, `/p/<slug>-<ref>`). */
+  property_path: string | null;
   /** The consultation a Fast Pre-Approval was invited from. */
   parent_reference: string | null;
   /** The site language the applicant used (`mortgage_requests.locale`). */
@@ -124,8 +125,8 @@ export function buildMortgageLeadPayload(row: MortgageLeadRow, siteUrl: string |
   applyPhone(payload, row.mobile_e164);
   const description = buildMortgageDescription(row, siteUrl);
   if (description) payload.Description__c = description;
-  if (row.property_slug) {
-    const url = clamp(`${siteOrigin(siteUrl)}/p/${row.property_slug}`, MAX_URL);
+  if (row.property_path) {
+    const url = clamp(`${siteOrigin(siteUrl)}${row.property_path}`, MAX_URL);
     if (url) payload.Website_Listing_URL__c = url;
   }
   const language = preferredLanguageFor(row.locale);

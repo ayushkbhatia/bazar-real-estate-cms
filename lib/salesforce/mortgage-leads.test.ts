@@ -55,7 +55,7 @@ function row(over: Partial<Row> = {}): Row {
     employment_type: "salaried",
     entry_point: "calculator_preapproval",
     property_reference: null,
-    property_slug: null,
+    property_path: null,
     parent_reference: null,
     ...over,
   };
@@ -112,10 +112,10 @@ describe("buildMortgageLeadPayload", () => {
 
   it("links the listing when the applicant started from one", () => {
     const p = buildMortgageLeadPayload(
-      row({ entry_point: "property_detail", property_reference: "LST-00018", property_slug: "wadeem-gardens" }),
+      row({ entry_point: "property_detail", property_reference: "LST-00018", property_path: "/p/wadeem-gardens-baz-ad-01234" }),
       SITE,
     );
-    expect(p.Website_Listing_URL__c).toBe("https://www.bazarrealestate.ae/p/wadeem-gardens");
+    expect(p.Website_Listing_URL__c).toBe("https://www.bazarrealestate.ae/p/wadeem-gardens-baz-ad-01234");
     expect(p.Description__c).toContain("Property: LST-00018");
   });
 });
@@ -239,7 +239,7 @@ describe("pushMortgageLead", () => {
       .mockImplementationOnce(missing("Website_Listing_URL__c"))
       .mockImplementationOnce(missing("Mortgage_Service__c"))
       .mockResolvedValueOnce({ id: "a01Z", created: true });
-    const out = await pushMortgageLead(row({ property_reference: "LST-00018", property_slug: "wadeem-gardens" }), SITE);
+    const out = await pushMortgageLead(row({ property_reference: "LST-00018", property_path: "/p/wadeem-gardens-baz-ad-01234" }), SITE);
     expect(out).toEqual({ ok: true, id: "a01Z" });
     expect(salesforceRequest).toHaveBeenCalledTimes(3);
     const last = (salesforceRequest.mock.calls[2][1] as { body: Record<string, unknown> }).body;

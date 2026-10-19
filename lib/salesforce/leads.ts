@@ -250,9 +250,10 @@ export type LeadSourceRow = {
   intent: string | null;
   property_reference: string | null;
   property_mode: PropertyMode | null;
-  /** The listing's slug, so a listing enquiry can link its page even when
-   *  no form submission recorded where it was sent from. */
-  property_slug?: string | null;
+  /** The listing's canonical site path (`propertyUrl`, `/p/<slug>-<ref>`),
+   *  so a listing enquiry links its page even when no form submission
+   *  recorded where it was sent from. Slugs alone are not unique. */
+  property_path?: string | null;
   /**
    * The website's own reference, when the listing came FROM Salesforce. Then
    * `property_reference` carries the CRM's listing name (LST-00003) — the
@@ -291,14 +292,15 @@ export function siteOrigin(siteUrl: string | undefined): string {
  * so every lead carries one where the site knows a page:
  *
  * - a listing enquiry: the page it was sent from, else the listing's own
- *   page — a listing dialog that records no submission still links it;
+ *   canonical page — a listing dialog that records no submission still
+ *   links it;
  * - a project enquiry: likewise, the project's page;
  * - anything else: the page the form sat on (`/buy`, `/tools/valuation`).
  */
 export function websiteListingUrl(row: LeadSourceRow, siteUrl: string | undefined): string | undefined {
   const origin = siteOrigin(siteUrl);
-  const fallback = row.property_slug
-    ? `${origin}/p/${row.property_slug}`
+  const fallback = row.property_path
+    ? `${origin}${row.property_path}`
     : row.project_slug
       ? `${origin}/developments/${row.project_slug}`
       : null;
