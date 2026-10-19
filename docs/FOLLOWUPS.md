@@ -1783,15 +1783,6 @@ surface reads the seed roster any more. These are the loose ends:
   `lead-routing.ts` imports it, for the inert `areas` above. Deleting the file
   is the natural end of the previous item.
 
-- [i18n] **MapLibre's own UI strings on the other three public maps.** The
-  search map now passes `locale: useMapUiStrings()`
-  (`app/[locale]/(public)/_components/use-map-ui-strings.ts`), so on `/ar` its
-  "Use ⌘ + scroll to zoom the map" overlay and zoom-button names are Arabic.
-  The area map, the listing page's `map-embed.tsx` and the contact page's
-  `hq-map-canvas.tsx` still draw MapLibre's English. Same one-line change in
-  each; the two with dependency arrays need the hook's result added to them
-  (it is memoised, so it does not recreate the map).
-
 - [i18n] **`components/brand/compare-button.tsx` hardcodes English
   accessible names** — "Save to shortlist", "Save to shortlist (n/25)",
   "Remove from shortlist" — on every listing card, in both locales. Noticed on
