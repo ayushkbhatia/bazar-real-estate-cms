@@ -73,7 +73,7 @@ export const INSIGHTS_PAGE: MasterPageDef = {
         "The grid of articles, and what to say when there aren't any yet.",
       locked: true,
       dataNote:
-        "Articles come from the blog — write and publish them under Blog. The grid shows the 24 most recent, newest first.",
+        "Articles come from the blog — write and publish them under Blog. The grid shows the 20 most recent, newest first, and each press of the load-more button adds 10.",
       fields: [
         area("empty_body", "Empty state · message", {
           max: 240,
@@ -85,11 +85,17 @@ export const INSIGHTS_PAGE: MasterPageDef = {
           optional: true,
         }),
         link("empty_cta_href", "Empty state · button link"),
+        text("load_more_label", "Load-more button label", {
+          max: 40,
+          optional: false,
+        }),
       ],
       defaults: {
         empty_body: "We haven't published any {category} insights yet.",
         empty_cta_label: "View all categories",
         empty_cta_href: "/insights",
+        load_more_label: "Load more",
+        load_more_label_ar: "عرض المزيد",
       },
     },
   ],

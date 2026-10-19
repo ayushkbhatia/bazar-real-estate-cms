@@ -27,6 +27,7 @@ import { ChevronRight } from "lucide-react";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
 import { InternalLinkCard } from "./_components/internal-link-card";
+import { ARTICLE_COVER_SIZES } from "../_components/article-hero";
 
 export const revalidate = 300;
 
@@ -248,7 +249,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               src={heroSrc}
               alt={article.hero?.alt_text ?? article.title}
               fill
-              sizes="(min-width: 760px) 664px, 100vw"
+              sizes={ARTICLE_COVER_SIZES}
               priority
               className="object-cover"
             />
