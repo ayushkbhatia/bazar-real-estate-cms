@@ -116,7 +116,10 @@
   "summary": {
     "baths": "{count, plural, zero {#+ حمام} one {حمام فأكثر} two {حمامان فأكثر} few {#+ حمامات} many {#+ حمامًا} other {#+ حمام}}",
     "beds": "{count, plural, zero {#+ غرفة نوم} one {غرفة نوم فأكثر} two {غرفتا نوم فأكثر} few {#+ غرف نوم} many {#+ غرفة نوم} other {#+ غرفة نوم}}",
-    "inArea": "في {area}"
+    "inArea": "في {area}",
+    "priceFrom": "ابتداءً من {price}",
+    "priceRange": "{min} – {max}",
+    "priceUpTo": "حتى {price}"
   },
   "tenureOption": {
     "freehold": "تملك حر",

@@ -119,5 +119,17 @@
     "establishedIn": "Established in Abu Dhabi",
     "knowMore": "Know more"
   },
-  "whyBazar": "Why Bazar"
+  "whyBazar": "Why Bazar",
+  "mapControls": {
+    "title": "Map",
+    "marker": "Map marker",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetBearing": "Drag to rotate map, click to reset north",
+    "toggleAttribution": "Toggle attribution",
+    "closePopup": "Close popup",
+    "ctrlScroll": "Use Ctrl + scroll to zoom the map",
+    "cmdScroll": "Use ⌘ + scroll to zoom the map",
+    "twoFingers": "Use two fingers to move the map"
+  }
 }

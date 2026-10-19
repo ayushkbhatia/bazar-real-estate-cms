@@ -7,6 +7,7 @@ import { toOptions } from "@/lib/amenities";
 import { SlidersHorizontal, X } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -80,6 +81,7 @@ export function MoreFiltersDrawer() {
   // The badge already has one rendering in `listing`; adding a second here
   // would give the same English two Arabics, which `messages.test.ts` refuses.
   const tl = useTranslations("listing");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -189,7 +191,19 @@ export function MoreFiltersDrawer() {
           it. Which is also what the `w-[420px]` this replaces was doing —
           nothing. Above `sm` the primitive's `data-[side=end]:sm:max-w-sm`
           caps the panel at 384px either way, so only the phone changes. */}
-      <SheetContent side="end" className="data-[side=end]:w-full">
+      {/* Our own close control: the primitive's is labelled with a hardcoded
+          English "Close" (docs/FOLLOWUPS.md), the pattern shortlist-drawer set. */}
+      <SheetContent
+        side="end"
+        showCloseButton={false}
+        className="data-[side=end]:w-full"
+      >
+        <SheetClose asChild>
+          <Button variant="ghost" size="icon-sm" className="absolute top-3 end-3">
+            <X />
+            <span className="sr-only">{tc("close")}</span>
+          </Button>
+        </SheetClose>
         <SheetHeader>
           <SheetTitle>{t("filters.moreFilters")}</SheetTitle>
         </SheetHeader>

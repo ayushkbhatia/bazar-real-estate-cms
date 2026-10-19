@@ -234,9 +234,11 @@ export function countActiveFilters(f: PropertyFilters): number {
  * default is the English this shipped with, which is what keeps
  * `lib/filters/property.test.ts` asserting the same strings it always did.
  *
- * The price bound is deliberately NOT in here. `AED 1.0–5.0M` is a currency
- * code and two numbers — non-prose, and the site renders it the same way on
- * `/ar`, exactly as the listing cards do.
+ * The price bound is in here too. It was once left out as "a currency code
+ * and two numbers", but the cards it sits above write the currency in the
+ * visitor's language (`درهم` on `/ar`, from the unit-labels dictionary), and
+ * the English default compacted `?price_min=10000` to `AED 0.0M–∞`. The search
+ * page passes a formatter that uses the same dictionary as the cards.
  */
 export type FilterSummaryLabels = {
   beds: (count: number) => string;
@@ -245,6 +247,8 @@ export type FilterSummaryLabels = {
   segment: (s: NonNullable<PropertyFilters["segment"]>) => string;
   form: (f: NonNullable<PropertyFilters["form"]>) => string;
   inArea: (area: string) => string;
+  /** Called only when at least one bound is set. Both are AED, as in the URL. */
+  price: (min: number | null, max: number | null) => string;
 };
 
 export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
@@ -254,6 +258,11 @@ export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
   segment: humanSegment,
   form: humanForm,
   inArea: (area) => `in ${area}`,
+  price: (lo, hi) => {
+    const min = lo != null ? `${(lo / 1_000_000).toFixed(1)}M` : "0";
+    const max = hi != null ? `${(hi / 1_000_000).toFixed(1)}M` : "∞";
+    return `AED ${min}–${max}`;
+  },
 };
 
 /** A pretty single-line summary used in result-count strings. */
@@ -272,9 +281,7 @@ export function describeFilters(
   if (areaName) parts.push(labels.inArea(areaName));
   else if (f.area) parts.push(labels.inArea(f.area));
   if (f.price_min != null || f.price_max != null) {
-    const min = f.price_min != null ? `${(f.price_min / 1_000_000).toFixed(1)}M` : "0";
-    const max = f.price_max != null ? `${(f.price_max / 1_000_000).toFixed(1)}M` : "∞";
-    parts.push(`AED ${min}–${max}`);
+    parts.push(labels.price(f.price_min ?? null, f.price_max ?? null));
   }
   return parts.join(" · ");
 }

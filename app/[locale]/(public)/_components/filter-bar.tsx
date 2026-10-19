@@ -449,7 +449,7 @@ function PriceRangeInputs({
       <Input
         type="number"
         placeholder={tr("filters.priceMinPlaceholder", { symbol })}
-        aria-label={tr("filters.priceMinAria", { currency })}
+        aria-label={tr("filters.priceMinAria", { currency: symbol })}
         value={minInput}
         min={0}
         step={10000}
@@ -463,7 +463,7 @@ function PriceRangeInputs({
       <Input
         type="number"
         placeholder={tr("filters.priceMaxPlaceholder", { symbol })}
-        aria-label={tr("filters.priceMaxAria", { currency })}
+        aria-label={tr("filters.priceMaxAria", { currency: symbol })}
         value={maxInput}
         min={0}
         step={10000}

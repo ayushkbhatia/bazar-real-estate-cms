@@ -11,6 +11,7 @@ import { propertyUrl } from "@/lib/queries/property-utils";
 import { formatPrice, usePreferences } from "@/lib/preferences";
 import { ensureRtlTextPlugin, pastelMapStyle } from "./map-style";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
+import { useMapUiStrings } from "./use-map-ui-strings";
 
 export type MapPin = {
   id: string;
@@ -61,6 +62,7 @@ const CTRL_TOUCH_TARGET =
 export function MapView({ pins, className }: Props) {
   const rtl = useIsRtl();
   const { prefs } = usePreferences();
+  const uiStrings = useMapUiStrings();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
@@ -97,6 +99,7 @@ export function MapView({ pins, className }: Props) {
         // fingers (or ctrl+wheel) still pan and zoom. The area map and the
         // contact HQ map have set it since they shipped; this one was missed.
         cooperativeGestures: true,
+        locale: uiStrings,
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
       map.addControl(
