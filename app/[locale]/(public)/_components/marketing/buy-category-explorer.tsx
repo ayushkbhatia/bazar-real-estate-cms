@@ -18,6 +18,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { useTranslations } from "next-intl";
+import Link from "@/components/i18n/link";
 import { seededShuffle } from "@/lib/shuffle";
 import type { FeaturedCardProps } from "./map-listing";
 import { FeaturedListings } from "./featured-listings";
@@ -38,7 +39,11 @@ const noSubscribe = () => () => {};
 const getSeed = () => VISIT_SEED;
 const getServerSeed = () => null;
 
-export type BuyCategory = { key: string; label: string };
+/**
+ * `href` set: the chip is a link into that category's search results.
+ * Unset: it is a toggle that swaps the featured grid below.
+ */
+export type BuyCategory = { key: string; label: string; href?: string };
 
 type Ctx = { active: string; setActive: (k: string) => void };
 const BuyCategoryCtx = createContext<Ctx | null>(null);
@@ -50,7 +55,12 @@ export function BuyCategoryProvider({
   categories: BuyCategory[];
   children: React.ReactNode;
 }) {
-  const [active, setActive] = useState(categories[0]?.key ?? "");
+  // The grid follows the first toggle chip. When every chip is a link there
+  // is nothing to toggle, so no category is active and the grid shows the
+  // general featured row instead of being stuck on the first type.
+  const [active, setActive] = useState(
+    categories.find((c) => !c.href)?.key ?? "",
+  );
   return (
     <BuyCategoryCtx.Provider value={{ active, setActive }}>
       {children}
@@ -65,7 +75,10 @@ function useBuyCategory(): Ctx {
   return ctx;
 }
 
-/** Clickable category chips shown in the hero (replaces the static pills). */
+/**
+ * Category chips shown in the hero. A chip with an href links to its search
+ * results; one without toggles the featured grid.
+ */
 export function HeroCategoryChips({
   categories,
 }: {
@@ -80,6 +93,17 @@ export function HeroCategoryChips({
       aria-label={t("propertyType")}
     >
       {categories.map((c) => {
+        if (c.href) {
+          return (
+            <Link
+              key={c.key}
+              href={c.href}
+              className="inline-flex items-center h-11 md:h-9 px-4 rounded-full border text-[13px] transition-colors bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-teal hover:text-bz-ink"
+            >
+              {c.label}
+            </Link>
+          );
+        }
         const on = c.key === active;
         return (
           <button
