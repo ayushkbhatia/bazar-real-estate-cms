@@ -153,15 +153,88 @@ describe("scrubLead", () => {
       [{ message: "The requested resource does not exist", errorCode: "NOT_FOUND" }],
       [{ message: "entity is deleted", errorCode: "ENTITY_IS_DELETED" }],
     ]) {
-      __resetSalesforceTokenCache();
-      calls = [];
-      mockFetch((url) =>
-        url.includes("/services/oauth2/token")
-          ? jsonResponse(200, TOKEN_OK)
-          : jsonResponse(404, body),
-      );
-      expect(await scrubLead("a04", "deleted-abc")).toEqual({ ok: true });
+      for (const recycleBin of [
+        [],
+        // Deleted by a person, three days after it arrived.
+        [{ IsDeleted: true, CreatedDate: "2026-10-16T10:00:00.000+0000", LastModifiedDate: "2026-10-19T10:00:00.000+0000" }],
+      ]) {
+        __resetSalesforceTokenCache();
+        calls = [];
+        mockFetch((url) =>
+          url.includes("/services/oauth2/token")
+            ? jsonResponse(200, TOKEN_OK)
+            : url.includes("/queryAll")
+              ? jsonResponse(200, { records: recycleBin, done: true, totalSize: recycleBin.length })
+              : jsonResponse(404, body),
+        );
+        expect(await scrubLead("a01i10000070BFaAAM", "deleted-abc")).toEqual({ ok: true });
+      }
     }
+  });
+
+  it("says a lead the duplicate trigger filed as a Re-Inquiry was moved, not erased", async () => {
+    // Production, 19 Oct 2026: LD-000074 was deleted two seconds after our
+    // upsert and filed under LD-000032.
+    const queries: string[] = [];
+    mockFetch((url) => {
+      if (url.includes("/services/oauth2/token")) return jsonResponse(200, TOKEN_OK);
+      if (url.includes("/queryAll")) {
+        return jsonResponse(200, {
+          records: [{
+            IsDeleted: true,
+            CreatedDate: "2026-10-19T11:25:47.000+0000",
+            LastModifiedDate: "2026-10-19T11:25:49.000+0000",
+            Email__c: "o'brien@example.org",
+          }],
+        });
+      }
+      if (url.includes("/query?")) {
+        queries.push(decodeURIComponent(url.split("q=")[1]));
+        return jsonResponse(200, { records: [{ Name: "LD-000032" }] });
+      }
+      return jsonResponse(404, [{ message: "The requested resource does not exist", errorCode: "NOT_FOUND" }]);
+    });
+
+    const out = await scrubLead("a01i10000070BFaAAM", "deleted-abc");
+
+    expect(out).toEqual({ ok: true, reInquiry: { record: "a01i10000070BFaAAM", parent: "LD-000032" } });
+    // The address is quoted safely into SOQL.
+    expect(queries[0]).toContain("Email__c = 'o\\'brien@example.org'");
+  });
+
+  it("finds the parent by time when the address is already gone", async () => {
+    const queries: string[] = [];
+    mockFetch((url) => {
+      if (url.includes("/services/oauth2/token")) return jsonResponse(200, TOKEN_OK);
+      if (url.includes("/queryAll")) {
+        return jsonResponse(200, {
+          records: [{ IsDeleted: true, CreatedDate: "2026-10-19T11:25:47.000+0000", LastModifiedDate: "2026-10-19T11:25:49.000+0000", Email__c: null }],
+        });
+      }
+      if (url.includes("/query?")) {
+        queries.push(decodeURIComponent(url.split("q=")[1]));
+        return jsonResponse(200, { records: [{ Name: "LD-000032" }] });
+      }
+      return jsonResponse(404, [{ errorCode: "NOT_FOUND", message: "gone" }]);
+    });
+
+    const out = await scrubLead("a01i10000070BFaAAM", "deleted-abc");
+
+    expect(out).toMatchObject({ ok: true, reInquiry: { parent: "LD-000032" } });
+    expect(queries).toHaveLength(1);
+    expect(queries[0]).toContain("Re_Enquiry_Date_and_Time__c >= 2026-10-19T11:24:47Z");
+  });
+
+  it("keeps the erasure outstanding when it cannot read why a record is gone", async () => {
+    mockFetch((url) =>
+      url.includes("/services/oauth2/token")
+        ? jsonResponse(200, TOKEN_OK)
+        : url.includes("/queryAll")
+          ? jsonResponse(503, [{ errorCode: "SERVER_UNAVAILABLE", message: "down" }])
+          : jsonResponse(404, [{ errorCode: "NOT_FOUND", message: "gone" }]),
+    );
+    const out = await scrubLead("a01i10000070BFaAAM", "deleted-abc");
+    expect(out).toMatchObject({ ok: false, retryable: true });
   });
 
   it("erases by substitution when the org refuses a null", async () => {

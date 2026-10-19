@@ -261,6 +261,13 @@ export async function fulfilErasureRequest(
     .map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`);
 
   if (crm.scrubbed > 0) parts.push(`Salesforce leads: ${crm.scrubbed}`);
+  // Moved, not erased: say so, so the reply to the subject does not claim it.
+  if (crm.reInquiries.length > 0) {
+    const parents = crm.reInquiries.map((r) => r.parent ?? r.record).join(", ");
+    parts.push(
+      `${crm.reInquiries.length === 1 ? "1 Salesforce lead had" : `${crm.reInquiries.length} Salesforce leads had`} become a Re-Inquiry (under ${parents}), which this site can't reach — ask Levarus to erase ${crm.reInquiries.length === 1 ? "it" : "them"}`,
+    );
+  }
   if (mortgage.requests.length > 0) {
     parts.push(
       `mortgage requests deleted: ${mortgage.requests.length} (${mortgage.requests.join(", ")}), with ${mortgage.files} ${mortgage.files === 1 ? "file" : "files"}`,

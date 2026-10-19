@@ -1,6 +1,7 @@
 import "server-only";
 import { salesforceRequest, SalesforceError } from "./client";
 import { leadObjectName } from "./leads";
+import { SF_ID_RE } from "./listings/fields";
 
 /**
  * PDPL right-to-erasure, applied to the copy of the subject that lives in
@@ -100,9 +101,79 @@ export function buildErasureFallbackPayload(
   };
 }
 
+/**
+ * A lead Salesforce took out of `Lead__c` and filed as a Re-Inquiry under an
+ * earlier inquiry from the same person — Levarus's duplicate rule (19 Oct
+ * 2026: same email and same project). The record we created is deleted two
+ * seconds after our upsert, and the personal data lives on in the
+ * Re-Inquiry, an object the integration user cannot see. `parent` is the
+ * inquiry it sits under (`LD-000032`), when it can be found.
+ */
+export type ReInquiry = { record: string; parent: string | null };
+
 export type ScrubResult =
-  | { ok: true }
+  | { ok: true; reInquiry?: ReInquiry }
   | { ok: false; retryable: boolean; message: string };
+
+/**
+ * A person deletes a lead hours or days after it arrives; the duplicate
+ * trigger deletes it within seconds of its creation (two, on 19 Oct 2026).
+ * Two minutes separates the two with room to spare.
+ */
+const REINQUIRY_WINDOW_MS = 2 * 60_000;
+
+type QueryPage<T> = { records: T[] };
+type GoneRecord = { CreatedDate?: string | null; LastModifiedDate?: string | null; IsDeleted?: boolean; Email__c?: string | null };
+
+function soqlString(value: string): string {
+  return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+}
+
+function soqlDateTime(ms: number): string {
+  return new Date(ms).toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+/**
+ * Why a record we created is gone: deleted by the duplicate trigger, or by a
+ * person (or long since purged from the recycle bin, which holds a deleted
+ * record for fifteen days — past that, the two cannot be told apart).
+ *
+ * Reads the recycle bin (`queryAll`) and, for a Re-Inquiry, the parent: the
+ * live inquiry with the same address that has re-enquiries, else the one
+ * whose last re-enquiry is stamped when ours was created. Throws on a
+ * failed call, so the caller can keep the erasure outstanding rather than
+ * call it done on a guess.
+ */
+export async function findReInquiry(recordId: string): Promise<ReInquiry | null> {
+  if (!SF_ID_RE.test(recordId)) return null;
+  const object = leadObjectName();
+  const gone = await salesforceRequest<QueryPage<GoneRecord>>(
+    `queryAll?q=${encodeURIComponent(
+      `SELECT CreatedDate, LastModifiedDate, IsDeleted, Email__c FROM ${object} WHERE Id = '${recordId}'`,
+    )}`,
+    { method: "GET" },
+  );
+  const rec = gone?.records?.[0];
+  if (!rec?.IsDeleted || !rec.CreatedDate || !rec.LastModifiedDate) return null;
+  const created = Date.parse(rec.CreatedDate);
+  const deleted = Date.parse(rec.LastModifiedDate);
+  if (!(deleted - created <= REINQUIRY_WINDOW_MS)) return null;
+
+  const byEmail = rec.Email__c
+    ? `SELECT Name FROM ${object} WHERE Email__c = ${soqlString(rec.Email__c)} AND Re_Enquiry_Count__c > 0 ORDER BY Re_Enquiry_Date_and_Time__c DESC LIMIT 1`
+    : null;
+  const byTime = `SELECT Name FROM ${object} WHERE Re_Enquiry_Date_and_Time__c >= ${soqlDateTime(created - 60_000)} AND Re_Enquiry_Date_and_Time__c <= ${soqlDateTime(created + REINQUIRY_WINDOW_MS)} LIMIT 1`;
+  for (const soql of [byEmail, byTime]) {
+    if (!soql) continue;
+    const res = await salesforceRequest<QueryPage<{ Name?: string | null }>>(
+      `query?q=${encodeURIComponent(soql)}`,
+      { method: "GET" },
+    );
+    const parent = res?.records?.[0]?.Name;
+    if (parent) return { record: recordId, parent };
+  }
+  return { record: recordId, parent: null };
+}
 
 /**
  * Pseudonymise one `Lead__c` record in place.
@@ -112,6 +183,10 @@ export type ScrubResult =
  * discharged and retrying forever would be wrong. So a 404 — Salesforce's
  * NOT_FOUND / ENTITY_IS_DELETED — resolves as success rather than an error
  * the operator has to interpret.
+ *
+ * Except a record the duplicate trigger took: then the personal data was
+ * moved, not removed, so the result says so (`reInquiry`) and the caller
+ * reports it, instead of calling the erasure done.
  */
 export async function scrubLead(
   externalId: string,
@@ -166,7 +241,20 @@ export async function scrubLead(
         err.errorCode === "ENTITY_IS_DELETED" ||
         err.errorCode === "NOT_FOUND"
       ) {
-        return { ok: true };
+        try {
+          const reInquiry = await findReInquiry(externalId);
+          return reInquiry ? { ok: true, reInquiry } : { ok: true };
+        } catch (lookupErr) {
+          // Gone, but why is unknown. Kept outstanding: a guess of "erased"
+          // could leave a Re-Inquiry holding the data with nobody told.
+          return {
+            ok: false,
+            retryable: true,
+            message: `Record is gone; could not read why: ${
+              lookupErr instanceof Error ? lookupErr.message : String(lookupErr)
+            }`,
+          };
+        }
       }
       return {
         ok: false,

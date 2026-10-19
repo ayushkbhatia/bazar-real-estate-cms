@@ -3,7 +3,7 @@ import { reportIssue } from "@/lib/observability";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isSalesforceConfigured } from "@/lib/env";
 import type { Database } from "@/db/types";
-import { scrubLead } from "./erasure";
+import { scrubLead, type ReInquiry } from "./erasure";
 
 /**
  * Draining `enquiries.crm_erasure_due_at`.
@@ -28,8 +28,26 @@ export type ErasureDrainResult = {
   remaining: number;
   /** Rows with no CRM record at all, retired without a call. */
   cleared: number;
+  /** Records Salesforce had already filed as Re-Inquiries: retired, not
+   *  erased — the data sits where this integration cannot reach it, and
+   *  each one is reported for a person to erase. */
+  reInquiries: ReInquiry[];
   lastError: string | null;
 };
+
+/** What an operator is told about a Re-Inquiry, without personal data. */
+export function reInquiryNote(r: ReInquiry): string {
+  return `Salesforce had filed this lead as a Re-Inquiry${
+    r.parent ? ` under ${r.parent}` : ""
+  } (record ${r.record}, since deleted from Lead__c). The integration cannot see Re-Inquiries: erase it there by hand.`;
+}
+
+async function reportReInquiry(r: ReInquiry, row: Record<string, string>): Promise<void> {
+  await reportIssue("Salesforce erasure incomplete: the lead became a Re-Inquiry", {
+    source: "salesforce/erasure",
+    context: { record: { ...row, sf_record_id: r.record, parent: r.parent ?? "unknown" } },
+  });
+}
 
 type DueRow = {
   id: string;
@@ -59,6 +77,7 @@ export async function drainCrmErasures(
     scrubbed: 0,
     remaining: 0,
     cleared: 0,
+    reInquiries: [],
     lastError: null,
   };
 
@@ -105,6 +124,17 @@ export async function drainCrmErasures(
 
   for (const row of withRecord) {
     const result = await scrubLead(row.crm_external_id!, row.name);
+    if (result.ok && result.reInquiry) {
+      // Retired all the same: no retry can reach it. The note on the row and
+      // the reported issue are what keep it from being forgotten.
+      await admin
+        .from("enquiries")
+        .update({ crm_erasure_due_at: null, crm_last_error: reInquiryNote(result.reInquiry) })
+        .eq("id", row.id);
+      out.reInquiries.push(result.reInquiry);
+      await reportReInquiry(result.reInquiry, { enquiry: row.id });
+      continue;
+    }
     if (result.ok) {
       await admin
         .from("enquiries")
@@ -144,7 +174,7 @@ export async function drainLeadErasureQueue(
   admin: SupabaseClient<Database>,
   opts: { limit?: number } = {},
 ): Promise<ErasureDrainResult> {
-  const out: ErasureDrainResult = { scrubbed: 0, remaining: 0, cleared: 0, lastError: null };
+  const out: ErasureDrainResult = { scrubbed: 0, remaining: 0, cleared: 0, reInquiries: [], lastError: null };
 
   const { data, error } = await admin
     .from("salesforce_lead_erasures")
@@ -166,6 +196,12 @@ export async function drainLeadErasureQueue(
 
   for (const row of rows) {
     const result = await scrubLead(row.sf_record_id, erasedPseudonym());
+    if (result.ok && result.reInquiry) {
+      await admin.from("salesforce_lead_erasures").delete().eq("sf_record_id", row.sf_record_id);
+      out.reInquiries.push(result.reInquiry);
+      await reportReInquiry(result.reInquiry, { source: row.source });
+      continue;
+    }
     if (result.ok) {
       await admin.from("salesforce_lead_erasures").delete().eq("sf_record_id", row.sf_record_id);
       out.scrubbed += 1;
