@@ -45,6 +45,7 @@ import {
 } from "@/lib/salesforce/mortgage-leads";
 import type { PushResult } from "@/lib/salesforce/leads";
 import type { Database } from "@/db/types";
+import { propertyUrl } from "@/lib/queries/property-utils";
 
 /** Per invocation. Keeps the run inside the function timeout and inside any
  *  sane share of the org's daily API allocation. A backlog drains across
@@ -132,7 +133,7 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
     ),
     project_name: one(row.developments)?.name ?? null,
     project_slug: one(row.developments)?.slug ?? null,
-    property_slug: property?.slug ?? null,
+    property_path: property ? propertyUrl(property) : null,
   };
 }
 
@@ -177,7 +178,7 @@ function toMortgageLeadRow(row: MortgageQueueRow): MortgageLeadRow {
     property_price_aed: row.property_price_aed,
     entry_point: row.entry_point,
     property_reference: crmName ?? property?.reference ?? null,
-    property_slug: property?.slug ?? null,
+    property_path: property ? propertyUrl(property) : null,
     parent_reference: one(row.parent)?.reference ?? null,
     locale: row.locale,
   };
