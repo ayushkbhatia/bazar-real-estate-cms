@@ -31,8 +31,10 @@ the content assets builder."
   from a `newsletter_deliveries` queue by a minute cron, each message carrying
   the subscriber's own unsubscribe link and RFC 8058 one-click headers.
 - The public subscribe, confirm and unsubscribe flows stop calling Mailchimp.
-  `lib/mailchimp.ts`, its webhook and the settings entry are left in place
-  and inert (they no-op without credentials); removing them is a follow-up.
+  `lib/mailchimp.ts`, its webhook and the settings entry were left in place
+  and inert at first, and removed in the follow-up. The `mailchimp` value
+  stays in the `integration_kind` enum, with its disconnected row; nothing
+  reads it.
 
 ## Consequences
 

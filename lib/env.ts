@@ -43,10 +43,6 @@ const serverSchema = z.object({
   MEILISEARCH_API_KEY: z.string().min(1).optional(),
   VOYAGE_API_KEY: z.string().min(1).optional(),
   // Sprint 13 integrations
-  MAILCHIMP_API_KEY: z.string().min(1).optional(),
-  MAILCHIMP_LIST_ID: z.string().min(1).optional(),
-  MAILCHIMP_DC: z.string().min(1).optional(), // datacenter, e.g. 'us21'
-  MAILCHIMP_WEBHOOK_SECRET: z.string().min(1).optional(),
   DOCUSIGN_INTEGRATION_KEY: z.string().min(1).optional(),
   DOCUSIGN_USER_ID: z.string().min(1).optional(),
   DOCUSIGN_ACCOUNT_ID: z.string().min(1).optional(),
@@ -137,10 +133,6 @@ const serverEnv =
         MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,
         MEILISEARCH_API_KEY: process.env.MEILISEARCH_API_KEY,
         VOYAGE_API_KEY: process.env.VOYAGE_API_KEY,
-        MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,
-        MAILCHIMP_LIST_ID: process.env.MAILCHIMP_LIST_ID,
-        MAILCHIMP_DC: process.env.MAILCHIMP_DC,
-        MAILCHIMP_WEBHOOK_SECRET: process.env.MAILCHIMP_WEBHOOK_SECRET,
         DOCUSIGN_INTEGRATION_KEY: process.env.DOCUSIGN_INTEGRATION_KEY,
         DOCUSIGN_USER_ID: process.env.DOCUSIGN_USER_ID,
         DOCUSIGN_ACCOUNT_ID: process.env.DOCUSIGN_ACCOUNT_ID,
@@ -192,10 +184,6 @@ export const isVoyageConfigured =
 export const isMapboxConfigured = Boolean(
   clientEnv.NEXT_PUBLIC_MAPBOX_TOKEN,
 );
-
-export const isMailchimpConfigured =
-  typeof window === "undefined" &&
-  Boolean(env.MAILCHIMP_API_KEY && env.MAILCHIMP_LIST_ID && env.MAILCHIMP_DC);
 
 export const isDocuSignConfigured =
   typeof window === "undefined" &&

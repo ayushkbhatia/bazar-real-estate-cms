@@ -68,7 +68,11 @@ confirmation token keep working.
 
 `POST /api/newsletter/unsubscribe?token=…` is the one-click endpoint the
 `List-Unsubscribe-Post` header points mail clients at;
-`/newsletter/unsubscribe/[token]` is the page a person lands on.
+`/newsletter/unsubscribe/[token]` is the page a person lands on. The page
+only reads: it shows the address and an **Unsubscribe** button, and the
+button does the unsubscribing. Mail scanners and link previewers open every
+URL in an email, so a page that unsubscribed as it rendered removed people
+who never asked to go.
 
 ## Data and privacy
 
@@ -93,9 +97,3 @@ confirmation token keep working.
 
 - **Delivery events.** Resend webhooks (delivered, bounced, complained) could
   mark subscribers `bounced` and show delivery rates per campaign.
-- **Retire Mailchimp code.** `lib/mailchimp.ts`, its webhook route and the
-  integrations-panel entry are inert; remove them.
-- **Unsubscribe on GET.** `/newsletter/unsubscribe/[token]` unsubscribes as
-  the page renders, so a link scanner that opens it removes the subscriber.
-  The one-click POST endpoint doesn't have this problem; the page could ask
-  for a click.

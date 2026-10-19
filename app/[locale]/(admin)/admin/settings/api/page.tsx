@@ -145,7 +145,7 @@ export default async function AdminSettingsApiPage() {
           "Outgoing webhook config — target URL, event selectors, secret",
           "Delivery history with retry on failure",
           "Signing secret rotation",
-          "Inbound webhook endpoints (Resend, Mailchimp, DocuSign) are managed in /admin/settings/integrations",
+          "Inbound webhook endpoints (Resend, DocuSign) are managed in /admin/settings/integrations",
         ]}
       />
     </div>

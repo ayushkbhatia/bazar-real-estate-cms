@@ -21,7 +21,6 @@ light up. Order below matches priority for launch.
 | Mapbox | `NEXT_PUBLIC_MAPBOX_TOKEN` | Address typeahead, isochrones, HQ map | 12 |
 | Property Finder | `PROPERTY_FINDER_FEED_TOKEN` | XML feed at `/api/feeds/property-finder.xml` (rewrites to `/api/feeds/property-finder`) | 13 |
 | Bayut | `BAYUT_FEED_TOKEN` | XML feed at `/api/feeds/bayut.xml` (rewrites to `/api/feeds/bayut`) | 13 |
-| Mailchimp | `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC`, `MAILCHIMP_WEBHOOK_SECRET` | Newsletter signup + webhooks | 13 |
 | DocuSign | `DOCUSIGN_INTEGRATION_KEY`, `DOCUSIGN_USER_ID`, `DOCUSIGN_ACCOUNT_ID`, `DOCUSIGN_PRIVATE_KEY`, `DOCUSIGN_BASE_URL`, `DOCUSIGN_WEBHOOK_SECRET` | Envelope creation + signed-doc callbacks | 13 |
 | DLD open data | (uses `dld_open_data.config.csv_url` on the integrations table) | `/tools/valuation` comparables | 13 |
 | Salesforce | `SALESFORCE_INSTANCE_URL`, `SALESFORCE_CLIENT_ID`, `SALESFORCE_CLIENT_SECRET` | Lead push from every public form into `Lead__c` | 14 |
@@ -190,21 +189,6 @@ returns 403 to anything that doesn't match.
 Send the full feed URL (incl. token) to the portal partnership
 contact. Daily sync cron updates the `integrations` row so the admin
 panel shows "last synced X hrs ago".
-
-## Mailchimp
-
-Newsletter list management.
-
-- `MAILCHIMP_API_KEY` — server-only, ends with the datacenter, e.g. `…-us21`
-- `MAILCHIMP_LIST_ID` — audience id (10 chars)
-- `MAILCHIMP_DC` — datacenter slug, e.g. `us21`
-- `MAILCHIMP_WEBHOOK_SECRET` — opaque token used as
-  `/api/webhooks/mailchimp?secret=<...>` so Mailchimp's POST is
-  authenticated
-
-In Mailchimp dashboard → Audience → Settings → Webhooks, set:
-- URL: `https://bazar.ae/api/webhooks/mailchimp?secret=<MAILCHIMP_WEBHOOK_SECRET>`
-- Events: Subscribe, Unsubscribe, Profile update, Cleaned address
 
 ## DocuSign
 

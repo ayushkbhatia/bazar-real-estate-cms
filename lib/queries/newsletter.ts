@@ -95,6 +95,31 @@ export async function getSubscriberByToken(
   return (data as NewsletterRow | null) ?? null;
 }
 
+/** Read-only lookup for the unsubscribe page: who a link belongs to and
+ *  whether they're still on the list. Reading must never unsubscribe — link
+ *  scanners open every URL in an email — so the change waits for a click.
+ *  Same token order as `unsubscribeNewsletterToken`: the permanent
+ *  unsubscribe token, then a legacy link's confirmation token. */
+export async function getSubscriberByUnsubscribeToken(
+  token: string,
+): Promise<{ email: string; status: NewsletterStatus } | null> {
+  if (!/^[0-9a-f]{48}$/.test(token)) return null;
+  const admin = await adminSupabase();
+  if (!admin) return null;
+  const { data: byUnsubscribe } = await admin
+    .from("newsletter_subscribers")
+    .select("email, status")
+    .eq("unsubscribe_token", token)
+    .maybeSingle();
+  if (byUnsubscribe) return byUnsubscribe;
+  const { data: byConfirmation } = await admin
+    .from("newsletter_subscribers")
+    .select("email, status")
+    .eq("confirmation_token", token)
+    .maybeSingle();
+  return byConfirmation ?? null;
+}
+
 /** Service-role helper for status mutations from confirm/unsubscribe. */
 export async function adminSupabase() {
   if (!isSupabaseConfigured || !env.SUPABASE_SERVICE_ROLE_KEY) return null;
