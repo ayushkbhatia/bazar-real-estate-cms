@@ -336,16 +336,13 @@ quick grep can show "what's outstanding in my area."
   each is one component reading `getFormWithOverrides` instead of its own
   literals. See `docs/FORMS.md`.
 
-- [newsletter] The only newsletter box on the site is the /insights hero.
-  The home teaser (`insights-teaser.tsx`) and the article rail
-  (`insights/[slug]/_components/article-rail.tsx`) both carry one, and both
-  read the `insights_newsletter` form's copy now, but neither is mounted on
-  any page — both are in `lib/dead-code.test.ts`. With one confirmed
-  subscriber, more places to sign up is the lever. "Done" is a decision on
-  where a box goes (article pages are the obvious one: mount `ArticleRail`, or
-  just `NewsletterSignup`, in `insights/[slug]/page.tsx` with
-  `getForm("insights_newsletter")`), then restoring `alsoOn` on the registry
-  entry for each surface that ships.
+- [newsletter] The home teaser's newsletter box is not on any page.
+  `insights-teaser.tsx` reads the `insights_newsletter` form but is a parked
+  page-builder candidate (`lib/dead-code.test.ts`). The site's boxes are the
+  /insights hero and the one under every article (`ArticleNewsletter`).
+  "Done" is the teaser being placed, or the client deciding the home page
+  doesn't want one; add "Home page" to the registry entry's `alsoOn` if it
+  ships.
 
 - [services] `/services/consulting` and `/services/consultation` both exist.
   The first is the old seed-driven "Consulting" page (senior-advisor hours,
