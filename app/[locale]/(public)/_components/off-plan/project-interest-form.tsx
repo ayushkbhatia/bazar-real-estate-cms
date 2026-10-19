@@ -79,21 +79,24 @@ export async function ProjectInterestForm({
             RTL mirror is too (`order` resolves against the grid, not a side).
             Same fix as the list-your-property band.
 
-            And `object-contain` in a square box below `md`, not `cover` in a
-            16/10 one: the render the client picked is 1536×1536, so a 16/10
-            crop was cutting 37% of its height off — the top and bottom of the
-            building. Contain never crops whatever ratio is uploaded next,
-            which is the property being asked for here; a wide render simply
-            sits letterboxed against the ink ground rather than being trimmed.
-            `cover` from `md`, where the photo fills a full-height column. */}
-        <div className="relative isolate order-first min-w-0 aspect-square overflow-hidden bg-bz-ink md:order-none md:aspect-auto md:h-full">
+            And `object-contain` at every width, in a 4/3 box below `md` —
+            the home list-your-property treatment. What the client ships here
+            is a typeset poster (1760×1328, ~4:3) with the headline and the
+            "Register your interest" button *inside* the picture. `cover` in
+            the desktop column (taller than wide, its height set by the form)
+            trimmed the leading edge off the headline; a square box on a phone
+            letterboxed it against black. Contain fits the whole artwork, and
+            `bg-bz-surface` (the card's own colour, not ink) turns the band
+            left over around it into card whitespace rather than black bars.
+            Nothing pins a side, so the RTL mirror needs nothing. */}
+        <div className="relative isolate order-first min-w-0 aspect-[4/3] overflow-hidden bg-bz-surface md:order-none md:aspect-auto md:h-full">
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={imageAlt ?? ""}
               fill
               sizes="(max-width: 767px) 100vw, 48vw"
-              className="absolute inset-0 h-full w-full object-contain md:object-cover"
+              className="absolute inset-0 h-full w-full object-contain"
             />
           ) : (
             <PlaceholderImage
