@@ -1409,9 +1409,10 @@ shows the trail.)
   English `Close`, so every slide-out on the Arabic site hands screen-reader
   users a control they cannot read. The shortlist card now composes around it
   (`showCloseButton={false}` plus its own `SheetClose`), which is the pattern
-  available without editing `components/ui/*` — but three Sheets still carry
-  the primitive's label: `more-filters-drawer.tsx`, the compare
-  `picker-drawer.tsx`, and `components/brand/public-mega-nav-mobile.tsx`. The
+  available without editing `components/ui/*`, and so does the search page's
+  `more-filters-drawer.tsx` — but two Sheets still carry the primitive's
+  label: the compare `picker-drawer.tsx` and
+  `components/brand/public-mega-nav-mobile.tsx`. The
   clean fix is one optional `closeLabel` prop on `SheetContent`, which is an
   edit to a shadcn primitive and therefore a decision (re-adding the component
   would drop it) rather than a patch. `components/ui/sheet.tsx:79`.
@@ -1781,3 +1782,18 @@ surface reads the seed roster any more. These are the loose ends:
 - **`lib/seeds/agents.ts` itself is nearly dead.** After this change only
   `lead-routing.ts` imports it, for the inert `areas` above. Deleting the file
   is the natural end of the previous item.
+
+- [i18n] **MapLibre's own UI strings on the other three public maps.** The
+  search map now passes `locale: useMapUiStrings()`
+  (`app/[locale]/(public)/_components/use-map-ui-strings.ts`), so on `/ar` its
+  "Use ⌘ + scroll to zoom the map" overlay and zoom-button names are Arabic.
+  The area map, the listing page's `map-embed.tsx` and the contact page's
+  `hq-map-canvas.tsx` still draw MapLibre's English. Same one-line change in
+  each; the two with dependency arrays need the hook's result added to them
+  (it is memoised, so it does not recreate the map).
+
+- [i18n] **`components/brand/compare-button.tsx` hardcodes English
+  accessible names** — "Save to shortlist", "Save to shortlist (n/25)",
+  "Remove from shortlist" — on every listing card, in both locales. Noticed on
+  `/ar/buy/search`. It is a brand component, so the fix (a `useTranslations`
+  call, or labels passed in) wants the owner's go-ahead.

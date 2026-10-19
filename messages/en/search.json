@@ -116,7 +116,10 @@
   "summary": {
     "baths": "{count, plural, one {#+ bath} other {#+ baths}}",
     "beds": "{count, plural, one {#+ bed} other {#+ beds}}",
-    "inArea": "in {area}"
+    "inArea": "in {area}",
+    "priceFrom": "from {price}",
+    "priceRange": "{min} – {max}",
+    "priceUpTo": "up to {price}"
   },
   "tenureOption": {
     "freehold": "Freehold",

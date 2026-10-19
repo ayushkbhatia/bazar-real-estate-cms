@@ -6,6 +6,9 @@ import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
 import { currentLocale } from "@/lib/i18n/current";
+import { getPublicUnitLabels } from "@/lib/queries/site-settings";
+import { formatPrice } from "@/lib/preferences/formatters";
+import { readPreferencesFromCookie } from "@/lib/preferences/server";
 import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
@@ -212,11 +215,14 @@ export async function SearchList({
     ),
   ]);
   // The gallery photos each card warms for its listing page (gallery-prefetch).
-  const [t, cardLabels, galleryPreviews] = await Promise.all([
+  const [t, cardLabels, galleryPreviews, unitLabels, prefs] = await Promise.all([
     getTranslations("search"),
     getCardLabelResolver(),
     fetchGalleryPreviews(rows, GALLERY_VISIBLE_TILES),
+    currentLocale().then(getPublicUnitLabels),
+    readPreferencesFromCookie(),
   ]);
+  const priceLabels = { currency: prefs.currency, labels: unitLabels };
 
   /*
    * The filter chips under the result count. `describeFilters` is shared with
@@ -230,6 +236,17 @@ export async function SearchList({
     segment: (segment) => t(`segment.${segment}`),
     form: (form) => t(`formOption.${form}`),
     inArea: (area) => t("summary.inArea", { area }),
+    // The same formatter and dictionary as the cards below it, so the chip
+    // says "ابتداءً من 10 ألف درهم" on /ar rather than "AED 0.0M–∞".
+    price: (min, max) =>
+      min != null && max != null
+        ? t("summary.priceRange", {
+            min: formatPrice(min, priceLabels),
+            max: formatPrice(max, priceLabels),
+          })
+        : min != null
+          ? t("summary.priceFrom", { price: formatPrice(min, priceLabels) })
+          : t("summary.priceUpTo", { price: formatPrice(max, priceLabels) }),
   };
 
   const selectedArea =

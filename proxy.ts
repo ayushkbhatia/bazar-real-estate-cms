@@ -211,16 +211,46 @@ export async function proxy(request: NextRequest) {
   //    The factory form matters. `updateSession` re-mints its response inside
   //    the Supabase cookie callback, so passing a ready-made rewrite would
   //    lose it on token refresh.
+  //
+  //    Every response here also carries the locale to the render as a request
+  //    header — see `withLocaleHeader`.
   const rewriteTo = internalPath(pathname);
   if (rewriteTo === pathname) {
-    return updateSession(request);
+    return updateSession(request, (req) =>
+      NextResponse.next({ request: { headers: withLocaleHeader(req, locale) } }),
+    );
   }
 
   return updateSession(request, (req) => {
     const url = req.nextUrl.clone();
     url.pathname = rewriteTo;
-    return NextResponse.rewrite(url, { request: req });
+    return NextResponse.rewrite(url, {
+      request: { headers: withLocaleHeader(req, locale) },
+    });
   });
+}
+
+/**
+ * The request's headers plus the locale, under the name next-intl reads.
+ *
+ * `setRequestLocale` in `app/[locale]/layout.tsx` is what normally tells
+ * next-intl the locale, but a client-side navigation does not render that
+ * layout: Next.js renders only the segments that changed. Clicking a filter on
+ * `/ar/buy/search` re-renders the page segment alone, so a page that does not
+ * call `setRequestLocale` itself has nothing pinned, and next-intl falls back
+ * to this header. Without it the fallback was English, and every server-built
+ * string on the page — the heading, the result count, the filter chips —
+ * flipped to English on the first click while the URL still said `/ar`.
+ *
+ * Always overwritten, so a header sent by the browser can never pick the
+ * locale; the URL does.
+ */
+const LOCALE_REQUEST_HEADER = "X-NEXT-INTL-LOCALE";
+
+function withLocaleHeader(request: NextRequest, locale: string): Headers {
+  const headers = new Headers(request.headers);
+  headers.set(LOCALE_REQUEST_HEADER, locale);
+  return headers;
 }
 
 export const config = {
