@@ -5,6 +5,7 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { ensureRtlTextPlugin, pastelMapStyle } from "../../_components/map-style";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
+import { useMapUiStrings } from "../../_components/use-map-ui-strings";
 
 /**
  * Client MapLibre canvas for the contact HQ map — the shared Bazar pastel
@@ -38,6 +39,7 @@ export function HqMapCanvas({
   className?: string;
 }) {
   const rtl = useIsRtl();
+  const uiStrings = useMapUiStrings();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [near, setNear] = useState(false);
 
@@ -93,6 +95,7 @@ export function HqMapCanvas({
         // A single-location map inside a scrolling page — require an explicit
         // gesture to zoom so the page still scrolls over it.
         cooperativeGestures: true,
+        locale: uiStrings,
         dragRotate: false,
         pitchWithRotate: false,
       });
@@ -125,7 +128,7 @@ export function HqMapCanvas({
       ro?.disconnect();
       map?.remove();
     };
-  }, [near, lat, lng, label, rtl]);
+  }, [near, lat, lng, label, rtl, uiStrings]);
 
   return <div ref={containerRef} className={className} dir="ltr" />;
 }

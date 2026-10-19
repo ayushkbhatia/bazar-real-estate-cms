@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { dotMeta, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
 import { ensureRtlTextPlugin, pastelMapStyle } from "../map-style";
+import { useMapUiStrings } from "../use-map-ui-strings";
 import {
   areaUnitLabel,
   formatPrice,
@@ -343,6 +344,7 @@ export function AreaMap({
   className,
 }: Props) {
   const rtl = useIsRtl();
+  const uiStrings = useMapUiStrings();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const [map, setMap] = useState<MapLibreMap | null>(null);
@@ -468,6 +470,7 @@ export function AreaMap({
         maxZoom: 16.5,
         attributionControl: false,
         cooperativeGestures: true,
+        locale: uiStrings,
         dragRotate: false,
         pitchWithRotate: false,
         fadeDuration: 120,

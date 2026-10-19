@@ -8,6 +8,7 @@ import {
   pastelMapStyle,
 } from "../../../_components/map-style";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
+import { useMapUiStrings } from "../../../_components/use-map-ui-strings";
 
 type POI = {
   label: string;
@@ -54,6 +55,7 @@ export function MapEmbed({
   className?: string;
 }) {
   const rtl = useIsRtl();
+  const uiStrings = useMapUiStrings();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [near, setNear] = useState(false);
 
@@ -103,6 +105,7 @@ export function MapEmbed({
         center: [lng, lat],
         zoom: 13,
         attributionControl: { compact: true },
+        locale: uiStrings,
       });
 
       // Listing pin.
@@ -136,7 +139,7 @@ export function MapEmbed({
       dead = true;
       map?.remove();
     };
-  }, [near, lat, lng, title, pois, rtl]);
+  }, [near, lat, lng, title, pois, rtl, uiStrings]);
 
   return <div ref={containerRef} className={className} dir="ltr" />;
 }
