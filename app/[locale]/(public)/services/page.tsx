@@ -120,8 +120,9 @@ export default async function ServicesPage({
         ) : null}
         <div className="flex flex-wrap gap-2 mt-8">
           {practices.map((p) => {
+            // 44px on a touch screen (the 390px geometry gate's tap minimum); 40px with a mouse.
             const chip =
-              "inline-flex items-center gap-2 h-10 px-4 rounded-full border border-bz-border bg-bz-surface text-[13.5px]";
+              "inline-flex items-center gap-2 h-10 pointer-coarse:h-11 px-4 rounded-full border border-bz-border bg-bz-surface text-[13.5px]";
             const inner = (
               <>
                 <span className="mono text-bz-accent text-[11px]">{p.n}</span>
