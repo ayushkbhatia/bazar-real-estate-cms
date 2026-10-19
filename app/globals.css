@@ -1299,6 +1299,9 @@
   :lang(ar) :is(h1, h2).md\:text-\[26px\] {
     font-size: 24px;
   }
+  :lang(ar) :is(h1, h2).md\:text-\[28px\] {
+    font-size: 26px;
+  }
   :lang(ar) :is(h1, h2).md\:text-\[30px\] {
     font-size: 28px;
   }
