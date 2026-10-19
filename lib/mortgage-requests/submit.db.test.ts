@@ -301,6 +301,22 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     expect(byId.get(en.requestId)).toMatchObject({ site_locale: "en", locale: "en" });
   });
 
+  it("records the desired property price when given, and never refuses a request over it (0163)", async () => {
+    const priced = submitBodySchema().parse({ service: "consultancy", details, entryPoint: "home", propertyPriceAed: 2_500_000 });
+    const withPrice = await submitRequest(deps, { body: priced, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null });
+    const odd = submitBodySchema().parse({ service: "consultancy", details, entryPoint: "home", propertyPriceAed: "lots" });
+    expect(odd.propertyPriceAed).toBeNull();
+    const without = await submitRequest(deps, { body: odd, idempotencyKey: key(), draftToken: null, ip: null, userAgent: null });
+
+    const { data } = await service
+      .from("mortgage_requests")
+      .select("id, property_price_aed")
+      .in("id", [withPrice.requestId, without.requestId]);
+    const byId = new Map((data ?? []).map((r) => [r.id, r]));
+    expect(byId.get(withPrice.requestId)?.property_price_aed).toBe(2_500_000);
+    expect(byId.get(without.requestId)?.property_price_aed).toBeNull();
+  });
+
   it("validates details with W2's rules, naming the field", () => {
     const parsed = submitBodySchema().safeParse({
       service: "consultancy",

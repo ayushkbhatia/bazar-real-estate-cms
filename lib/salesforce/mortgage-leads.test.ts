@@ -127,6 +127,13 @@ describe("buildMortgageDescription", () => {
     expect(lines.at(-1)).toBe(`Bazar mortgage request: ${UUID}`);
   });
 
+  it("adds the desired property price only when the applicant gave one", () => {
+    expect(buildMortgageDescription(row({ property_price_aed: 2_500_000 }), SITE)).toContain(
+      "Desired property price: AED 2,500,000",
+    );
+    expect(buildMortgageDescription(row(), SITE)).not.toContain("property price");
+  });
+
   it("names the consultation a pre-approval was invited from", () => {
     const text = buildMortgageDescription(row({ entry_point: "consult_invite", parent_reference: "BZM-26-0002" }), SITE)!;
     expect(text).toContain("Follows consultation: BZM-26-0002");

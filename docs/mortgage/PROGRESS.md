@@ -1694,3 +1694,27 @@ production 14 Oct 2026)
 **Deviations from SPEC:** SPEC §4.3 orders the queue by promise due; newest
 first is now the default, promise due one choice away.
 
+
+## Desired property price on W2 · 19 Oct 2026
+
+Bazar asked for W2 to ask the applicant the price of the property they hope to
+buy, so the team has a sense of eligibility before the first call — without
+it ever holding an application up.
+
+- **Built:** an optional "Desired property price" field (AED prefix, digits
+  only, grouped as typed, cut at nine digits) after Email on W2. No rule, no
+  error: anything unusable is "not given". The submit body carries
+  `propertyPriceAed` (`propertyPriceSchema` catches a bad value to null, never
+  a 422), and the route writes it to `mortgage_requests.property_price_aed`
+  (**0163, applied to prod 19 Oct**) right after `mortgage_create_request()`,
+  like `site_locale` (0155), so the function's signature is unchanged. Shown
+  back on W3's summary, as a chip on the C2/C6 file header, as a line in the
+  Salesforce lead description, and in the DSR export.
+- **Deviations from SPEC:** a new W2 field the designs don't have. Its copy is
+  in PENDING_COPY (`w2.propertyPrice.*`, `field.propertyPrice`) and the CMS
+  chip in PENDING_CMS_COPY. Editable like every W2 message in Pages & blocks →
+  Wizards.
+- **Open:** a pre-approval started from a consultation's invite link copies
+  the consultation's details; the price is not copied to it. The queue (C1)
+  doesn't show it. `submit.db.test.ts` has a case for it, not run here (needs
+  the local stack).

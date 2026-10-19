@@ -173,6 +173,42 @@ export function emailRule(raw: string): DetailRule | null {
   return EMAIL_SHAPE.safeParse(email).success ? null : "invalid";
 }
 
+// ── Desired property price ───────────────────────────────────────
+
+/**
+ * Optional, and never a reason to stop someone (Bazar, 19 Oct 2026): it tells
+ * the adviser roughly what the applicant is after, nothing more. So it has no
+ * rule and no error. The field only accepts digits, a number past nine digits
+ * is cut rather than refused, and anything that isn't a positive number is
+ * simply "not given".
+ */
+export const PROPERTY_PRICE_MAX_DIGITS = 9;
+
+/** The digits of a price as typed or pasted, without leading zeros: "AED 2,500,000" → "2500000". */
+export function propertyPriceDigits(raw: string): string {
+  return raw.replace(/\D/g, "").replace(/^0+/, "").slice(0, PROPERTY_PRICE_MAX_DIGITS);
+}
+
+/** How the field shows it while typing: "2500000" → "2,500,000". */
+export function maskPropertyPrice(raw: string): string {
+  return propertyPriceDigits(raw).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/** Whole dirhams, or null when nothing (or nothing usable) was typed. */
+export function parsePropertyPrice(raw: string | undefined): number | null {
+  const digits = propertyPriceDigits(raw ?? "");
+  return digits ? Number(digits) : null;
+}
+
+/** The server's side: a positive whole number of dirhams, or null. Anything else reads as not given, never as an error. */
+export const propertyPriceSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(10 ** PROPERTY_PRICE_MAX_DIGITS - 1)
+  .nullish()
+  .catch(null);
+
 // ── The whole form ───────────────────────────────────────────────
 
 /** What W2 holds while someone types (the store's `details`). */
@@ -185,6 +221,8 @@ export type DetailsDraft = {
   /** The national digits as typed, "50 218 4417". */
   mobileNational?: string;
   email?: string;
+  /** Optional, as typed: "2,500,000". Not part of `Details`; see parsePropertyPrice. */
+  propertyPrice?: string;
 };
 
 /** What the API takes, and what W3/W4/W7 show. */

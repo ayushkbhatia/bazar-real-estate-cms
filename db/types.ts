@@ -3147,6 +3147,7 @@ export type Database = {
           reference: string
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
+          property_price_aed: number | null
           site_locale: string | null
           sla_breach_notified_at: string | null
           sla_due_at: string | null
@@ -3195,6 +3196,7 @@ export type Database = {
           reference: string
           residency: Database["public"]["Enums"]["mortgage_residency"]
           service: Database["public"]["Enums"]["mortgage_service"]
+          property_price_aed?: number | null
           site_locale?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null
@@ -3243,6 +3245,7 @@ export type Database = {
           reference?: string
           residency?: Database["public"]["Enums"]["mortgage_residency"]
           service?: Database["public"]["Enums"]["mortgage_service"]
+          property_price_aed?: number | null
           site_locale?: string | null
           sla_breach_notified_at?: string | null
           sla_due_at?: string | null

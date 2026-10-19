@@ -201,6 +201,7 @@ function PreApproval({
           { label: t("service.preApproval"), tone: "ink" },
           { label: t(EMPLOYMENT_KEY[file.employment]) },
           { label: file.residencyWithLtv },
+          ...(file.propertyPrice ? [{ label: file.propertyPrice }] : []),
         ]}
         right={
           <span className="flex items-center gap-3">
@@ -505,6 +506,7 @@ function Consultancy({
           { label: t("service.consultancy"), tone: "accent" },
           { label: file.residencyWithLtv },
           { label: t(EMPLOYMENT_KEY[file.employment]) },
+          ...(file.propertyPrice ? [{ label: file.propertyPrice }] : []),
         ]}
         right={
           <span className="text-[12.5px] text-bz-ink-2">

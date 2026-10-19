@@ -61,7 +61,7 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
     db
       .from("mortgage_requests")
       .select(
-        "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, property_ref, locale, site_locale, submitted_at, closed_at, sla_stopped_at, decision, decline_reason, decision_message, decided_at, stage:mortgage_stages(name)",
+        "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, property_price_aed, entry_point, property_ref, locale, site_locale, submitted_at, closed_at, sla_stopped_at, decision, decline_reason, decision_message, decided_at, stage:mortgage_stages(name)",
       )
       .in("id", list),
     db.from("mortgage_consents").select("request_id, kind, wording_version, wording_text, given_at, withdrawn_at, ip, user_agent").in("request_id", list),
@@ -102,6 +102,7 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
           email: r.email,
           residency: r.residency,
           employment_type: r.employment_type,
+          desired_property_price_aed: r.property_price_aed,
           language: r.locale,
           website: r.site_locale,
           started_from: r.entry_point,

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { validateDetails } from "@/lib/mortgage-requests/details";
-import { formatDob, formatMobile } from "@/lib/mortgage-requests/format";
+import { parsePropertyPrice, validateDetails } from "@/lib/mortgage-requests/details";
+import { formatAed, formatDob, formatMobile } from "@/lib/mortgage-requests/format";
 import { FLOW_PATHS } from "@/lib/mortgage-requests/client/apply-state";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { FlowActions } from "../../../_components/flow-actions";
@@ -37,6 +37,7 @@ export function ConsultancyReview() {
   const valid = validateDetails(state.details);
   if (!valid.ok) return <FlowPending />;
   const d = valid.details;
+  const price = parsePropertyPrice(state.details.propertyPrice);
 
   const rail = (
     <RailCard title={t("common.whatHappensNext")}>
@@ -84,6 +85,7 @@ export function ConsultancyReview() {
           [t("field.dateOfBirth"), formatDob(d.dateOfBirth)],
           [t("field.mobile"), formatMobile(d.mobile)],
           [t("field.email"), d.email],
+          ...(price ? [[t("field.propertyPrice"), formatAed(price)] as [string, string]] : []),
         ]}
       />
 

@@ -168,9 +168,14 @@ const ALLOWED: Readonly<Record<string, string>> = {
   // (دائرة الأراضي والأملاك): an acronym with an Arabic form, like FAQ and HQ.
   'master/mortgage·calc_closing.cashNote.mortgage_registration': "an acronym that does have an Arabic form",
 
+  // The currency before the mortgage application's desired-property-price
+  // field. "AED" is a code, but the site writes the currency as a word in
+  // Arabic (درهم, lib/preferences/unit-labels.ts), so the prefix translates.
+  'wizard·w2.w2.propertyPrice.prefix': "a currency code that does have an Arabic form",
+
 };
 
-const ALLOWED_CEILING = 14;
+const ALLOWED_CEILING = 15;
 
 describe("G-16 · translatable fields hold prose", () => {
   it("finds no data-shaped value outside the allowlist", () => {

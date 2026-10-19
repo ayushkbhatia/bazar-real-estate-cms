@@ -22,7 +22,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { isIP } from "node:net";
 import { z } from "zod";
 import { CONSENT_WORDINGS, isConsentVersion } from "../consent";
-import { detailsSchema, ENTRY_POINTS, type Service } from "../details";
+import { detailsSchema, ENTRY_POINTS, propertyPriceSchema, type Service } from "../details";
 import { clockDueFrom } from "../sla";
 import { authoriseDraft, FILE_COLUMNS, retireFiles, type DraftDeps, type FileRow } from "./drafts";
 import { MortgageApiError } from "./errors";
@@ -44,6 +44,8 @@ export function submitBodySchema(now: () => Date = () => new Date()) {
       .transform((v) => (v && PROPERTY_REF.test(v) ? v : undefined)),
     // Which version of the site the applicant came from (0155); absent or unknown reads as English.
     siteLocale: z.enum(["en", "ar"]).catch("en"),
+    // W2's optional desired property price (0163), whole dirhams. Never refused: a bad value reads as not given.
+    propertyPriceAed: propertyPriceSchema,
   };
   return z.discriminatedUnion("service", [
     z.object({ service: z.literal("consultancy"), ...common }),
@@ -179,6 +181,7 @@ export async function submitRequest(
   const created = new Date(row.submitted_at).getTime() === now.getTime();
 
   if (created) await recordSiteLocale(deps, row.id, body.siteLocale);
+  if (created && body.propertyPriceAed) await recordPropertyPrice(deps, row.id, body.propertyPriceAed);
   if (body.service === "pre_approval" && created) {
     await removeOrphans(deps, body.draftId);
   }
@@ -196,6 +199,19 @@ export async function submitRequest(
 export async function recordSiteLocale(deps: SubmitDeps, requestId: string, siteLocale: "en" | "ar"): Promise<void> {
   try {
     await deps.db.from("mortgage_requests").update({ site_locale: siteLocale }).eq("id", requestId);
+  } catch {
+    // The column stays null.
+  }
+}
+
+/**
+ * The applicant's desired property price (0163), written the same way and for
+ * the same reason as the site locale above. Best effort: it is a hint for the
+ * adviser, so a failed write leaves it empty and the request stands.
+ */
+export async function recordPropertyPrice(deps: SubmitDeps, requestId: string, priceAed: number): Promise<void> {
+  try {
+    await deps.db.from("mortgage_requests").update({ property_price_aed: priceAed }).eq("id", requestId);
   } catch {
     // The column stays null.
   }
