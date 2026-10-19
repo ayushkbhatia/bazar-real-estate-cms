@@ -52,15 +52,19 @@ export type LeadPayload = {
   Lead_Source__c?: string;
   Description__c?: string;
   Inquiry_Type__c?: string;
-  /** The listing page, for an enquiry about a listing. Replaced
-   *  `Property_Reference__c`, which Levarus removed from Lead__c at Bazar's
-   *  request on 13 Oct 2026. The API name is assumed from the listing
-   *  object's own field; see OPTIONAL_LEAD_FIELDS. */
+  /** The page the lead came from: the listing for a listing enquiry, the
+   *  project for a project enquiry, else the page the form sat on. Lead API
+   *  v1.1 (1 Oct 2026); Levarus's website lead assignment reads it. Replaced
+   *  `Property_Reference__c`, removed from Lead__c on 13 Oct 2026. */
   Website_Listing_URL__c?: string;
+  /** Restricted picklist, Lead API v1.1: "Arabic" or "Arabic & English".
+   *  See PREFERRED_LANGUAGE. */
+  Preferred_Languages__c?: string;
   /** A mortgage request's service: "Fast Pre-Approval (24-hour)" or
-   *  "Mortgage Consultancy". Not on Lead__c yet — asked of Levarus on
-   *  14 Oct 2026 — so it is optional: an org without it drops it and the
-   *  description still says which. See OPTIONAL_LEAD_FIELDS. */
+   *  "Mortgage Consultancy" — a restricted picklist of exactly those two,
+   *  created 19 Oct 2026. Optional: while the integration user cannot write
+   *  it, the lead goes without and the description still says which. See
+   *  OPTIONAL_LEAD_FIELDS. */
   Mortgage_Service__c?: string;
 };
 
@@ -98,7 +102,7 @@ export function clamp(value: string | null | undefined, max: number): string | u
  * value, and where the truth is genuinely not one of the options, a stated
  * default is used rather than a guess dressed up as a mapping.
  */
-export const INQUIRY_TYPES = ["Buy", "Sell", "Rent"] as const;
+export const INQUIRY_TYPES = ["Buy", "Sell", "Rent", "Other"] as const;
 export const LEAD_SOURCES = [
   "Facebook",
   "Advertisement",
@@ -119,16 +123,11 @@ export type LeadSourceValue = (typeof LEAD_SOURCES)[number];
  *
  * A general "tell me about your services" enquiry is not a purchase, and a
  * property-management enquiry is the opposite of all three — the person
- * already owns the property and wants it run for them. Neither has a value in
- * this picklist, and the field cannot be left empty, so they land on Buy: the
- * most common intent on a sales-led marketplace, and the least surprising
- * thing for an advisor to find and correct.
- *
- * Worth telling Levarus. A fourth value ("Other", or "Manage") would remove
- * the need to state a wrong answer confidently. Until then this constant is
- * the one place the compromise lives.
+ * already owns the property and wants it run for them. Until 19 Oct 2026 the
+ * picklist had no word for either and they were filed as Buy; Levarus then
+ * added "Other" at Bazar's request.
  */
-const INQUIRY_TYPE_FALLBACK: InquiryType = "Buy";
+const INQUIRY_TYPE_FALLBACK: InquiryType = "Other";
 
 /**
  * The visitor's own declared intent, which is the strongest signal available:
@@ -136,13 +135,15 @@ const INQUIRY_TYPE_FALLBACK: InquiryType = "Buy";
  * Stored in `enquiries.inferred_constraints.intent` (see the public enquiry
  * action) and drawn from ENQUIRY_INTENTS in lib/schemas/enquiry.ts.
  *
- * `invest` is a purchase. `manage` is the case the picklist has no word for.
+ * `invest` is a purchase. `manage` is none of the three: the owner wants the
+ * property run for them.
  */
 const INTENT_INQUIRY_TYPE: Record<string, InquiryType> = {
   buy: "Buy",
   sell: "Sell",
   rent: "Rent",
   invest: "Buy",
+  manage: "Other",
 };
 
 /** The listing's own commercial mode, where a listing is attached. */
@@ -218,6 +219,23 @@ export function leadSourceFor(source: EnquirySource): LeadSourceValue {
   return SOURCE_LEAD_SOURCE[source] ?? "Website";
 }
 
+/**
+ * `Preferred_Languages__c` — a restricted picklist of "Arabic" and
+ * "Arabic & English", and nothing for English alone. The only signal this
+ * site has is the language the visitor used it in, so an Arabic visitor is
+ * "Arabic", and an English one sends nothing rather than claiming they speak
+ * Arabic: asked of Levarus on 19 Oct 2026 to add "English". When they do,
+ * it is one line here.
+ */
+export const PREFERRED_LANGUAGES = ["Arabic", "Arabic & English"] as const;
+const PREFERRED_LANGUAGE: Record<string, (typeof PREFERRED_LANGUAGES)[number]> = {
+  ar: "Arabic",
+};
+
+export function preferredLanguageFor(locale: string | null | undefined): string | undefined {
+  return locale ? PREFERRED_LANGUAGE[locale] : undefined;
+}
+
 /** The enquiry columns this mapper reads, joined to its property's facts. */
 export type LeadSourceRow = {
   id: string;
@@ -232,6 +250,9 @@ export type LeadSourceRow = {
   intent: string | null;
   property_reference: string | null;
   property_mode: PropertyMode | null;
+  /** The listing's slug, so a listing enquiry can link its page even when
+   *  no form submission recorded where it was sent from. */
+  property_slug?: string | null;
   /**
    * The website's own reference, when the listing came FROM Salesforce. Then
    * `property_reference` carries the CRM's listing name (LST-00003) — the
@@ -240,12 +261,13 @@ export type LeadSourceRow = {
    */
   website_reference?: string | null;
   /** The page the visitor sent the form from, absolute
-   *  (`https://www.bazarrealestate.ae/ar/p/…`). `Lead__c` has no field for it,
-   *  so it rides in the description. */
+   *  (`https://www.bazarrealestate.ae/ar/p/…`). Sent as
+   *  `Website_Listing_URL__c` and repeated in the description. */
   page_url?: string | null;
   /** The project, when the enquiry was about one (a brochure request on a
    *  project page). */
   project_name?: string | null;
+  project_slug?: string | null;
 };
 
 /**
@@ -257,8 +279,30 @@ export type LeadSourceRow = {
 export function leadPageUrl(paths: readonly (string | null)[], siteUrl: string | undefined): string | null {
   const path = paths.find((p): p is string => !!p && p.startsWith("/") && !p.startsWith("//"));
   if (!path) return null;
-  const origin = (siteUrl ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
-  return `${origin}${path}`;
+  return `${siteOrigin(siteUrl)}${path}`;
+}
+
+export function siteOrigin(siteUrl: string | undefined): string {
+  return (siteUrl ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
+}
+
+/**
+ * `Website_Listing_URL__c`. Levarus assign website leads by it (19 Oct 2026),
+ * so every lead carries one where the site knows a page:
+ *
+ * - a listing enquiry: the page it was sent from, else the listing's own
+ *   page — a listing dialog that records no submission still links it;
+ * - a project enquiry: likewise, the project's page;
+ * - anything else: the page the form sat on (`/buy`, `/tools/valuation`).
+ */
+export function websiteListingUrl(row: LeadSourceRow, siteUrl: string | undefined): string | undefined {
+  const origin = siteOrigin(siteUrl);
+  const fallback = row.property_slug
+    ? `${origin}/p/${row.property_slug}`
+    : row.project_slug
+      ? `${origin}/developments/${row.project_slug}`
+      : null;
+  return clamp(row.page_url ?? fallback, MAX_URL);
 }
 
 /**
@@ -303,7 +347,7 @@ export function buildDescription(row: LeadSourceRow): string | undefined {
  * that the object logged to Sentry on a failure shows what was actually sent,
  * and so a test can assert "this field was omitted" by looking at the keys.
  */
-export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
+export function buildLeadPayload(row: LeadSourceRow, siteUrl?: string): LeadPayload {
   const payload: LeadPayload = {};
   const set = <K extends keyof LeadPayload>(
     key: K,
@@ -327,11 +371,9 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
 
   applyPhone(payload, row.phone);
 
-  // Only for an enquiry about a listing, where the page IS the listing. A
-  // general contact-form lead sends no URL here at all rather than an empty
-  // string; its page is in the description.
-  const listingUrl = row.property_reference ? clamp(row.page_url, MAX_URL) : undefined;
-  if (listingUrl) payload.Website_Listing_URL__c = listingUrl;
+  // Absent rather than an empty string when no page is known.
+  set("Website_Listing_URL__c", websiteListingUrl(row, siteUrl));
+  set("Preferred_Languages__c", preferredLanguageFor(row.locale));
 
   return payload;
 }
@@ -418,16 +460,33 @@ export type PushResult =
  * rather than a sprint.
  */
 /**
- * Fields a lead can do without. Both API names are assumed:
- * `Website_Listing_URL__c` (Levarus named the new field "website listing url";
- * the listing object's is `Website_Listing_URL__c`) and `Mortgage_Service__c`
- * (asked for on 14 Oct 2026, not yet created). A wrong guess or a missing
- * field costs one extra call, not the lead.
+ * Fields a lead can do without. Each costs at most one extra call, never the
+ * lead, when the org refuses it:
+ *
+ * - `INVALID_FIELD` — no such column: removed, renamed, or hidden from the
+ *   integration user;
+ * - `INVALID_FIELD_FOR_INSERT_UPDATE` — visible but read-only to it. This is
+ *   how `Mortgage_Service__c` arrived on 19 Oct 2026, and before this code
+ *   was listed here it failed every mortgage lead outright;
+ * - `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` — a value the picklist no
+ *   longer holds.
+ *
+ * What each carried is in the description too.
  */
-const OPTIONAL_LEAD_FIELDS = ["Website_Listing_URL__c", "Mortgage_Service__c"] as const;
+const OPTIONAL_LEAD_FIELDS = [
+  "Website_Listing_URL__c",
+  "Preferred_Languages__c",
+  "Mortgage_Service__c",
+] as const;
 
-export async function pushLead(row: LeadSourceRow): Promise<PushResult> {
-  return pushLeadPayload(row.id, buildLeadPayload(row), "enquiry");
+const DROPPABLE_ERRORS = new Set([
+  "INVALID_FIELD",
+  "INVALID_FIELD_FOR_INSERT_UPDATE",
+  "INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+]);
+
+export async function pushLead(row: LeadSourceRow, siteUrl?: string): Promise<PushResult> {
+  return pushLeadPayload(row.id, buildLeadPayload(row, siteUrl), "enquiry");
 }
 
 /**
@@ -460,7 +519,10 @@ export async function pushLeadPayload(
   let result = await send(externalId, object, externalIdField, current);
   for (let i = 0; i < OPTIONAL_LEAD_FIELDS.length && !result.ok; i++) {
     const failed = result;
-    const dropped = failed.errorCode === "INVALID_FIELD"
+    // The client appends the error's `fields` to the message, so a picklist
+    // rejection — whose text names the field's label, not its API name —
+    // still names the field here.
+    const dropped = failed.errorCode && DROPPABLE_ERRORS.has(failed.errorCode)
       ? OPTIONAL_LEAD_FIELDS.find((f) => f in current && failed.message.includes(f))
       : undefined;
     if (!dropped) break;

@@ -89,12 +89,13 @@ type QueueRow = {
   inferred_constraints: { intent?: string | null } | null;
   crm_attempts: number;
   properties: QueueProperty | QueueProperty[] | null;
-  developments: { name: string } | { name: string }[] | null;
+  developments: { name: string; slug: string } | { name: string; slug: string }[] | null;
   form_submissions: { source_path: string | null }[] | null;
 };
 
 type QueueProperty = {
   reference: string;
+  slug: string;
   mode: Database["public"]["Enums"]["property_mode"];
   salesforce_listings:
     | { sf_listing_name: string | null }
@@ -130,6 +131,8 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
       env.NEXT_PUBLIC_SITE_URL,
     ),
     project_name: one(row.developments)?.name ?? null,
+    project_slug: one(row.developments)?.slug ?? null,
+    property_slug: property?.slug ?? null,
   };
 }
 
@@ -144,6 +147,7 @@ type MortgageQueueRow = {
   employment_type: MortgageLeadRow["employment_type"];
   property_price_aed: number | null;
   entry_point: MortgageLeadRow["entry_point"];
+  locale: string;
   crm_attempts: number;
   properties: QueueMortgageProperty | QueueMortgageProperty[] | null;
   parent: { reference: string } | { reference: string }[] | null;
@@ -175,6 +179,7 @@ function toMortgageLeadRow(row: MortgageQueueRow): MortgageLeadRow {
     property_reference: crmName ?? property?.reference ?? null,
     property_slug: property?.slug ?? null,
     parent_reference: one(row.parent)?.reference ?? null,
+    locale: row.locale,
   };
 }
 
@@ -363,7 +368,7 @@ export async function GET(req: NextRequest) {
     const { data, error } = await admin
       .from("enquiries")
       .select(
-        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode, salesforce_listings(sf_listing_name)), developments:development_id(name), form_submissions(source_path)",
+        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, slug, mode, salesforce_listings(sf_listing_name)), developments:development_id(name, slug), form_submissions(source_path)",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())
@@ -375,7 +380,7 @@ export async function GET(req: NextRequest) {
 
     for (const row of rows) {
       const attempts = row.crm_attempts + 1;
-      const result = await pushLead(toLeadRow(row));
+      const result = await pushLead(toLeadRow(row), env.NEXT_PUBLIC_SITE_URL);
       await settle(admin, "enquiries", row.id, attempts, result, tally);
     }
 
@@ -383,7 +388,7 @@ export async function GET(req: NextRequest) {
     const { data: mortgageData, error: mortgageError } = await admin
       .from("mortgage_requests")
       .select(
-        "id, reference, service, full_name, email, mobile_e164, residency, employment_type, property_price_aed, entry_point, crm_attempts, properties:property_id(reference, slug, salesforce_listings(sf_listing_name)), parent:parent_request_id(reference)",
+        "id, reference, service, full_name, email, mobile_e164, residency, employment_type, property_price_aed, entry_point, locale, crm_attempts, properties:property_id(reference, slug, salesforce_listings(sf_listing_name)), parent:parent_request_id(reference)",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())

@@ -8,7 +8,9 @@ Two directions, one Connected App, one integration user.
 | **Listings in** — Salesforce → website | Every listing the CRM marks Published for the website becomes a listing here | **Built** (Phase 3) — see [Listings](#listings--salesforce-to-website) |
 
 Vendor documents: *Lead Creation API* (18 Sept 2026), *Web to Lead Creation*
-(23 Sept), the production edition of the same (24 Sept) and *Published
+(23 Sept), the production edition of the same (24 Sept), its **v1.1 (1 Oct)**
+— adds `Preferred_Languages__c` and `Website_Listing_URL__c`, removes
+`Property_Reference__c` — and *Published
 Listings — API Integration Guide* — v1.2 (25 Sept) and **v1.3 (5 Oct)**, a
 production and a sandbox edition with the same field list. The listings guide
 uses the **same Connected App** as the lead documents, so both directions
@@ -37,8 +39,8 @@ enrols itself, and a form added next year cannot forget to.
 
 ### Field mapping
 
-`Lead__c` is a **custom** object, not the standard `Lead`. Eight fields, all
-custom, all documented in the vendor doc and nothing beyond them.
+`Lead__c` is a **custom** object, not the standard `Lead`. Ten fields, all
+custom, all documented in the vendor doc (v1.1) and nothing beyond them.
 
 | Salesforce | Source | Notes |
 |---|---|---|
@@ -47,9 +49,10 @@ custom, all documented in the vendor doc and nothing beyond them.
 | `Country_Code__c` | split from `enquiries.phone` | `"+971"`. See `lib/salesforce/phone.ts`. |
 | `Phone__c` | split from `enquiries.phone` | National part, trunk zero stripped. |
 | `Lead_Source__c` | enquiry `source` | `Website`, or `Others` for WhatsApp. Required. |
-| `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent`. Required. |
+| `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent` / `Other`. Required. |
 | `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
-| `Website_Listing_URL__c` | the listing page's absolute URL | Property enquiries only. Replaced `Property_Reference__c`, which Levarus removed at Bazar's request on 13 Oct 2026. The API name is assumed from the listing object; a lead is resent without it if the org says no such column. The reference itself is in the description (`Property: …`). |
+| `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else `/p/<slug>`), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
+| `Preferred_Languages__c` | `enquiries.locale` | Restricted picklist: `Arabic`, `Arabic & English` — no `English`. An `/ar` lead sends `Arabic`; an English one sends nothing until Levarus add `English` (asked 19 Oct 2026; `PREFERRED_LANGUAGE` in `leads.ts`). |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
 **On the two picklists.** Both are Required as of 23 Sept, which inverts the
@@ -67,10 +70,11 @@ conflates for-sale and for-lease, so intent or source decides instead of a
 coin flip. Valuation and `/services/sell` leads now carry `Sell`, which they
 could not before the value set was published.
 
-The fallback is a compromise, not a mapping. A property-management enquiry is
-the opposite of all three values — the person already owns the property — and
-a general "tell me about your services" lead is none of them. Worth asking
-Levarus for a fourth value.
+The fallback is `Other`, added by Levarus on 19 Oct 2026 at Bazar's request.
+A property-management enquiry (intent `manage`) is the opposite of Buy, Sell
+and Rent — the person already owns the property — and a general "tell me
+about your services" lead is none of them. Until that day both were filed as
+`Buy`.
 
 `Lead_Source__c` has entries for `Facebook`, `Property Finder` and `Bayut`,
 all channels Bazar uses. None is mapped yet, deliberately: no lead in the
@@ -121,9 +125,18 @@ Arabic-Indic digits (`+٩٧١…`), which `splitPhone` now reads as digits.
 13 Oct 2026**, at Omar's request, and replaced with a website listing URL
 field. Until the sync caught up every property enquiry answered
 `INVALID_FIELD: No such column`. The sync now sends `Website_Listing_URL__c`
-instead — its API name assumed until Levarus confirm it — and resends a lead
-once without a field the org says it does not have, so a wrong guess costs a
-call, not the lead. The description always carries `Property: <reference>`.
+instead — confirmed by the v1.1 doc and a describe of the object — and
+resends a lead once without an optional field the org refuses, so a missing,
+read-only or rejected optional field costs a call, not the lead.
+
+**Optional fields** (`OPTIONAL_LEAD_FIELDS`): `Website_Listing_URL__c`,
+`Preferred_Languages__c`, `Mortgage_Service__c`. Dropped and resent on
+`INVALID_FIELD` (no such column, or hidden from the integration user),
+`INVALID_FIELD_FOR_INSERT_UPDATE` (visible but read-only) and
+`INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` naming the field. The middle one was
+missing until 19 Oct 2026: `Mortgage_Service__c` arrived read-only to the
+integration user, and every mortgage lead failed outright on it (BZM-26-0002,
+15 Oct). A required field is never dropped. The description always carries `Property: <reference>`.
 
 The description also carries, since the same day, `Page:` — the absolute
 URL of the page the form was sent from (`form_submissions.source_path`) — and
@@ -170,7 +183,8 @@ request's uuid is the External ID. `lib/salesforce/mortgage-leads.ts` maps it:
 | `Country_Code__c`, `Phone__c` | `mobile_e164`, split as an enquiry's phone is |
 | `Lead_Source__c` | `Website` |
 | `Inquiry_Type__c` | `Buy` (financing a purchase) |
-| `Mortgage_Service__c` | `Fast Pre-Approval (24-hour)` or `Mortgage Consultancy` — **optional, not on the object yet**; dropped and resent without while the org lacks it |
+| `Mortgage_Service__c` | `Fast Pre-Approval (24-hour)` or `Mortgage Consultancy` — a restricted picklist of exactly those two, on the object since 19 Oct 2026 but **read-only to the integration user** until Levarus grant edit; dropped and resent without meanwhile |
+| `Preferred_Languages__c` | `locale`, as an enquiry's |
 | `Website_Listing_URL__c` | the listing page, when the applicant started from one |
 | `Description__c` | first line `Mortgage request: <service>`, then reference, residency, employment, where they started, the listing and parent consultation if any, a link to the file in /admin/mortgages, and the request id |
 
@@ -184,9 +198,9 @@ Erasure: a mortgage request is deleted outright by a DSR or retention, so a
 `salesforce_lead_erasures`, and the cron pseudonymises that record as it does an
 erased enquiry's (Phase 2) before deleting the queue row.
 
-**Ask of Levarus:** a field `Mortgage_Service__c` on `Lead__c` — Text, or a
-picklist holding exactly the two values above — so the service has its own
-column in list views. Until then it is the description's first line.
+**Ask of Levarus:** ~~a field `Mortgage_Service__c`~~ created 19 Oct 2026;
+still to do, **edit access to it for the integration user's profile or
+permission set**. Until then the service is the description's first line.
 
 ## Phase 2 — erasure reaches the CRM
 
@@ -583,9 +597,20 @@ whole-number floor and the Arabic field lengths. Still open:
 
 13. **Make `Phone__c` and `Country_Code__c` optional.** 36% of this site's
     leads have no phone number; as written, none of them can reach the CRM.
-14. A fourth `Inquiry_Type__c` value ("Other", or "Manage"). Property
-    management and general service enquiries are none of Buy/Sell/Rent, and
-    the field cannot be left empty, so they currently land on `Buy`.
+14. ~~A fourth `Inquiry_Type__c` value.~~ **Answered** 19 Oct 2026: `Other`.
+    In use as the fallback and for intent `manage`.
+
+### Raised 19 Oct 2026
+
+15. **Edit access to `Mortgage_Service__c`** for the integration user. The
+    field exists but is read-only to it (describe: `createable: false`).
+16. **An `English` value on `Preferred_Languages__c`.** It holds only
+    `Arabic` and `Arabic & English`, so an English-site lead sends nothing.
+17. Duplicate handling (Levarus, 19 Oct): a new email → new `Lead__c` and
+    contact; same email + same project → a Re-Inquiry under the parent;
+    same email + different project → new `Lead__c` on the same contact. The
+    site sends no `Project__c`, so which "project" their rule compares is
+    worth confirming.
 
 ## Design rules that held
 

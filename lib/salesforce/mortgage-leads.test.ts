@@ -105,6 +105,11 @@ describe("buildMortgageLeadPayload", () => {
     expect(p.Description__c).not.toMatch(/birth|passport|emirates|document|statement|consent/i);
   });
 
+  it("says the applicant's language only when the picklist has a word for it", () => {
+    expect(buildMortgageLeadPayload(row({ locale: "ar" }), SITE).Preferred_Languages__c).toBe("Arabic");
+    expect("Preferred_Languages__c" in buildMortgageLeadPayload(row({ locale: "en" }), SITE)).toBe(false);
+  });
+
   it("links the listing when the applicant started from one", () => {
     const p = buildMortgageLeadPayload(
       row({ entry_point: "property_detail", property_reference: "LST-00018", property_slug: "wadeem-gardens" }),
@@ -173,6 +178,53 @@ describe("pushMortgageLead", () => {
     const second = (salesforceRequest.mock.calls[1][1] as { body: Record<string, unknown> }).body;
     expect(second).not.toHaveProperty("Mortgage_Service__c");
     expect(String(second.Description__c)).toContain("Mortgage request: Fast Pre-Approval (24-hour)");
+  });
+
+  it("still sends the lead while the service field is read-only to the integration user", async () => {
+    // Production, 15 Oct 2026: BZM-26-0002 failed outright on exactly this.
+    salesforceRequest
+      .mockImplementationOnce(async () => {
+        throw new FakeSalesforceError(
+          "Unable to create/update fields: Mortgage_Service__c. Please check the security settings of this field and verify that it is read/write for your profile or permission set. [Mortgage_Service__c]",
+          { status: 400, errorCode: "INVALID_FIELD_FOR_INSERT_UPDATE", retryable: false },
+        );
+      })
+      .mockResolvedValueOnce({ id: "a01W", created: true });
+    const out = await pushMortgageLead(row(), SITE);
+    expect(out).toEqual({ ok: true, id: "a01W" });
+    const second = (salesforceRequest.mock.calls[1][1] as { body: Record<string, unknown> }).body;
+    expect(second).not.toHaveProperty("Mortgage_Service__c");
+    expect(second.Email__c).toBe("layla@example.org");
+  });
+
+  it("drops a language the picklist no longer holds rather than the lead", async () => {
+    salesforceRequest
+      .mockImplementationOnce(async () => {
+        throw new FakeSalesforceError("Preferred Languages: bad value for restricted picklist field: Arabic [Preferred_Languages__c]", {
+          status: 400,
+          errorCode: "INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+          retryable: false,
+        });
+      })
+      .mockResolvedValueOnce({ id: "a01V", created: true });
+    const out = await pushMortgageLead(row({ locale: "ar" }), SITE);
+    expect(out).toEqual({ ok: true, id: "a01V" });
+    const second = (salesforceRequest.mock.calls[1][1] as { body: Record<string, unknown> }).body;
+    expect(second).not.toHaveProperty("Preferred_Languages__c");
+    expect(second).toHaveProperty("Mortgage_Service__c");
+  });
+
+  it("never drops a required picklist on a picklist rejection", async () => {
+    salesforceRequest.mockImplementationOnce(async () => {
+      throw new FakeSalesforceError("Inquiry Type: bad value for restricted picklist field: Buy [Inquiry_Type__c]", {
+        status: 400,
+        errorCode: "INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST",
+        retryable: false,
+      });
+    });
+    const out = await pushMortgageLead(row(), SITE);
+    expect(out.ok).toBe(false);
+    expect(salesforceRequest).toHaveBeenCalledTimes(1);
   });
 
   it("drops each missing optional field in turn", async () => {
