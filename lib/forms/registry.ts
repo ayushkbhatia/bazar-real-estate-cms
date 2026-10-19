@@ -1160,7 +1160,7 @@ export const FORM_DEFS: FormDef[] = [
     // and the responses are managed; the field list is shown read-only.
     control: "copy",
     variant: "compact",
-    alsoOn: ["Area guides", "Property pages"],
+    alsoOn: ["Area guides"],
     copy: copy({
       title: "Get the full advisor report",
       subtitle:
