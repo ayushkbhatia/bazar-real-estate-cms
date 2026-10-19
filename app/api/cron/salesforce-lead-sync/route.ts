@@ -340,6 +340,7 @@ export async function GET(req: NextRequest) {
   erasures.scrubbed += queued.scrubbed;
   erasures.remaining += queued.remaining;
   erasures.cleared += queued.cleared;
+  erasures.reInquiries.push(...queued.reInquiries);
   erasures.lastError = erasures.lastError ?? queued.lastError;
 
   // The expected state on preview, on a local machine, and in production
