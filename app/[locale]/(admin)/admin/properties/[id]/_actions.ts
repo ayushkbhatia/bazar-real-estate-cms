@@ -13,6 +13,7 @@ import {
 import { logAudit } from "@/lib/audit";
 import { sanitizeArticleHtml } from "@/lib/article-html";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
+import { cleanLifestyleTags } from "@/lib/lifestyle-tags";
 import { requireRole } from "@/lib/auth";
 import {
   SALESFORCE_OWNED_COLUMNS,
@@ -1154,5 +1155,51 @@ export async function setPropertyCardLabels(
   // the listing's own page.
   revalidateLocalised("/", "layout");
   if (row?.slug) revalidateLocalised(`/p/${row.slug}`);
+  return { status: "ok" };
+}
+
+/**
+ * Set a listing's lifestyle tags (lib/lifestyle-tags.ts).
+ *
+ * Saves on its own, like the card labels beside it in the rail, so the shared
+ * edit schema stays as it is. Unknown ids are dropped here; the column's CHECK
+ * would reject them anyway.
+ */
+export async function setPropertyLifestyleTags(
+  propertyId: string,
+  tags: string[],
+): Promise<{ status: "ok" } | { status: "error"; message: string }> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  const clean = cleanLifestyleTags(tags);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: row } = await supabase
+    .from("properties")
+    .select("lifestyle_tags")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("properties")
+    .update({ lifestyle_tags: clean })
+    .eq("id", propertyId);
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "property.lifestyle_tags_update",
+    target_kind: "property",
+    target_id: propertyId,
+    before: { lifestyle_tags: row?.lifestyle_tags ?? [] },
+    after: { lifestyle_tags: clean },
+  });
+
+  // Admin only. No public page draws the tags, and the search routes that
+  // filter by them are force-dynamic, so there is no cached page to clear —
+  // and a site-wide revalidate per tick would cold every ISR page for nothing.
+  // A future per-tag landing page that is ISR revalidates its own path here.
+  revalidatePath(`/admin/properties/${propertyId}`);
   return { status: "ok" };
 }

@@ -4,6 +4,7 @@ import {
   countActiveFilters,
   describeFilters,
 } from "./property";
+import type { LifestyleTag } from "@/lib/lifestyle-tags";
 
 describe("parseFilters", () => {
   it("returns an all-null state for an empty record", () => {
@@ -25,6 +26,7 @@ describe("parseFilters", () => {
       tenure: null,
       furnishing: null,
       amenities: [],
+      lifestyle: [],
       verified: null,
       advisor: null,
       sort: null,
@@ -59,11 +61,22 @@ describe("parseFilters", () => {
       tenure: null,
       furnishing: null,
       amenities: [],
+      lifestyle: [],
       verified: null,
       advisor: null,
       sort: null,
       page: null,
     });
+  });
+
+  it("keeps known lifestyle tags, in vocabulary order, deduplicated", () => {
+    expect(
+      parseFilters({ lifestyle: "gated, waterfront,bogus,gated" }).lifestyle,
+    ).toEqual(["waterfront", "gated"]);
+    expect(parseFilters({ lifestyle: ["luxury", 7] }).lifestyle).toEqual([
+      "luxury",
+    ]);
+    expect(parseFilters({ lifestyle: "" }).lifestyle).toEqual([]);
   });
 
   it("trims and caps the search query", () => {
@@ -132,6 +145,7 @@ const EMPTY = {
   tenure: null,
   furnishing: null,
   amenities: [] as string[],
+  lifestyle: [] as LifestyleTag[],
   verified: null,
   advisor: null,
   sort: null,

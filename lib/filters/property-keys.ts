@@ -23,6 +23,7 @@ export const FILTER_PARAM_KEYS = [
   "tenure",
   "furnishing",
   "amenities",
+  "lifestyle",
   "verified",
   "advisor",
   "sort",

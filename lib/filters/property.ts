@@ -10,6 +10,11 @@ import {
   PROPERTY_SEGMENTS,
   PROPERTY_TYPES,
 } from "@/lib/schemas/property";
+import {
+  cleanLifestyleTags,
+  LIFESTYLE_TAG_LABEL,
+  type LifestyleTag,
+} from "@/lib/lifestyle-tags";
 
 export const TENURES = ["freehold", "leasehold"] as const;
 export const FURNISHINGS = ["unfurnished", "semi", "fully"] as const;
@@ -50,6 +55,9 @@ export const filterParsers = {
   tenure: parseAsStringEnum([...TENURES]),
   furnishing: parseAsStringEnum([...FURNISHINGS]),
   amenities: parseAsString, // comma-separated list, parsed below
+  /** Lifestyle tags (lib/lifestyle-tags.ts), comma-separated; a listing must
+   *  carry every one given. What a per-tag landing page will set. */
+  lifestyle: parseAsString,
   verified: parseAsBoolean,
   advisor: parseAsString, // staff slug
   sort: parseAsStringEnum([...SORT_OPTIONS]),
@@ -79,6 +87,7 @@ export type PropertyFilters = {
   tenure: Tenure | null;
   furnishing: Furnishing | null;
   amenities: string[];
+  lifestyle: LifestyleTag[];
   verified: boolean | null;
   advisor: string | null;
   sort: SortOption | null;
@@ -102,6 +111,7 @@ const EMPTY: PropertyFilters = {
   tenure: null,
   furnishing: null,
   amenities: [],
+  lifestyle: [],
   verified: null,
   advisor: null,
   sort: null,
@@ -112,7 +122,7 @@ export const PAGE_SIZE = 24;
 
 /** Coerce an unknown record (typically searchParams) to PropertyFilters. */
 export function parseFilters(input: Record<string, unknown>): PropertyFilters {
-  const out: PropertyFilters = { ...EMPTY, amenities: [] };
+  const out: PropertyFilters = { ...EMPTY, amenities: [], lifestyle: [] };
 
   if (typeof input.q === "string") {
     const trimmed = input.q.trim();
@@ -188,6 +198,10 @@ export function parseFilters(input: Record<string, unknown>): PropertyFilters {
       .slice(0, 30);
   }
 
+  // Unknown tags are dropped rather than failing the search: a stale link to
+  // a retired tag should widen, not empty, the results.
+  out.lifestyle = cleanLifestyleTags(input.lifestyle);
+
   if (input.verified === true || input.verified === "true") {
     out.verified = true;
   }
@@ -249,6 +263,7 @@ export type FilterSummaryLabels = {
   inArea: (area: string) => string;
   /** Called only when at least one bound is set. Both are AED, as in the URL. */
   price: (min: number | null, max: number | null) => string;
+  lifestyle: (tag: LifestyleTag) => string;
 };
 
 export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
@@ -263,6 +278,7 @@ export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
     const max = hi != null ? `${(hi / 1_000_000).toFixed(1)}M` : "∞";
     return `AED ${min}–${max}`;
   },
+  lifestyle: (tag) => LIFESTYLE_TAG_LABEL[tag].en,
 };
 
 /** A pretty single-line summary used in result-count strings. */
@@ -278,6 +294,7 @@ export function describeFilters(
   if (f.type) parts.push(labels.type(f.type));
   if (f.segment) parts.push(labels.segment(f.segment));
   if (f.form) parts.push(labels.form(f.form));
+  for (const tag of f.lifestyle ?? []) parts.push(labels.lifestyle(tag));
   if (areaName) parts.push(labels.inArea(areaName));
   else if (f.area) parts.push(labels.inArea(f.area));
   if (f.price_min != null || f.price_max != null) {

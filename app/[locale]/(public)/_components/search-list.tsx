@@ -12,6 +12,7 @@ import { readPreferencesFromCookie } from "@/lib/preferences/server";
 import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
+import { lifestyleTagLabel } from "@/lib/lifestyle-tags";
 import {
   countActiveFilters,
   describeFilters,
@@ -229,6 +230,7 @@ export async function SearchList({
    * `lib/queries/*` and with tests that have no request scope, so it takes the
    * words rather than a translator — see `FilterSummaryLabels`.
    */
+  const summaryLocale = await currentLocale();
   const summaryLabels: FilterSummaryLabels = {
     beds: (count) => t("summary.beds", { count }),
     baths: (count) => t("summary.baths", { count }),
@@ -247,6 +249,8 @@ export async function SearchList({
         : min != null
           ? t("summary.priceFrom", { price: formatPrice(min, priceLabels) })
           : t("summary.priceUpTo", { price: formatPrice(max, priceLabels) }),
+    // Fixed vocabulary with its Arabic beside it (lib/lifestyle-tags.ts).
+    lifestyle: (tag) => lifestyleTagLabel(tag, summaryLocale),
   };
 
   const selectedArea =
