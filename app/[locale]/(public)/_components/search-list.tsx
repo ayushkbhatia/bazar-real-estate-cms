@@ -1,10 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import {
-  listPublishedProperties,
-  propertyUrl,
-} from "@/lib/queries/properties";
+import { listPublishedProperties, propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
@@ -33,6 +30,9 @@ import { SearchToggles } from "./search-toggles";
 import { DrawAreaTool } from "./draw-area-tool";
 import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
+import { GalleryPrefetch } from "./gallery-prefetch";
+import { fetchGalleryPreviews } from "@/lib/queries/property-gallery-preview";
+import { GALLERY_VISIBLE_TILES } from "../p/[slug]/_components/gallery-sizes";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Form = Database["public"]["Enums"]["property_form"];
@@ -204,10 +204,19 @@ export async function SearchList({
       offset,
     }),
     fetchAreas(),
-    getSearchHeaderCopy(mode, effectiveForm ?? null, undefined, filters.segment),
+    getSearchHeaderCopy(
+      mode,
+      effectiveForm ?? null,
+      undefined,
+      filters.segment,
+    ),
   ]);
-  const t = await getTranslations("search");
-  const cardLabels = await getCardLabelResolver();
+  // The gallery photos each card warms for its listing page (gallery-prefetch).
+  const [t, cardLabels, galleryPreviews] = await Promise.all([
+    getTranslations("search"),
+    getCardLabelResolver(),
+    fetchGalleryPreviews(rows, GALLERY_VISIBLE_TILES),
+  ]);
 
   /*
    * The filter chips under the result count. `describeFilters` is shared with
@@ -325,27 +334,29 @@ export async function SearchList({
                   href={propertyUrl(row)}
                   className="block"
                 >
-                  <ListingCardPriced
-                    variant="row"
-                    className={ROW_CARD_RESPONSIVE}
-                    priceAed={row.price_aed}
-                    title={row.title}
-                    location={row.areas?.name ?? "United Arab Emirates"}
-                    beds={row.beds}
-                    baths={row.baths}
-                    area={row.built_up_ft2 ?? 0}
-                    badges={badges}
-                    imgLabel={row.reference}
-                    heroSrc={
-                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                    }
-                    heroAlt={row.hero?.alt_text ?? row.title}
-                    priority={index < 2}
-                    propertyId={row.id}
-                    verified={Boolean(
-                      (row.flags as Record<string, unknown> | null)?.verified,
-                    )}
-                  />
+                  <GalleryPrefetch urls={galleryPreviews.get(row.id) ?? []}>
+                    <ListingCardPriced
+                      variant="row"
+                      className={ROW_CARD_RESPONSIVE}
+                      priceAed={row.price_aed}
+                      title={row.title}
+                      location={row.areas?.name ?? "United Arab Emirates"}
+                      beds={row.beds}
+                      baths={row.baths}
+                      area={row.built_up_ft2 ?? 0}
+                      badges={badges}
+                      imgLabel={row.reference}
+                      heroSrc={
+                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                      }
+                      heroAlt={row.hero?.alt_text ?? row.title}
+                      priority={index < 2}
+                      propertyId={row.id}
+                      verified={Boolean(
+                        (row.flags as Record<string, unknown> | null)?.verified,
+                      )}
+                    />
+                  </GalleryPrefetch>
                 </Link>
               );
             })}
@@ -362,25 +373,28 @@ export async function SearchList({
                     href={propertyUrl(row)}
                     className="block"
                   >
-                    <ListingCardPriced
-                      priceAed={row.price_aed}
-                      title={row.title}
-                      location={row.areas?.name ?? "United Arab Emirates"}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
-                      badges={badges}
-                      imgLabel={row.reference}
-                      heroSrc={
-                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                      }
-                      heroAlt={row.hero?.alt_text ?? row.title}
-                      priority={priority}
-                      propertyId={row.id}
-                      verified={Boolean(
-                        (row.flags as Record<string, unknown> | null)?.verified,
-                      )}
-                    />
+                    <GalleryPrefetch urls={galleryPreviews.get(row.id) ?? []}>
+                      <ListingCardPriced
+                        priceAed={row.price_aed}
+                        title={row.title}
+                        location={row.areas?.name ?? "United Arab Emirates"}
+                        beds={row.beds}
+                        baths={row.baths}
+                        area={row.built_up_ft2 ?? 0}
+                        badges={badges}
+                        imgLabel={row.reference}
+                        heroSrc={
+                          row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                        }
+                        heroAlt={row.hero?.alt_text ?? row.title}
+                        priority={priority}
+                        propertyId={row.id}
+                        verified={Boolean(
+                          (row.flags as Record<string, unknown> | null)
+                            ?.verified,
+                        )}
+                      />
+                    </GalleryPrefetch>
                   </Link>
                 );
               })}

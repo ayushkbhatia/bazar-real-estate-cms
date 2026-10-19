@@ -9,6 +9,11 @@ import { Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { inlineArrowStep } from "@/lib/dom/inline-arrows";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
+import {
+  GALLERY_HERO_SIZES,
+  GALLERY_TILE_SIZES,
+  GALLERY_VISIBLE_TILES,
+} from "./gallery-sizes";
 
 export type GalleryImage = {
   src: string | null;
@@ -29,8 +34,8 @@ export function Gallery({
   reference: string;
 }) {
   const t = useTranslations("property");
-  const slots: GalleryImage[] = images.slice(0, 5);
-  while (slots.length < 5) {
+  const slots: GalleryImage[] = images.slice(0, GALLERY_VISIBLE_TILES);
+  while (slots.length < GALLERY_VISIBLE_TILES) {
     slots.push({
       src: null,
       alt: `${reference} placeholder`,
@@ -39,7 +44,7 @@ export function Gallery({
   }
 
   const [open, setOpen] = useState<number | null>(null);
-  const remaining = Math.max(0, images.length - 5);
+  const remaining = Math.max(0, images.length - GALLERY_VISIBLE_TILES);
 
   return (
     <>
@@ -103,11 +108,11 @@ function Tile({
           alt={slot.alt}
           fill
           priority={priority}
-          sizes={
-            priority
-              ? "(min-width: 1024px) 66vw, 100vw"
-              : "(min-width: 1024px) 33vw, 50vw"
-          }
+          // All five tiles sit above the fold, so none of them is lazy:
+          // `loading="lazy"` held tiles 2–5 back until layout and queued them
+          // behind everything else on the page.
+          loading={priority ? undefined : "eager"}
+          sizes={priority ? GALLERY_HERO_SIZES : GALLERY_TILE_SIZES}
           className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
         />
       ) : (
