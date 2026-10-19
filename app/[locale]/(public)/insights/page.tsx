@@ -24,6 +24,9 @@ import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
+import { ArticleGrid } from "./_components/article-grid";
+import { coverWarmup } from "./_components/article-hero";
+import { WarmCover } from "./_components/warm-cover";
 
 export const revalidate = 300;
 
@@ -49,6 +52,10 @@ export async function generateMetadata({
  */
 const ARTICLE_GRID_COLUMNS =
   "grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))]";
+
+/** Cards in the grid on arrival, and how many each "Load more" adds. */
+const GRID_FIRST_PAGE = 20;
+const GRID_PAGE_STEP = 10;
 
 function ArticleHero({ row, sizes }: { row: ArticleListRow; sizes: string }) {
   if (row.hero) {
@@ -161,12 +168,13 @@ export default async function InsightsIndexPage({
             lg there is no spare width to absorb, and capping the rail there
             would flatten the 1.4:1 split into two near-equal columns. */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,440px)] gap-10 items-start">
-          <Link
-            href={articleUrl(featured)}
-            className="group block"
-            aria-label={featured.title}
-          >
-            {/* The lead column keeps all the width the aside doesn't take, so
+          <WarmCover cover={coverWarmup(featured)}>
+            <Link
+              href={articleUrl(featured)}
+              className="group block"
+              aria-label={featured.title}
+            >
+              {/* The lead column keeps all the width the aside doesn't take, so
                 the image flattens as it widens — at 16:10 a full-width lead on
                 a large monitor would push the headline off the first screen.
                 Past 2xl the ratio stops being the right control (a 2560px
@@ -174,42 +182,45 @@ export default async function InsightsIndexPage({
                 the viewport instead and the crop just gets wider. Note the
                 ratio has to be dropped to do that: `aspect-ratio` plus a height
                 clamp shrinks the *width* to match and leaves a gap beside it. */}
-            <div className="relative aspect-[16/10] lg:aspect-[2/1] xl:aspect-[21/9] 2xl:aspect-auto 2xl:h-[min(52vh,640px)] rounded-lg overflow-hidden bg-bz-surface-2">
-              <ArticleHero
-                row={featured}
-                sizes="(min-width: 1280px) calc(100vw - 576px), (min-width: 1024px) 58vw, 100vw"
-              />
-            </div>
-            <div className="mt-5">
-              <Eyebrow>{featured.category_label}</Eyebrow>
-              <h2
-                className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
-                style={{ letterSpacing: "-0.025em" }}
-              >
-                {featured.title}
-              </h2>
-              {featured.excerpt ? (
-                <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-                  {featured.excerpt}
-                </p>
-              ) : null}
-              <div className="mt-5 text-[12.5px] text-bz-muted flex items-center gap-2">
-                {featured.author ? (
-                  <>
-                    <span>{featured.author.display_name}</span>
-                    <span>·</span>
-                  </>
-                ) : null}
-                <span>{formatPublishedDate(featured.published_at, locale)}</span>
-                {featured.read_minutes ? (
-                  <>
-                    <span>·</span>
-                    <span>{readTime(t, featured.read_minutes)}</span>
-                  </>
-                ) : null}
+              <div className="relative aspect-[16/10] lg:aspect-[2/1] xl:aspect-[21/9] 2xl:aspect-auto 2xl:h-[min(52vh,640px)] rounded-lg overflow-hidden bg-bz-surface-2">
+                <ArticleHero
+                  row={featured}
+                  sizes="(min-width: 1280px) calc(100vw - 576px), (min-width: 1024px) 58vw, 100vw"
+                />
               </div>
-            </div>
-          </Link>
+              <div className="mt-5">
+                <Eyebrow>{featured.category_label}</Eyebrow>
+                <h2
+                  className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
+                  style={{ letterSpacing: "-0.025em" }}
+                >
+                  {featured.title}
+                </h2>
+                {featured.excerpt ? (
+                  <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                    {featured.excerpt}
+                  </p>
+                ) : null}
+                <div className="mt-5 text-[12.5px] text-bz-muted flex items-center gap-2">
+                  {featured.author ? (
+                    <>
+                      <span>{featured.author.display_name}</span>
+                      <span>·</span>
+                    </>
+                  ) : null}
+                  <span>
+                    {formatPublishedDate(featured.published_at, locale)}
+                  </span>
+                  {featured.read_minutes ? (
+                    <>
+                      <span>·</span>
+                      <span>{readTime(t, featured.read_minutes)}</span>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </Link>
+          </WarmCover>
 
           <aside className="bg-bz-ink text-white rounded-lg p-8 sticky top-6">
             <div
@@ -306,9 +317,17 @@ export default async function InsightsIndexPage({
             ) : null}
           </div>
         ) : (
-          <div className={cn("grid gap-9 gap-y-14", ARTICLE_GRID_COLUMNS)}>
-            {rest.map((row) => (
-              <article key={row.id} className="group">
+          <ArticleGrid
+            className={cn("grid gap-9 gap-y-14", ARTICLE_GRID_COLUMNS)}
+            initial={GRID_FIRST_PAGE}
+            step={GRID_PAGE_STEP}
+            loadMoreLabel={str(gridV, "load_more_label") ?? "Load more"}
+            cards={rest.map((row) => (
+              <WarmCover
+                key={row.id}
+                cover={coverWarmup(row)}
+                className="group"
+              >
                 <Link href={articleUrl(row)} className="block">
                   <div className="relative aspect-[4/3] rounded overflow-hidden bg-bz-surface-2">
                     <ArticleHero
@@ -340,9 +359,9 @@ export default async function InsightsIndexPage({
                       : ""}
                   </div>
                 </Link>
-              </article>
+              </WarmCover>
             ))}
-          </div>
+          />
         )}
       </section>
     ),

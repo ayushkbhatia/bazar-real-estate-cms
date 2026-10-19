@@ -99,8 +99,6 @@ const UNREFERENCED: Readonly<Record<string, string>> = {
     "article table of contents, built and never mounted",
   "app/[locale]/(public)/insights/_components/editors-pick.tsx":
     "built and never mounted on /insights",
-  "app/[locale]/(public)/insights/_components/load-more.tsx":
-    "built and never mounted; /insights paginates by URL instead",
 
   // ── Sprint 5b backfill, same batch as the seventeen already deleted ──────
   "app/[locale]/(public)/developments/[slug]/_components/location-section.tsx":
@@ -130,7 +128,7 @@ const UNREFERENCED: Readonly<Record<string, string>> = {
 };
 
 /** What the inventory held when this landed. Lowering it is the point. */
-const UNREFERENCED_CEILING = 24;
+const UNREFERENCED_CEILING = 23;
 
 const EXPORTED =
   /^export\s+(?:async\s+)?(?:function|const|class|type|interface|enum)\s+([A-Za-z0-9_]+)/gm;
