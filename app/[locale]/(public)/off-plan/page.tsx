@@ -301,6 +301,7 @@ export default async function NewProjectsPage({
     why: (
       <WhyBand
         key="why"
+        wide
         title={str(why, "why_title") ?? ""}
         body={str(why, "why_body") ?? ""}
         stats={statPairs(why)}
