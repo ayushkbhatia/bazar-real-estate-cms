@@ -315,11 +315,11 @@ describe("leadPageUrl", () => {
 describe("websiteListingUrl", () => {
   const SITE = "https://www.bazarrealestate.ae";
   it("prefers the page the form was sent from, /ar included", () => {
-    expect(websiteListingUrl(row({ page_url: `${SITE}/ar/p/villa`, property_slug: "villa" }), SITE)).toBe(`${SITE}/ar/p/villa`);
+    expect(websiteListingUrl(row({ page_url: `${SITE}/ar/p/villa-baz-ad-04891`, property_path: "/p/villa-baz-ad-04891" }), SITE)).toBe(`${SITE}/ar/p/villa-baz-ad-04891`);
   });
 
   it("links the listing's own page when no submission recorded one", () => {
-    expect(websiteListingUrl(row({ page_url: null, property_slug: "villa-baz-ad-04891" }), SITE)).toBe(
+    expect(websiteListingUrl(row({ page_url: null, property_path: "/p/villa-baz-ad-04891" }), SITE)).toBe(
       `${SITE}/p/villa-baz-ad-04891`,
     );
   });
@@ -327,7 +327,7 @@ describe("websiteListingUrl", () => {
   it("links the project's page for a project enquiry", () => {
     expect(
       websiteListingUrl(
-        row({ page_url: null, property_reference: null, property_slug: null, project_slug: "bab-al-qasr" }),
+        row({ page_url: null, property_reference: null, property_path: null, project_slug: "bab-al-qasr" }),
         SITE,
       ),
     ).toBe(`${SITE}/developments/bab-al-qasr`);

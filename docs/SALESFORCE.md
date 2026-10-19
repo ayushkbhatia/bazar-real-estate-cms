@@ -51,7 +51,7 @@ custom, all documented in the vendor doc (v1.1) and nothing beyond them.
 | `Lead_Source__c` | enquiry `source` | `Website`, or `Others` for WhatsApp. Required. |
 | `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent` / `Other`. Required. |
 | `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
-| `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else `/p/<slug>`), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
+| `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else its canonical `/p/<slug>-<reference>` — slugs alone repeat), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
 | `Preferred_Languages__c` | `enquiries.locale` | Restricted picklist: `Arabic`, `Arabic & English` — no `English`. An `/ar` lead sends `Arabic`; an English one sends nothing until Levarus add `English` (asked 19 Oct 2026; `PREFERRED_LANGUAGE` in `leads.ts`). |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
