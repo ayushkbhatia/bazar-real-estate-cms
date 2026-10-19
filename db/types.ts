@@ -3838,6 +3838,7 @@ export type Database = {
           geo: Json | null
           i18n: Json
           id: string
+          lifestyle_tags: string[]
           listing_permit_expires_at: string | null
           listing_permit_no: string | null
           mode: Database["public"]["Enums"]["property_mode"]
@@ -3902,6 +3903,7 @@ export type Database = {
           geo?: Json | null
           i18n?: Json
           id?: string
+          lifestyle_tags?: string[]
           listing_permit_expires_at?: string | null
           listing_permit_no?: string | null
           mode: Database["public"]["Enums"]["property_mode"]
@@ -3966,6 +3968,7 @@ export type Database = {
           geo?: Json | null
           i18n?: Json
           id?: string
+          lifestyle_tags?: string[]
           listing_permit_expires_at?: string | null
           listing_permit_no?: string | null
           mode?: Database["public"]["Enums"]["property_mode"]

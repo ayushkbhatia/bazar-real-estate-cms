@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/select";
 import { CardLabelPicker } from "@/components/brand/card-label-picker";
 import type { CardLabel } from "@/lib/card-labels";
+import type { LifestyleTag } from "@/lib/lifestyle-tags";
+import { LifestyleTagPicker } from "../_lifestyle-tag-picker";
 import { createProperty } from "./_actions";
 
 function FieldError({ message }: { message?: string }) {
@@ -77,6 +79,7 @@ export function NewPropertyForm({
   cardLabels: CardLabel[];
 }) {
   const [labels, setLabels] = useState<string[]>([]);
+  const [lifestyle, setLifestyle] = useState<LifestyleTag[]>([]);
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -113,7 +116,7 @@ export function NewPropertyForm({
       // Labels ride alongside rather than inside `values`: they are a key in
       // the `flags` jsonb, not a column, and `propertyCreateSchema` is shared
       // with the edit form, the importer and the public query.
-      const result = await createProperty(values, labels);
+      const result = await createProperty(values, labels, lifestyle);
       if (result.status === "error") {
         toast.error(result.message);
         if (result.fieldErrors) setServerFieldErrors(result.fieldErrors);
@@ -315,6 +318,21 @@ export function NewPropertyForm({
           vocabulary={cardLabels}
           value={labels}
           onChange={setLabels}
+          disabled={pending}
+        />
+      </div>
+
+      <div className="bg-bz-surface border border-bz-border rounded-lg p-6 flex flex-col gap-3">
+        <div>
+          <Label>Lifestyle tags</Label>
+          <p className="mt-1 text-[12px] text-bz-muted">
+            How this listing is classified for search — a search can be
+            narrowed to any of these. Not drawn on the card.
+          </p>
+        </div>
+        <LifestyleTagPicker
+          value={lifestyle}
+          onChange={setLifestyle}
           disabled={pending}
         />
       </div>

@@ -11,6 +11,7 @@ import {
 import { generatePropertyReference, slugify } from "@/lib/slug";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
+import { cleanLifestyleTags } from "@/lib/lifestyle-tags";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -74,6 +75,10 @@ export async function createProperty(
    * Validated here rather than trusted: it arrives from a browser.
    */
   labels: string[] = [],
+  /** Lifestyle tags (lib/lifestyle-tags.ts) — a column, but kept off the
+   *  shared schema for the same reason as labels. Filtered to the known
+   *  vocabulary, which the column's CHECK also enforces. */
+  lifestyle: string[] = [],
 ): Promise<CreateResult> {
   if (!isSupabaseConfigured)
     return {
@@ -114,6 +119,7 @@ export async function createProperty(
         status: "draft",
         amenities: [],
         flags: { labels: cleanLabels(labels) },
+        lifestyle_tags: cleanLifestyleTags(lifestyle),
         compliance: {},
         seo: { slug },
       })

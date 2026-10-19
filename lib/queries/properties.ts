@@ -305,6 +305,11 @@ export async function listPublishedProperties(opts: {
       // properties.amenities is a text[]; `contains` performs a superset check.
       query = query.contains("amenities", filters.amenities);
     }
+    if (filters.lifestyle && filters.lifestyle.length > 0) {
+      // properties.lifestyle_tags is a text[] (0165, GIN-indexed); a listing
+      // must carry every tag asked for.
+      query = query.contains("lifestyle_tags", filters.lifestyle);
+    }
     if (filters.advisor) {
       // advisor slug → staff user_id lookup, then equality.
       const { data: staffRow } = await supabase
