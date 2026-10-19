@@ -20,7 +20,6 @@
   "fallbackArea": "United Arab Emirates",
   "fallbackCity": "Abu Dhabi",
   "fallbackRegion": "the UAE",
-  "thisArea": "this area",
   "faq": {
     "locationQ": "Where is {reference} located?",
     "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",

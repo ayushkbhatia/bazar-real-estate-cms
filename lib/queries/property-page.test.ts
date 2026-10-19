@@ -45,9 +45,6 @@ describe("the listing page's shared wording", () => {
     expect(copy.text("advisor", "enquire_label")).toBe(
       "Enquire about BAZ-AD-09790",
     );
-    expect(copy.text("enquiry", "valuation_prompt")).toBe(
-      "Own elsewhere in Al Ghadeer?",
-    );
     expect(copy.text("enquiry", "dialog_title")).toBe(
       "Enquire about Al Ghadeer Gardens",
     );
@@ -84,8 +81,6 @@ describe("the listing page's shared wording", () => {
       ["specification", "heading"],
       ["advisor", "eyebrow"],
       ["enquiry", "eyebrow"],
-      ["enquiry", "valuation_prompt"],
-      ["enquiry", "valuation_cta"],
       ["faq", "eyebrow"],
       ["faq", "heading"],
       ["similar", "eyebrow"],
@@ -126,9 +121,6 @@ describe("the listing page's shared wording", () => {
   it("lets a call site replace a token, for the no-area fallbacks", async () => {
     const copy = await getPropertyPageCopy({ ...EN, area: "the UAE" }, "en");
     expect(copy.text("similar", "eyebrow")).toBe("More in the UAE");
-    expect(
-      copy.text("enquiry", "valuation_prompt", { area: "this area" }),
-    ).toBe("Own elsewhere in this area?");
   });
 
   it("leaves the reference token in place for the templates drawn as elements", async () => {
