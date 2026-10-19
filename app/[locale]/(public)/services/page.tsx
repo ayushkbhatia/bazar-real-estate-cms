@@ -119,15 +119,32 @@ export default async function ServicesPage({
           </p>
         ) : null}
         <div className="flex flex-wrap gap-2 mt-8">
-          {practices.map((p) => (
-            <span
-              key={p.key}
-              className="inline-flex items-center gap-2 h-10 px-4 rounded-full border border-bz-border bg-bz-surface text-[13.5px]"
-            >
-              <span className="mono text-bz-accent text-[11px]">{p.n}</span>
-              {p.title}
-            </span>
-          ))}
+          {practices.map((p) => {
+            const chip =
+              "inline-flex items-center gap-2 h-10 px-4 rounded-full border border-bz-border bg-bz-surface text-[13.5px]";
+            const inner = (
+              <>
+                <span className="mono text-bz-accent text-[11px]">{p.n}</span>
+                {p.title}
+              </>
+            );
+            // Each chip goes where its practice's own button goes — the
+            // destination an editor set on that band — so the two never
+            // disagree. A practice with no destination stays a plain label.
+            return p.ctaHref !== "#" ? (
+              <Link
+                key={p.key}
+                href={p.ctaHref}
+                className={`${chip} hover:border-bz-border-strong hover:bg-bz-surface-2 transition-colors`}
+              >
+                {inner}
+              </Link>
+            ) : (
+              <span key={p.key} className={chip}>
+                {inner}
+              </span>
+            );
+          })}
         </div>
       </section>
     ),
