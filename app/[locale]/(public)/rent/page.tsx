@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
-import { listNewThisWeek } from "@/lib/queries/curated-listings";
+import { listFeaturedByType } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
 import { RentAreaMap } from "../_components/marketing/rent-area-map";
 import { LeadBand } from "../_components/marketing/lead-band";
@@ -46,7 +46,11 @@ export default async function RentPage({
 
   const [content, rows, areas] = await Promise.all([
     getMasterPageContent("rent"),
-    listNewThisWeek({ limit: 4 }),
+    // Rentals only. This was the site-wide "new this week" feed, which is
+    // whatever was published last — off-plan units and sales included — so
+    // the rent page's "featured for rent" row showed homes for sale. With no
+    // rental published the list is empty and the section stays hidden.
+    listFeaturedByType({ mode: "rent", limit: 4 }),
     listAreaOptions(),
   ]);
   const featured = rows.slice(0, 4).map(listingRowToCard);
