@@ -629,7 +629,7 @@ const BUY_TYPE_HREF: Record<string, string> = {
   Villas: "/buy/search?type=villa",
   Townhouses: "/buy/search?type=townhouse",
   Penthouses: "/buy/search?type=penthouse",
-  "Commercial Properties": "/commercial",
+  "Commercial Properties": "/buy/search?segment=commercial",
 };
 
 const RENT_TYPE_HREF: Record<string, string> = {
@@ -732,7 +732,7 @@ const BUY: MasterPageDef = {
       { label: "Apartment", href: "/buy/search?type=apartment" },
       { label: "Villa", href: "/buy/search?type=villa" },
       { label: "Penthouse", href: "/buy/search?type=penthouse" },
-      { label: "Commercial", href: "/commercial" },
+      { label: "Commercial", href: "/buy/search?segment=commercial" },
     ],
     heroStats: [],
     form: {
@@ -794,7 +794,7 @@ const BUY: MasterPageDef = {
         name: "Commercial Properties",
         desc: "Offices, retail and land.",
         cta: "Browse commercial",
-        href: "/commercial",
+        href: "/buy/search?segment=commercial",
         img: "commercial tower",
         image: { media_id: null, alt: null, label: null },
       },

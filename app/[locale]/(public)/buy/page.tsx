@@ -110,11 +110,13 @@ export default async function BuyPage({
   // defaults, which are this section's original strings.
   const map = content.section("map")?.values ?? {};
 
-  // The hero chips drive the interactive featured grid, so their labels double
-  // as category keys.
-  const categories: BuyCategory[] = (c.chips ?? []).map((label) => ({
+  // The hero chips' labels double as the featured grid's category keys. A
+  // chip with a link goes to that type's search results; one without stays a
+  // toggle for the grid.
+  const categories: BuyCategory[] = (c.chips ?? []).map((label, i) => ({
     key: label.toLowerCase(),
     label,
+    href: c.chipHrefs?.[i],
   }));
   const categoryCtaHref: Record<string, string> = {};
   (c.chips ?? []).forEach((label, i) => {
