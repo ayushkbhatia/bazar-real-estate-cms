@@ -26,6 +26,10 @@ const serverSchema = z.object({
   RESEND_API_KEY: z.string().min(1).optional(),
   RESEND_FROM_ADDRESS: senderAddress.optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
+  // Signing secret of the Resend webhook (delivered / bounced / complained →
+  // /api/webhooks/resend, docs/NEWSLETTER.md). Unset, the route rejects every
+  // request rather than trusting an unsigned one.
+  RESEND_WEBHOOK_SECRET: z.string().min(1).optional(),
   CRON_SECRET: z.string().min(1).optional(),
   // Blocks real delivery. Unset it and nothing outside production sends —
   // see `isEmailDryRun` in lib/email.ts for why that is the default.
@@ -125,6 +129,7 @@ const serverEnv =
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
+        RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
         CRON_SECRET: process.env.CRON_SECRET,
         EMAIL_DRY_RUN: process.env.EMAIL_DRY_RUN,
         HEALTH_DIGEST_RECIPIENTS: process.env.HEALTH_DIGEST_RECIPIENTS,

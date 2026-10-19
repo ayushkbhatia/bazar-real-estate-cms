@@ -253,21 +253,43 @@ export async function runNewsletterSender(opts: { deadlineMs?: number } = {}): P
   return { ...drained, started, finished };
 }
 
-/** Delivery counts for a campaign, by status. */
-export async function deliveryCounts(
-  campaignId: string,
-  client: Db = db(),
-): Promise<Record<"queued" | "sending" | "sent" | "failed" | "skipped", number>> {
+export type DeliveryCounts = Record<"queued" | "sending" | "sent" | "failed" | "skipped", number> & {
+  /** What Resend's webhook reported afterwards (0164); zero until it is set up. */
+  delivered: number;
+  bounced: number;
+  complained: number;
+};
+
+export const EMPTY_DELIVERY_COUNTS: DeliveryCounts = {
+  queued: 0,
+  sending: 0,
+  sent: 0,
+  failed: 0,
+  skipped: 0,
+  delivered: 0,
+  bounced: 0,
+  complained: 0,
+};
+
+/** Delivery counts for a campaign: by send status, then by what Resend reported. */
+export async function deliveryCounts(campaignId: string, client: Db = db()): Promise<DeliveryCounts> {
   const statuses = ["queued", "sending", "sent", "failed", "skipped"] as const;
-  const counts = await Promise.all(
-    statuses.map(async (status) => {
-      const { count } = await client
-        .from("newsletter_deliveries")
-        .select("id", { count: "exact", head: true })
-        .eq("campaign_id", campaignId)
-        .eq("status", status);
+  const events = [
+    ["delivered", "delivered_at"],
+    ["bounced", "bounced_at"],
+    ["complained", "complained_at"],
+  ] as const;
+  const head = () =>
+    client.from("newsletter_deliveries").select("id", { count: "exact", head: true }).eq("campaign_id", campaignId);
+  const counts = await Promise.all([
+    ...statuses.map(async (status) => {
+      const { count } = await head().eq("status", status);
       return [status, count ?? 0] as const;
     }),
-  );
-  return Object.fromEntries(counts) as Record<(typeof statuses)[number], number>;
+    ...events.map(async ([key, column]) => {
+      const { count } = await head().not(column, "is", null);
+      return [key, count ?? 0] as const;
+    }),
+  ]);
+  return { ...EMPTY_DELIVERY_COUNTS, ...Object.fromEntries(counts) };
 }

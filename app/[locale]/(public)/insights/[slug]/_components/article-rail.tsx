@@ -3,6 +3,7 @@ import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { NewsletterSignup } from "@/app/[locale]/(public)/_components/newsletter-signup";
+import type { ResolvedForm } from "@/lib/forms/types";
 
 /**
  * Sprint 5d (backfilled): right rail on the article detail page.
@@ -11,12 +12,18 @@ import { NewsletterSignup } from "@/app/[locale]/(public)/_components/newsletter
  */
 export function ArticleRail({
   author,
+  newsletterForm,
 }: {
   author: {
     display_name: string;
     title: string | null;
     slug: string;
   } | null;
+  /**
+   * `getForm("insights_newsletter")`, read by the page that mounts this — the
+   * same form as the /insights hero, so the box carries the editor's copy.
+   */
+  newsletterForm?: ResolvedForm;
 }) {
   const t = useTranslations("editorial");
   return (
@@ -73,7 +80,11 @@ export function ArticleRail({
           with.
         </p>
         <div className="mt-4">
-          <NewsletterSignup source="insights_article" variant="dark" />
+          <NewsletterSignup
+            source="insights_article"
+            variant="dark"
+            form={newsletterForm}
+          />
         </div>
       </div>
     </aside>

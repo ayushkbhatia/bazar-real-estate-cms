@@ -11,6 +11,7 @@ import {
   type ArticleListRow,
 } from "@/lib/queries/articles";
 import { mediaPublicUrl } from "@/lib/media";
+import { getForm } from "@/lib/queries/forms";
 import { NewsletterSignup } from "./newsletter-signup";
 
 function ArticleImage({ row }: { row: ArticleListRow }) {
@@ -59,7 +60,12 @@ function formatDate(iso: string | null, locale: Locale): string {
 export async function InsightsTeaser({
   locale = DEFAULT_LOCALE,
 }: { locale?: Locale } = {}) {
-  const { rows } = await listPublishedArticles({ limit: 5 });
+  // The same `insights_newsletter` form as the /insights hero, so one edit in
+  // /admin/forms words every box.
+  const [{ rows }, newsletterForm] = await Promise.all([
+    listPublishedArticles({ limit: 5 }),
+    getForm("insights_newsletter"),
+  ]);
   const lead = rows[0];
   const rest = rows.slice(1, 5);
 
@@ -162,7 +168,11 @@ export async function InsightsTeaser({
             </h3>
           </div>
           <div className="w-full md:w-[360px]">
-            <NewsletterSignup source="homepage" variant="dark" />
+            <NewsletterSignup
+              source="homepage"
+              variant="dark"
+              form={newsletterForm}
+            />
           </div>
         </div>
       </div>
