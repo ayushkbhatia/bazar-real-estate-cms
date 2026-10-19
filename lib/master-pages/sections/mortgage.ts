@@ -177,16 +177,24 @@ export const MORTGAGE_PAGE: MasterPageDef = {
     },
     {
       key: "scenario",
-      label: "Scenario selector",
+      // Was "Scenario selector", which nobody looking for the calculator in
+      // the editor recognised. The key stays `scenario`: stored documents are
+      // filed under it.
+      label: "Mortgage calculator",
       description:
-        "The inputs, and the monthly payment they produce. The one section the whole page is really about.",
+        "The calculator: the inputs, and the dark box beside them with the monthly payment, total to be paid, total interest and principal share. The one section the whole page is really about.",
       locked: true,
       dataNote:
-        "What the sliders and dropdowns open on — price, deposit, rate, term — is set under Settings → Mortgage, along with the deposit floors the 'below guidance' warning quotes.",
+        "What the sliders and dropdowns open on — price, deposit, rate, term — is set under Settings → Mortgage, along with the deposit floors the 'below guidance' warning quotes. The labels inside the calculator are under Calculator · Your numbers and Calculator · Results and affordability.",
       fields: [
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
         area("intro", "Intro", { max: 300 }),
+        image(
+          "result_image",
+          "Results box · background image",
+          "Fills the dark box with the monthly payment, under a dark scrim so the white figures stay legible. Leave unset to keep the plain dark box.",
+        ),
       ],
       defaults: {
         eyebrow: "Scenario",
@@ -197,6 +205,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "Drag the price and the deposit, pick a term, and the monthly payment moves with them.",
         intro_ar:
           "حرّك السعر والدفعة المقدّمة، واختر مدة التمويل، وسيتغيّر المبلغ الشهري تبعاً لذلك.",
+        result_image: { media_id: null, alt: null, label: null },
       },
     },
     {

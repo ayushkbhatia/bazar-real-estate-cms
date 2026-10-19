@@ -82,7 +82,7 @@ type Props = {
   /** Enabled section keys, in the order Pages & blocks puts them. */
   order: string[];
   hero: MortgageHeroCopy;
-  scenario: SectionCopy;
+  scenario: SectionCopy & { resultImageUrl: string | null };
   affordabilityCopy: SectionCopy;
   compare: SectionCopy;
   amortization: SectionCopy;
