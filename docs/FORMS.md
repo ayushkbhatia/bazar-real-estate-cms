@@ -102,6 +102,14 @@ routing decides which advisor *owns* the lead, the list is "also tell these
 people". Empty by default, which costs one column read on a round trip the
 submission log is making anyway.
 
+Every active admin (staff role `admin`, status `active`, read per submission
+from `lib/staff-admins.ts`) is told about every submission that made an
+enquiry — an email (the same one the list gets, deduplicated against it) and
+a `new_enquiry` row in the admin bell, linking to the enquiry. Suspend an
+admin or change their role in /admin/users and they stop receiving them. A
+submission with no enquiry (a newsletter sign-up) goes to the form's list
+only.
+
 **Mappings** are how a field's answer finds its column. `name`, `email`,
 `phone`, `message`, `intent`, `timeline`, `development_id` and friends land in
 `enquiries`. Everything mapped `custom` rides in `form_submissions.data` **and**

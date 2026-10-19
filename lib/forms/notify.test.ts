@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { answersFor } from "./notify";
+import { answersFor, recipientsWithAdmins } from "./notify";
 import { formSubmissionTemplate } from "@/lib/email-templates";
 
 describe("answersFor", () => {
@@ -109,5 +109,30 @@ describe("formSubmissionTemplate", () => {
   it("still sends something when every field came back blank", () => {
     const tpl = formSubmissionTemplate({ ...base, answers: [] });
     expect(tpl.html).toContain("(no answers)");
+  });
+});
+
+describe("recipientsWithAdmins", () => {
+  const admins = [
+    { userId: "a", email: "Ops@Bazar.ae" },
+    { userId: "b", email: "ceo@bazar.ae" },
+    { userId: "c", email: null },
+  ];
+
+  it("adds every active admin with an address to an enquiry's email", () => {
+    expect(recipientsWithAdmins(["desk@bazar.ae"], admins, true)).toEqual([
+      "desk@bazar.ae",
+      "Ops@Bazar.ae",
+      "ceo@bazar.ae",
+    ]);
+  });
+
+  it("sends an admin who is also on the form's list one email, not two", () => {
+    expect(recipientsWithAdmins(["ops@bazar.ae"], admins, true)).toEqual(["ops@bazar.ae", "ceo@bazar.ae"]);
+  });
+
+  it("keeps a submission that made no enquiry to the form's own list", () => {
+    expect(recipientsWithAdmins(["desk@bazar.ae"], admins, false)).toEqual(["desk@bazar.ae"]);
+    expect(recipientsWithAdmins([], admins, false)).toEqual([]);
   });
 });
