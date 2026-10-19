@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Archive, ChevronRight, KanbanSquare, ListTree } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { LiveDot } from "@/lib/realtime/live-dot";
-import { listEnquiries } from "@/lib/queries/enquiries";
+import { countHeldEnquiries, listEnquiries } from "@/lib/queries/enquiries";
 import { getStaffRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
@@ -140,13 +140,17 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
 
   // In Kanban mode the status filter is meaningless — the columns ARE
   // the status partition — but scope + temperature still apply.
-  const { rows, total } = await listEnquiries({
-    scope,
-    status: view === "kanban" ? null : status,
-    temperature,
-    archived,
-    limit: 200,
-  });
+  const [{ rows, total }, heldCount] = await Promise.all([
+    listEnquiries({
+      scope,
+      status: view === "kanban" ? null : status,
+      temperature,
+      archived,
+      limit: 200,
+    }),
+    // Only admins can open the archive, so only they are told what is in it.
+    canArchive ? countHeldEnquiries(30) : Promise.resolve(0),
+  ]);
 
   return (
     <CmsShell
@@ -173,6 +177,21 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
             {total} {total === 1 ? "enquiry" : "enquiries"}
           </div>
         </div>
+
+        {heldCount > 0 && !archived ? (
+          <Link
+            href="?archived=1"
+            className="flex items-center justify-between gap-3 rounded-lg border border-bz-border bg-bz-surface-2 px-4 py-2.5 text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
+          >
+            <span>
+              {heldCount === 1
+                ? "1 enquiry in the last 30 days was held by the spam check."
+                : `${heldCount} enquiries in the last 30 days were held by the spam check.`}{" "}
+              Check them — restore any real person.
+            </span>
+            <ChevronRight size={14} strokeWidth={1.7} />
+          </Link>
+        ) : null}
 
         {view === "kanban" ? (
           <KanbanBoard rows={rows} />
@@ -221,6 +240,14 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                         {row.unread_count > 0 ? (
                           <span className="inline-flex items-center h-[20px] px-1.5 rounded-full text-[10.5px] bg-bz-navy text-bz-bg">
                             {row.unread_count} unread
+                          </span>
+                        ) : null}
+                        {row.held ? (
+                          <span
+                            title="Filed straight into the archive by the website's spam check. Restore it if it is a real person."
+                            className="inline-flex items-center h-[20px] px-1.5 rounded border border-bz-border text-[10.5px] text-bz-ink-2"
+                          >
+                            Held by spam check
                           </span>
                         ) : null}
                         {row.locale === "ar" ? (

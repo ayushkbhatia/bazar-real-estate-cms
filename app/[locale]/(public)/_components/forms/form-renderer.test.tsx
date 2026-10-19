@@ -10,6 +10,8 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 import { FormRenderer } from "./form-renderer";
 import { renderWithIntl } from "@/lib/i18n/test-utils";
 import { defaultForm } from "@/lib/forms";
+import { HONEYPOT_FIELD } from "@/lib/forms/spam";
+import { submitForm } from "@/app/[locale]/(public)/_actions/forms";
 
 // The registry's Buy brief: every field full width, so one field per row —
 // Full Name, Phone, Email, Purpose, then the folded rest.
@@ -72,5 +74,93 @@ describe("FormRenderer foldAfterRows", () => {
     const { container } = renderWithIntl(<FormRenderer form={buy()} />);
     expect(fold(container)).toBeNull();
     expect(container.querySelector("[inert]")).toBeNull();
+  });
+});
+
+describe("FormRenderer honeypot", () => {
+  it("renders a trap no browser autofill recognises", () => {
+    const { container } = renderWithIntl(<FormRenderer form={buy()} />);
+    const trap = container.querySelector<HTMLInputElement>(
+      `[name="${HONEYPOT_FIELD}"]`,
+    );
+    expect(trap).not.toBeNull();
+    // The old `_company_url` was filled by Chrome's and Safari's autofill,
+    // and every lead that did so was discarded.
+    expect(container.querySelector('[name="_company_url"]')).toBeNull();
+    expect(trap!.getAttribute("data-1p-ignore")).not.toBeNull();
+    expect(trap!.getAttribute("data-lpignore")).toBe("true");
+  });
+});
+
+describe("FormRenderer when the server action fails", () => {
+  const band = () => defaultForm("buy_lead_band")!;
+
+  async function fillAndSubmit(container: HTMLElement) {
+    const user = userEvent.setup();
+    const inputs = container.querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement
+    >("input[name], textarea[name]");
+    for (const el of inputs) {
+      if (el.name.startsWith("_")) continue;
+      if (el.type === "checkbox" || el.type === "range") continue;
+      const value =
+        el.type === "email"
+          ? "visitor@example.com"
+          : el.type === "tel" || el.name.includes("phone")
+            ? "501234567"
+            : "Test Visitor";
+      await user.type(el, value);
+    }
+    await user.click(container.querySelector('[type="submit"]')!);
+  }
+
+  it("retries through /api/forms/<key> and files the lead", async () => {
+    vi.mocked(submitForm).mockRejectedValueOnce(
+      new Error('Server Action "abc" was not found on the server.'),
+    );
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: async () => ({ status: "ok", enquiryId: "e1" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { container } = renderWithIntl(<FormRenderer form={band()} />);
+      await fillAndSubmit(container);
+      await vi.waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/forms/buy_lead_band",
+          expect.objectContaining({ method: "POST" }),
+        ),
+      );
+      const body = JSON.parse(fetchMock.mock.calls[0]![1].body);
+      expect(body.values.email).toBe("visitor@example.com");
+      await vi.waitFor(() =>
+        expect(container.querySelector("form")).toBeNull(),
+      );
+    } finally {
+      vi.unstubAllGlobals();
+      warn.mockRestore();
+    }
+  });
+
+  it("says so, instead of doing nothing, when both ways fail", async () => {
+    vi.mocked(submitForm).mockRejectedValueOnce(new Error("offline"));
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const { container } = renderWithIntl(<FormRenderer form={band()} />);
+      await fillAndSubmit(container);
+      expect(
+        await screen.findByText(/Something went wrong sending that/),
+      ).toBeTruthy();
+      // The answers are still there to send again.
+      expect(
+        container.querySelector<HTMLInputElement>('input[type="email"]')!
+          .value,
+      ).toBe("visitor@example.com");
+    } finally {
+      vi.unstubAllGlobals();
+      warn.mockRestore();
+    }
   });
 });

@@ -2,7 +2,8 @@
   "field": {
     "dialingCode": "Dialing code",
     "rangeAny": "Any",
-    "sendAnother": "Send another"
+    "sendAnother": "Send another",
+    "sendFailed": "Something went wrong sending that. Try again — your answers are still here."
   },
   "gate": {
     "trigger": "Get the full advisor report",

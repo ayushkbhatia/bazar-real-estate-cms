@@ -397,6 +397,13 @@ export async function sendEnquiryTouch(
  * Nothing is erased, so this is not a PDPL deletion route; that stays with
  * the DSR console.
  */
+/** The spam check's reason on a held lead, or null for an ordinary one. */
+function heldReason(inferred: unknown): string | null {
+  if (!inferred || typeof inferred !== "object") return null;
+  const held = (inferred as { held?: unknown }).held;
+  return typeof held === "string" && held !== "" ? held : null;
+}
+
 export async function setEnquiryArchived(
   enquiryId: string,
   archived: boolean,
@@ -407,10 +414,18 @@ export async function setEnquiryArchived(
 
   const { data: before } = await ctx.supabase
     .from("enquiries")
-    .select("archived_at, status")
+    .select("archived_at, status, crm_sync_state, inferred_constraints")
     .eq("id", enquiryId)
     .maybeSingle();
   if (!before) return { status: "error", message: "Not found / not allowed." };
+
+  // A lead the spam check held was filed with its CRM push switched off
+  // (`lib/enquiries/intake.ts`). Restoring it is an admin saying "this one is
+  // real", so it goes to Salesforce like any other lead from here.
+  const releasesHeld =
+    !archived &&
+    before.crm_sync_state === "skipped" &&
+    heldReason(before.inferred_constraints) !== null;
 
   // Guard the no-op rather than writing a fresh timestamp over an existing
   // one: a second archive would otherwise move the filing date and log a
@@ -428,6 +443,9 @@ export async function setEnquiryArchived(
       // Cleared on restore so the pair never disagrees about whether the
       // row is filed and who filed it.
       archived_by: archived ? ctx.user.id : null,
+      ...(releasesHeld
+        ? { crm_sync_state: "pending", crm_next_attempt_at: nowIso }
+        : {}),
     })
     .eq("id", enquiryId)
     .select("id")

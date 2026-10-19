@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { defaultForm } from "./resolve";
+import { defaultForm, visibleFields } from "./resolve";
 import {
   buildFormBrief,
   buildSubmissionData,
+  clampBrief,
   extractLead,
+  onFormFields,
   optionLabel,
 } from "./submission";
 import {
@@ -458,5 +460,43 @@ describe("normaliseSubmission", () => {
     expect(values.email).toBe("ali@example.com");
     expect(values.budget).toBe(1450000);
     expect(values.consent).toBe(true);
+  });
+});
+
+describe("clampBrief", () => {
+  it("leaves a brief inside the intake's limit alone", () => {
+    expect(clampBrief("Short brief")).toBe("Short brief");
+    const exact = "x".repeat(2000);
+    expect(clampBrief(exact)).toBe(exact);
+  });
+
+  it("trims a long one to the limit instead of losing the lead", () => {
+    const out = clampBrief("word ".repeat(600));
+    expect(out.length).toBeLessThanOrEqual(2000);
+    expect(out.endsWith("…")).toBe(true);
+  });
+});
+
+describe("onFormFields", () => {
+  const form = defaultForm("home_list_property")!;
+  const fields = visibleFields(form);
+  const keyFor = (mapping: string) =>
+    (fields.find((f) => f.key === mapping) ??
+      fields.find((f) => f.mapping === mapping))!.key;
+
+  it("moves the intake's errors onto the fields the visitor sees", () => {
+    const out = onFormFields(form, {
+      email: "Enter a valid email",
+      phone: "Enter a phone number we can reach you on",
+    });
+    expect(out).toEqual({
+      [keyFor("email")]: "Enter a valid email",
+      [keyFor("phone")]: "Enter a phone number we can reach you on",
+    });
+  });
+
+  it("drops an error no field on the form can show", () => {
+    expect(onFormFields(form, { budget_min: "Min budget can't exceed max" }))
+      .toEqual({});
   });
 });

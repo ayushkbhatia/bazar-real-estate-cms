@@ -10,7 +10,7 @@
 
 import type { FormFieldDef, FormOption, ResolvedForm } from "./types";
 import { formatRangeLabel, parseRangeValue } from "./types";
-import { activeFields, renderFormCopy } from "./resolve";
+import { activeFields, renderFormCopy, visibleFields } from "./resolve";
 
 export type DynamicOptions = Record<string, FormOption[]>;
 
@@ -254,4 +254,45 @@ export function buildSubmissionData(
     data[field.key] = values[field.key] ?? null;
   }
   return { ...data, _labels: labels };
+}
+
+/** `enquirySchema`'s ceiling on `message`, which the brief is filed as. */
+const MAX_BRIEF = 2000;
+
+/**
+ * Keep the brief inside what the intake accepts.
+ *
+ * The brief is the answers plus their labels plus any scenario, so a visitor
+ * who used the whole of a 2,000-character message box produced a brief over
+ * the limit — and the intake refused it with an error on `message`, which on
+ * forms whose box is keyed otherwise matched no field: "Please fix the errors
+ * below" over a form with nothing marked. Trimming the tail loses words from
+ * the end of a long note; refusing lost the lead.
+ */
+export function clampBrief(brief: string): string {
+  if (brief.length <= MAX_BRIEF) return brief;
+  return `${brief.slice(0, MAX_BRIEF - 1).trimEnd()}…`;
+}
+
+/**
+ * Point the intake's errors at the fields the visitor can see.
+ *
+ * `enquirySchema` names its fields `name`, `email`, `phone`, `message`; a form
+ * may key the same answers `first_name`, `contact_email`, `note`. An error
+ * whose key matches no field is invisible, so it is moved to the field mapped
+ * to it, or dropped (the form-level message still shows).
+ */
+export function onFormFields(
+  form: ResolvedForm,
+  errors: Record<string, string>,
+): Record<string, string> {
+  const fields = visibleFields(form);
+  const out: Record<string, string> = {};
+  for (const [key, message] of Object.entries(errors)) {
+    const target =
+      fields.find((f) => f.key === key) ??
+      fields.find((f) => f.mapping === key);
+    if (target && !out[target.key]) out[target.key] = message;
+  }
+  return out;
 }

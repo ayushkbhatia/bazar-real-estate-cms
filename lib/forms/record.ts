@@ -31,6 +31,11 @@ export async function captureFormSubmission(entry: {
   data: Record<string, unknown>;
   enquiryId?: string | null;
   sourcePath?: string | null;
+  /**
+   * Held by the spam check: logged as already archived, and nobody is
+   * emailed — the lead it belongs to is in the enquiries archive.
+   */
+  held?: boolean;
 }): Promise<void> {
   const admin = createAdminClient();
   if (!admin) return;
@@ -40,6 +45,7 @@ export async function captureFormSubmission(entry: {
       data: entry.data as never,
       enquiry_id: entry.enquiryId ?? null,
       source_path: entry.sourcePath ?? null,
+      ...(entry.held ? { status: "archived" } : {}),
     });
     if (error) {
       // A missing table is the expected state between merging this and
@@ -53,7 +59,7 @@ export async function captureFormSubmission(entry: {
       });
     }
 
-    await notifyFormRecipients(admin, entry);
+    if (!entry.held) await notifyFormRecipients(admin, entry);
   } catch (err) {
     await reportError(err, {
       source: "forms/record",
