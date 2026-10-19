@@ -17,6 +17,9 @@ const {
   leadExternalIdField,
   leadPageUrl,
   missingRequiredFields,
+  preferredLanguageFor,
+  websiteListingUrl,
+  PREFERRED_LANGUAGES,
   INQUIRY_TYPES,
   LEAD_SOURCES,
 } = await import("./leads");
@@ -68,19 +71,33 @@ describe("buildLeadPayload", () => {
       "Description__c",
       "Inquiry_Type__c",
       "Website_Listing_URL__c",
+      "Preferred_Languages__c",
     ]);
-    for (const key of Object.keys(buildLeadPayload(row()))) {
+    for (const key of Object.keys(buildLeadPayload(row({ locale: "ar" })))) {
       expect(allowed.has(key), `unexpected field ${key}`).toBe(true);
     }
   });
 
-  it("omits the property reference for a lead with no listing attached", () => {
-    // "pass this value when enquiry about property" — an empty string is not
-    // the same as not passing it.
-    const payload = buildLeadPayload(
-      row({ property_reference: null, property_mode: null, source: "contact_page" }),
+  it("sends the page a general lead came from, and nothing when none is known", () => {
+    // Levarus assign website leads by this field (19 Oct 2026), so a lead
+    // with no listing still carries its page. An empty string is not the
+    // same as not passing it.
+    const general = row({ property_reference: null, property_mode: null, source: "contact_page" });
+    expect(buildLeadPayload({ ...general, page_url: "https://www.bazarrealestate.ae/buy" }).Website_Listing_URL__c).toBe(
+      "https://www.bazarrealestate.ae/buy",
     );
-    expect("Website_Listing_URL__c" in payload).toBe(false);
+    expect("Website_Listing_URL__c" in buildLeadPayload({ ...general, page_url: null })).toBe(false);
+  });
+
+  it("sends Preferred_Languages__c only with a value the picklist holds", () => {
+    expect(buildLeadPayload(row({ locale: "ar" })).Preferred_Languages__c).toBe("Arabic");
+    // The picklist has no "English"; claiming Arabic for an English visitor
+    // would misroute them.
+    expect("Preferred_Languages__c" in buildLeadPayload(row({ locale: "en" }))).toBe(false);
+    for (const locale of ["ar", "en", "fr", ""]) {
+      const v = preferredLanguageFor(locale);
+      if (v) expect(PREFERRED_LANGUAGES as readonly string[]).toContain(v);
+    }
   });
 
   it("omits both phone fields when the enquiry carries no usable number", () => {
@@ -262,11 +279,11 @@ describe("inquiryTypeFor", () => {
     expect(inquiryTypeFor(null, null, "list_property")).toBe("Sell");
   });
 
-  it("falls back to Buy where none of the three is true", () => {
-    // Required field, so there is no option to say nothing. Documented
-    // compromise, not a mapping.
-    expect(inquiryTypeFor(null, null, "property_management")).toBe("Buy");
-    expect(inquiryTypeFor("manage", null, "property_consultation")).toBe("Buy");
+  it("files Other where none of Buy, Sell or Rent is true", () => {
+    // "Other" joined the picklist on 19 Oct 2026; these were Buy before.
+    expect(inquiryTypeFor(null, null, "property_management")).toBe("Other");
+    expect(inquiryTypeFor("manage", null, "property_consultation")).toBe("Other");
+    expect(inquiryTypeFor("manage", "buy", "property_page")).toBe("Other");
   });
 });
 
@@ -292,6 +309,28 @@ describe("leadPageUrl", () => {
   it("links nothing that is not a path on this site", () => {
     expect(leadPageUrl([], undefined)).toBeNull();
     expect(leadPageUrl(["https://evil.test/x", "//evil.test/x"], undefined)).toBeNull();
+  });
+});
+
+describe("websiteListingUrl", () => {
+  const SITE = "https://www.bazarrealestate.ae";
+  it("prefers the page the form was sent from, /ar included", () => {
+    expect(websiteListingUrl(row({ page_url: `${SITE}/ar/p/villa`, property_slug: "villa" }), SITE)).toBe(`${SITE}/ar/p/villa`);
+  });
+
+  it("links the listing's own page when no submission recorded one", () => {
+    expect(websiteListingUrl(row({ page_url: null, property_slug: "villa-baz-ad-04891" }), SITE)).toBe(
+      `${SITE}/p/villa-baz-ad-04891`,
+    );
+  });
+
+  it("links the project's page for a project enquiry", () => {
+    expect(
+      websiteListingUrl(
+        row({ page_url: null, property_reference: null, property_slug: null, project_slug: "bab-al-qasr" }),
+        SITE,
+      ),
+    ).toBe(`${SITE}/developments/bab-al-qasr`);
   });
 });
 

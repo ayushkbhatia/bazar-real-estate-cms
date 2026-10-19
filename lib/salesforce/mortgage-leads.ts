@@ -10,7 +10,9 @@ import {
   MAX_EMAIL,
   MAX_NAME,
   MAX_URL,
+  preferredLanguageFor,
   pushLeadPayload,
+  siteOrigin,
   type LeadPayload,
   type PushResult,
 } from "./leads";
@@ -77,6 +79,8 @@ export type MortgageLeadRow = {
   property_slug: string | null;
   /** The consultation a Fast Pre-Approval was invited from. */
   parent_reference: string | null;
+  /** The site language the applicant used (`mortgage_requests.locale`). */
+  locale?: string | null;
 };
 
 /**
@@ -86,10 +90,6 @@ export type MortgageLeadRow = {
  */
 export function isSampleMortgageRequest(email: string): boolean {
   return /@example\.com$/i.test(email.trim());
-}
-
-function origin(siteUrl: string | undefined): string {
-  return (siteUrl ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
 }
 
 export function buildMortgageDescription(row: MortgageLeadRow, siteUrl: string | undefined): string | undefined {
@@ -103,7 +103,7 @@ export function buildMortgageDescription(row: MortgageLeadRow, siteUrl: string |
   if (row.property_price_aed) lines.push(`Desired property price: ${formatAed(row.property_price_aed)}`);
   if (row.property_reference) lines.push(`Property: ${row.property_reference}`);
   if (row.parent_reference) lines.push(`Follows consultation: ${row.parent_reference}`);
-  lines.push(`Mortgage file: ${origin(siteUrl)}/admin/mortgages/${row.reference}`);
+  lines.push(`Mortgage file: ${siteOrigin(siteUrl)}/admin/mortgages/${row.reference}`);
   lines.push(`Bazar mortgage request: ${row.id}`);
   return clamp(lines.join("\n"), MAX_DESCRIPTION);
 }
@@ -125,9 +125,11 @@ export function buildMortgageLeadPayload(row: MortgageLeadRow, siteUrl: string |
   const description = buildMortgageDescription(row, siteUrl);
   if (description) payload.Description__c = description;
   if (row.property_slug) {
-    const url = clamp(`${origin(siteUrl)}/p/${row.property_slug}`, MAX_URL);
+    const url = clamp(`${siteOrigin(siteUrl)}/p/${row.property_slug}`, MAX_URL);
     if (url) payload.Website_Listing_URL__c = url;
   }
+  const language = preferredLanguageFor(row.locale);
+  if (language) payload.Preferred_Languages__c = language;
   return payload;
 }
 
