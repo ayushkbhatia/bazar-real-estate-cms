@@ -297,7 +297,15 @@ export function FormRenderer({
               // has already been made — honouring it below `sm` costs
               // nothing and saved 84px on the home card, where First and
               // Last Name were two full-width 68px blocks stacked.
-              "grid-cols-2 sm:gap-4"
+              //
+              // Except a row holding a <select>: a native select can't wrap,
+              // and its options are whatever an editor typed. "Any
+              // residential type" needs 161px (226px in Arabic) of a 146px
+              // half on a 390px phone, so it was cut off — and the blocking
+              // mobile geometry gate failed /buy. Those rows stack below `sm`.
+              row.some((f) => f.type === "select")
+              ? "grid-cols-1 sm:grid-cols-2 sm:gap-4"
+              : "grid-cols-2 sm:gap-4"
             : "grid-cols-1 sm:grid-cols-2",
         )}
       >
