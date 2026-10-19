@@ -17,6 +17,7 @@ import {
   Home,
   Calendar,
   KeyRound,
+  LandPlot,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { CarouselGrid } from "@/components/brand/mobile";
@@ -163,9 +164,13 @@ import { AgentCard } from "./_components/agent-card";
 import { TokenText } from "./_components/token-text";
 import type { EnquiryDialogCopy } from "./_components/enquiry-dialog";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
-import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
 import { AreaText, PricePerAreaText } from "../../_components/area-text";
+import {
+  fifthKeyFact,
+  plotInSpecification,
+  tenureInSpecification,
+} from "./_components/key-facts";
 
 export const revalidate = 60;
 
@@ -322,7 +327,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // No session lookup: with customer accounts gone the property page is the
   // same for everyone, which keeps it out of dynamic rendering.
-  const [amenityTaxonomy, similar, enquiryForm, valuationGate, mortgageFlowOpen] =
+  const [amenityTaxonomy, similar, enquiryForm, mortgageFlowOpen] =
     await Promise.all([
       listAmenitiesTaxonomy(),
       getSimilarProperties(
@@ -332,7 +337,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ),
       // The listing enquiry dialog — fields and copy come from /admin/forms.
       getForm("property_enquiry"),
-      getForm("valuation_report_gate"),
       // The "Get mortgage pre-approval" button (docs/mortgage, SPEC §4.1).
       isMortgageFlowPublic(),
     ]);
@@ -395,8 +399,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
    * listing shares (Pages → Sub-pages → Property pages).
    *
    * `{area}` falls back to "the UAE" for a listing with no area, which is what
-   * the similar rail said before; the valuation prompt overrides it with "this
-   * area" at its call site, which is what that line said.
+   * the similar rail said before.
    */
   const typeLabel = propertyTypeLabel(property.type, locale);
   const copy = await getPropertyPageCopy(
@@ -446,7 +449,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             value: t("spec.parkingBays", { count: property.parking_bays }),
           }
         : null,
-      property.plot_ft2
+      property.plot_ft2 && plotInSpecification(property.type)
         ? {
             label: t("spec.plotSize"),
             value: <AreaText ft2={property.plot_ft2} />,
@@ -467,6 +470,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             note: t("spec.perYear"),
           }
         : null,
+      // A villa's key facts show its plot in tenure's place, so its tenure
+      // is listed here instead.
+      property.tenure && tenureInSpecification(property.type)
+        ? {
+            label: t("stat.tenure"),
+            value: tenureLabel(property.tenure, t),
+          }
+        : null,
       { label: t("spec.listingType"), value: t(`mode.${property.mode}`) },
       property.published_at
         ? {
@@ -476,6 +487,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         : null,
     ] as (SpecRow | null)[]
   ).filter((r): r is SpecRow => r !== null);
+
+  const fifthFact = fifthKeyFact(property);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -651,11 +664,19 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             label={t("stat.type")}
             value={term(property.type, locale)}
           />
-          <FactTile
-            icon={<KeyRound size={16} strokeWidth={1.6} />}
-            label={t("stat.tenure")}
-            value={tenureLabel(property.tenure, t)}
-          />
+          {fifthFact?.kind === "plot" ? (
+            <FactTile
+              icon={<LandPlot size={16} strokeWidth={1.6} />}
+              label={t("stat.plotSize")}
+              value={<AreaText ft2={fifthFact.ft2} />}
+            />
+          ) : fifthFact?.kind === "tenure" ? (
+            <FactTile
+              icon={<KeyRound size={16} strokeWidth={1.6} />}
+              label={t("stat.tenure")}
+              value={tenureLabel(property.tenure, t)}
+            />
+          ) : null}
           <FactTile
             icon={<Calendar size={16} strokeWidth={1.6} />}
             label={t("stat.yearBuilt")}
@@ -845,27 +866,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               allowAnother
               toastErrors
             />
-            {/* T1-E cleanup: secondary CTA — visitors who own elsewhere
-                in the same area are a high-intent valuation source.
-
-                The whole block follows the gate's switch at /admin/forms. It
-                used to be only the button, so a disabled gate left the
-                question standing over nothing. */}
-            {valuationGate.enabled ? (
-              <div className="mt-4 pt-4 border-t border-bz-border">
-                <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
-                  {copy.text(
-                    "enquiry",
-                    "valuation_prompt",
-                    property.areas ? undefined : { area: t("thisArea") },
-                  )}
-                </div>
-                <ValuationLeadGate
-                  form={valuationGate}
-                  triggerLabel={copy.text("enquiry", "valuation_cta")}
-                />
-              </div>
-            ) : null}
             {/* Permit + DLD plot moved into the Specification block, which
                 now carries the full compliance line. */}
           </div>

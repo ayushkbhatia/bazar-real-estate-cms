@@ -272,11 +272,6 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
         optional: false,
         help: `Shown when nobody is assigned. ${TOKEN_HELP.reference}`,
       }),
-      text("valuation_prompt", "Valuation prompt", {
-        max: 120,
-        help: `The line above the valuation button, under the form. ${TOKEN_HELP.area}`,
-      }),
-      text("valuation_cta", "Valuation button", { max: 80 }),
     ],
     {
       eyebrow: "Enquire about this property",
@@ -289,14 +284,10 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
       dialog_note_ar: `المرجع ${REFERENCE} · يصل مباشرةً إلى ${ADVISOR}، المستشار المسؤول عن هذا الإعلان العقاري.`,
       dialog_note_no_advisor: `Reference ${REFERENCE} · an advisor replies within 2 hours during office hours.`,
       dialog_note_no_advisor_ar: `المرجع ${REFERENCE} · يردّ عليك أحد المستشارين خلال ساعتين في أوقات العمل.`,
-      valuation_prompt: `Own elsewhere in ${AREA}?`,
-      valuation_prompt_ar: `هل تملك عقاراً آخر في ${AREA}؟`,
-      valuation_cta: "Get a free valuation report",
-      valuation_cta_ar: "احصل على تقرير تقييم مجاني",
     },
     {
       dataNote:
-        "The form's fields, button, confirmation and pre-filled message are in Forms → Enquire about this property. The valuation dialog's own wording is in Forms → Get the full advisor report.",
+        "The form's fields, button, confirmation and pre-filled message are in Forms → Enquire about this property.",
       dataLink: { label: "Enquiry form", href: "/admin/forms/property_enquiry" },
     },
   ),

@@ -47,8 +47,6 @@ describe("unknownTokenIssues", () => {
           "يرجى تعبئة المعلومات أدناه لمعرفة المزيد عن {title} في {area}.",
         dialog_note_no_advisor:
           "Please fill out the information below to learn more about {title} in {area}.",
-        valuation_prompt: "Own elsewhere in {area}?",
-        valuation_cta: "Request a Property Valuation",
       }),
     ).toEqual([]);
   });

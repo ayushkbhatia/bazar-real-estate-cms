@@ -129,9 +129,6 @@ describe("property page copy — the fold", () => {
     const at = (key: string) => en.find((s) => s.key === key)!.values;
     // What the page's literals said before they moved.
     expect(str(at("specification"), "heading")).toBe("The full detail.");
-    expect(str(at("enquiry"), "valuation_cta")).toBe(
-      "Get a free valuation report",
-    );
     expect(str(at("similar"), "heading")).toBe("Nearby Properties");
   });
 });
