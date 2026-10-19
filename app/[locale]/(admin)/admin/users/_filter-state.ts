@@ -1,5 +1,5 @@
 import {
-  STAFF_ROLES,
+  ALL_STAFF_ROLES,
   STAFF_STATUSES,
   type StaffRole,
   type StaffStatus,
@@ -30,7 +30,7 @@ export function parseUserFilters(
   const status = get("status");
   const q = get("q");
   return {
-    role: STAFF_ROLES.includes(role as StaffRole) ? (role as StaffRole) : null,
+    role: ALL_STAFF_ROLES.includes(role as StaffRole) ? (role as StaffRole) : null,
     status: STAFF_STATUSES.includes(status as StaffStatus)
       ? (status as StaffStatus)
       : null,

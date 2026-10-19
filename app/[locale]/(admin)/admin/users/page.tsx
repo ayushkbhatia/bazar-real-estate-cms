@@ -303,7 +303,14 @@ function RolesPanel({
 }: {
   counts: Record<StaffRole, number>;
 }) {
-  const rolesInOrder: StaffRole[] = ["admin", "editor", "agent", "marketing", "support"];
+  const rolesInOrder: StaffRole[] = [
+    "admin",
+    "editor",
+    "agent",
+    "marketing",
+    "support",
+    "mortgage_admin",
+  ];
   return (
     <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
       <Eyebrow>Roles</Eyebrow>

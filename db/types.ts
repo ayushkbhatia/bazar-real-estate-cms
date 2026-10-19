@@ -6304,7 +6304,13 @@ export type Database = {
         | "withdrawn"
         | "mirror_only"
       salesforce_mapping_kind: "location" | "developer" | "agent"
-      staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
+      staff_role:
+        | "admin"
+        | "editor"
+        | "agent"
+        | "marketing"
+        | "support"
+        | "mortgage_admin"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
       valuation_condition:
         | "original"
@@ -6721,7 +6727,14 @@ export const Constants = {
         "mirror_only",
       ],
       salesforce_mapping_kind: ["location", "developer", "agent"],
-      staff_role: ["admin", "editor", "agent", "marketing", "support"],
+      staff_role: [
+        "admin",
+        "editor",
+        "agent",
+        "marketing",
+        "support",
+        "mortgage_admin",
+      ],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
       valuation_condition: [
         "original",

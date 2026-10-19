@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  STAFF_ROLES,
+  ALL_STAFF_ROLES,
   STAFF_STATUSES,
   ROLE_LABEL,
   STATUS_LABEL,
@@ -137,7 +137,7 @@ export function StaffRowActions({
             Change role — {ROLE_LABEL[currentRole]}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            {STAFF_ROLES.map((r) => (
+            {ALL_STAFF_ROLES.map((r) => (
               <DropdownMenuItem
                 key={r}
                 disabled={r === currentRole}

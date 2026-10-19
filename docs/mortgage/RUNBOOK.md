@@ -544,6 +544,8 @@ select at, actor_id, actor_kind, before, after
 
 A row with `actor_kind` `system` and no `note` is a role changed without saying who: find out who.
 
+**Mortgage Admin (0165).** One role is given in the app, not in SQL: an admin can invite someone, or change their role, to *Mortgage Admin* at `/admin/users`. A trigger makes a Mortgage Admin Head of mortgages and keeps them Head; changing their role to anything else removes it. Both write the usual `staff.mortgage_role_change` audit row, noted "given the Mortgage Admin role" or "left the Mortgage Admin role". A Mortgage Admin sees only the mortgage module and Mortgage stages, and `is_staff()` doesn't count them, so the database refuses them everything else. It is for the mortgage team's own people, not for break-glass: use the statements above for that.
+
 Setting the team's own roles (§11) uses the same statements, with a note that says so instead of "break-glass".
 
 **Don't**

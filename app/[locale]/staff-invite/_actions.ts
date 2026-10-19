@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import type { StaffRole } from "@/lib/schemas/staff";
 import {
   linkState,
   linkStateMessage,
@@ -202,7 +203,7 @@ async function ensureStaffRow(
     user_id: userId,
     display_name: row.display_name,
     slug,
-    role: row.role as "admin" | "editor" | "agent" | "marketing" | "support",
+    role: row.role as StaffRole,
     status: "active",
     joined_at: new Date().toISOString().slice(0, 10),
   });

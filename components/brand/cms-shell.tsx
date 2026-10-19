@@ -24,6 +24,7 @@ import {
   ScrollText,
   ShieldCheck,
   MoreHorizontal,
+  ListOrdered,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdminSession } from "@/app/[locale]/(admin)/_components/admin-session";
@@ -131,6 +132,32 @@ function navGroups(mortgage: { newCount: number } | null) {
   );
 }
 
+/**
+ * A Mortgage Admin's whole menu: the mortgage module and its stages. Nothing
+ * else in /admin is theirs (the admin layout sends them back here, and
+ * `is_staff()` refuses them every other table — 0165).
+ */
+function mortgageAdminNavGroups(mortgage: { newCount: number } | null) {
+  return [
+    {
+      group: "Mortgages",
+      items: [
+        {
+          label: "Mortgage requests",
+          href: "/admin/mortgages",
+          icon: MortgageNavIcon,
+          badge: mortgage?.newCount ?? 0,
+        },
+        {
+          label: "Mortgage stages",
+          href: "/admin/pages/mortgage-stages",
+          icon: ListOrdered,
+        },
+      ] as NavItem[],
+    },
+  ];
+}
+
 function NavBadge({ count, active }: { count: number; active: boolean }) {
   if (count <= 0) return null;
   return (
@@ -227,16 +254,29 @@ export function CmsShell({
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const activeTab = activeCmsTab(pathname);
-  const groups = navGroups(useAdminSession()?.mortgage ?? null);
+  const session = useAdminSession();
+  const mortgageOnly = session?.staff?.role === "mortgage_admin";
+  const groups = mortgageOnly
+    ? mortgageAdminNavGroups(session?.mortgage ?? null)
+    : navGroups(session?.mortgage ?? null);
+  const homeHref = mortgageOnly ? "/admin/mortgages" : "/admin";
 
   const mobileTabs: TabItem[] = [
-    ...CMS_PRIMARY_TABS.map((t) => ({
-      key: t.key,
-      label: t.label,
-      icon: t.icon,
-      href: t.href,
-      isActive: activeTab === t.key,
-    })),
+    ...(mortgageOnly
+      ? groups[0]!.items.map((item) => ({
+          key: item.href,
+          label: item.label,
+          icon: item.icon,
+          href: item.href,
+          isActive: !!pathname?.startsWith(item.href),
+        }))
+      : CMS_PRIMARY_TABS.map((t) => ({
+          key: t.key,
+          label: t.label,
+          icon: t.icon,
+          href: t.href,
+          isActive: activeTab === t.key,
+        }))),
     {
       key: "more",
       label: "More",
@@ -253,7 +293,7 @@ export function CmsShell({
       {/* Desktop sidebar (≥ md) */}
       <aside className="hidden md:flex bg-bz-surface border-e border-bz-border flex-col py-5 px-3.5 gap-1">
         <div className="px-2.5 pb-5">
-          <Link href="/admin" className="flex items-center">
+          <Link href={homeHref} className="flex items-center">
             <Wordmark sublabel="CMS" size="sm" />
           </Link>
         </div>
@@ -307,7 +347,8 @@ export function CmsShell({
               {title}
             </div>
           </div>
-          <CmsSearchInput />
+          {/* Search reads the catalogue, which a Mortgage Admin can't. */}
+          {mortgageOnly ? null : <CmsSearchInput />}
           {live}
           <NotificationsChime />
           {notifications ?? <NotificationsBell />}

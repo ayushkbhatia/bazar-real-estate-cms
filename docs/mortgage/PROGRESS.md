@@ -1718,3 +1718,28 @@ it ever holding an application up.
   the consultation's details; the price is not copied to it. The queue (C1)
   doesn't show it. `submit.db.test.ts` has a case for it, not run here (needs
   the local stack).
+
+
+## Mortgage Admin staff role · 19 Oct 2026
+
+Bazar asked for a kind of user who signs in to the admin and sees only the
+mortgage work.
+
+- **Built:** `staff_role` gains `mortgage_admin`, labelled *Mortgage Admin*
+  ("Mortgage requests only") at `/admin/users`, where an admin invites or
+  assigns it like any role (**0165**). A trigger pairs it with
+  `mortgage_role = 'head'` and clears that when the role is taken away; the
+  SR-14 audit trigger now fires on every `staff` update, so a role change that
+  moves the mortgage role is still audited. `is_staff()` excludes the role, so
+  every table outside the module refuses them. In the CMS: sign-in lands on
+  `/admin/mortgages` (the dashboard redirects), the sidebar holds only
+  Mortgage requests and Mortgage stages, global search is hidden, and the admin
+  layout's `MortgageAdminGuard` sends any other `/admin` path back to the queue.
+  `STAFF_ROLES` stays the five CMS-wide roles, so `requireRole(STAFF_ROLES)`
+  still refuses them; `ALL_STAFF_ROLES` is what can be invited.
+- **Deviations from SPEC:** D10 and RUNBOOK §6 had mortgage roles granted in
+  SQL only. A Mortgage Admin is now granted in the app, by an admin, audited
+  the same way. Break-glass is unchanged.
+- **Open:** nothing reads `mortgage_admin` in the database tests yet
+  (`test:db` needs the local stack).
+

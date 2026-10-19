@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  STAFF_ROLES,
+  ALL_STAFF_ROLES,
   STAFF_STATUSES,
   ROLE_LABEL,
   STATUS_LABEL,
@@ -56,7 +56,7 @@ export function UserFilters({ initial }: { initial: FilterState }) {
         value={initial.role}
         options={[
           { value: null, label: "All" },
-          ...STAFF_ROLES.map((r) => ({ value: r, label: ROLE_LABEL[r] })),
+          ...ALL_STAFF_ROLES.map((r) => ({ value: r, label: ROLE_LABEL[r] })),
         ]}
         onChange={(v) => setParam("role", v)}
       />
