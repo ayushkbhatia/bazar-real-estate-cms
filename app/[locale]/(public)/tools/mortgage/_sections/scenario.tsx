@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Input } from "@/components/ui/input";
@@ -57,7 +58,8 @@ export const BUYER_STATUSES: { value: BuyerStatus; key: string }[] = [
 ];
 
 type Props = {
-  copy: SectionCopy;
+  /** `resultImageUrl`: the photograph behind the results box, if one is set. */
+  copy: SectionCopy & { resultImageUrl?: string | null };
   prefs: Preferences;
   price: number;
   downPct: number;
@@ -120,7 +122,10 @@ export function ScenarioSection(props: Props) {
 
   return (
     <ToolSection copy={copy} testId="scenario-section">
-      <div className="grid lg:grid-cols-[440px_1fr] gap-8 lg:gap-10 items-start [&>*]:min-w-0">
+      {/* Stretched on desktop so the results box stands as tall as the
+          inputs beside it, rather than stopping halfway down them. Stacked on
+          a phone, each keeps its own height. */}
+      <div className="grid lg:grid-cols-[440px_1fr] gap-8 lg:gap-10 items-start lg:items-stretch [&>*]:min-w-0">
         {/* ── inputs ─────────────────────────────────────────────── */}
         <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <fieldset>
@@ -328,38 +333,63 @@ export function ScenarioSection(props: Props) {
         </div>
 
         {/* ── the answer ─────────────────────────────────────────── */}
-        <div className="bg-bz-ink text-white rounded-xl p-6 md:p-9 lg:sticky lg:top-6">
-          <Eyebrow className="text-white/70">
-            {t("mortgage.monthlyPayment")}
-          </Eyebrow>
-          <div
-            className="serif text-[52px] md:text-[88px] mt-1 leading-none"
-            style={{ letterSpacing: "-0.03em" }}
-            data-testid="monthly-payment"
-          >
-            {money(summary.monthlyPaymentAed, prefs)}
-          </div>
-          <p className="text-[14px] text-white/75 mt-3">
-            {t("mortgage.borrowedFor", {
-              amount: money(summary.principalAed, prefs),
-              years: termYears,
-              rate: annualRatePct,
-              type: inlineType(mortgageType),
-            })}
-          </p>
-          <div className="grid grid-cols-3 gap-4 md:gap-6 mt-9 pt-7 border-t border-white/15">
-            <Metric
-              label={t("mortgage.totalToPay")}
-              value={money(summary.totalPaidAed, prefs)}
-            />
-            <Metric
-              label={t("mortgage.totalInterest")}
-              value={money(summary.totalInterestAed, prefs)}
-            />
-            <Metric
-              label={t("mortgage.principalShare")}
-              value={`${summary.principalSharePct}%`}
-            />
+        <div
+          className={cn(
+            "bg-bz-ink text-white rounded-xl p-6 md:p-9 flex flex-col",
+            copy.resultImageUrl && "relative overflow-hidden",
+          )}
+        >
+          {copy.resultImageUrl ? (
+            <>
+              {/* Decorative: the figures carry the meaning. Photo and scrim
+                  are positioned siblings, not a negative z-index, for the
+                  reason the service hero gives (axe's background stack). */}
+              <Image
+                src={copy.resultImageUrl}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-bz-ink/80 via-bz-ink/55 to-bz-ink/85" />
+            </>
+          ) : null}
+          <div className="relative flex flex-col grow">
+            <Eyebrow className="text-white/70">
+              {t("mortgage.monthlyPayment")}
+            </Eyebrow>
+            <div
+              className="serif text-[52px] md:text-[88px] mt-1 leading-none"
+              style={{ letterSpacing: "-0.03em" }}
+              data-testid="monthly-payment"
+            >
+              {money(summary.monthlyPaymentAed, prefs)}
+            </div>
+            <p className="text-[14px] text-white/75 mt-3">
+              {t("mortgage.borrowedFor", {
+                amount: money(summary.principalAed, prefs),
+                years: termYears,
+                rate: annualRatePct,
+                type: inlineType(mortgageType),
+              })}
+            </p>
+            {/* Takes up the height the stretch adds, so the totals sit on the
+                box's floor and the payment stays at its head. */}
+            <div aria-hidden className="grow" />
+            <div className="grid grid-cols-3 gap-4 md:gap-6 mt-9 pt-7 border-t border-white/15">
+              <Metric
+                label={t("mortgage.totalToPay")}
+                value={money(summary.totalPaidAed, prefs)}
+              />
+              <Metric
+                label={t("mortgage.totalInterest")}
+                value={money(summary.totalInterestAed, prefs)}
+              />
+              <Metric
+                label={t("mortgage.principalShare")}
+                value={`${summary.principalSharePct}%`}
+              />
+            </div>
           </div>
         </div>
       </div>

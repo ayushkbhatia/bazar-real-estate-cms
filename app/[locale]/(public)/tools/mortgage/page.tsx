@@ -113,7 +113,10 @@ export default async function MortgagePage({
             imageAlt: heroImage?.alt ?? null,
             showForm: heroV.show_form !== false,
           }}
-          scenario={head(v("scenario"))}
+          scenario={{
+            ...head(v("scenario")),
+            resultImageUrl: img(v("scenario"), "result_image")?.url ?? null,
+          }}
           affordabilityCopy={head(v("affordability"))}
           compare={head(v("compare"))}
           amortization={head(v("amortization"))}
