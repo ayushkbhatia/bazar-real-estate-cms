@@ -243,33 +243,39 @@ export function initials(name: string): string {
     .join("");
 }
 
+/** One tile of the home / about developer marquee. */
+export type MarqueeTile = {
+  slug: string;
+  name: string;
+  /** Null → the tile sets the name in type, as the grid sets initials. */
+  logo: { src: string; w: number; h: number } | null;
+  /**
+   * Trimmed art fits the tight box; an upload or padded master carries its
+   * padding inside the frame and gets the taller one.
+   */
+  tight: boolean;
+};
+
 /**
- * Every directory slug whose profile page will 404, under both spellings.
+ * The developer marquee's tiles: every developer the /developers grid shows,
+ * in the same order, linking to the same slugs.
  *
- * `/developers/[slug]` calls `notFound()` on a draft entry — deliberately, so
- * "unpublish" actually removes the URL rather than leaving it reachable to
- * anyone with the link. The surfaces that link INTO those pages have to agree,
- * and one of them did not: the home and /about developer marquee builds its
- * tiles from `DEVELOPERS`, the code-owned set, which has no idea what the
- * catalogue has published. Three tiles on the front page led to a 404 in both
- * languages (`miral`, `nic-developers`, `q-properties`), found by crawling
- * production 2026-09-09.
- *
- * Both spellings, because a merged entry lands under the CATALOGUE slug while
- * the shipped one keeps working via `findDirectoryEntry`'s name match — so
- * hiding only the slug the merge produced would leave the marquee linking the
- * directory slug of the same draft developer.
+ * The marquee used to tile the code-owned set alone and hide the drafts
+ * among it, so a developer added from the CMS appeared on /developers and
+ * never on the home page or /about — fourteen of them by October 2026. Built
+ * from `listDirectory` instead, the three surfaces cannot disagree: a draft
+ * is already dropped, a new catalogue row is already in, and a merged entry
+ * links its catalogue slug (`modon-properties`, not `modon`).
  */
-export async function draftDirectorySlugs(
-  locale?: Locale,
-): Promise<string[]> {
-  const drafts = (await listAllDirectory(locale)).filter((d) => !d.published);
-  if (drafts.length === 0) return [];
-  const draftKeys = new Set(
-    drafts.map((d) => developerNameKey(d.name_en)).filter((k) => k !== ""),
-  );
-  const superseded = DEVELOPERS.filter((d) =>
-    draftKeys.has(developerNameKey(d.name)),
-  ).map((d) => d.slug);
-  return [...new Set([...drafts.map((d) => d.slug), ...superseded])];
+export async function marqueeTiles(locale?: Locale): Promise<MarqueeTile[]> {
+  // Trimmed art first, unlike `entryLogo`: every catalogue row carries an
+  // upload, and an upload is a padded square canvas that draws a launch
+  // partner's mark at a fraction of its trimmed size in a 108px tile. The
+  // upload is what a developer added from the CMS has, so it fills in there.
+  return (await listDirectory(locale)).map((d) => ({
+    slug: d.slug,
+    name: d.name,
+    logo: d.trimmed ?? entryLogo(d),
+    tight: d.trimmed !== null,
+  }));
 }

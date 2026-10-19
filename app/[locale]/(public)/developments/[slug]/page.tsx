@@ -422,11 +422,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     locale,
   );
 
+  const overviewFacts = factPairs(development.facts, (k) => t(`facts.${k}`));
+
   const nodes: Record<string, React.ReactNode> = {
     overview: (
       <section
         id="overview"
-        className={`px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 ${ANCHOR_SCROLL_MT}`}
+        /* Half the band on a phone: 64px above the heading under a 56px
+           sub-nav, and 64px + a 64px row gap below it, read as two empty
+           screens' worth of scroll at 375px. */
+        className={`px-4 md:px-12 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 ${ANCHOR_SCROLL_MT}`}
       >
         <div>
           <Eyebrow>
@@ -455,9 +460,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           ) : null}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 self-start">
-          {factPairs(development.facts, (k) => t(`facts.${k}`)).map(
-            ([l, v]) => (
+        {/* Not rendered when empty: an empty grid cell still takes the row
+            gap, which on a phone was 64px of nothing under the copy. */}
+        {overviewFacts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 self-start">
+            {overviewFacts.map(([l, v]) => (
               <div
                 key={l}
                 className="p-[18px] bg-bz-surface-2 rounded-lg border border-bz-border"
@@ -465,9 +472,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <div className="eyebrow">{l}</div>
                 <div className="text-[16px] font-medium mt-1.5">{v}</div>
               </div>
-            ),
-          )}
-        </div>
+            ))}
+          </div>
+        ) : null}
       </section>
     ),
     "master-plan": (
