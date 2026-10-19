@@ -4,6 +4,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { formSubmissionEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
+import { emitNotification } from "@/lib/notifications";
+import { activeAdmins, type ActiveAdmin } from "@/lib/staff-admins";
 import { getFormDef } from "./registry";
 import { optionLabel } from "./submission";
 import { defaultForm } from "./resolve";
@@ -80,7 +82,31 @@ export function answersFor(
 }
 
 /**
- * Email everyone on a form's notification list.
+ * Everyone a submission's email goes to: the form's own list, plus — when it
+ * made an enquiry — every active admin (Bazar, 19 Oct 2026: "enquiry
+ * submission notifications … for all the current users of the admin panel
+ * with admin permissions"). Case-insensitive, so an admin who is also on a
+ * form's list gets one email, not two. A submission that made no enquiry (a
+ * newsletter sign-up) reaches the form's list only.
+ */
+export function recipientsWithAdmins(
+  formList: readonly string[],
+  admins: readonly ActiveAdmin[],
+  isEnquiry: boolean,
+): string[] {
+  const all = [...formList, ...(isEnquiry ? admins.flatMap((a) => (a.email ? [a.email] : [])) : [])];
+  const seen = new Set<string>();
+  return all.filter((e) => {
+    const key = e.trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/**
+ * Email everyone on a form's notification list, and tell every active admin
+ * about a new enquiry — by email and in the admin bell.
  *
  * Best-effort and fire-after-the-fact, like the submission log it sits beside:
  * this runs once the lead is already written, so a bounced address or a Resend
@@ -101,12 +127,35 @@ export async function notifyFormRecipients(
   },
 ): Promise<void> {
   try {
-    const recipients = await recipientsFor(admin, entry.formKey);
+    const isEnquiry = Boolean(entry.enquiryId);
+    const [formList, admins] = await Promise.all([
+      recipientsFor(admin, entry.formKey),
+      isEnquiry ? activeAdmins(admin) : Promise.resolve([]),
+    ]);
+    const recipients = recipientsWithAdmins(formList, admins, isEnquiry);
+    const def = getFormDef(entry.formKey);
+    const formName = def?.name ?? entry.formKey;
+
+    // The bell in the admin header (and its chime): one row per active admin.
+    if (isEnquiry) {
+      await Promise.all(
+        admins.map((a) =>
+          emitNotification({
+            user_id: a.userId,
+            kind: "new_enquiry",
+            title: `New enquiry · ${formName}`,
+            body: entry.sourcePath ? `From ${entry.sourcePath}` : (def?.surface ?? null),
+            link: `/admin/enquiries/${entry.enquiryId}`,
+            payload: { enquiry_id: entry.enquiryId, form_key: entry.formKey },
+          }),
+        ),
+      );
+    }
+
     if (recipients.length === 0) return;
 
-    const def = getFormDef(entry.formKey);
     const template = await formSubmissionEmail({
-      formName: def?.name ?? entry.formKey,
+      formName,
       surface: def?.surface ?? "Website",
       formKey: entry.formKey,
       answers: answersFor(entry.formKey, entry.data),

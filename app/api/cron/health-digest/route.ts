@@ -28,6 +28,7 @@ import { env, isSupabaseConfigured } from "@/lib/env";
 import { reportError, recordHeartbeat } from "@/lib/observability";
 import { healthDigestEmail } from "@/lib/content-assets/system-emails";
 import { sendEmail } from "@/lib/email";
+import { activeAdmins } from "@/lib/staff-admins";
 import {
   isStale,
   staleAfterMinutes,
@@ -63,28 +64,11 @@ function ago(iso: string, now: Date): string {
   return hours < 48 ? `${hours}h ago` : `${Math.round(hours / 24)}d ago`;
 }
 
-/**
- * Every active admin's address.
- *
- * Resolved once. `auth.admin.getUserById` is a round trip per call, and the
- * escalation cron learned the hard way what putting one inside a loop costs.
- */
+/** Every active admin's address. */
 async function adminEmails(
   admin: ReturnType<typeof adminClient>,
 ): Promise<string[]> {
-  const { data: staff } = await admin
-    .from("staff")
-    .select("user_id")
-    .eq("status", "active")
-    .eq("role", "admin");
-
-  const out: string[] = [];
-  for (const row of staff ?? []) {
-    const { data } = await admin.auth.admin.getUserById(row.user_id);
-    const email = data?.user?.email;
-    if (email) out.push(email);
-  }
-  return out;
+  return (await activeAdmins(admin)).flatMap((a) => (a.email ? [a.email] : []));
 }
 
 export async function GET(req: NextRequest) {
