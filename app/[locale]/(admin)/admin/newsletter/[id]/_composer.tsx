@@ -9,6 +9,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  Languages,
   Loader2,
   Save,
   Send,
@@ -24,12 +26,16 @@ import {
   AUDIENCE_LABELS,
   NEWSLETTER_TOKENS,
   hasArabicEdition,
+  isBlankBody,
+  toArabicLinks,
   type Audience,
   type CampaignDraft,
   type CampaignStatus,
 } from "@/lib/newsletter/campaign";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../../content-assets/emails/_body-editor";
+import type { FeatureTarget } from "../../content-assets/emails/_feature-types";
+import { translateNewsletter } from "../_translate";
 import { EmailFrame, InboxHeader, ViewportToggle, type EmailViewport } from "../../content-assets/emails/_email-frame";
 import {
   deleteCampaign,
@@ -70,6 +76,8 @@ export function Composer({
   canSend,
   from,
   replyTo,
+  records,
+  canTranslate,
 }: {
   id: string;
   status: CampaignStatus;
@@ -82,6 +90,10 @@ export function Composer({
   canSend: boolean;
   from: string;
   replyTo: string;
+  /** Published records the Feature button and the link search offer. */
+  records: FeatureTarget[];
+  /** A model key is configured, so "Translate from English" can run. */
+  canTranslate: boolean;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<CampaignDraft>(initial);
@@ -96,6 +108,12 @@ export function Composer({
   const [problems, setProblems] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [rendering, setRendering] = useState(false);
+  const [missing, setMissing] = useState<{ id: string; label: string }[]>([]);
+  // Bumped when the Arabic fields are filled from outside the editor, so it
+  // remounts on the new content (TipTap reads `defaultValue` once).
+  const [editorVersion, setEditorVersion] = useState(0);
+  const [translateNotes, setTranslateNotes] = useState<string[]>([]);
+  const [translating, startTranslate] = useTransition();
   const [when, setWhen] = useState(() =>
     toLocalInput(scheduledAt ? new Date(scheduledAt) : new Date(Date.now() + 24 * 60 * 60 * 1000)),
   );
@@ -121,6 +139,7 @@ export function Composer({
         if (n !== request.current || !result) return;
         setPreview(result.email);
         setProblems(result.problems);
+        setMissing(result.missing);
       } finally {
         if (n === request.current) setRendering(false);
       }
@@ -219,6 +238,41 @@ export function Composer({
     });
   }
 
+  const arabicStarted = Boolean(draft.subject_ar.trim()) || !isBlankBody(draft.body_ar);
+
+  function fillArabic(fields: Pick<CampaignDraft, "subject_ar" | "preheader_ar" | "body_ar">) {
+    setDraft((d) => ({ ...d, ...fields }));
+    setErrors((e) => ({ ...e, subject_ar: "", body_ar: "", preheader_ar: "" }));
+    setEditorVersion((v) => v + 1);
+  }
+
+  function copyEnglish() {
+    if (arabicStarted && !window.confirm("Replace the Arabic edition with a copy of the English?")) return;
+    // The body and preview line only: an English subject in the Arabic field
+    // would make the edition "complete" before a word of it is Arabic.
+    fillArabic({ subject_ar: "", preheader_ar: draft.preheader, body_ar: toArabicLinks(draft.body) });
+    setTranslateNotes([]);
+    toast.success("English copied into the Arabic edition — translate it, then write the Arabic subject.");
+  }
+
+  function translate() {
+    if (arabicStarted && !window.confirm("Replace the Arabic edition with a fresh translation of the English?")) return;
+    startTranslate(async () => {
+      const r = await translateNewsletter(id, {
+        subject: draft.subject,
+        preheader: draft.preheader,
+        body: draft.body,
+      });
+      if (r.status === "error") {
+        toast.error(r.message);
+        return;
+      }
+      fillArabic({ subject_ar: r.subject_ar, preheader_ar: r.preheader_ar, body_ar: r.body_ar });
+      setTranslateNotes(r.notes);
+      toast.success("Arabic drafted from the English. Read it through before you save and send.");
+    });
+  }
+
   function remove() {
     if (!window.confirm("Delete this draft? This can't be undone.")) return;
     startBusy(async () => {
@@ -309,9 +363,54 @@ export function Composer({
             </div>
             <p className="text-[12px] text-bz-muted max-w-[70ch] -mt-2">
               {lang === "ar"
-                ? "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead."
+                ? "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead. Featured listings, projects and articles appear in Arabic by themselves."
                 : "Everyone receives this edition, unless you write an Arabic one for Arabic subscribers."}
             </p>
+
+            {lang === "ar" && !locked ? (
+              <div className="rounded-md border border-bz-border bg-bz-surface-2 px-3 py-2.5 flex flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[12px] text-bz-ink-2 me-auto">
+                    {arabicStarted ? "Start again from the English:" : "Start the Arabic edition from the English:"}
+                  </span>
+                  {canTranslate ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={translate}
+                      disabled={translating || (isBlankBody(draft.body) && !draft.subject.trim())}
+                    >
+                      {translating ? <Loader2 size={13} className="animate-spin" /> : <Languages size={13} strokeWidth={1.8} />}
+                      {translating ? "Translating…" : "Translate from English"}
+                    </Button>
+                  ) : null}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={copyEnglish}
+                    disabled={translating || isBlankBody(draft.body)}
+                  >
+                    <Copy size={13} strokeWidth={1.8} />
+                    Copy the English
+                  </Button>
+                </div>
+                <p className="text-[11px] text-bz-muted">
+                  {canTranslate
+                    ? "A machine first draft: prices, names and links are protected, featured blocks carry over as they are, and links to the site go to its Arabic pages. Read it through before sending."
+                    : "Copies the English layout — featured blocks, buttons, images, links pointed at the Arabic pages — for you to translate in place."}
+                </p>
+                {translateNotes.length > 0 ? (
+                  <ul className="text-[11.5px] text-[oklch(0.4_0.08_60)] flex flex-col gap-0.5">
+                    {translateNotes.map((n) => (
+                      <li key={n} className="flex gap-1.5">
+                        <AlertTriangle size={12} strokeWidth={1.8} className="shrink-0 mt-0.5" />
+                        {n}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : null}
 
             <label className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-bz-ink-2">Subject</span>
@@ -351,7 +450,7 @@ export function Composer({
                 />
               ) : (
                 <EmailBodyEditor
-                  key={lang}
+                  key={`${lang}-${editorVersion}`}
                   defaultValue={draft[bodyKey]}
                   onChange={(html) => set(bodyKey, html)}
                   tokens={tokens}
@@ -359,13 +458,16 @@ export function Composer({
                   onMediaUploaded={(m) => setMedia((list) => [m, ...list])}
                   dir={lang === "ar" ? "rtl" : "ltr"}
                   lang={lang}
+                  records={records}
                 />
               )}
               {allProblems[bodyKey] ? (
                 <span className={FIELD_ERROR}>{allProblems[bodyKey]}</span>
               ) : (
                 <span className="text-[11.5px] text-bz-muted">
-                  Headings, lists, links, buttons and images. The logo, colours and footer come from{" "}
+                  Headings, lists, links, buttons, images — and <strong>Feature</strong> for listings, projects,
+                  articles and area guides, drawn from the live records when it sends. The logo, colours and footer
+                  come from{" "}
                   <Link href="/admin/content-assets/design" className="underline">
                     Email design
                   </Link>
@@ -373,6 +475,18 @@ export function Composer({
                 </span>
               )}
             </div>
+
+            {missing.length > 0 && previewLang === lang ? (
+              <p className="rounded border border-[oklch(0.85_0.08_70)] bg-[oklch(0.97_0.03_80)] px-3 py-2 text-[12px] text-[oklch(0.4_0.08_60)] flex gap-2">
+                <AlertTriangle size={13} strokeWidth={1.8} className="shrink-0 mt-0.5" />
+                <span>
+                  {missing.length === 1 ? "One featured record is" : `${missing.length} featured records are`} no longer
+                  published and will be left out
+                  {missing.some((m) => m.label) ? `: ${missing.map((m) => m.label).filter(Boolean).join(", ")}` : ""}.
+                  Edit the block to replace {missing.length === 1 ? "it" : "them"}.
+                </span>
+              </p>
+            ) : null}
 
             {lang === "ar" && draft.body ? (
               <details className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2">

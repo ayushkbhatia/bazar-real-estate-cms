@@ -19,9 +19,17 @@ import {
   NEWSLETTER_WRITE_ROLES,
   campaignDraftSchema,
   campaignProblems,
+  editionLocale,
   renderNewsletter,
   type CampaignDraft,
 } from "@/lib/newsletter/campaign";
+import { featureBlocksIn } from "@/lib/content-assets/email-feature";
+import type { EmailBrand } from "@/lib/content-assets/email-brand";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { featureDrawer, newsletterFeatures } from "@/lib/newsletter/features";
+import { missingFeatures, unresolvedFeatures } from "@/lib/newsletter/feature-render";
+import { isStarter, starterDraft, STARTER_NEEDS, type StarterPicks } from "@/lib/newsletter/starters";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { drainNewsletterQueue, finishCampaigns, startCampaign } from "@/lib/newsletter/send";
 
 export type NewsletterActionResult =
@@ -38,8 +46,29 @@ function clean(draft: CampaignDraft): CampaignDraft {
     preheader: draft.preheader.trim(),
     subject_ar: draft.subject_ar.trim(),
     preheader_ar: draft.preheader_ar.trim(),
-    body: sanitizeEmailBody(draft.body),
-    body_ar: sanitizeEmailBody(draft.body_ar),
+    body: sanitizeEmailBody(draft.body, { features: true }),
+    body_ar: sanitizeEmailBody(draft.body_ar, { features: true }),
+  };
+}
+
+/**
+ * The featured records for the edition a `want` reader gets, looked up live,
+ * and what is no longer published among them.
+ */
+async function featuresFor(draft: CampaignDraft, want: EmailLocale, brand: EmailBrand) {
+  const edition = editionLocale(draft, want);
+  const body = edition === "ar" ? draft.body_ar : draft.body;
+  const found = await newsletterFeatures([body], edition);
+  const blocks = featureBlocksIn(body);
+  const missing = blocks.flatMap((b) => missingFeatures(b, found.lookup));
+  // The catalogue didn't answer: say so, rather than preview cards as gone.
+  const unreachable = unresolvedFeatures(blocks, found.lookup);
+  if (unreachable > 0) {
+    missing.push({ id: "unreachable", label: `${unreachable} couldn't be looked up just now — the send retries those` });
+  }
+  return {
+    draw: (l: EmailLocale) => featureDrawer(found, brand, l),
+    missing,
   };
 }
 
@@ -68,17 +97,77 @@ function toRow(draft: CampaignDraft) {
 
 // ── Campaigns ────────────────────────────────────────────────────
 
-/** A blank draft, then straight into the composer. */
-export async function createCampaign(): Promise<void> {
+type Row = Record<string, unknown>;
+
+/** The newest published records a starter layout is filled with. */
+async function starterPicks(needs: Partial<Record<keyof StarterPicks, number>>): Promise<StarterPicks> {
+  const sb = createSupabasePublicClient();
+  const shape = (rows: unknown, name: string) =>
+    ((rows ?? []) as Row[]).map((r) => ({ id: String(r.id), name: String(r[name] ?? "") }));
+  const none = Promise.resolve({ data: [] as Row[] });
+  const [properties, developments, articles] = await Promise.all([
+    needs.property
+      ? sb
+          .from("properties")
+          .select("id, title")
+          .eq("status", "published")
+          .is("deleted_at", null)
+          .order("published_at", { ascending: false, nullsFirst: false })
+          .limit(needs.property)
+      : none,
+    needs.development
+      ? sb
+          .from("developments")
+          .select("id, name")
+          .not("published_at", "is", null)
+          .order("published_at", { ascending: false })
+          .limit(needs.development)
+      : none,
+    needs.article
+      ? sb
+          .from("articles")
+          .select("id, title")
+          .eq("status", "published")
+          .is("deleted_at", null)
+          .order("published_at", { ascending: false, nullsFirst: false })
+          .limit(needs.article)
+      : none,
+  ]);
+  return {
+    property: shape(properties.data, "title"),
+    development: shape(developments.data, "name"),
+    article: shape(articles.data, "title"),
+  };
+}
+
+/**
+ * A new draft — blank, or a starter layout filled with the newest listings,
+ * launches and articles — then straight into the composer.
+ */
+export async function createCampaign(formData?: FormData): Promise<void> {
   if (!isSupabaseConfigured) throw new Error("Supabase env vars are not set.");
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const raw = formData?.get("starter");
+  const starter = isStarter(raw) ? raw : "blank";
+  const fields = starter === "blank" ? {} : starterDraft(starter, await starterPicks(STARTER_NEEDS[starter]));
   const { data, error } = await supabase
     .from("newsletter_campaigns")
-    .insert({ created_by: user.id, updated_by: user.id })
+    .insert({
+      ...fields,
+      ...(fields.body !== undefined ? { body: sanitizeEmailBody(fields.body, { features: true }) } : {}),
+      ...(fields.body_ar !== undefined ? { body_ar: sanitizeEmailBody(fields.body_ar, { features: true }) } : {}),
+      created_by: user.id,
+      updated_by: user.id,
+    })
     .select("id")
     .single();
   if (error || !data) throw new Error(error?.message ?? "Could not create the newsletter.");
-  await logAudit({ action: "newsletter.campaign_create", target_kind: "newsletter_campaign", target_id: data.id });
+  await logAudit({
+    action: "newsletter.campaign_create",
+    target_kind: "newsletter_campaign",
+    target_id: data.id,
+    after: { starter },
+  });
   redirect(`${ADMIN_PATH}/${data.id}`);
 }
 
@@ -100,7 +189,12 @@ export async function saveCampaign(id: string, raw: unknown): Promise<Newsletter
   return { status: "ok", message: "Saved." };
 }
 
-export type CampaignPreview = { email: RenderedEmail; problems: Record<string, string> };
+export type CampaignPreview = {
+  email: RenderedEmail;
+  problems: Record<string, string>;
+  /** Featured records in the previewed edition that are no longer published — left out, not blocking. */
+  missing: { id: string; label: string }[];
+};
 
 /** Unsaved fields, rendered as a subscriber in `locale` would receive them. */
 export async function previewCampaign(raw: unknown, locale: "en" | "ar"): Promise<CampaignPreview | null> {
@@ -108,12 +202,14 @@ export async function previewCampaign(raw: unknown, locale: "en" | "ar"): Promis
   const parsed = parseDraft(raw);
   if (!parsed.ok) return null;
   const brand = await readEmailBrand();
+  const features = await featuresFor(parsed.draft, locale, brand);
   const email = renderNewsletter(parsed.draft, {
     brand,
     locale,
     unsubscribeUrl: `${emailSiteUrl()}${locale === "ar" ? "/ar" : ""}/newsletter/unsubscribe/preview`,
+    features: features.draw,
   });
-  return { email, problems: campaignProblems(parsed.draft) };
+  return { email, problems: campaignProblems(parsed.draft), missing: features.missing };
 }
 
 /** One copy to the signed-in staff member, in `locale`. */
@@ -126,11 +222,14 @@ export async function sendCampaignTest(raw: unknown, locale: "en" | "ar"): Promi
   if (problems.subject || problems.body) {
     return { status: "error", message: "Write a subject and the newsletter before sending a test.", fieldErrors: problems };
   }
+  const brand = await readEmailBrand();
+  const features = await featuresFor(parsed.draft, locale, brand);
   const email = renderNewsletter(parsed.draft, {
-    brand: await readEmailBrand(),
+    brand,
     locale,
     // A test must not carry a working unsubscribe link for anyone.
     unsubscribeUrl: `${emailSiteUrl()}${locale === "ar" ? "/ar" : ""}/newsletter/unsubscribe/test`,
+    features: features.draw,
   });
   const result = await sendEmail({
     to: user.email,

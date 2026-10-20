@@ -6,11 +6,19 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
 
 ## What an editor does
 
-1. **Newsletter → New newsletter.** A draft opens in the composer.
+1. **Newsletter → New newsletter.** Pick a starting point — **Blank**, or a
+   layout already filled with what is newest on the site, in both editions:
+   **Monthly digest** (a featured project, the four newest listings, the
+   latest three articles), **New listings**, **Project launches**, **From
+   Insights**. A draft opens in the composer.
 2. **Write** — subject, preview line and body in the same rich-text editor the
-   Content assets emails use (headings, lists, links, buttons, images, fields).
+   Content assets emails use (headings, lists, links, buttons, images, fields),
+   plus **Feature** for the site's own listings, projects, articles and area
+   guides (below). Links, buttons and images can point at any published page
+   by searching for it ("Find a page on the site"); an image can be a link.
    An optional **Arabic edition** (subject + body); Arabic subscribers get it,
-   and get the English when it's blank.
+   and get the English when it's blank. **Translate from English** drafts it
+   by machine, **Copy the English** copies the layout to translate by hand.
 3. **Audience** — every confirmed subscriber, English only, or Arabic only,
    with the live count beside each.
 4. **Review** — the real email in a desktop / phone frame, English and Arabic,
@@ -23,6 +31,58 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
 dates — filterable and searchable, with **Re-send confirmation** for anyone
 still pending (per row, or every pending address at once) and **Unsubscribe**
 for anyone who asks by other means.
+
+## Featured listings, projects, articles and areas
+
+The composer's **Feature** button places up to six records of one kind —
+listings, projects, articles or area guides — as cards, in one of three
+layouts: **Cards** (one full-width card each: photo, name, facts, price,
+link), **Grid** (two to a row) or **List** (a line each with a thumbnail).
+Each block can be re-picked, reordered, restyled or dragged in the editor.
+
+**The block stores the records, not their words.** It is an empty
+`<div data-email-feature="property" data-ids="…" data-layout="grid">` in the
+body (`lib/content-assets/email-feature.ts`), like an article's internal
+links (docs/INTERNAL_LINKS.md). The cards are drawn when the email is
+rendered — preview, test and every send — from the live records:
+
+- **In the reader's language.** The Arabic edition's cards carry the Arabic
+  names, the site's Arabic words for "For sale", bedrooms, handover, and
+  prices in the site's own currency words (Units & currency settings), right
+  to left, linking to the `/ar` pages. Nobody translates a card; copying or
+  translating the English carries the block over as it is.
+- **Today's facts.** A repriced listing goes out at its new price.
+- **Nothing dead.** A record unpublished by send time is left out (a block
+  with none left draws nothing). The composer warns while writing — the
+  block shows *Not live*, and a notice under the editor names it.
+
+How: `lib/newsletter/features.ts` looks the records up — projects, listings
+and areas through the article internal-link resolver (one query per kind, the
+public client, the site's publication filters), articles with one more query
+— and `lib/newsletter/feature-render.ts` draws email-safe tables with inline
+styles. The sender looks them up once per campaign and edition per batch,
+never per recipient. Card photos go through the site's own image optimizer in
+production (`/_next/image`, the variants the public pages already use) rather
+than the ~1.4 MB originals; elsewhere the original is used.
+
+The sanitiser keeps a featured block only where asked (`{ features: true }` —
+the newsletter's save and render); in every system email it is stripped. A
+sent campaign's report draws its cards from the records as they are now.
+
+## Starting points and the Arabic edition
+
+The starter layouts are code (`lib/newsletter/starters.ts`) — templates, like
+a page's sections; what fills them is the live catalogue, picked as the draft
+is made. Each leaves one bracketed line — "[Write a line or two introducing
+this issue.]" — that blocks sending until it is replaced, in both editions.
+
+**Translate from English** (`newsletter/_translate.ts`) is the property
+editor's machine-translation pipeline (lib/i18n/mt): prices, names and links
+masked, the body split into blocks with its markup replaced by markers, every
+block validated and left in English if rejected (the composer says how many).
+It fills the composer without saving — a first draft to read (ADR-0008) —
+and needs `ANTHROPIC_API_KEY`; without one the button is hidden and **Copy the
+English** remains. Both point links to site pages at their `/ar` pages.
 
 ## Where people sign up
 
@@ -128,6 +188,14 @@ who never asked to go.
 | `lib/newsletter/events.ts` | webhook signature check and event parsing |
 | `app/api/webhooks/resend/` | the delivery-event webhook |
 | `lib/newsletter/campaign.ts` | types, schema, audience, render (shared by preview, test and send) |
+| `lib/content-assets/email-feature.ts` | the featured block's vocabulary: kinds, layouts, attributes, parsing |
+| `lib/tiptap/email-feature.ts` | the editor node; `email-image.ts` carries an image's link |
+| `lib/newsletter/features.ts` | looking featured records up, per language (server) |
+| `lib/newsletter/feature-render.ts` | drawing them as email cards, and their Arabic words |
+| `lib/newsletter/starters.ts` | the starter layouts |
+| `admin/content-assets/emails/_feature-*.tsx` | the Feature picker and the block's editor view |
+| `admin/newsletter/_feature-targets.ts` | what the picker offers (published records + articles) |
+| `admin/newsletter/_translate.ts` | Translate from English |
 | `lib/newsletter/send.ts` | start, drain, finish — the sender |
 | `lib/email.ts` | `headers` on a send; `sendEmailBatch` |
 | `app/api/cron/newsletter-send/` | the minute cron |
@@ -135,6 +203,11 @@ who never asked to go.
 | `app/[locale]/(admin)/admin/newsletter/` | Campaigns, the composer, Subscribers |
 
 ## Follow-ups
+
+- **Card prices at send time, not frozen.** Cards are drawn per batch, so a
+  long send (100 a minute) could straddle a price change. A snapshot of the
+  resolved records when sending starts would freeze them; not worth a
+  migration at today's list size.
 
 - **Opens and clicks.** Resend can report both (`email.opened`,
   `email.clicked`), but open tracking adds a pixel and click tracking rewrites

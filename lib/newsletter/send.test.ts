@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ sendEmailBatch: vi.fn() }));
+const mocks = vi.hoisted(() => ({ sendEmailBatch: vi.fn(), lookup: vi.fn() }));
 
 vi.mock("@/lib/email", () => ({
   EMAIL_BATCH_LIMIT: 100,
@@ -8,6 +8,11 @@ vi.mock("@/lib/email", () => ({
 }));
 vi.mock("@/lib/content-assets/system-resolve", () => ({ readEmailBrand: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => null }));
+// Featured records: whatever each test says the catalogue answers.
+vi.mock("./features", () => ({
+  newsletterFeatures: async () => ({ lookup: { get: mocks.lookup }, labels: undefined }),
+  featureDrawer: () => () => ({ html: "<table>CARD</table>", text: "CARD" }),
+}));
 
 import { DEFAULT_EMAIL_BRAND } from "@/lib/content-assets/email-brand";
 import { MAX_ATTEMPTS, sendClaimed } from "./send";
@@ -61,6 +66,7 @@ const claimed = (attempts = 1) => [
 describe("sendClaimed", () => {
   beforeEach(() => {
     mocks.sendEmailBatch.mockReset();
+    mocks.lookup.mockReset();
   });
 
   it("sends one batch, each in the recipient's language with their own unsubscribe link, and skips anyone who left", async () => {
@@ -108,5 +114,32 @@ describe("sendClaimed", () => {
     const { client } = fakeDb({ campaigns: [], subscribers: [] });
     expect(await sendClaimed(client, [], DEFAULT_EMAIL_BRAND)).toEqual({ sent: 0, skipped: 0, failed: 0, retried: 0 });
     expect(mocks.sendEmailBatch).not.toHaveBeenCalled();
+  });
+
+  const featured = {
+    ...campaign,
+    body: '<p>Hi</p><div data-email-feature="property" data-ids="11111111-0000-0000-0000-000000000001" data-layout="card" data-labels="[]"></div>',
+  };
+
+  it("draws featured blocks into each email", async () => {
+    mocks.lookup.mockReturnValue({ kind: "property" });
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r1", "r2"] });
+    const { client } = fakeDb({ campaigns: [featured], subscribers });
+    await sendClaimed(client, claimed(), DEFAULT_EMAIL_BRAND);
+    expect(mocks.sendEmailBatch.mock.calls[0]![0][0].html).toContain("<table>CARD</table>");
+  });
+
+  it("requeues rather than sends when the featured records couldn't be looked up", async () => {
+    mocks.lookup.mockReturnValue(undefined);
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r2"] });
+    const { client, updates } = fakeDb({ campaigns: [featured], subscribers });
+    const report = await sendClaimed(client, claimed(), DEFAULT_EMAIL_BRAND);
+    // d1 (English, featured body) waits; d2 gets the Arabic edition, which features nothing.
+    expect(report).toMatchObject({ sent: 1, retried: 1 });
+    expect(updates.find((u) => u.id === "d1")!.patch).toMatchObject({ status: "queued" });
+
+    const last = fakeDb({ campaigns: [featured], subscribers });
+    await sendClaimed(last.client, claimed(MAX_ATTEMPTS), DEFAULT_EMAIL_BRAND);
+    expect(last.updates.find((u) => u.id === "d1")!.patch).toMatchObject({ status: "failed" });
   });
 });

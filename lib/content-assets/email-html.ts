@@ -9,6 +9,14 @@ import {
 } from "@/lib/email-templates";
 import type { EmailBrand } from "./email-brand";
 import {
+  FEATURE_ATTR,
+  featureAttrs,
+  featureBlockPattern,
+  parseFeatureTag,
+  readFeatureAttrs,
+  type EmailFeatureBlock,
+} from "./email-feature";
+import {
   isTokenName,
   tokenDef,
   tokenPattern,
@@ -50,7 +58,10 @@ import {
  *   StarterKit (code and code block off): p, h2, h3, strong, em, u, s, ul, ol,
  *     li, blockquote, hr, br, a (Link)
  *   EmailButton (lib/tiptap/email-button.ts): a[data-email-button]
- *   EmailImage (lib/tiptap/email-image.ts): img[data-media-key]
+ *   EmailImage (lib/tiptap/email-image.ts): img[data-media-key][data-href]
+ *   EmailFeature (lib/tiptap/email-feature.ts): div[data-email-feature] —
+ *     newsletters only, behind `{ features: true }`; every other email's
+ *     sanitiser drops the element.
  */
 const TAGS = [
   "p",
@@ -106,19 +117,47 @@ function unescapeTokenHref(href: string): string {
   return href.replace(/%7B%7B\s*([a-z_]+)\s*%7D%7D/gi, "{{$1}}");
 }
 
-function baseOptions(): sanitizeHtml.IOptions {
+/**
+ * Where a linked image may point: what a link may — an absolute http(s),
+ * mailto or tel address, a single url token, or a path on this site (made
+ * absolute when the email is rendered).
+ */
+function validImageHref(raw: string): string | null {
+  const href = unescapeTokenHref(raw.trim());
+  if (TOKEN_HREF_RE.test(href)) return href;
+  if (/^\/(?!\/)\S*$/.test(href)) return href;
+  if (/^(https?:\/\/|mailto:|tel:)\S+$/i.test(href)) return href;
+  return null;
+}
+
+/** What the sanitiser may keep beyond what every email may. */
+export type EmailBodyOptions = {
+  /** Keep featured blocks (newsletters). Off, they are dropped. */
+  features?: boolean;
+};
+
+function baseOptions(opts: EmailBodyOptions = {}): sanitizeHtml.IOptions {
   return {
-    allowedTags: TAGS,
+    allowedTags: opts.features ? [...TAGS, "div"] : TAGS,
     allowedAttributes: {
       a: ["href", "data-email-button"],
-      img: ["src", "alt", "width", "data-media-key"],
+      img: ["src", "alt", "width", "data-media-key", "data-href"],
+      ...(opts.features ? { div: Object.values(FEATURE_ATTR) } : {}),
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
     allowedSchemesAppliedToAttributes: ["href", "src"],
     allowProtocolRelative: false,
     nonTextTags: ["script", "style", "textarea", "option", "noscript", "title"],
-    exclusiveFilter: (frame) => frame.tag === "img" && !allowedImage(frame.attribs),
+    // A div is only ever a featured block, canonicalised below; one that
+    // isn't (pasted markup) goes, with whatever it held.
+    exclusiveFilter: (frame) =>
+      (frame.tag === "img" && !allowedImage(frame.attribs)) ||
+      (frame.tag === "div" && !frame.attribs[FEATURE_ATTR.kind]),
     transformTags: {
+      div: (tagName, attribs) => {
+        const block = readFeatureAttrs(attribs);
+        return { tagName, attribs: block ? featureAttrs(block) : {} };
+      },
       a: (tagName, attribs) => {
         const out: Record<string, string> = {};
         if (attribs.href) out.href = unescapeTokenHref(attribs.href);
@@ -137,6 +176,11 @@ function baseOptions(): sanitizeHtml.IOptions {
         if (out.width !== undefined && !/^\d{1,4}$/.test(out.width)) {
           delete out.width;
         }
+        if (out["data-href"] !== undefined) {
+          const href = validImageHref(out["data-href"]);
+          if (href) out["data-href"] = href;
+          else delete out["data-href"];
+        }
         return { tagName, attribs: out };
       },
     },
@@ -144,9 +188,9 @@ function baseOptions(): sanitizeHtml.IOptions {
 }
 
 /** Allowlist-sanitise a body for storage. Idempotent. */
-export function sanitizeEmailBody(html: string): string {
+export function sanitizeEmailBody(html: string, opts: EmailBodyOptions = {}): string {
   if (!html) return "";
-  return sanitizeHtml(html, baseOptions()).trim();
+  return sanitizeHtml(html, baseOptions(opts)).trim();
 }
 
 /**
@@ -175,17 +219,24 @@ export type EmailContext = {
   values: TokenContext;
   /** Pre-built panels for the block tokens this email offers. */
   blocks?: EmailBlocks;
+  /**
+   * Draws a featured block (newsletters). When set, the body keeps its
+   * featured blocks and each is swapped for what this returns — `null` drops
+   * it. When absent, they are stripped like any other unknown element.
+   */
+  features?: (block: EmailFeatureBlock) => EmailBlock | null;
 };
 
 function styledOptions(
   brand: EmailBrand,
   locale: EmailLocale = "en",
+  opts: EmailBodyOptions = {},
 ): sanitizeHtml.IOptions {
   // Inline styles are physical, not logical: `padding-inline-start` and
   // `border-inline-start` are ignored by Outlook and by Gmail's Android app,
   // so the side has to be chosen here rather than left to the renderer.
   const start = locale === "ar" ? "right" : "left";
-  const base = baseOptions();
+  const base = baseOptions(opts);
   const style =
     (css: string) =>
     (tagName: string, attribs: Record<string, string>) => ({
@@ -197,8 +248,9 @@ function styledOptions(
   return {
     ...base,
     allowedAttributes: {
+      ...base.allowedAttributes,
       a: ["href", "data-email-button", "style"],
-      img: ["src", "alt", "width", "data-media-key", "style"],
+      img: ["src", "alt", "width", "data-media-key", "data-href", "style"],
       p: ["style"],
       h2: ["style"],
       h3: ["style"],
@@ -209,6 +261,7 @@ function styledOptions(
       hr: ["style"],
     },
     transformTags: {
+      div: base.transformTags!.div,
       p: style("margin:0 0 14px"),
       h2: style(
         locale === "ar"
@@ -292,7 +345,7 @@ export function renderEmailBodyHtml(
   brand: EmailBrand,
   locale: EmailLocale = "en",
 ): string {
-  let html = sanitizeHtml(body, styledOptions(brand, locale));
+  let html = sanitizeHtml(body, styledOptions(brand, locale, { features: !!ctx.features }));
 
   // A block token on a line of its own replaces the whole paragraph — a panel
   // is a <div> or <table>, and neither may sit inside a <p>. The panel goes in
@@ -309,6 +362,30 @@ export function renderEmailBodyHtml(
       panels.push(block.html);
       return `\u0000${panels.length - 1}\u0000`;
     },
+  );
+
+  // Featured blocks, the same way: drawn from live records by the caller,
+  // swapped in last so no token pass reads a record's name or price.
+  if (ctx.features) {
+    const draw = ctx.features;
+    html = html.replace(featureBlockPattern(), (match) => {
+      const block = parseFeatureTag(match);
+      const drawn = block ? draw(block) : null;
+      panels.push(drawn?.html ?? "");
+      return `\u0000${panels.length - 1}\u0000`;
+    });
+  }
+
+  // A div is only ever an empty featured block, swapped out above (or kept
+  // only when a hook was given). One that held content — hand-built markup,
+  // never the editor — loses its tags, and so its editor-only attributes.
+  html = html.replace(/<\/?div\b[^>]*>/gi, "");
+
+  // A linked image: the link around it, before the token and href passes so
+  // `{{insights_url}}` is filled and a relative path made absolute like any
+  // other link's.
+  html = html.replace(/<img ([^>]*?)\s*data-href="([^"]*)"([^>]*)>/g, (_m, before: string, href: string, after: string) =>
+    `<a href="${href}" style="text-decoration:none;border:0"><img ${`${before} ${after}`.trim()}></a>`,
   );
 
   // Every other token, in ONE pass over tags and text. One pass matters: a
@@ -404,6 +481,11 @@ function decodeEntities(s: string): string {
   });
 }
 
+/** A path on this site, as the full address a plain-text reader can follow. */
+function absoluteText(href: string): string {
+  return href.startsWith("/") && !href.startsWith("//") ? `${emailSiteUrl()}${href}` : href;
+}
+
 function stripTags(s: string): string {
   return s.replace(/<[^>]+>/g, "");
 }
@@ -418,9 +500,27 @@ export function renderEmailBodyText(
   ctx: EmailContext,
   locale: EmailLocale = "en",
 ): string {
-  let html = sanitizeEmailBody(body);
+  let html = sanitizeEmailBody(body, { features: !!ctx.features });
+
+  // Featured blocks become their text, held aside until the end like the
+  // HTML half's panels.
+  const held: string[] = [];
+  if (ctx.features) {
+    const draw = ctx.features;
+    html = html.replace(featureBlockPattern(), (match) => {
+      const block = parseFeatureTag(match);
+      const text = (block ? draw(block)?.text : "") ?? "";
+      held.push(text.trim());
+      return `<p>\u0000${held.length - 1}\u0000</p>`;
+    });
+  }
 
   html = html.replace(/<br\s*\/?>/g, "\n");
+  // A linked image says where it goes, by its description when it has one.
+  html = html.replace(/<img [^>]*data-href="([^"]*)"[^>]*>/g, (tag, href: string) => {
+    const alt = /\balt="([^"]*)"/.exec(tag)?.[1]?.trim();
+    return `<p>${alt ? `${alt}: ` : ""}${absoluteText(href)}</p>`;
+  });
   html = html.replace(/<img[^>]*>/g, "");
   html = html.replace(/<hr\s*\/?>/g, "\n\n");
 
@@ -428,14 +528,14 @@ export function renderEmailBodyText(
   html = html.replace(
     /<a [^>]*data-email-button[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>|<a href="([^"]*)"[^>]*data-email-button[^>]*>([\s\S]*?)<\/a>/g,
     (_m, h1: string, l1: string, h2: string, l2: string) =>
-      `\n\n${stripTags(l1 ?? l2).trim()}: ${h1 ?? h2}\n\n`,
+      `\n\n${stripTags(l1 ?? l2).trim()}: ${absoluteText(h1 ?? h2)}\n\n`,
   );
   // Links keep their address unless the label already is it.
   html = html.replace(
     /<a href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g,
     (_m, href: string, label: string) => {
       const text = stripTags(label).trim();
-      return text === href || !href ? text : `${text} (${href})`;
+      return text === href || !href ? text : `${text} (${absoluteText(href)})`;
     },
   );
 
@@ -476,6 +576,7 @@ export function renderEmailBodyText(
     // A quoted optional token with no value leaves a bare quote marker.
     .filter((l) => l !== ">")
     .join("\n")
+    .replace(/\u0000(\d+)\u0000/g, (_m, i: string) => held[Number(i)] ?? "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

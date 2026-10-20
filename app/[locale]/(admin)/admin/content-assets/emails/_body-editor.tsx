@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { NodeSelection } from "@tiptap/pm/state";
 import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
@@ -19,6 +20,8 @@ import {
   Redo2,
   RectangleHorizontal,
   Braces,
+  LayoutGrid,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +39,12 @@ import { EmailButton } from "@/lib/tiptap/email-button";
 import { EmailImage } from "@/lib/tiptap/email-image";
 import { TokenHighlight } from "@/lib/tiptap/token-highlight";
 import type { TokenDef } from "@/lib/content-assets/tokens";
+import type { FeatureKind } from "@/lib/content-assets/email-feature";
+import type { EmailFeatureAttributes } from "@/lib/tiptap/email-feature";
+import { filterRecordOptions } from "../../_fields/record-picker";
+import { FeatureDialog, type FeatureChoice, type FeatureRequest } from "./_feature-dialog";
+import { EmailFeatureWithView, FeatureEditorContext, type FeatureEditorApi } from "./_feature-view";
+import { FEATURE_KIND_META, type FeatureTarget } from "./_feature-types";
 import {
   ImageInsertDialog,
   type BlogMediaOption,
@@ -52,6 +61,13 @@ import {
  * Deliberately smaller than the blog editor. No code blocks (no inbox renders
  * them sensibly), headings at two levels, and two email-specific blocks: a
  * button and a plain image.
+ *
+ * Given `records` (the newsletter composer does), it also offers a third:
+ * featured listings, projects, articles and area guides, drawn as cards when
+ * the email is rendered — and the link, button and image dialogs can search
+ * the site's pages for a target. The sanitiser keeps featured blocks only
+ * where they are asked for (`{ features: true }`), so a system email's body
+ * can never carry one.
  */
 
 type Props = {
@@ -69,13 +85,23 @@ type Props = {
   dir?: "ltr" | "rtl";
   /** Language of the content area, so the Arabic face applies. */
   lang?: string;
+  /**
+   * The site's published records. Turns on the Feature button and the
+   * "page on this site" search in the link dialogs. Newsletters only.
+   */
+  records?: FeatureTarget[];
 };
 
-/** `{{token}}` or an absolute address — what a link or button may point at. */
+/**
+ * `{{token}}`, an absolute address, or a path on this site (made absolute when
+ * the email is rendered) — what a link, button or linked image may point at.
+ */
 function validTarget(href: string): boolean {
   const v = href.trim();
   return (
-    /^\{\{\s*[a-z_]+\s*\}\}$/i.test(v) || /^(https?:\/\/|mailto:|tel:)\S+$/i.test(v)
+    /^\{\{\s*[a-z_]+\s*\}\}$/i.test(v) ||
+    /^(https?:\/\/|mailto:|tel:)\S+$/i.test(v) ||
+    /^\/(?!\/)\S*$/.test(v)
   );
 }
 
@@ -117,7 +143,8 @@ function Divider() {
 
 type TargetDialogState =
   | { mode: "link"; href: string; text: string; needsText: boolean }
-  | { mode: "button"; href: string; text: string; editing: boolean };
+  | { mode: "button"; href: string; text: string; editing: boolean }
+  | { mode: "image"; href: string; text: string };
 
 export function EmailBodyEditor({
   defaultValue,
@@ -127,9 +154,13 @@ export function EmailBodyEditor({
   onMediaUploaded,
   dir = "ltr",
   lang,
+  records,
 }: Props) {
   const [imageOpen, setImageOpen] = useState(false);
   const [target, setTarget] = useState<TargetDialogState | null>(null);
+  const [feature, setFeature] = useState<FeatureRequest | null>(null);
+  const [lastKind, setLastKind] = useState<FeatureKind>("property");
+  const featuresOn = records !== undefined;
 
   const editor = useEditor({
     extensions: [
@@ -148,6 +179,7 @@ export function EmailBodyEditor({
       }),
       EmailButton,
       EmailImage,
+      ...(featuresOn ? [EmailFeatureWithView] : []),
       TokenHighlight.configure({ allowed: tokens.map((t) => t.name) }),
     ],
     content: defaultValue || "<p></p>",
@@ -183,7 +215,58 @@ export function EmailBodyEditor({
     }
   }
 
+  const recordByKey = useMemo(
+    () => new Map((records ?? []).map((r) => [`${r.kind}:${r.id}`, r])),
+    [records],
+  );
+  const lookup = useCallback(
+    (kind: FeatureKind, id: string) => recordByKey.get(`${kind}:${id}`) ?? null,
+    [recordByKey],
+  );
+  const featureApi = useMemo<FeatureEditorApi>(
+    () => ({
+      lookup,
+      edit: (pos: number, attrs: EmailFeatureAttributes) =>
+        setFeature({
+          pos,
+          initial: { kind: attrs.kind, ids: attrs.ids, layout: attrs.layout, labels: attrs.labels },
+        }),
+    }),
+    [lookup],
+  );
+
+  function applyFeature(choice: FeatureChoice) {
+    if (!editor || !feature) return;
+    setLastKind(choice.kind);
+    if (feature.pos === null) {
+      editor.chain().focus().insertEmailFeature(choice).run();
+    } else {
+      editor.chain().focus().updateEmailFeature(feature.pos, choice).run();
+    }
+    setFeature(null);
+  }
+
+  /**
+   * Insert a new block (a button, an image). With a block selected — a
+   * featured block is selected the moment it is inserted — a plain insert
+   * would REPLACE it, so the new block goes after it instead.
+   */
+  function insertBlock(node: { type: string; attrs: Record<string, unknown> }) {
+    if (!editor) return;
+    const sel = editor.state.selection;
+    if (sel instanceof NodeSelection) editor.chain().focus().insertContentAt(sel.to, node).run();
+    else editor.chain().focus().insertContent(node).run();
+  }
+
   function openLink(ed: Editor) {
+    if (ed.isActive("emailImage")) {
+      setTarget({
+        mode: "image",
+        href: (ed.getAttributes("emailImage").href as string | null) ?? "",
+        text: "",
+      });
+      return;
+    }
     const { from, to } = ed.state.selection;
     setTarget({
       mode: "link",
@@ -210,7 +293,9 @@ export function EmailBodyEditor({
   function applyTarget() {
     if (!editor || !target) return;
     const href = target.href.trim();
-    if (target.mode === "link") {
+    if (target.mode === "image") {
+      editor.chain().focus().setEmailImageHref(href || null).run();
+    } else if (target.mode === "link") {
       if (href === "") {
         editor.chain().focus().extendMarkRange("link").unsetLink().run();
       } else if (target.needsText) {
@@ -234,18 +319,14 @@ export function EmailBodyEditor({
         .updateAttributes("emailButton", { href, label: target.text.trim() })
         .run();
     } else {
-      editor
-        .chain()
-        .focus()
-        .setEmailButton({ href, label: target.text.trim() })
-        .run();
+      insertBlock({ type: "emailButton", attrs: { href, label: target.text.trim() } });
     }
     setTarget(null);
   }
 
   const targetValid =
     target !== null &&
-    (target.mode === "link"
+    (target.mode === "link" || target.mode === "image"
       ? target.href.trim() === "" || validTarget(target.href)
       : validTarget(target.href) && target.text.trim() !== "");
 
@@ -324,8 +405,8 @@ export function EmailBodyEditor({
           </ToolbarBtn>
           <Divider />
           <ToolbarBtn
-            label="Link"
-            active={editor.isActive("link")}
+            label={editor.isActive("emailImage") ? "Link the image" : "Link"}
+            active={editor.isActive("link") || Boolean(editor.isActive("emailImage") && editor.getAttributes("emailImage").href)}
             onClick={() => openLink(editor)}
           >
             <LinkIcon size={13} strokeWidth={1.8} />
@@ -347,6 +428,19 @@ export function EmailBodyEditor({
           >
             <Minus size={13} strokeWidth={1.8} />
           </ToolbarBtn>
+          {featuresOn ? (
+            <>
+              <Divider />
+              <ToolbarBtn
+                label="Feature listings, projects, articles or areas"
+                active={editor.isActive("emailFeature")}
+                onClick={() => setFeature({ pos: null, initial: null })}
+              >
+                <LayoutGrid size={13} strokeWidth={1.8} />
+                <span className="hidden sm:inline">Feature</span>
+              </ToolbarBtn>
+            </>
+          ) : null}
           <Divider />
           <label className="relative inline-flex items-center h-7 rounded border border-bz-border bg-bz-bg text-[12px] text-bz-ink-2 hover:border-bz-border-strong">
             <Braces
@@ -416,7 +510,19 @@ export function EmailBodyEditor({
         <div className="h-[41px] border-b border-bz-border bg-bz-surface-2" />
       )}
 
-      <EditorContent editor={editor} />
+      <FeatureEditorContext.Provider value={featuresOn ? featureApi : null}>
+        <EditorContent editor={editor} />
+      </FeatureEditorContext.Provider>
+
+      {records ? (
+        <FeatureDialog
+          request={feature}
+          targets={records}
+          defaultKind={lastKind}
+          onClose={() => setFeature(null)}
+          onChoose={applyFeature}
+        />
+      ) : null}
 
       <ImageInsertDialog
         open={imageOpen}
@@ -426,17 +532,16 @@ export function EmailBodyEditor({
         folder="brand"
         captionless
         onInsert={({ src, mediaKey, alt, width }) => {
-          editor
-            ?.chain()
-            .focus()
-            .setEmailImage({
+          insertBlock({
+            type: "emailImage",
+            attrs: {
               src,
               mediaKey,
               alt,
               // Never wider than the 492px email column.
               width: width ? Math.min(width, 492) : null,
-            })
-            .run();
+            },
+          });
         }}
       />
 
@@ -448,18 +553,22 @@ export function EmailBodyEditor({
                 <DialogTitle>
                   {target.mode === "link"
                     ? "Link"
-                    : target.editing
-                      ? "Edit button"
-                      : "Add a button"}
+                    : target.mode === "image"
+                      ? "Link the image"
+                      : target.editing
+                        ? "Edit button"
+                        : "Add a button"}
                 </DialogTitle>
                 <DialogDescription>
                   {target.mode === "link"
                     ? "Point the selected words at an address, or at a link this email already knows."
-                    : "A filled button in the brand colour, on a line of its own."}
+                    : target.mode === "image"
+                      ? "Where a click on the image goes. Leave empty for a picture that isn't a link."
+                      : "A filled button in the brand colour, on a line of its own."}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col gap-3">
-                {target.mode === "button" || target.needsText ? (
+                {target.mode === "button" || (target.mode === "link" && target.needsText) ? (
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="target-text">
                       {target.mode === "button" ? "Button text" : "Link text"}
@@ -500,6 +609,13 @@ export function EmailBodyEditor({
                       })}
                     </div>
                   ) : null}
+                  {records && records.length > 0 ? (
+                    <SitePageSearch
+                      records={records}
+                      arabic={lang === "ar"}
+                      onPick={(path) => setTarget({ ...target, href: path })}
+                    />
+                  ) : null}
                   <Input
                     id="target-href"
                     value={target.href}
@@ -508,9 +624,10 @@ export function EmailBodyEditor({
                     className="h-8 text-[12.5px] mono"
                   />
                   <span className="text-[11px] text-bz-muted">
-                    A full address starting https://, mailto: or tel:, or one of
-                    the links above.
-                    {target.mode === "link" ? " Leave empty to remove the link." : ""}
+                    A full address starting https://, mailto: or tel:
+                    {featuresOn ? ", a page found above" : ""}, or one of the
+                    links above.
+                    {target.mode !== "button" ? " Leave empty to remove the link." : ""}
                   </span>
                 </div>
               </div>
@@ -526,6 +643,69 @@ export function EmailBodyEditor({
           ) : null}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/**
+ * "A page on this site": search the published listings, projects, articles
+ * and area guides and use one's path as the target. The Arabic edition gets
+ * the `/ar` page. A path rather than a full address, so it follows the site
+ * wherever it is served; the renderer makes it absolute.
+ */
+function SitePageSearch({
+  records,
+  arabic,
+  onPick,
+}: {
+  records: FeatureTarget[];
+  arabic: boolean;
+  onPick: (path: string) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const q = query.trim();
+  const matches = q ? (filterRecordOptions(records, q) as FeatureTarget[]).slice(0, 6) : [];
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="relative">
+        <Search
+          size={12}
+          strokeWidth={1.8}
+          aria-hidden
+          className="pointer-events-none absolute start-2 top-1/2 -translate-y-1/2 text-bz-muted"
+        />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Find a page on the site — a listing, project, article or area"
+          aria-label="Find a page on the site"
+          className="h-8 ps-7 text-[12.5px]"
+        />
+      </div>
+      {matches.length > 0 ? (
+        <ul className="max-h-[180px] overflow-y-auto rounded border border-bz-border p-0.5">
+          {matches.map((r) => (
+            <li key={`${r.kind}:${r.id}`}>
+              <button
+                type="button"
+                onClick={() => {
+                  onPick(`${arabic ? "/ar" : ""}${r.href}`);
+                  setQuery("");
+                }}
+                className="flex w-full items-center gap-2 rounded px-2 py-1 text-start text-[12px] hover:bg-bz-surface-2"
+              >
+                <span className="shrink-0 text-[10.5px] uppercase tracking-wide text-bz-muted">
+                  {FEATURE_KIND_META[r.kind].noun}
+                </span>
+                <span className="min-w-0 flex-1 truncate">{r.name}</span>
+                <span className="mono shrink-0 truncate text-[10.5px] text-bz-muted max-w-[40%]">{r.href}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : q ? (
+        <span className="text-[11px] text-bz-muted">No published page matches “{q}”.</span>
+      ) : null}
     </div>
   );
 }

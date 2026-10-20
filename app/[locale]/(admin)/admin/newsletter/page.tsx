@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
-import { Button } from "@/components/ui/button";
 import { getStaffRole, requireRole } from "@/lib/auth";
 import { STAFF_ROLES } from "@/lib/schemas/staff";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -11,7 +9,7 @@ import {
   type Audience,
   type CampaignStatus,
 } from "@/lib/newsletter/campaign";
-import { createCampaign } from "./_actions";
+import { NewNewsletterButton } from "./_new-newsletter";
 import { subscriberCounts } from "./_data";
 import { CampaignStatusPill, NewsletterTabs, formatDubai } from "./_shared";
 
@@ -51,14 +49,7 @@ export default async function NewsletterPage() {
       title="Newsletter"
       breadcrumbs="Content · Newsletter"
       primary={
-        canWrite ? (
-          <form action={createCampaign}>
-            <Button type="submit">
-              <Plus size={14} strokeWidth={1.8} />
-              New newsletter
-            </Button>
-          </form>
-        ) : undefined
+        canWrite ? <NewNewsletterButton /> : undefined
       }
     >
       <div className="flex flex-col gap-6">
@@ -83,8 +74,8 @@ export default async function NewsletterPage() {
           <div className="rounded-lg border border-dashed border-bz-border p-10 text-center">
             <p className="serif text-[22px]">No newsletters yet</p>
             <p className="mt-2 text-[13px] text-bz-muted max-w-[52ch] mx-auto">
-              Write one in the same editor as the site&apos;s emails, preview it on desktop and phone, send yourself a
-              test, then send it to your {counts.confirmed} confirmed subscriber{counts.confirmed === 1 ? "" : "s"} — now
+              Start from a layout filled with the newest listings, launches and articles, or a blank page. Write it in
+              English and Arabic, preview it on desktop and phone, send yourself a test, then send it to your {counts.confirmed} confirmed subscriber{counts.confirmed === 1 ? "" : "s"} — now
               or at a time you choose.
             </p>
           </div>

@@ -14,8 +14,10 @@ import { z } from "zod";
 import { emailSiteUrl } from "@/lib/email-templates";
 import type { EmailBrand } from "@/lib/content-assets/email-brand";
 import { renderSystemEmail, type RenderedEmail } from "@/lib/content-assets/system-render";
+import type { EmailContext } from "@/lib/content-assets/email-html";
 import { outOfScopeTokens, unknownTokens, type EmailLocale, type TokenName } from "@/lib/content-assets/tokens";
 import type { Database } from "@/db/types";
+import { hasPlaceholder } from "./starters";
 
 export type CampaignStatus = Database["public"]["Enums"]["newsletter_campaign_status"];
 export type CampaignRow = Database["public"]["Tables"]["newsletter_campaigns"]["Row"];
@@ -66,7 +68,11 @@ export type CampaignDraft = z.infer<typeof campaignDraftSchema>;
 /** A body with nothing a reader would see: TipTap's empty document is `<p></p>`. */
 export function isBlankBody(html: string | null | undefined): boolean {
   if (!html) return true;
-  const text = html.replace(/<img\b[^>]*>/gi, "x").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ");
+  // A picture or a featured block is something a reader sees.
+  const text = html
+    .replace(/<img\b[^>]*>|<div\b[^>]*data-email-feature[^>]*>/gi, "x")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ");
   return text.trim() === "";
 }
 
@@ -89,6 +95,11 @@ export function campaignProblems(c: CampaignDraft): Record<string, string> {
   if (arSubject !== arBody) {
     problems[arSubject ? "body_ar" : "subject_ar"] =
       "Write both the Arabic subject and the Arabic newsletter, or neither — Arabic subscribers get the English while it's blank.";
+  }
+  for (const field of ["body", "body_ar", "preheader", "preheader_ar"] as const) {
+    if (!problems[field] && hasPlaceholder(c[field])) {
+      problems[field] = "Replace the text in [brackets] the starter layout left for you.";
+    }
   }
   if (c.audience === "ar" && !arSubject && !arBody) {
     problems.audience = "Arabic subscribers only, but there's no Arabic edition: they would get the English.";
@@ -115,6 +126,19 @@ const FOOTER = {
   en: '<p>You’re receiving this because you subscribed to Bazar’s newsletter. <a href="{{unsubscribe_url}}">Unsubscribe</a> at any time.</p>',
   ar: '<p>تصلك هذه الرسالة لأنك اشتركت في النشرة الإخبارية من بازار. يمكنك <a href="{{unsubscribe_url}}">إلغاء الاشتراك</a> في أي وقت.</p>',
 } as const;
+
+/**
+ * The Arabic edition's links, from the English's: a path on this site goes to
+ * its `/ar` page, so an Arabic reader who follows a link stays in Arabic.
+ * Absolute addresses, tokens and paths already under `/ar` (or not pages at
+ * all — `/api`, `/_next`) are left alone. Featured blocks need nothing: they
+ * build their links per reader.
+ */
+export function toArabicLinks(html: string): string {
+  return html.replace(/\b(href|data-href)="(\/(?!\/)[^"]*)"/g, (match, attr: string, path: string) =>
+    /^\/(ar(\/|$|[?#])|api\/|_next\/)/.test(path) ? match : `${attr}="/ar${path === "/" ? "" : path}"`,
+  );
+}
 
 /** The site links a newsletter's fields fill in, plus this recipient's unsubscribe link. */
 export function newsletterTokenValues(unsubscribeUrl: string, locale: EmailLocale) {
@@ -150,15 +174,33 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+/** The edition a reader who wants `want` receives: Arabic only when it is complete. */
+export function editionLocale(
+  c: { subject_ar?: string | null; body_ar?: string | null },
+  want: EmailLocale,
+): EmailLocale {
+  return want === "ar" && hasArabicEdition(c) ? "ar" : "en";
+}
+
 /**
  * The newsletter as one recipient gets it, in `want` (Arabic when the Arabic
  * edition is complete, English otherwise).
+ *
+ * `features` draws the featured blocks for the edition being sent — the
+ * caller looks the records up (lib/newsletter/features.ts, server-only) for
+ * that language. Without it the blocks are left out, which is right for
+ * nothing but a test of the text.
  */
 export function renderNewsletter(
   c: Pick<CampaignDraft, "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar">,
-  opts: { brand: EmailBrand; locale: EmailLocale; unsubscribeUrl: string },
+  opts: {
+    brand: EmailBrand;
+    locale: EmailLocale;
+    unsubscribeUrl: string;
+    features?: (edition: EmailLocale) => EmailContext["features"];
+  },
 ): RenderedEmail & { locale: EmailLocale } {
-  const locale: EmailLocale = opts.locale === "ar" && hasArabicEdition(c) ? "ar" : "en";
+  const locale = editionLocale(c, opts.locale);
   const preheader = (locale === "ar" ? (c.preheader_ar ?? "") : c.preheader).trim();
   const rendered = renderSystemEmail(
     {
@@ -168,7 +210,7 @@ export function renderNewsletter(
       bodyAr: locale === "ar" ? c.body_ar + FOOTER.ar : null,
       format: "html",
     },
-    { values: newsletterTokenValues(opts.unsubscribeUrl, locale) },
+    { values: newsletterTokenValues(opts.unsubscribeUrl, locale), features: opts.features?.(locale) },
     opts.brand,
     locale,
   );

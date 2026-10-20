@@ -7,12 +7,20 @@ export type EmailImageAttributes = {
   alt: string;
   /** Display width in pixels; null lets it fill the column. */
   width: number | null;
+  /**
+   * Where a click on the image goes — an absolute address, a site path or a
+   * url token — or null for an image that is only a picture. Stored as
+   * `data-href` on the `<img>`; the renderer wraps it in the link.
+   */
+  href?: string | null;
 };
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     emailImage: {
       setEmailImage: (attrs: EmailImageAttributes) => ReturnType;
+      /** Point the selected image at an address, or `null` to unlink it. */
+      setEmailImageHref: (href: string | null) => ReturnType;
     };
   }
 }
@@ -54,6 +62,10 @@ export const EmailImage = Node.create({
           return raw && /^\d{1,4}$/.test(raw) ? Number(raw) : null;
         },
       },
+      href: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-href") || null,
+      },
     };
   },
 
@@ -68,6 +80,7 @@ export const EmailImage = Node.create({
     };
     if (node.attrs.mediaKey) attrs["data-media-key"] = node.attrs.mediaKey;
     if (node.attrs.width) attrs.width = String(node.attrs.width);
+    if (node.attrs.href) attrs["data-href"] = node.attrs.href as string;
     return ["img", attrs];
   },
 
@@ -77,6 +90,10 @@ export const EmailImage = Node.create({
         (attrs) =>
         ({ commands }) =>
           commands.insertContent({ type: this.name, attrs }),
+      setEmailImageHref:
+        (href) =>
+        ({ commands }) =>
+          commands.updateAttributes(this.name, { href: href?.trim() || null }),
     };
   },
 });
