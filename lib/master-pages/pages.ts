@@ -1124,7 +1124,7 @@ const OFF_PLAN: MasterPageDef = {
             name: "Branded Residences",
             desc: "Premium residences created with globally recognised lifestyle and hospitality brands.",
             cta: "View branded residences",
-            href: "/off-plan/search",
+            href: "/off-plan/search?lifestyle=branded_residences",
           },
         ],
       },
