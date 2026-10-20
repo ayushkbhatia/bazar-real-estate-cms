@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import {
   listExclusiveProperties,
-  listNewThisWeek,
+  listRandomListings,
   listFeaturedByType,
 } from "@/lib/queries/curated-listings";
 import { listAreaPins, listAreaListingDots } from "@/lib/queries/area-map";
@@ -69,7 +69,7 @@ export default async function BuyPage({
     dots,
   ] = await Promise.all([
     getMasterPageContent("buy"),
-    listExclusiveProperties({ limit: 4 }),
+    listExclusiveProperties({ mode: "buy", limit: FEATURED_POOL }),
     listFeaturedByType({ mode: "buy", type: "apartment", limit: FEATURED_POOL }),
     listFeaturedByType({ mode: "buy", type: "villa", limit: FEATURED_POOL }),
     listFeaturedByType({ mode: "buy", type: "penthouse", limit: FEATURED_POOL }),
@@ -79,12 +79,16 @@ export default async function BuyPage({
     listAreaListingDots(),
   ]);
 
-  // General featured fallback (used when a category bucket is empty).
+  // The general featured row — what the grid shows whenever no category is
+  // active, which is always while every hero chip is a link. Exclusives when
+  // there are enough to fill it; otherwise a random sample of everything for
+  // sale. Either way a pool, not four, so the grid's per-visit shuffle picks
+  // from the catalogue rather than reordering the four newest listings.
   const fallbackRows =
     exclusiveRows.length >= 4
       ? exclusiveRows
-      : await listNewThisWeek({ limit: 4 });
-  const featured = fallbackRows.slice(0, 4).map(listingRowToCard);
+      : await listRandomListings({ mode: "buy", limit: FEATURED_POOL });
+  const featured = fallbackRows.map(listingRowToCard);
 
   const featuredByCategory: Record<string, ReturnType<typeof listingRowToCard>[]> = {
     apartment: apartmentRows.map(listingRowToCard),

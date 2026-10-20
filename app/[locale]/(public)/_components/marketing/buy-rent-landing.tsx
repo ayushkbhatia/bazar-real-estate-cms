@@ -340,7 +340,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
               title={p.featuredTitle}
               ctaLabel={p.featuredCta}
               ctaHref={p.featuredCtaHref}
-              items={p.featured}
+              // /buy hands a pool for CategoryFeatured to sample; without
+              // chips there is no sampler, so show the first row of it.
+              items={p.featured.slice(0, 4)}
             />
           )}
         </div>

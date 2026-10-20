@@ -24,6 +24,8 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
+import { seededShuffle } from "@/lib/shuffle";
+import { allRows } from "@/lib/salesforce/listings/paginate";
 
 import type { ListingRow } from "@/lib/queries/properties";
 import type { Database } from "@/db/types";
@@ -69,16 +71,20 @@ function mapRows(
 
 export async function listExclusiveProperties(
   opts: {
+    /** Sale or rent only. Unset: both, as /exclusive shows them. */
+    mode?: PropertyMode;
     limit?: number;
   } = {},
 ): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("properties")
     .select(LISTING_FIELDS)
     .eq("status", "published" as never)
-    .contains("flags", { exclusive: true })
+    .contains("flags", { exclusive: true });
+  if (opts.mode) query = query.eq("mode", opts.mode as never);
+  const { data, error } = await query
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(opts.limit ?? 24);
   if (error || !data) {
@@ -114,6 +120,59 @@ export async function listNewThisWeek(
   }
   return mapRows(
     data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[],
+    await currentLocale(),
+  );
+}
+
+/**
+ * A random sample of published listings, for a featured row that should not
+ * always lead with the newest. PostgREST cannot `order by random()`, so this
+ * reads every matching id (one narrow query), shuffles them here and fetches
+ * full rows for the first `limit` — returned in the shuffled order. The /buy
+ * page is ISR-cached, so the sample changes once per revalidation; the grid
+ * then picks its four from it per visit (`CategoryFeatured`).
+ */
+export async function listRandomListings(
+  opts: {
+    mode?: PropertyMode;
+    limit?: number;
+  } = {},
+): Promise<ListingRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = createSupabasePublicClient();
+  let ids: string[];
+  try {
+    const rows = await allRows<{ id: string }>((from, to) => {
+      let query = supabase
+        .from("properties")
+        .select("id")
+        .eq("status", "published" as never);
+      if (opts.mode) query = query.eq("mode", opts.mode as never);
+      return query.order("id").range(from, to);
+    });
+    ids = rows.map((r) => r.id);
+  } catch (error) {
+    console.error("[listRandomListings]", error);
+    return [];
+  }
+  const picked = seededShuffle(ids, Math.random()).slice(0, opts.limit ?? 24);
+  if (picked.length === 0) return [];
+  const { data, error } = await supabase
+    .from("properties")
+    .select(LISTING_FIELDS)
+    .in("id", picked);
+  if (error || !data) {
+    if (error) console.error("[listRandomListings]", error);
+    return [];
+  }
+  const rank = new Map(picked.map((id, i) => [id, i]));
+  const ordered = (data as unknown as { id: string }[])
+    .slice()
+    .sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+  return mapRows(
+    ordered as unknown as (Record<string, unknown> & {
       property_media?: RawMediaJoin[];
     })[],
     await currentLocale(),
