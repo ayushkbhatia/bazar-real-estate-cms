@@ -67,3 +67,13 @@ export function cleanLifestyleTags(raw: unknown): LifestyleTag[] {
   const picked = new Set(list.filter(isLifestyleTag));
   return LIFESTYLE_TAGS.filter((t) => picked.has(t));
 }
+
+/**
+ * The search a "show me these" link opens: every sale listing carrying the
+ * tag. `/buy/search` because that is where tagged stock lives — the tags sit
+ * on sale rows (`buy` and `off_plan`, which that route's mode umbrella covers
+ * both of) and on no rentals. Unprefixed: the locale-aware `Link` adds `/ar`.
+ */
+export function lifestyleSearchHref(tag: LifestyleTag): string {
+  return `/buy/search?lifestyle=${tag}`;
+}

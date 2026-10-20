@@ -27,6 +27,7 @@ import {
   statList,
   propTypeList,
 } from "./fields";
+import { LIFESTYLE_TAGS, LIFESTYLE_TAG_LABEL } from "@/lib/lifestyle-tags";
 import { DEVELOPERS_PAGE } from "./sections/developers";
 import { PARTNERS_PAGE } from "./sections/partners";
 import { LEGAL_TERMS_PAGE, LEGAL_COOKIES_PAGE } from "./sections/legal";
@@ -1123,7 +1124,7 @@ const OFF_PLAN: MasterPageDef = {
             name: "Branded Residences",
             desc: "Premium residences created with globally recognised lifestyle and hospitality brands.",
             cta: "View branded residences",
-            href: "/off-plan/search",
+            href: "/off-plan/search?lifestyle=branded_residences",
           },
         ],
       },
@@ -1515,6 +1516,19 @@ const AREAS: MasterPageDef = {
             }),
             text("chips_label", "Chips heading", { max: 80, optional: true }),
             text("cta_label", "Button label", { max: 60, optional: true }),
+            {
+              key: "lifestyle",
+              label: "Button shows listings tagged",
+              kind: "select",
+              // The tags an editor ticks on each listing (property editor →
+              // Lifestyle tags). A closed set in code, so validated on save.
+              options: LIFESTYLE_TAGS.map((tag) => ({
+                value: tag,
+                label: LIFESTYLE_TAG_LABEL[tag].en,
+              })),
+              placeholder: "No tag — use the button link below",
+              help: "The button opens a search of every listing carrying this tag, and stays in step as listings are tagged. Leave it empty to send the button to the link below instead.",
+            },
             link("cta_href", "Button link"),
             image("image", "Image"),
             text("img", "Placeholder caption", { max: 80, optional: true }),
@@ -1537,6 +1551,7 @@ const AREAS: MasterPageDef = {
               "Mamsha Al Saadiyat\nHidd Al Saadiyat\nAl Muneera\nAl Bandar\nAl Zeina\nYas Acres\nReem Hills\nGardenia Bay",
             chips_label: "Popular waterfront communities",
             cta_label: "Explore waterfront communities",
+            lifestyle: "waterfront",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
             img: "waterfront promenade · canal",
@@ -1552,6 +1567,7 @@ const AREAS: MasterPageDef = {
               "Yas Acres\nSaadiyat Lagoons\nSaadiyat Reserve\nAl Raha Gardens\nReem Hills\nAl Ghadeer\nBloom Living\nHidd Al Saadiyat",
             chips_label: "Popular gated communities",
             cta_label: "Explore gated communities",
+            lifestyle: "gated",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
             img: "gated villa community · aerial",
@@ -1567,6 +1583,7 @@ const AREAS: MasterPageDef = {
               "Mamsha Al Saadiyat\nHidd Al Saadiyat\nSaadiyat Lagoons\nSaadiyat Reserve\nNurai Island\nNobu Residences\nBaccarat Residences Saadiyat\nRamhan Island",
             chips_label: "Popular luxury communities",
             cta_label: "Explore luxury communities",
+            lifestyle: "luxury",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
             img: "luxury residence · beachfront",
@@ -1582,6 +1599,7 @@ const AREAS: MasterPageDef = {
               "Yas Acres\nAl Raha Gardens\nBloom Living\nAl Ghadeer\nSaadiyat Lagoons\nNoya\nNoya Viva\nFay Al Reeman",
             chips_label: "Popular family-friendly communities",
             cta_label: "Explore family-friendly communities",
+            lifestyle: "family_friendly",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
             img: "family townhouses · park",
