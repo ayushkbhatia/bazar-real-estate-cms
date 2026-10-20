@@ -133,9 +133,11 @@ export async function LocationBrowsing({
             `display: none` does not stop the fetch — without this a phone
             downloaded the 640px candidate of a tile it never shows. A 1px
             slot below the breakpoint picks the smallest generated width
-            instead; the md+ slot is the one that has to be right.
+            instead; the md+ slot is the one that has to be right. The
+            tile is ~485×520 at 1440px — taller than wide — so a landscape
+            photo is drawn ~1.5× the tile's width; 55vw asks for that.
           */
-          sizes="(max-width: 768px) 1px, 33vw"
+          sizes="(max-width: 768px) 1px, 55vw"
         />
 
         {/* Community tiles — mobile rail, desktop 4×2 grid */}

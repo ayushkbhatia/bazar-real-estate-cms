@@ -37,7 +37,10 @@ export function CategoryTiles({ items }: Props) {
               src={t.imgUrl}
               alt={t.imgAlt ?? t.name}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              // A tile is ~320px tall and about as wide, so a landscape photo is
+              // drawn at 1.5× the tile width and its sides cropped. `sizes`
+              // asks for that drawn width, not the tile's.
+              sizes="(max-width: 640px) 480px, (max-width: 1024px) 75vw, 38vw"
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (

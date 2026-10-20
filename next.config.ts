@@ -63,11 +63,22 @@ const nextConfig: NextConfig = {
     // Next 16 allowlists `quality`: anything not in this array is a 400 from
     // the optimizer, so `quality={100}` needs the value declared here.
     //
-    // 75 stays the default for photography, where the WebP artefacts land in
-    // texture nobody reads. Floor plans are the opposite — hairline walls and
-    // 10px dimension labels, which q75 smears (measured 38 dB PSNR against the
-    // source, and the ringing is visible at 1:1). 100 is for those.
-    qualities: [75, 100],
+    // There is no 75 in the list on purpose. An `<Image>` with no `quality`
+    // asks for 75, and the loader snaps that to the closest allowed value
+    // (next/dist/shared/lib/find-closest-quality.js) — so every photo on the
+    // site is encoded at 90 without a prop on each of them. q75 was measured
+    // at 37–39 dB PSNR against the source on production listing photos, and
+    // read as soft on a retina screen; q90 is ~44 dB for about twice the
+    // bytes. The originals are themselves Canva exports at roughly JPEG q40,
+    // so a second pass at q75 compounded loss the files already carried.
+    //
+    // Floor plans ask for 100 explicitly — hairline walls and 10px dimension
+    // labels, which a lossy pass smears and rings at 1:1.
+    //
+    // Changing this list changes every image URL, so each variant is
+    // re-optimized once: a one-off spike in Supabase cached egress (see
+    // minimumCacheTTL above). Don't churn it.
+    qualities: [90, 100],
   },
   experimental: {
     // The root layout is `app/[locale]/layout.tsx`, a top-level dynamic

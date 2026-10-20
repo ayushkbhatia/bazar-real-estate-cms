@@ -79,7 +79,9 @@ export function AreaSpotlights({
                   src={s.imageUrl}
                   alt={s.imageAlt ?? name}
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  // 360px tall on a phone and as wide as the screen, so a wide photo is
+                  // drawn at ~2× the width — see HERO_SIZES for why 680px.
+                  sizes="(max-width: 680px) 680px, (max-width: 768px) 100vw, 50vw"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (

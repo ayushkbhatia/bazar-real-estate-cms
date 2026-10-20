@@ -126,7 +126,7 @@ export function RendersGallery({
                         src={tile.url}
                         alt={tile.alt ?? ""}
                         fill
-                        sizes={sizesFor(wide)}
+                        sizes={sizesFor(wide, lead && !split)}
                         className="object-cover"
                       />
                     </div>
@@ -150,9 +150,19 @@ export function RendersGallery({
  * The same for both layouts, and not a coincidence: a wide tile is two of the
  * half's two tracks or two of the full width's four, which is ~46vw either way.
  * Below `md` the halves stack and each mosaic keeps its two tracks.
+ *
+ * A square tile is not drawn at its own width. Renders are landscape (3:2 to
+ * 16:9), and `object-cover` scales one to the square's HEIGHT and crops the
+ * sides, so it is drawn ~1.5× wider than the tile. `sizes` only describes
+ * width, so a square asks for 1.5× its track or the browser picks a file the
+ * crop then stretches (measured 0.87× on a 1440px retina screen). The lead
+ * tile of the full-width mosaic is 16:9 on a phone and a 2×2 square from `md`.
  */
-function sizesFor(wide: boolean): string {
-  return wide
-    ? "(min-width: 768px) 46vw, 92vw"
-    : "(min-width: 768px) 23vw, 46vw";
+function sizesFor(wide: boolean, squareFromMd: boolean): string {
+  if (wide) {
+    return squareFromMd
+      ? "(min-width: 768px) 69vw, 92vw"
+      : "(min-width: 768px) 46vw, 92vw";
+  }
+  return "(min-width: 768px) 34vw, 69vw";
 }
