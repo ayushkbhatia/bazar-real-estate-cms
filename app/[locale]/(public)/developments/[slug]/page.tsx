@@ -56,6 +56,7 @@ import {
   listOtherDevelopmentsInArea,
 } from "@/lib/queries/development-extras";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { HERO_SIZES } from "../../_components/hero-sizes";
 import { isSupabaseConfigured } from "@/lib/env";
 
 export const revalidate = 60;
@@ -592,7 +593,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                         src={mediaPublicUrl(fp.media.storage_key)}
                         alt={fp.media.alt_text ?? fp.label}
                         fill
-                        sizes="33vw"
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        quality={100}
                         className="object-cover rounded"
                       />
                     </div>
@@ -877,7 +879,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             src={hero.url}
             alt={hero.alt}
             fill
-            sizes="100vw"
+            sizes={HERO_SIZES}
             priority
             className="object-cover"
           />

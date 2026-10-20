@@ -21,7 +21,9 @@ function ArticleImage({ row }: { row: ArticleListRow }) {
         src={mediaPublicUrl(row.hero.storage_key)}
         alt={row.hero.alt_text ?? row.title}
         fill
-        sizes="(min-width: 1280px) 600px, 50vw"
+        // Only the lead card has a photo: a 1.6fr column from `lg`, the full
+        // width below it.
+        sizes="(min-width: 1280px) 600px, (min-width: 1024px) 45vw, 100vw"
         className="object-cover"
       />
     );

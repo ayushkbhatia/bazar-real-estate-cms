@@ -49,7 +49,7 @@ function ArticleHero({ row }: { row: ArticleListRow }) {
         src={mediaPublicUrl(row.hero.storage_key)}
         alt={row.hero.alt_text ?? row.title}
         fill
-        sizes="(min-width: 1280px) 380px, 33vw"
+        sizes="(min-width: 1280px) 380px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         className="object-cover"
       />
     );

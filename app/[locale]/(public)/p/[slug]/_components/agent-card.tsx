@@ -85,6 +85,9 @@ export function AgentCard({
               alt={advisor.display_name}
               width={64}
               height={64}
+              // Without `sizes` a fixed-size image gets only 1x and 2x
+              // candidates, so a 3x phone stretched the 128px one.
+              sizes="64px"
               className="w-full h-full object-cover"
             />
           ) : (

@@ -16,6 +16,7 @@ import { FaqAccordion } from "./_components/faq-accordion";
 import { ListPropertyForm } from "./_components/list-property-form";
 import { PricingResources } from "./_components/pricing-resources";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { HERO_SIZES } from "../../_components/hero-sizes";
 import { asLocale } from "@/lib/i18n/locales";
 
 export async function generateMetadata({
@@ -132,7 +133,7 @@ export default async function ListYourPropertyPage({
               src={heroImage}
               alt={img(heroV, "image")?.alt ?? ""}
               fill
-              sizes="100vw"
+              sizes={HERO_SIZES}
               priority
               className="object-cover"
             />

@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { HERO_SIZES } from "../hero-sizes";
 import { fluid } from "./fluid";
 
 type Props = {
@@ -56,7 +57,7 @@ export function MHero({
           alt={imageAlt ?? ""}
           fill
           priority
-          sizes="100vw"
+          sizes={HERO_SIZES}
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (

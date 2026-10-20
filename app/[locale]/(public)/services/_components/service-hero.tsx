@@ -2,6 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { cn } from "@/lib/utils";
+import { HERO_SIZES } from "../../_components/hero-sizes";
 import { fluid } from "../../_components/marketing/fluid";
 
 type Props = {
@@ -78,7 +79,7 @@ export function ServiceHero({
             src={imageUrl}
             alt={imageAlt ?? ""}
             fill
-            sizes="100vw"
+            sizes={HERO_SIZES}
             priority
             className="object-cover"
           />

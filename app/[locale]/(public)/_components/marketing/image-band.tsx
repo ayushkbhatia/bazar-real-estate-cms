@@ -35,7 +35,10 @@ export function ImageBand({
               src={imageUrl}
               alt={imageAlt ?? ""}
               fill
-              sizes="(max-width: 767px) 100vw, 1200px"
+              // On a phone the band is far taller than wide (358×480 when
+              // `tall`), so a landscape photo is drawn at height × aspect —
+              // see HERO_SIZES for why 680px.
+              sizes="(max-width: 680px) 680px, (max-width: 767px) 100vw, 1200px"
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (

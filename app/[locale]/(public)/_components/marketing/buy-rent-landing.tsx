@@ -13,6 +13,7 @@ import { PropTypeGrid, type PropType } from "./prop-type-grid";
 import { ChipCloud } from "./chip-cloud";
 import { WhyBand } from "./why-band";
 import { Faq } from "./faq";
+import { HERO_SIZES } from "../hero-sizes";
 import {
   BuyCategoryProvider,
   HeroCategoryChips,
@@ -206,7 +207,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
               src={heroImage}
               alt={p.heroImageAlt ?? ""}
               fill
-              sizes="100vw"
+              sizes={HERO_SIZES}
               priority
               className="object-cover"
             />

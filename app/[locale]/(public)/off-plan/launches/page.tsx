@@ -49,12 +49,16 @@ export const revalidate = 300;
  * A plain `50vw` would hand a phone renders sized for a gutterless screen, and
  * the card's own default (`100vw` below 1024px) would be twice too large on
  * every phone and tablet that opens this page.
+ *
+ * Below `sm` the card's photo is square (development-card.tsx), so a landscape
+ * render is drawn at 1.5× the track's width and cropped — the phone entry asks
+ * for that drawn width, not the track's.
  */
 const CARD_SIZES = [
   "(min-width: 1024px) calc((100vw - 144px) / 3)",
   "(min-width: 768px) calc((100vw - 120px) / 2)",
   "(min-width: 640px) calc((100vw - 56px) / 2)",
-  "calc((100vw - 44px) / 2)",
+  "calc((100vw - 44px) * 0.75)",
 ].join(", ");
 
 /** The first desktop row — and a phone's first row and a half — load at once. */

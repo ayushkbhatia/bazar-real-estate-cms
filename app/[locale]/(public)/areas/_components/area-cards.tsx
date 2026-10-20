@@ -130,7 +130,10 @@ function Grid({ cards }: { cards: GridCard[] }) {
                 src={c.imgUrl}
                 alt={c.imgAlt ?? c.name}
                 fill
-                sizes="(max-width: 768px) 50vw, 25vw"
+                // 220–240px tall and narrower than that on a phone, and area
+                // photos are wide (often 2:1 or more), so the photo is drawn at
+                // ~2× the card's height and cropped. Ask for that width.
+                sizes="(max-width: 768px) 440px, (max-width: 1920px) 480px, 25vw"
                 className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
