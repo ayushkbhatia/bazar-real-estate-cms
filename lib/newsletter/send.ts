@@ -6,11 +6,15 @@ import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import type { EmailBrand } from "@/lib/content-assets/email-brand";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
 import {
+  editionLocale,
   renderNewsletter,
   unsubscribeHeaders,
   unsubscribeLinks,
   type CampaignRow,
 } from "./campaign";
+import { featureDrawer, newsletterFeatures, type NewsletterFeatures } from "./features";
+import { unresolvedFeatures } from "./feature-render";
+import { featureBlocksIn } from "@/lib/content-assets/email-feature";
 
 /**
  * The newsletter sender: start a campaign, drain its deliveries in Resend
@@ -111,8 +115,26 @@ export async function sendClaimed(
   const campaignById = new Map((campaigns ?? []).map((c) => [c.id, c as Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar">]));
   const subscriberById = new Map((subscribers ?? []).map((s) => [s.id, s]));
 
+  // Featured records, looked up once per campaign and edition for the whole
+  // batch — never per recipient. A batch is at most one minute's worth of a
+  // send, so every reader of it sees the same prices.
+  const features = new Map<string, Promise<NewsletterFeatures>>();
+  const featuresFor = (campaign: { id: string; body: string; body_ar: string | null }, edition: EmailLocale) => {
+    const key = `${campaign.id}:${edition}`;
+    let hit = features.get(key);
+    if (!hit) {
+      hit = newsletterFeatures([edition === "ar" ? campaign.body_ar : campaign.body], edition);
+      features.set(key, hit);
+    }
+    return hit;
+  };
+
   const toSend: { delivery: Delivery; input: BatchEmailInput }[] = [];
   const skipped: { id: string; patch: Record<string, unknown> }[] = [];
+  // Featured records the database didn't answer for: rather than mail cards
+  // missing, the delivery goes back in the queue (and fails after
+  // MAX_ATTEMPTS, like a refused batch).
+  const deferred: { id: string; patch: Record<string, unknown> }[] = [];
   for (const delivery of claimed) {
     const campaign = campaignById.get(delivery.campaign_id);
     const subscriber = subscriberById.get(delivery.subscriber_id);
@@ -123,17 +145,32 @@ export async function sendClaimed(
     }
     const locale: EmailLocale = delivery.locale === "ar" ? "ar" : "en";
     const links = unsubscribeLinks(subscriber.unsubscribe_token, locale);
-    const email = renderNewsletter(
-      {
-        subject: campaign.subject,
-        preheader: campaign.preheader,
-        body: campaign.body,
-        subject_ar: campaign.subject_ar ?? "",
-        preheader_ar: campaign.preheader_ar ?? "",
-        body_ar: campaign.body_ar ?? "",
-      },
-      { brand, locale, unsubscribeUrl: links.page },
-    );
+    const draft = {
+      subject: campaign.subject,
+      preheader: campaign.preheader,
+      body: campaign.body,
+      subject_ar: campaign.subject_ar ?? "",
+      preheader_ar: campaign.preheader_ar ?? "",
+      body_ar: campaign.body_ar ?? "",
+    };
+    const edition = editionLocale(draft, locale);
+    const found = await featuresFor(campaign, edition);
+    if (unresolvedFeatures(featureBlocksIn(edition === "ar" ? draft.body_ar : draft.body), found.lookup) > 0) {
+      const final = delivery.attempts >= MAX_ATTEMPTS;
+      if (final) report.failed += 1;
+      else report.retried += 1;
+      deferred.push({
+        id: delivery.id,
+        patch: { status: final ? "failed" : "queued", error: "featured listings could not be looked up" },
+      });
+      continue;
+    }
+    const email = renderNewsletter(draft, {
+      brand,
+      locale,
+      unsubscribeUrl: links.page,
+      features: (l) => featureDrawer(found, brand, l),
+    });
     toSend.push({
       delivery,
       input: {
@@ -145,7 +182,7 @@ export async function sendClaimed(
       },
     });
   }
-  await updateEach(client, skipped);
+  await updateEach(client, [...skipped, ...deferred]);
   report.skipped += skipped.length;
   if (toSend.length === 0) return report;
 

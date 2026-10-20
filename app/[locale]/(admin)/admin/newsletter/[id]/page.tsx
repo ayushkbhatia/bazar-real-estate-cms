@@ -18,6 +18,9 @@ import {
   type CampaignRow,
 } from "@/lib/newsletter/campaign";
 import { deliveryCounts, EMPTY_DELIVERY_COUNTS } from "@/lib/newsletter/send";
+import { featureDrawer, newsletterFeatures } from "@/lib/newsletter/features";
+import { isAnthropicConfigured } from "@/lib/concierge/env";
+import { listFeatureTargets } from "../_feature-targets";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { subscriberCounts } from "../_data";
 import { CampaignStatusPill } from "../_shared";
@@ -79,13 +82,34 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     };
     const unsubscribe = `${emailSiteUrl()}/newsletter/unsubscribe/preview`;
     const admin = createAdminClient();
+    // Featured cards as they would draw today — the records are live, so a
+    // listing repriced since the send shows its new price here.
+    const arabicEdition = hasArabicEdition(draft);
+    const [enFeatures, arFeatures] = await Promise.all([
+      newsletterFeatures([draft.body], "en"),
+      arabicEdition ? newsletterFeatures([draft.body_ar], "ar") : null,
+    ]);
     return (
       <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
         <CampaignReport
           campaign={campaign}
           counts={admin ? await deliveryCounts(id, admin) : EMPTY_DELIVERY_COUNTS}
-          english={renderNewsletter(draft, { brand, locale: "en", unsubscribeUrl: unsubscribe })}
-          arabic={hasArabicEdition(draft) ? renderNewsletter(draft, { brand, locale: "ar", unsubscribeUrl: unsubscribe }) : null}
+          english={renderNewsletter(draft, {
+            brand,
+            locale: "en",
+            unsubscribeUrl: unsubscribe,
+            features: (l) => featureDrawer(enFeatures, brand, l),
+          })}
+          arabic={
+            arabicEdition && arFeatures
+              ? renderNewsletter(draft, {
+                  brand,
+                  locale: "ar",
+                  unsubscribeUrl: unsubscribe,
+                  features: (l) => featureDrawer(arFeatures, brand, l),
+                })
+              : null
+          }
           from={sender.from}
           replyTo={sender.replyTo}
           canWrite={canWrite}
@@ -94,6 +118,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     );
   }
 
+  const [media, records] = await Promise.all([fetchImages(supabase), listFeatureTargets()]);
   return (
     <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
       <Composer
@@ -111,7 +136,9 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           audience: (["all", "en", "ar"].includes(campaign.audience) ? campaign.audience : "all") as "all" | "en" | "ar",
         }}
         audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr }}
-        media={await fetchImages(supabase)}
+        media={media}
+        records={records}
+        canTranslate={isAnthropicConfigured}
         canWrite={canWrite}
         canSend={canSend}
         from={sender.from}
