@@ -99,6 +99,28 @@ describe("defaults reproduce the page as it shipped", () => {
     }
   });
 
+  it("points each community type's button at its lifestyle tag", () => {
+    const items = list<Record<string, unknown>>(
+      values("community_types"),
+      "items",
+    );
+    expect(items.map((i) => i.lifestyle)).toEqual([
+      "waterfront",
+      "gated",
+      "luxury",
+      "family_friendly",
+    ]);
+    // A default the save validator would reject is a page that can't be saved.
+    const field = section("community_types")
+      .fields.filter(isListField)
+      .flatMap((f) => f.fields)
+      .find((f) => f.key === "lifestyle");
+    expect(field?.kind).toBe("select");
+    if (field?.kind !== "select") return;
+    const allowed = (field.options ?? []).map((o) => o.value);
+    for (const t of items) expect(allowed).toContain(t.lifestyle);
+  });
+
   it("keeps the six FAQ entries", () => {
     expect(faqPairs(values("faqs"))).toHaveLength(6);
   });

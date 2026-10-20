@@ -24,6 +24,7 @@ import {
 import { chipLines, headlineParts } from "@/lib/master-pages/text";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { isLifestyleTag, lifestyleSearchHref } from "@/lib/lifestyle-tags";
 
 export async function generateMetadata({
   params,
@@ -188,7 +189,11 @@ export default async function AreasPage({
             chips: chipLines(t.chips),
             chipsLabel: s(t.chips_label),
             ctaLabel: s(t.cta_label),
-            ctaHref: s(t.cta_href),
+            // A picked tag wins over the typed link: it is the editor saying
+            // "show the listings tagged this", which a URL can only imitate.
+            ctaHref: isLifestyleTag(t.lifestyle)
+              ? lifestyleSearchHref(t.lifestyle)
+              : s(t.cta_href),
             ...image,
             imageLabel: s(t.img) ?? image.imageLabel,
           };

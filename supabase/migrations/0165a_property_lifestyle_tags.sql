@@ -1,4 +1,4 @@
--- 0165_property_lifestyle_tags.sql
+-- 0165a_property_lifestyle_tags.sql
 -- Lifestyle tags on a listing: the "Communities by lifestyle" cut the Areas
 -- menu already makes (Waterfront, Family friendly, Luxury, Gated) plus Branded
 -- residences, as a classification a property carries and a search can filter
