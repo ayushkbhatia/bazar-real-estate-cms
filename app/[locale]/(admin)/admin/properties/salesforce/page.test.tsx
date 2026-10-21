@@ -18,7 +18,7 @@ vi.mock("@/lib/salesforce/client", () => ({
 }));
 vi.mock("@/lib/queries/salesforce-listings", () => ({
   listSalesforceListings: async () => h.rows,
-  getListingSyncSettings: async () => ({ paused: false, autoPublish: false, writeBack: false, lastRunAt: null, lastSummary: {} }),
+  getListingSyncSettings: async () => ({ paused: false, writeBack: false, lastRunAt: null, lastSummary: {} }),
   getMappingOptions: async () => ({
     areas: [{ id: "00000000-0000-4000-8000-000000000006", label: "Al Reem Island" }],
     developers: [],
@@ -38,7 +38,6 @@ vi.mock("@/components/brand/cms-shell", () => ({
   ),
 }));
 vi.mock("./_actions", () => ({
-  approveSalesforceListing: vi.fn(),
   saveSalesforceMapping: vi.fn(),
   setSalesforceListingHidden: vi.fn(),
   syncSalesforceListingsNow: vi.fn(),
@@ -94,7 +93,7 @@ beforeEach(() => {
       sfListingId: "a03iy000000XI30AAG",
       name: "LST-00002",
       title: "4BR Villa on Yas Island",
-      state: "awaiting_approval",
+      state: "on_website",
       property: { id: "p1", slug: "4br-villa", reference: "BAZ-AD-04891", status: "draft" },
     }),
   ];
@@ -114,26 +113,46 @@ describe("Salesforce listings screen", () => {
     expect(within(held).getByText("Fix here")).toBeTruthy();
   });
 
-  it("offers Approve on a listing waiting for its first yes", async () => {
+  it("sends a listing on the website to its editor, with no buttons of its own", async () => {
     render(await SalesforceListingsPage());
-    const waiting = screen.getByText("4BR Villa on Yas Island").closest("li")!;
-    expect(within(waiting).getByRole("button", { name: "Approve" })).toBeTruthy();
-    expect(within(waiting).getByRole("link", { name: "Open in editor" }).getAttribute("href")).toBe("/admin/properties/p1");
+    const drafted = screen.getByText("4BR Villa on Yas Island").closest("li")!;
+    expect(within(drafted).getByText("on the website")).toBeTruthy();
+    expect(within(drafted).getByText(/BAZ-AD-04891 · draft/)).toBeTruthy();
+    expect(within(drafted).queryByRole("button")).toBeNull();
+    expect(within(drafted).getByRole("link", { name: "Open in editor" }).getAttribute("href")).toBe("/admin/properties/p1");
+  });
+
+  it("offers to keep a waiting listing out before its draft is made", async () => {
+    render(await SalesforceListingsPage());
+    const held = screen.getByText("3BR Apartment").closest("li")!;
+    expect(within(held).getByRole("button", { name: "Don’t bring in" })).toBeTruthy();
+  });
+
+  it("flags a withdrawn listing the website still shows", async () => {
+    h.rows = [
+      row({
+        state: "withdrawn",
+        withdrawnReason: "Deleted in Salesforce",
+        property: { id: "p1", slug: "x", reference: "BAZ-AD-04891", status: "published" },
+      }),
+    ];
+    render(await SalesforceListingsPage());
+    expect(screen.getByText(/Still published on the website/)).toBeTruthy();
   });
 
   it("gives an agent the view without the controls", async () => {
     h.role = "agent";
     render(await SalesforceListingsPage());
-    expect(screen.queryByRole("button", { name: "Approve" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Don’t bring in" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Sync now" })).toBeNull();
     expect(screen.queryByRole("combobox")).toBeNull();
   });
 
-  it("says plainly when the org is a sandbox, and offers nothing to approve", async () => {
+  it("says plainly when the org is a sandbox, and offers nothing to decide", async () => {
     h.org = "bazarrealestate--sand.sandbox.my.salesforce.com";
     h.rows = [row({ state: "mirror_only" })];
     render(await SalesforceListingsPage());
     expect(screen.getByText("sandbox · nothing is published")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /Hide from website|Approve/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Don’t bring in|Allow on website/ })).toBeNull();
   });
 });

@@ -1,9 +1,10 @@
 /**
  * @vitest-environment node
  *
- * setPropertyCardLabels on a listing published from Salesforce: the two
- * built-in labels are Salesforce's checkboxes (guide v1.3), so ticking one
- * here is refused rather than saved and quietly reverted by the next sync.
+ * setPropertyCardLabels on a draft that came from Salesforce: the website owns
+ * it (0166), so the two built-in labels Salesforce ticked are the editor's to
+ * change like any other — and unticking one has to clear its legacy boolean,
+ * which the card would otherwise still read as a tick.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -73,38 +74,24 @@ function seed(snapshot: Row | null) {
   db.salesforce_listings = snapshot ? [{ sf_listing_id: SF, snapshot, unresolved: {} }] : [];
 }
 
-describe("setPropertyCardLabels on a Salesforce listing", () => {
+describe("setPropertyCardLabels on a Salesforce draft", () => {
   beforeEach(() => seed({ v: 3, listingId: SF, title: "Villa", exclusive: true, vacantOnTransfer: false }));
 
-  it("refuses to tick a built-in label Salesforce has unticked", async () => {
-    const res = await setPropertyCardLabels(PROPERTY, ["exclusive", "vacant_on_transfer", "new_launch"]);
-    expect(res).toEqual({
-      status: "error",
-      message: "Vacant on transfer comes from Salesforce on this listing. Tick it there; the website follows on the next sync.",
-    });
-    expect(updates).toEqual([]);
-  });
-
-  it("refuses to untick one Salesforce has ticked", async () => {
+  it("unticks a built-in label Salesforce ticked, legacy boolean and all", async () => {
     const res = await setPropertyCardLabels(PROPERTY, ["new_launch"]);
-    expect(res.status).toBe("error");
-    expect(res.status === "error" && res.message).toContain("Exclusive comes from Salesforce");
-  });
-
-  it("saves the website's own labels around Salesforce's", async () => {
-    const res = await setPropertyCardLabels(PROPERTY, ["exclusive", "new_launch", "price_drop"]);
     expect(res).toEqual({ status: "ok" });
-    expect(db.properties[0].flags).toMatchObject({ exclusive: true, labels: ["exclusive", "new_launch", "price_drop"] });
+    expect(db.properties[0].flags).toEqual({ exclusive: false, vacant_on_transfer: false, labels: ["new_launch"] });
   });
 
-  it("leaves a label alone when Salesforce cannot say (the field hidden)", async () => {
-    seed({ v: 3, listingId: SF, title: "Villa", exclusive: null, vacantOnTransfer: null });
-    const res = await setPropertyCardLabels(PROPERTY, ["vacant_on_transfer"]);
+  it("ticks one Salesforce left unticked", async () => {
+    const res = await setPropertyCardLabels(PROPERTY, ["exclusive", "vacant_on_transfer"]);
     expect(res).toEqual({ status: "ok" });
+    expect(db.properties[0].flags).toMatchObject({ exclusive: true, vacant_on_transfer: true });
   });
 
-  it("does not apply to a listing the CMS owns", async () => {
-    seed(null);
-    expect(await setPropertyCardLabels(PROPERTY, ["vacant_on_transfer"])).toEqual({ status: "ok" });
+  it("keeps the rest of the bag", async () => {
+    db.properties[0].flags = { exclusive: true, feature_on_homepage: true, labels: [] };
+    await setPropertyCardLabels(PROPERTY, ["exclusive"]);
+    expect(db.properties[0].flags).toMatchObject({ feature_on_homepage: true, exclusive: true, labels: ["exclusive"] });
   });
 });

@@ -12,11 +12,9 @@ import {
 } from "@/lib/salesforce/client";
 import { isLiveWebsiteStatus } from "./fields";
 import { revalidatePath } from "next/cache";
-import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { recordHeartbeat, reportError, reportIssue } from "@/lib/observability";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { generatePropertyReference, slugify } from "@/lib/slug";
-import { evaluatePublishability } from "@/lib/publishability";
 import { hashSource } from "@/lib/i18n/mt/translate";
 import { explainAbsences, fetchPublishedListings } from "./fetch";
 import { downloadImage, storeImage } from "./images";
@@ -25,7 +23,6 @@ import {
   applyCardFlags,
   decideState,
   planListing,
-  targetStatus,
   type CardFlags,
   type Hold,
   type ListingState,
@@ -46,26 +43,28 @@ import {
 /**
  * The listing sync: one run, start to finish.
  *
- * ── Two phases ───────────────────────────────────────────────────────────
- * Content first, status second. Phase one walks every listing: plans it,
- * creates or corrects its property row, copies its photos. Phase two re-reads
- * the admin flags (approved, hidden) in one query and only then decides what
- * is live. The split is for the flags: an admin who hides a listing while a
- * run is copying photos must not have that undone by a decision the run made
- * from flags it read a minute earlier.
+ * ── Salesforce supplies the first draft, and nothing after ──────────────
+ * A listing new to the website becomes a property row once: a DRAFT, with
+ * every fact the CRM gave and its whole photo gallery. From that moment the
+ * row is the website's (0166, the client's call of 21 Oct 2026): editors
+ * change any field and any photo in the CMS and publish it themselves. The
+ * sync never writes that row, its photos or its status again — not when the
+ * CRM edits the listing, not when the CRM withdraws it. A withdrawal is
+ * recorded on the mirror and shown in the editor, for a person to act on.
  *
- * ── Drift, not hashes ────────────────────────────────────────────────────
- * A synced field is compared with the value actually in the row, every run.
- * Comparing against a hash of what the sync last wrote would miss an editor
- * changing a CRM-owned field in the CMS: the hash would still match and the
- * edit would stick, silently disagreeing with Salesforce. The CRM owns those
- * fields; the comparison is what makes that true.
+ * The row is created only once its photos are all copied, so the draft an
+ * editor opens is complete and there is nothing left for the sync to add.
+ *
+ * ── Two phases ───────────────────────────────────────────────────────────
+ * Content first, mirror second. Phase one walks every listing: plans it,
+ * copies the photos of a new one and creates its draft. Phase two re-reads
+ * the admin flags (hidden) in one query and records each listing's state.
  *
  * ── Cost ─────────────────────────────────────────────────────────────────
- * In steady state: one token, one SOQL query, and five or six database reads.
- * Writes happen only where something changed. Photos are the expensive part
- * and are bounded per run by count and by the clock; a listing whose photos
- * are still copying waits rather than going live with half a gallery.
+ * In steady state: one token, one SOQL query, and four or five database
+ * reads. A listing already on the website costs no write but its mirror row.
+ * Photos are bounded per run by count and by the clock; a new listing's draft
+ * waits for the rest of its gallery rather than arriving with half of it.
  */
 
 type Admin = SupabaseClient<Database>;
@@ -111,23 +110,19 @@ type PropertyRow = {
 
 type MirrorRow = Database["public"]["Tables"]["salesforce_listings"]["Row"];
 
-type LinkRow = { property_id: string; media_id: string; role: MediaRole; sort_order: number };
-
 export type SyncSummary = {
   ok: boolean;
   skipped?: string;
   org?: string | null;
   sandbox?: boolean;
   seen: number;
+  /** New drafts this run. */
   created: number;
-  updated: number;
-  published: number;
-  unpublished: number;
+  /** Listings whose draft exists: the website's to edit and publish. */
+  onWebsite: number;
   held: number;
   hidden: number;
   mirrorOnly: number;
-  awaitingApproval: number;
-  live: number;
   withdrawn: number;
   invisible: number;
   imagesCopied: number;
@@ -142,14 +137,10 @@ function emptySummary(): SyncSummary {
     ok: true,
     seen: 0,
     created: 0,
-    updated: 0,
-    published: 0,
-    unpublished: 0,
+    onWebsite: 0,
     held: 0,
     hidden: 0,
     mirrorOnly: 0,
-    awaitingApproval: 0,
-    live: 0,
     withdrawn: 0,
     invisible: 0,
     imagesCopied: 0,
@@ -160,7 +151,9 @@ function emptySummary(): SyncSummary {
   };
 }
 
-export type Revalidator = (paths: { propertyUrls: string[]; lists: boolean }) => void;
+/** Called when a run changed what the admin screens show. Nothing public:
+ *  the sync never publishes, edits or takes down a listing. */
+export type Revalidator = () => void;
 
 type Ctx = {
   admin: Admin;
@@ -168,17 +161,12 @@ type Ctx = {
   startedAt: number;
   orgHost: string;
   sandbox: boolean;
-  autoPublish: boolean;
   lookups: Lookups;
   mediaByKey: Map<string, string>;
-  sfMediaIds: Set<string>;
   properties: Map<string, PropertyRow>;
-  links: Map<string, LinkRow[]>;
   mirror: Map<string, MirrorRow>;
   imageDownloads: number;
   summary: SyncSummary;
-  dirtyUrls: Set<string>;
-  listsDirty: boolean;
   /** Whether this run may call Salesforce (false when re-applying from stored
    *  snapshots without credentials). */
   canFetch: boolean;
@@ -278,25 +266,6 @@ async function loadState(admin: Admin, orgHost: string) {
     ),
   ]);
 
-  const links = new Map<string, LinkRow[]>();
-  const ids = props.map((p) => p.id);
-  for (let i = 0; i < ids.length; i += 200) {
-    const chunk = ids.slice(i, i + 200);
-    const rows = await allRows<LinkRow>((from, to) =>
-      admin
-        .from("property_media")
-        .select("property_id, media_id, role, sort_order")
-        .in("property_id", chunk)
-        .order("property_id")
-        .order("media_id")
-        .range(from, to),
-    );
-    for (const l of rows) {
-      const list = links.get(l.property_id) ?? [];
-      list.push(l);
-      links.set(l.property_id, list);
-    }
-  }
   return {
     mirror: new Map(mirror.map((m) => [m.sf_listing_id, m])),
     properties: new Map(
@@ -305,39 +274,10 @@ async function loadState(admin: Admin, orgHost: string) {
         .map((p) => [p.salesforce_listing_id as string, p]),
     ),
     mediaByKey: new Map(media.map((m) => [m.source_key, m.media_id])),
-    sfMediaIds: new Set(media.map((m) => m.media_id)),
-    links,
   };
 }
 
 // ── helpers ─────────────────────────────────────────────────────────────
-
-function sameValue(a: unknown, b: unknown): boolean {
-  if (a == null && b == null) return true;
-  if (a == null || b == null) return false;
-  if (typeof a === "number" || typeof b === "number") return Number(a) === Number(b);
-  if (Array.isArray(a) && Array.isArray(b)) {
-    return a.length === b.length && a.every((v, i) => sameValue(v, b[i]));
-  }
-  if (typeof a === "object" && typeof b === "object") {
-    const ka = Object.keys(a as object).sort();
-    const kb = Object.keys(b as object).sort();
-    return (
-      sameValue(ka, kb) &&
-      ka.every((k) => sameValue((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]))
-    );
-  }
-  return String(a) === String(b);
-}
-
-/** The synced fields that differ from the row as it stands. */
-export function driftOf(desired: SyncedFields, current: Record<string, unknown>): Partial<SyncedFields> {
-  const patch: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(desired)) {
-    if (!sameValue(v, current[k])) patch[k] = v;
-  }
-  return patch as Partial<SyncedFields>;
-}
 
 async function audit(
   admin: Admin,
@@ -398,6 +338,11 @@ type Planned = {
   imagesPending: number;
   imageFailures: Record<string, { reason: string; at: string }>;
   seen: boolean;
+  /** Its draft existed before this run: the website's now, untouched. */
+  handedOver: boolean;
+  /** Its draft was on the website and is gone — an editor deleted it. Not
+   *  brought back unless someone allows it again. */
+  deletedHere: boolean;
 };
 
 async function ensureMirror(ctx: Ctx, p: Planned): Promise<void> {
@@ -504,28 +449,6 @@ function withProvenance(
   return i18n;
 }
 
-async function updateFields(ctx: Ctx, p: Planned, property: PropertyRow, fields: SyncedFields): Promise<void> {
-  const patch = driftOf(fields, property) as Record<string, unknown>;
-  const flags = applyCardFlags(property.flags, p.cardFlags);
-  if (flags) patch.flags = flags;
-  if (Object.keys(patch).length === 0) return;
-
-  if (Object.entries(TWIN_OF).some(([twin, english]) => twin in patch || english in patch)) {
-    patch.i18n = withProvenance(property.i18n, fields, Object.keys(patch), ctx.now);
-  }
-
-  const { data, error } = await ctx.admin
-    .from("properties")
-    .update(patch as Database["public"]["Tables"]["properties"]["Update"])
-    .eq("id", property.id)
-    .select(SYNC_COLUMNS)
-    .maybeSingle();
-  if (error || !data) throw new Error(`property update failed: ${error?.message ?? "no row"}`);
-  ctx.properties.set(p.snapshot.listingId, data as unknown as PropertyRow);
-  ctx.summary.updated += 1;
-  if (property.status === "published") ctx.dirtyUrls.add(propertyUrl(property));
-}
-
 type Wanted = { ref: ImageRef; role: MediaRole };
 
 function wantedImages(s: ListingSnapshot): Wanted[] {
@@ -586,7 +509,6 @@ async function copyImages(ctx: Ctx, p: Planned): Promise<void> {
       continue;
     }
     ctx.mediaByKey.set(key, stored.mediaId);
-    ctx.sfMediaIds.add(stored.mediaId);
     delete failures[key];
     ctx.summary.imagesCopied += 1;
     ready += 1;
@@ -629,77 +551,21 @@ export function desiredLinks(
   return out;
 }
 
-/**
- * Bring the listing's photo links in line with the CRM's, touching only what
- * came from Salesforce. A photo an editor added stays; if it was the hero and
- * the CRM has one, it steps down into the gallery rather than disappearing.
- */
-async function reconcileLinks(ctx: Ctx, p: Planned, property: PropertyRow): Promise<void> {
+/** A new draft's photos, as the CRM ordered them. Its first and only links:
+ *  after this the gallery is the editor's. */
+async function linkPhotos(ctx: Ctx, p: Planned, property: PropertyRow): Promise<void> {
   const want = desiredLinks(p.snapshot, ctx.mediaByKey);
-  const have = ctx.links.get(property.id) ?? [];
-  const haveById = new Map(have.map((l) => [l.media_id, l]));
-  const wantIds = new Set(want.map((w) => w.media_id));
-  let changed = false;
-
-  const stale = have.filter((l) => ctx.sfMediaIds.has(l.media_id) && !wantIds.has(l.media_id));
-  if (stale.length) {
-    await ctx.admin
-      .from("property_media")
-      .delete()
-      .eq("property_id", property.id)
-      .in("media_id", stale.map((l) => l.media_id));
-    changed = true;
-  }
-
-  const wantsHero = want.some((w) => w.role === "hero");
-  const wantsPlan = want.some((w) => w.role === "floor_plan");
-  const theirs = have.filter((l) => !ctx.sfMediaIds.has(l.media_id));
-  for (const l of theirs) {
-    if (l.role === "hero" && wantsHero) {
-      await ctx.admin
-        .from("property_media")
-        .update({ role: "gallery", sort_order: 1000 + l.sort_order })
-        .eq("property_id", property.id)
-        .eq("media_id", l.media_id);
-      changed = true;
-    } else if (l.role === "floor_plan" && wantsPlan) {
-      // Both public render sites read the FIRST floor plan, so a second would
-      // be invisible. The CRM's wins; the editor's stays in the library.
-      await ctx.admin
-        .from("property_media")
-        .delete()
-        .eq("property_id", property.id)
-        .eq("media_id", l.media_id);
-      changed = true;
-    }
-  }
-
-  const upserts = want.filter((w) => {
-    const h = haveById.get(w.media_id);
-    return !h || h.role !== w.role || h.sort_order !== w.sort_order;
-  });
-  if (upserts.length) {
-    const { error } = await ctx.admin.from("property_media").upsert(
-      upserts.map((w) => ({ property_id: property.id, ...w })),
-      { onConflict: "property_id,media_id" },
-    );
-    if (error) throw new Error(`photo links failed: ${error.message}`);
-    changed = true;
-  }
-
-  if (changed) {
-    ctx.links.set(property.id, [
-      ...theirs.filter((l) => !(l.role === "floor_plan" && wantsPlan)).map((l) =>
-        l.role === "hero" && wantsHero ? { ...l, role: "gallery" as const, sort_order: 1000 + l.sort_order } : l,
-      ),
-      ...want.map((w) => ({ property_id: property.id, ...w })),
-    ]);
-    if (property.status === "published") ctx.dirtyUrls.add(propertyUrl(property));
-  }
+  if (want.length === 0) return;
+  const { error } = await ctx.admin.from("property_media").upsert(
+    want.map((w) => ({ property_id: property.id, ...w })),
+    { onConflict: "property_id,media_id" },
+  );
+  if (error) throw new Error(`photo links failed: ${error.message}`);
 }
 
 async function contentPhase(ctx: Ctx, snapshot: ListingSnapshot, seen: boolean): Promise<Planned> {
   const plan = planListing(snapshot, ctx.lookups, ctx.now);
+  const existing = ctx.properties.get(snapshot.listingId) ?? null;
   const p: Planned = {
     snapshot,
     hash: snapshotHash(snapshot),
@@ -708,73 +574,104 @@ async function contentPhase(ctx: Ctx, snapshot: ListingSnapshot, seen: boolean):
     unresolved: plan.unresolved,
     fields: plan.fields,
     cardFlags: plan.cardFlags,
-    property: ctx.properties.get(snapshot.listingId) ?? null,
+    property: existing,
     imagesTotal: wantedImages(snapshot).length,
     imagesReady: 0,
     imagesPending: 0,
     imageFailures: {},
     seen,
+    handedOver: false,
+    deletedHere: false,
   };
 
   // A sandbox's listings are evaluated and shown on the admin screen, and go
   // no further. Nothing from a sandbox reaches `properties` or the bucket.
   if (ctx.sandbox) return p;
 
+  // Already on the website: the editors' now. Not one write.
+  if (existing) {
+    p.handedOver = true;
+    return p;
+  }
+
   if (!plan.fields) return p;
 
+  const mirror = ctx.mirror.get(snapshot.listingId);
+  // Hidden before it arrived: no draft, and no photos copied for one.
+  if (mirror?.hidden_at) return p;
+  // Its draft was here and is not any more. Bringing it back would undo an
+  // editor's delete every fifteen minutes.
+  if (mirror?.state === "on_website") {
+    p.deletedHere = true;
+    return p;
+  }
+
   await ensureMirror(ctx, p);
-  let property = p.property;
-  if (!property) property = await createProperty(ctx, p, plan.fields);
-  else await updateFields(ctx, p, property, plan.fields);
-  property = ctx.properties.get(snapshot.listingId) ?? property;
-  p.property = property;
-  if (!property) return p;
-
   await copyImages(ctx, p);
-  await reconcileLinks(ctx, p, property);
 
-  if (p.imagesTotal > 0 && p.imagesReady === 0 && p.imagesPending === 0) {
-    p.holds.push({
-      code: "photos_unavailable",
-      fix: "salesforce",
-      message: `None of the ${p.imagesTotal} photos could be copied: ${Object.values(p.imageFailures)
-        .map((f) => f.reason)
-        .filter((v, i, a) => a.indexOf(v) === i)
-        .join("; ")}.`,
-    });
-  } else if (p.imagesPending > 0 && property.status !== "published") {
-    // A listing's first appearance waits for its whole gallery. One already
-    // live keeps its place while the new photos arrive.
+  if (p.imagesPending > 0) {
+    // The draft waits for its whole gallery: once it exists, nothing more is
+    // added to it.
     p.holds.push({
       code: "photos_pending",
       fix: "wait",
-      message: `${p.imagesReady} of ${p.imagesTotal} photos copied so far; the rest follow on the next runs.`,
+      message: `${p.imagesReady} of ${p.imagesTotal} photos copied so far; the draft is created when the rest have followed.`,
     });
+    return p;
   }
   const failedCount = Object.keys(p.imageFailures).length;
-  if (failedCount > 0 && p.imagesReady > 0) {
+  if (failedCount > 0) {
     p.notes.push({
       code: "photos_failed",
       message: `${failedCount} of ${p.imagesTotal} photos could not be copied (${[
         ...new Set(Object.values(p.imageFailures).map((f) => f.reason)),
-      ].join("; ")}).`,
+      ].join("; ")}). Add them in the editor.`,
     });
   }
+
+  const property = await createProperty(ctx, p, plan.fields);
+  p.property = property;
+  if (property) await linkPhotos(ctx, p, property);
   return p;
 }
 
-// ── phase two: status ───────────────────────────────────────────────────
+// ── phase two: the mirror ───────────────────────────────────────────────
+
+/**
+ * What the CRM left out of a draft, as the editor who completes it reads it:
+ * the holds that would once have kept it off the website, each now a gap to
+ * fill in the CMS. The publish gate still refuses what the law requires.
+ */
+export function draftGaps(holds: readonly Hold[], unresolved: Unresolved): Note[] {
+  const out: Note[] = [];
+  for (const h of holds) {
+    if (h.code === "unmapped_location") {
+      out.push({
+        code: "draft_no_area",
+        message: `Salesforce gives the area as "${unresolved.location ?? "?"}", which matches no area on the website. Choose the area here.`,
+      });
+    } else if (h.code === "unmapped_developer") {
+      out.push({
+        code: "draft_no_developer",
+        message: `Salesforce gives the developer as "${unresolved.developer ?? "?"}", which matches no developer on the website. Choose the developer here.`,
+      });
+    } else if (h.fix === "salesforce") {
+      out.push({ code: `draft_${h.code}`, message: h.message });
+    }
+  }
+  return out;
+}
 
 type Decision = { p: Planned; state: ListingState; holds: Hold[] };
 
 async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
   // The flags, fresh. See "Two phases" above.
   const ids = planned.map((p) => p.snapshot.listingId);
-  const flags = new Map<string, { approved_at: string | null; hidden_at: string | null }>();
+  const flags = new Map<string, { hidden_at: string | null }>();
   for (let i = 0; i < ids.length; i += 200) {
     const { data, error } = await ctx.admin
       .from("salesforce_listings")
-      .select("sf_listing_id, approved_at, hidden_at")
+      .select("sf_listing_id, hidden_at")
       .in("sf_listing_id", ids.slice(i, i + 200));
     if (error) throw new Error(`flag read failed: ${error.message}`);
     for (const f of data ?? []) flags.set(f.sf_listing_id, f);
@@ -786,87 +683,33 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
 
   for (const p of planned) {
     const id = p.snapshot.listingId;
-    const f = flags.get(id);
-    let holds = p.holds;
-    let state: ListingState = decideState({
+    const mirror = ctx.mirror.get(id);
+    const onWebsite = !!p.property && !ctx.sandbox;
+    const state: ListingState = decideState({
       sandbox: ctx.sandbox,
       withdrawn: false,
-      hidden: !!f?.hidden_at,
-      holds,
-      approved: !!f?.approved_at,
-      autoPublish: ctx.autoPublish,
+      onWebsite,
+      hidden: p.deletedHere || !!flags.get(id)?.hidden_at,
     });
 
-    const property = p.property;
-    if (state === "live" && property && p.fields) {
-      // The CMS's own gate, on the row as it will be. The plan's holds should
-      // already cover everything it checks; this is the belt to those braces,
-      // so a Salesforce listing can never go live past a rule an editor
-      // cannot.
-      const gate = evaluatePublishability({
-        status: property.status,
-        has_developer: p.fields.developer_id != null,
-        mode: p.fields.mode,
-        property_form: p.fields.property_form,
-        listing_permit_no: p.fields.listing_permit_no,
-        listing_permit_expires_at: p.fields.listing_permit_expires_at,
-        slug: property.slug,
-        title: p.fields.title,
-        price_aed: p.fields.price_aed,
-        now: ctx.now,
-      });
-      if (!gate.ok) {
-        holds = [...holds, ...gate.blockers.map((b) => ({ code: "gate" as const, fix: "website" as const, message: b }))];
-        state = "held";
-      }
-    }
+    // On the website, the CRM's gaps are the editor's to fill and the publish
+    // gate's to enforce: nothing is held, and nothing waits on a mapping. The
+    // notes are kept from the run that made the draft — what Salesforce left
+    // out of it — rather than rewritten from a record the website no longer
+    // follows.
+    const holds = onWebsite ? [] : p.holds;
+    const notes = p.handedOver
+      ? ((mirror?.notes as Note[] | null) ?? [])
+      : onWebsite
+        ? [...draftGaps(p.holds, p.unresolved), ...p.notes]
+        : p.notes;
+    const imagesTotal = p.handedOver ? (mirror?.images_total ?? 0) : p.imagesTotal;
+    const imagesReady = p.handedOver ? (mirror?.images_ready ?? 0) : p.imagesReady;
 
-    // A listing with no row at all cannot be live, whatever the flags say.
-    if (state === "live" && !property) state = "held";
-
-    let approvedAt = f?.approved_at ?? null;
-    if (property && !ctx.sandbox) {
-      const next = targetStatus(state, property.status);
-      if (next !== property.status) {
-        const patch: Database["public"]["Tables"]["properties"]["Update"] = { status: next };
-        if (next === "published" && !property.published_at) {
-          const crmDate = p.snapshot.publishedOn ? Date.parse(`${p.snapshot.publishedOn}T00:00:00Z`) : NaN;
-          patch.published_at =
-            Number.isFinite(crmDate) && crmDate <= ctx.now.getTime() ? new Date(crmDate).toISOString() : nowIso;
-        }
-        const { error } = await ctx.admin.from("properties").update(patch).eq("id", property.id);
-        if (error) {
-          ctx.summary.errors.push(`status ${id}: ${error.message}`);
-        } else {
-          const url = propertyUrl(property);
-          ctx.dirtyUrls.add(url);
-          ctx.listsDirty = true;
-          if (next === "published") {
-            ctx.summary.published += 1;
-            await audit(ctx.admin, "property.salesforce_published", property.id, {
-              salesforce_listing: p.snapshot.listingName ?? id,
-            });
-          } else if (property.status === "published") {
-            ctx.summary.unpublished += 1;
-            await audit(ctx.admin, "property.salesforce_unpublished", property.id, {
-              salesforce_listing: p.snapshot.listingName ?? id,
-              state,
-              holds: holds.map((h) => h.code),
-            });
-          }
-          property.status = next;
-        }
-      }
-      // Going live under auto-publish is an approval: switching auto-publish
-      // off later must not take down what it already put up.
-      if (state === "live" && !approvedAt) approvedAt = nowIso;
-    }
-
-    if (state === "live") ctx.summary.live += 1;
+    if (state === "on_website") ctx.summary.onWebsite += 1;
     else if (state === "held") ctx.summary.held += 1;
     else if (state === "hidden") ctx.summary.hidden += 1;
     else if (state === "mirror_only") ctx.summary.mirrorOnly += 1;
-    else if (state === "awaiting_approval") ctx.summary.awaitingApproval += 1;
 
     decisions.push({ p, state, holds });
     rows.push({
@@ -878,24 +721,29 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
       sf_last_modified_at: p.snapshot.lastModifiedAt,
       state,
       holds: holds as unknown as Json,
-      notes: p.notes as unknown as Json,
-      unresolved: p.unresolved as unknown as Json,
+      notes: notes as unknown as Json,
+      unresolved: (onWebsite ? {} : p.unresolved) as unknown as Json,
       snapshot: p.snapshot as unknown as Json,
       snapshot_hash: p.hash,
-      images_total: p.imagesTotal,
-      images_ready: p.imagesReady,
-      image_failures: p.imageFailures as unknown as Json,
+      images_total: imagesTotal,
+      images_ready: imagesReady,
+      image_failures: (p.handedOver ? (mirror?.image_failures ?? {}) : p.imageFailures) as unknown as Json,
       withdrawn_at: null,
       withdrawn_reason: null,
       last_synced_at: nowIso,
       last_error: null,
       ...(p.seen ? { last_seen_at: nowIso } : {}),
-      ...(approvedAt && !f?.approved_at ? { approved_at: approvedAt } : {}),
     });
+
+    if (p.deletedHere && !flags.get(id)?.hidden_at) {
+      // Recorded as a hide, so the screen shows it as one and "Allow on
+      // website" is how a deleted draft comes back.
+      await ctx.admin.from("salesforce_listings").update({ hidden_at: nowIso }).eq("sf_listing_id", id);
+    }
   }
 
-  // Flags an admin owns (approved_by, hidden_at, hidden_by) are never in this
-  // payload, so the upsert cannot overwrite them.
+  // Flags an admin owns (approved_at, approved_by, hidden_at, hidden_by) are
+  // never in this payload, so the upsert cannot overwrite them.
   for (let i = 0; i < rows.length; i += 100) {
     const { error } = await ctx.admin
       .from("salesforce_listings")
@@ -923,16 +771,24 @@ const WEBSITE_ERROR_MAX = 32_000;
  * Their contract: Published with the URL on success; Deactivated with the
  * reason on failure, which takes the listing out of the published set until
  * the CRM team fixes it and publishes it again. Only a failure THEY can fix
- * deactivates. A listing waiting on us — a location nobody has mapped, an
- * admin's approval, photos still copying — keeps its status, so it stays in
- * the sweep and goes live the moment we are done; the error field says what
- * it is waiting for. Null means say nothing: a sandbox, or a listing the CRM
+ * deactivates. A listing waiting on us — photos still copying — keeps its
+ * status, so it stays in the sweep and its draft is made the moment we are
+ * done; the error field says what it is waiting for. A listing whose draft is
+ * on the website is Published, with its URL, only once an editor has
+ * published it there. Null means say nothing: a sandbox, or a listing the CRM
  * itself has already withdrawn.
  */
 export function writeBackFor(state: ListingState, holds: readonly Hold[], liveUrl: string | null): WriteBack | null {
   switch (state) {
     case "live":
       return { Website_Status__c: "Published", Website_Listing_URL__c: liveUrl, Website_Error__c: null };
+    case "on_website":
+      return liveUrl
+        ? { Website_Status__c: "Published", Website_Listing_URL__c: liveUrl, Website_Error__c: null }
+        : {
+            Website_Listing_URL__c: null,
+            Website_Error__c: "A draft on the website. The Bazar team edit it and publish it there.",
+          };
     case "hidden":
       return {
         Website_Status__c: "Deactivated",
@@ -998,7 +854,8 @@ async function writeBackPhase(ctx: Ctx, decisions: Decision[]): Promise<void> {
   if (ctx.sandbox || !ctx.writeBack || !ctx.canFetch) return;
   for (const { p, state, holds } of decisions) {
     const property = p.property;
-    const liveUrl = state === "live" && property ? `${siteOrigin()}${propertyUrl(property)}` : null;
+    const liveUrl =
+      state === "on_website" && property?.status === "published" ? `${siteOrigin()}${propertyUrl(property)}` : null;
     const want = writeBackFor(state, holds, liveUrl);
     if (!want) continue;
     const delta = writeBackDelta(want, p.snapshot);
@@ -1021,21 +878,13 @@ async function writeBackPhase(ctx: Ctx, decisions: Decision[]): Promise<void> {
   }
 }
 
+/**
+ * Salesforce no longer publishes this listing. Recorded on the mirror and
+ * nowhere else: a draft on the website is the website's, so whether it comes
+ * down is an editor's decision. The editor shows them the withdrawal and its
+ * reason (SalesforceSourceCard).
+ */
 async function withdraw(ctx: Ctx, row: MirrorRow, reason: string, status: string | null = null): Promise<void> {
-  const property = ctx.properties.get(row.sf_listing_id);
-  if (property && property.status === "published") {
-    const { error } = await ctx.admin.from("properties").update({ status: "off_market" }).eq("id", property.id);
-    if (!error) {
-      ctx.summary.unpublished += 1;
-      ctx.dirtyUrls.add(propertyUrl(property));
-      ctx.listsDirty = true;
-      await audit(ctx.admin, "property.salesforce_unpublished", property.id, {
-        salesforce_listing: row.sf_listing_name ?? row.sf_listing_id,
-        state: "withdrawn",
-        reason,
-      });
-    }
-  }
   await ctx.admin
     .from("salesforce_listings")
     .update({
@@ -1061,14 +910,11 @@ async function heartbeat(summary: SyncSummary, detail: string): Promise<void> {
 function describe(s: SyncSummary): string {
   const parts = [
     `seen ${s.seen}`,
-    `live ${s.live}`,
-    s.awaitingApproval ? `awaiting approval ${s.awaitingApproval}` : null,
+    `on the website ${s.onWebsite}`,
     s.held ? `held ${s.held}` : null,
     s.hidden ? `hidden ${s.hidden}` : null,
     s.mirrorOnly ? `evaluated ${s.mirrorOnly}` : null,
-    s.created ? `created ${s.created}` : null,
-    s.published ? `published ${s.published}` : null,
-    s.unpublished ? `taken down ${s.unpublished}` : null,
+    s.created ? `new drafts ${s.created}` : null,
     s.withdrawn ? `withdrawn ${s.withdrawn}` : null,
     s.imagesCopied ? `photos ${s.imagesCopied}` : null,
     s.writtenBack ? `written back ${s.writtenBack}` : null,
@@ -1107,7 +953,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
 
   const { data: settings } = await admin
     .from("salesforce_listing_sync")
-    .select("paused, auto_publish, write_back")
+    .select("paused, write_back")
     .eq("id", 1)
     .maybeSingle();
   if (settings?.paused && !reapply) {
@@ -1148,14 +994,11 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
       startedAt: Date.now(),
       orgHost: effectiveOrg,
       sandbox: summary.sandbox,
-      autoPublish: !!settings?.auto_publish,
       writeBack: !!settings?.write_back,
       lookups: await loadLookups(admin),
       ...state,
       imageDownloads: 0,
       summary,
-      dirtyUrls: new Set(),
-      listsDirty: false,
       canFetch: isSalesforceConfigured && !!orgHost,
     };
 
@@ -1227,10 +1070,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
     const decisions = await statusPhase(ctx, planned);
     await writeBackPhase(ctx, decisions);
 
-    const revalidate = opts.revalidate ?? defaultRevalidate;
-    if (ctx.dirtyUrls.size || ctx.listsDirty) {
-      revalidate({ propertyUrls: [...ctx.dirtyUrls], lists: ctx.listsDirty || ctx.dirtyUrls.size > 0 });
-    }
+    if (summary.created || summary.withdrawn) (opts.revalidate ?? defaultRevalidate)();
 
     if (summary.hiddenFields.length) {
       await reportIssue("Salesforce hides listing fields from the integration user", {
@@ -1269,22 +1109,8 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
   }
 }
 
-const LIST_PATHS = [
-  "/",
-  "/buy",
-  "/buy/ready",
-  "/buy/resale",
-  "/buy/search",
-  "/rent",
-  "/rent/search",
-  "/off-plan/search",
-  "/commercial",
-];
-
 /** Route handler or server action only — both may revalidate. */
-function defaultRevalidate(paths: { propertyUrls: string[]; lists: boolean }): void {
+function defaultRevalidate(): void {
   revalidatePath("/admin/properties");
   revalidatePath("/admin/properties/salesforce");
-  for (const url of paths.propertyUrls) revalidateLocalised(url);
-  if (paths.lists) for (const p of LIST_PATHS) revalidateLocalised(p);
 }

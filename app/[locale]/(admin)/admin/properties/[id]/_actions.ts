@@ -14,12 +14,8 @@ import { logAudit } from "@/lib/audit";
 import { sanitizeArticleHtml } from "@/lib/article-html";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { cleanLifestyleTags } from "@/lib/lifestyle-tags";
+import { BUILT_IN_FLAG } from "@/lib/card-labels";
 import { requireRole } from "@/lib/auth";
-import {
-  SALESFORCE_OWNED_COLUMNS,
-  salesforceTwinColumns,
-} from "@/lib/salesforce/listings/plan";
-import { upgradeSnapshot } from "@/lib/salesforce/listings/snapshot";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -45,74 +41,6 @@ async function revalidatePropertyPaths(propertyId: string) {
     revalidateLocalised("/");
   }
 }
-
-/**
- * Did the editor actually change this value, or only round-trip it?
- *
- * The rich-text editor re-serialises HTML its own way, so a description is
- * compared by its words, not its markup — otherwise every save of a Salesforce
- * listing would claim the description had been changed.
- */
-function sameStoredValue(col: string, posted: unknown, stored: unknown): boolean {
-  if (col === "description" || col === "description_ar") {
-    const words = (v: unknown) =>
-      String(v ?? "")
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    return words(posted) === words(stored);
-  }
-  if (typeof stored === "number" || typeof posted === "number") {
-    if (posted == null || posted === "" || stored == null) return posted == null && stored == null;
-    return Number(posted) === Number(stored);
-  }
-  return JSON.stringify(posted ?? null) === JSON.stringify(stored ?? null);
-}
-
-/**
- * What Salesforce owns on this listing, or null when it is the CMS's own.
- *
- * The fixed columns are always the sync's. The Arabic twins, the advisor and
- * the two built-in card labels are the sync's only some of the time — an
- * Arabic title in `Title_Arabic__c` (or an English one left blank, which the
- * sync clears its twin with), an assigned agent that maps to a staff member,
- * an Exclusive checkbox the integration user can read — so an editor's own
- * Arabic, advisor or label on a listing whose CRM record says nothing is
- * never overwritten, and never refused here either.
- */
-async function salesforceOwnership(propertyId: string): Promise<{
-  columns: string[];
-  agent: boolean;
-  /** Built-in card label id → Salesforce's checkbox. */
-  labels: Map<string, boolean>;
-} | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from("properties")
-    .select("salesforce_listing_id")
-    .eq("id", propertyId)
-    .maybeSingle();
-  if (!data?.salesforce_listing_id) return null;
-  const { data: m } = await supabase
-    .from("salesforce_listings")
-    .select("snapshot, unresolved")
-    .eq("sf_listing_id", data.salesforce_listing_id)
-    .maybeSingle();
-  const snap = upgradeSnapshot(m?.snapshot);
-  const unresolved = (m?.unresolved ?? {}) as { agent?: unknown };
-  const labels = new Map<string, boolean>();
-  if (snap.exclusive != null) labels.set("exclusive", snap.exclusive);
-  if (snap.vacantOnTransfer != null) labels.set("vacant_on_transfer", snap.vacantOnTransfer);
-  return {
-    columns: [...SALESFORCE_OWNED_COLUMNS, ...salesforceTwinColumns(snap)],
-    agent: !!snap.agent && !unresolved.agent,
-    labels,
-  };
-}
-
-const FROM_SALESFORCE =
-  "This listing is published from Salesforce, which sets this. Change it there; the website follows on the next sync.";
 
 export type SaveResult =
   | { status: "ok"; message?: string }
@@ -170,29 +98,9 @@ export async function updateProperty(
 
   const { data: before } = await supabase
     .from("properties")
-    .select("slug, title, price_aed, status, salesforce_listing_id")
+    .select("slug, title, price_aed, status")
     .eq("id", id)
     .maybeSingle();
-
-  // A listing published from Salesforce: the sync owns these columns and
-  // would change them back within fifteen minutes. Keep Salesforce's values
-  // and say so now, rather than let the edit look saved and quietly revert.
-  const keptFromSalesforce: string[] = [];
-  const owned = before?.salesforce_listing_id ? await salesforceOwnership(id) : null;
-  if (owned) {
-    const { data: current } = await supabase
-      .from("properties")
-      .select(owned.columns.join(", "))
-      .eq("id", id)
-      .maybeSingle();
-    const row = (current ?? {}) as unknown as Record<string, unknown>;
-    const data = updateData as Record<string, unknown>;
-    for (const col of owned.columns) {
-      if (!(col in data)) continue;
-      if (!sameStoredValue(col, data[col], row[col])) keptFromSalesforce.push(col);
-      data[col] = row[col];
-    }
-  }
 
   const { data, error } = await supabase
     .from("properties")
@@ -264,19 +172,6 @@ export async function updateProperty(
     revalidateLocalised("/");
   }
 
-  if (keptFromSalesforce.length > 0) {
-    const one = keptFromSalesforce.length === 1;
-    // A location or developer the website could not match is usually a
-    // mapping, not a CRM edit — so say where that is fixed.
-    const mappable = keptFromSalesforce.some((c) => c === "area_id" || c === "developer_id");
-    return {
-      status: "ok",
-      message:
-        `Saved. ${keptFromSalesforce.map((c) => c.replace(/_id$/, "").replace(/_/g, " ")).join(", ")} ` +
-        `${one ? "comes" : "come"} from Salesforce and ${one ? "was" : "were"} left as ${one ? "it is" : "they are"} — ` +
-        `change ${one ? "it" : "them"} in Salesforce${mappable ? ", or map the area or developer on the Salesforce listings screen" : ""}.`,
-    };
-  }
   return { status: "ok", message: "Saved." };
 }
 
@@ -308,14 +203,6 @@ export async function assignAgent(
   if (agentId !== null && !UUID_RE.test(agentId)) {
     return { status: "error", message: "Invalid agent id." };
   }
-  if ((await salesforceOwnership(propertyId))?.agent) {
-    return {
-      status: "error",
-      message:
-        "The advisor comes from the agent assigned in Salesforce. Change it there, or map that Salesforce user to someone else on the Salesforce listings screen.",
-    };
-  }
-
   const supabase = await createSupabaseServerClient();
 
   // Only allow assigning to an active agent (defence-in-depth against a stale
@@ -412,8 +299,6 @@ export async function setPropertyLocation(
     };
   }
 
-  if (await salesforceOwnership(propertyId))
-    return { status: "error", message: FROM_SALESFORCE };
 
   const supabase = await createSupabaseServerClient();
   const { data: before } = await supabase
@@ -918,8 +803,6 @@ export async function setPropertyDeveloper(
 
   if (!UUID_RE.test(developerId))
     return { status: "error", message: "Pick a developer." };
-  if (await salesforceOwnership(propertyId))
-    return { status: "error", message: FROM_SALESFORCE };
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -1111,18 +994,6 @@ export async function setPropertyCardLabels(
     ),
   ].slice(0, 40);
 
-  // Salesforce's two checkboxes are the CRM's to tick on a listing it
-  // publishes; the sync would put a change back within fifteen minutes.
-  const owned = await salesforceOwnership(propertyId);
-  for (const [id, on] of owned?.labels ?? []) {
-    if (clean.includes(id) !== on) {
-      return {
-        status: "error",
-        message: `${id === "exclusive" ? "Exclusive" : "Vacant on transfer"} comes from Salesforce on this listing. ${on ? "Untick" : "Tick"} it there; the website follows on the next sync.`,
-      };
-    }
-  }
-
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase
     .from("properties")
@@ -1135,9 +1006,16 @@ export async function setPropertyCardLabels(
       ? (row.flags as Record<string, unknown>)
       : {};
 
+  // The two built-ins also live on as legacy booleans, which the card reads
+  // as ticks (lib/card-labels.ts). Set them to what was saved, or an unticked
+  // Exclusive — say one a Salesforce draft arrived with — would come back.
+  const legacy = Object.fromEntries(
+    Object.entries(BUILT_IN_FLAG).map(([id, flag]) => [flag, clean.includes(id)]),
+  );
+
   const { error } = await supabase
     .from("properties")
-    .update({ flags: { ...flags, labels: clean } })
+    .update({ flags: { ...flags, ...legacy, labels: clean } })
     .eq("id", propertyId);
   if (error) return { status: "error", message: error.message };
 

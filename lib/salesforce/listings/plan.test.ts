@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { plainTextToHtml } from "@/lib/plain-text-html";
 import {
-  SALESFORCE_OWNED_COLUMNS,
   applyCardFlags,
   decideState,
   developerKey,
@@ -10,8 +9,6 @@ import {
   resolveDeveloper,
   resolveProject,
   resolveWebsiteArea,
-  salesforceTwinColumns,
-  targetStatus,
   viewAmenity,
   type Hold,
 } from "./plan";
@@ -344,17 +341,6 @@ describe("planListing — the facts v1.3 added", () => {
   });
 });
 
-describe("salesforceTwinColumns", () => {
-  it("owns the twins Salesforce wrote and the ones whose English it left blank", () => {
-    const s = toSnapshot(COMPLETE_SALE);
-    expect(salesforceTwinColumns(s).sort()).toEqual(
-      ["description_ar", "orientation_ar", "short_description_ar", "title_ar", "view_ar"].sort(),
-    );
-    expect(salesforceTwinColumns({ ...s, titleAr: null, viewAr: null, view: null })).not.toContain("title_ar");
-    expect(salesforceTwinColumns({ ...s, titleAr: null, viewAr: null, view: null })).toContain("view_ar");
-  });
-});
-
 describe("resolveWebsiteArea", () => {
   it("places a listing by Area and Sub-area, the sub-area only within its area", () => {
     expect(resolveWebsiteArea("Saadiyat Island", "Saadiyat Lagoons", "Abu Dhabi", lookups())).toEqual({
@@ -479,40 +465,21 @@ describe("plainTextToHtml", () => {
   });
 });
 
-describe("decideState and targetStatus", () => {
-  const clean = { sandbox: false, withdrawn: false, hidden: false, holds: [], approved: false, autoPublish: false };
-  const hold: Hold = { code: "no_title", fix: "salesforce", message: "x" };
+describe("decideState", () => {
+  const clean = { sandbox: false, withdrawn: false, onWebsite: false, hidden: false };
 
-  it("puts evidence of withdrawal above everything, a sandbox above publishing", () => {
-    expect(decideState({ ...clean, withdrawn: true, sandbox: true })).toBe("withdrawn");
-    expect(decideState({ ...clean, sandbox: true, approved: true })).toBe("mirror_only");
-    expect(decideState({ ...clean, hidden: true, approved: true })).toBe("hidden");
-    expect(decideState({ ...clean, holds: [hold], approved: true })).toBe("held");
-    expect(decideState(clean)).toBe("awaiting_approval");
-    expect(decideState({ ...clean, autoPublish: true })).toBe("live");
-    expect(decideState({ ...clean, approved: true })).toBe("live");
+  it("puts evidence of withdrawal above everything, a sandbox above the website", () => {
+    expect(decideState({ ...clean, withdrawn: true, sandbox: true, onWebsite: true })).toBe("withdrawn");
+    expect(decideState({ ...clean, sandbox: true, onWebsite: true })).toBe("mirror_only");
   });
 
-  it("only ever takes a published listing down, and never touches an archived one it cannot publish", () => {
-    expect(targetStatus("live", "draft")).toBe("published");
-    expect(targetStatus("live", "archived")).toBe("published");
-    expect(targetStatus("held", "published")).toBe("off_market");
-    expect(targetStatus("hidden", "published")).toBe("off_market");
-    expect(targetStatus("held", "draft")).toBe("draft");
-    expect(targetStatus("withdrawn", "archived")).toBe("archived");
-    expect(targetStatus("awaiting_approval", null)).toBe("draft");
+  it("lets nothing but a withdrawal speak for a listing whose draft is on the website", () => {
+    expect(decideState({ ...clean, onWebsite: true, hidden: true })).toBe("on_website");
+    expect(decideState({ ...clean, onWebsite: true })).toBe("on_website");
   });
-});
 
-describe("SALESFORCE_OWNED_COLUMNS", () => {
-  it("is exactly the always-synced fields — no more, no fewer", () => {
-    // The editor's save guard keeps these; if a synced field were missing
-    // from the list, an editor's change to it would revert silently fifteen
-    // minutes later. The Arabic twins and the advisor are the CRM's only some
-    // of the time (salesforceTwinColumns, resolveAgent).
-    const fields = planListing(toSnapshot(COMPLETE_SALE), lookups(), NOW).fields!;
-    const sometimes = ["title_ar", "short_description_ar", "description_ar", "view_ar", "orientation_ar", "assigned_agent_id"];
-    const always = Object.keys(fields).filter((k) => !sometimes.includes(k));
-    expect([...SALESFORCE_OWNED_COLUMNS].sort()).toEqual(always.sort());
+  it("before the draft: hidden, or waiting", () => {
+    expect(decideState({ ...clean, hidden: true })).toBe("hidden");
+    expect(decideState(clean)).toBe("held");
   });
 });

@@ -73,11 +73,11 @@ const { runListingSync, writeBackDelta, writeBackFor } = await import("./sync");
 const { imageKey, toSnapshot } = await import("./snapshot");
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0]);
-const revalidated: { propertyUrls: string[]; lists: boolean }[] = [];
+let revalidated = 0;
 // On the fixtures' clock, not the calendar's: RENT_UNMAPPED's listing expires on
 // 1 Oct 2026, and with the real date every run after that held it as expired.
 const run = (extra: Partial<Parameters<typeof runListingSync>[0]> = {}) =>
-  runListingSync({ trigger: "cron", revalidate: (p) => revalidated.push(p), now: NOW, ...extra });
+  runListingSync({ trigger: "cron", revalidate: () => void (revalidated += 1), now: NOW, ...extra });
 
 function seedLookups(db: FakeDb) {
   db.seed(
@@ -106,9 +106,6 @@ function property(db: FakeDb, sfId: string) {
 function mirror(db: FakeDb, sfId: string) {
   return db.rows("salesforce_listings").find((m) => m.sf_listing_id === sfId) as Record<string, unknown> | undefined;
 }
-function setAutoPublish(db: FakeDb, on: boolean) {
-  db.rows("salesforce_listing_sync")[0].auto_publish = on;
-}
 
 beforeEach(() => {
   h.db = new FakeDb();
@@ -122,7 +119,7 @@ beforeEach(() => {
   h.issues = [];
   h.patches = [];
   h.patchFails = false;
-  revalidated.length = 0;
+  revalidated = 0;
 });
 
 describe("when there is nothing to talk to", () => {
@@ -154,7 +151,6 @@ describe("a sandbox org", () => {
     h.sweep = [COMPLETE_SALE, SPARSE_PUBLISHED];
     const download = vi.fn(h.download);
     h.download = download;
-    setAutoPublish(h.db, true);
 
     const s = await run();
     expect(s.sandbox).toBe(true);
@@ -178,46 +174,38 @@ describe("a sandbox org", () => {
 });
 
 describe("a production org", () => {
-  it("creates the listing as a draft with its photos, and waits for approval", async () => {
+  it("creates the listing as a draft with its photos, and hands it to the website", async () => {
     const s = await run();
     expect(s.created).toBe(1);
     const p = property(h.db, COMPLETE_SALE.Id)!;
     expect(p).toMatchObject({ status: "draft", title: "4BR Villa on Yas Island", price_aed: 1_850_000, area_id: IDS.yas });
     expect(p.reference).toMatch(/^BAZ-AD-0\d{4}$/);
     expect(p.slug).toBe("4br-villa-on-yas-island");
-    expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("awaiting_approval");
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("on_website");
 
     // Cover (a File), one more File, one web photo, and the floor plan.
     expect(h.db.objects.size).toBe(4);
     const links = h.db.rows("property_media").filter((l) => l.property_id === p.id);
     expect(links.map((l) => l.role).sort()).toEqual(["floor_plan", "gallery", "gallery", "hero"]);
-    expect(revalidated).toHaveLength(0);
+    expect(revalidated).toBe(1);
   });
 
-  it("goes live under auto-publish, dated when Salesforce published it, and counts that as approval", async () => {
-    setAutoPublish(h.db, true);
-    const s = await run();
-    expect(s.published).toBe(1);
-    const p = property(h.db, COMPLETE_SALE.Id)!;
-    expect(p.status).toBe("published");
-    expect(p.published_at).toBe("2026-09-17T00:00:00.000Z");
-    expect(mirror(h.db, COMPLETE_SALE.Id)?.approved_at).toBeTruthy();
-    expect(revalidated.at(-1)?.propertyUrls[0]).toMatch(/^\/p\/4br-villa-on-yas-island-baz-ad-0\d{4}$/);
-
-    // Turning auto-publish off afterwards does not take it down.
-    setAutoPublish(h.db, false);
+  it("never publishes, whatever the old auto-publish switch says", async () => {
+    h.db.rows("salesforce_listing_sync")[0].auto_publish = true;
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    await run();
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("draft");
   });
 
-  it("writes nothing on a run where nothing changed", async () => {
-    setAutoPublish(h.db, true);
+  it("writes nothing on a run where nothing is new", async () => {
     await run();
+    const before = JSON.stringify(property(h.db, COMPLETE_SALE.Id));
     const download = vi.fn(h.download);
     h.download = download;
     const s = await run();
-    expect(s).toMatchObject({ created: 0, updated: 0, published: 0, unpublished: 0, imagesCopied: 0 });
+    expect(s).toMatchObject({ created: 0, onWebsite: 1, imagesCopied: 0 });
     expect(download).not.toHaveBeenCalled();
+    expect(JSON.stringify(property(h.db, COMPLETE_SALE.Id))).toBe(before);
   });
 
   it("knows a photo it copied long ago, however many photos came before it", async () => {
@@ -241,30 +229,52 @@ describe("a production org", () => {
     expect(mirror(h.db, COMPLETE_SALE.Id)?.images_ready).toBe(4);
   });
 
-  it("puts back a Salesforce-owned field an editor changed in the CMS", async () => {
-    setAutoPublish(h.db, true);
-    await run();
-    property(h.db, COMPLETE_SALE.Id)!.price_aed = 999;
-    const s = await run();
-    expect(s.updated).toBe(1);
-    expect(property(h.db, COMPLETE_SALE.Id)?.price_aed).toBe(1_850_000);
-  });
-
-  it("leaves the website's own fields alone", async () => {
+  it("keeps every edit an editor makes to the draft, CRM fields included", async () => {
     await run();
     const p = property(h.db, COMPLETE_SALE.Id)!;
-    p.slug = "an-editors-slug";
-    p.advisor_note = "Written by an editor.";
-    p.flags = { ...(p.flags as object), labels: ["new_launch"], feature_on_homepage: true };
-    await run();
-    expect(property(h.db, COMPLETE_SALE.Id)).toMatchObject({
-      slug: "an-editors-slug",
-      advisor_note: "Written by an editor.",
-      flags: { labels: ["new_launch"], feature_on_homepage: true, exclusive: true, vacant_on_transfer: false },
+    Object.assign(p, {
+      title: "An editor's title",
+      price_aed: 999_000,
+      area_id: IDS.reem,
+      address_line: "Bab Al Qasr Resort Residence 19, Masdar City",
+      geo: { lat: 24.4339, lng: 54.6209 },
+      developer_id: IDS.sobha,
+      amenities: ["Private Garden"],
+      listing_permit_no: "EDITOR-1",
+      view_ar: "عربي المحرر",
+      assigned_agent_id: null,
+      flags: { exclusive: false, vacant_on_transfer: true, labels: ["vacant_on_transfer"] },
+      status: "published",
     });
+    const edited = JSON.stringify(p);
+    // Salesforce changes the same fields afterwards: none of it reaches the row.
+    h.sweep = [
+      {
+        ...COMPLETE_SALE,
+        Price__c: 2_000_000,
+        Property__r: { ...COMPLETE_SALE.Property__r, Title__c: "Salesforce's new title", View__c: null, View_Arabic__c: null },
+      },
+    ];
+    await run();
+    expect(JSON.stringify(property(h.db, COMPLETE_SALE.Id))).toBe(edited);
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("on_website");
+    // The mirror still shows the CRM's latest, for reference.
+    expect((mirror(h.db, COMPLETE_SALE.Id)?.snapshot as { title: string }).title).toBe("Salesforce's new title");
   });
 
-  it("writes every fact v1.3 added, and records the Arabic as the CRM's own", async () => {
+  it("keeps the editor's photos: removed ones stay removed, added ones stay", async () => {
+    await run();
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    const links = h.db.rows("property_media");
+    const kept = links.filter((l) => l.property_id === p.id && l.role !== "hero");
+    links.length = 0;
+    links.push(...kept, { property_id: p.id, media_id: "00000000-0000-4000-b000-000000000001", role: "hero", sort_order: 0 });
+    const before = JSON.stringify(links);
+    await run();
+    expect(JSON.stringify(h.db.rows("property_media"))).toBe(before);
+  });
+
+  it("writes every fact v1.3 added into the draft, and records the Arabic as the CRM's own", async () => {
     await run();
     const p = property(h.db, COMPLETE_SALE.Id)!;
     expect(p).toMatchObject({
@@ -289,69 +299,67 @@ describe("a production org", () => {
     }
   });
 
-  it("takes an editor's tick off a card label Salesforce says no to", async () => {
+  it("does not bring back a draft an editor deleted, until someone allows it", async () => {
     await run();
-    const p = property(h.db, COMPLETE_SALE.Id)!;
-    p.flags = { exclusive: true, vacant_on_transfer: false, labels: ["vacant_on_transfer", "new_launch"] };
-    const s = await run();
-    expect(s.updated).toBe(1);
-    expect(property(h.db, COMPLETE_SALE.Id)?.flags).toEqual({ exclusive: true, vacant_on_transfer: false, labels: ["new_launch"] });
+    const rows = h.db.rows("properties");
+    rows.length = 0;
+    await run();
+    expect(h.db.rows("properties")).toHaveLength(0);
+    expect(mirror(h.db, COMPLETE_SALE.Id)).toMatchObject({ state: "hidden" });
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.hidden_at).toBeTruthy();
+
+    // "Allow on website": a fresh draft.
+    mirror(h.db, COMPLETE_SALE.Id)!.hidden_at = null;
+    await run();
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("draft");
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("on_website");
   });
 
-  it("keeps the CRM's Arabic current when only its English moved", async () => {
+  it("makes no draft for a listing hidden before it arrived, and copies no photos for it", async () => {
+    h.db.seed("salesforce_listings", {
+      sf_listing_id: COMPLETE_SALE.Id,
+      org_host: "bazarrealestate.my.salesforce.com",
+      state: "held",
+      hidden_at: "2026-09-20T00:00:00Z",
+      snapshot: { v: 3, listingId: COMPLETE_SALE.Id },
+      snapshot_hash: "x",
+    });
+    const download = vi.fn(h.download);
+    h.download = download;
     await run();
-    const before = (property(h.db, COMPLETE_SALE.Id)!.i18n as Record<string, { src_hash: string }>).title_ar.src_hash;
-    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Title__c: "Four-bedroom villa on Yas Island" } }];
-    await run();
-    const after = (property(h.db, COMPLETE_SALE.Id)!.i18n as Record<string, { src_hash: string; source: string }>).title_ar;
-    expect(after.source).toBe("human");
-    expect(after.src_hash).not.toBe(before);
-  });
-
-  it("clears an Arabic twin when Salesforce clears its English", async () => {
-    await run();
-    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, View__c: null, View_Arabic__c: null } }];
-    await run();
-    const p = property(h.db, COMPLETE_SALE.Id)!;
-    expect(p).toMatchObject({ view: null, view_ar: null });
-    expect((p.i18n as Record<string, unknown>).view_ar).toBeUndefined();
-  });
-
-  it("takes a live listing down when an editor hides it, and keeps it down", async () => {
-    setAutoPublish(h.db, true);
-    await run();
-    mirror(h.db, COMPLETE_SALE.Id)!.hidden_at = new Date().toISOString();
-    const s = await run();
-    expect(s.unpublished).toBe(1);
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("off_market");
+    expect(h.db.rows("properties")).toHaveLength(0);
+    expect(download).not.toHaveBeenCalled();
     expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("hidden");
+  });
+
+  it("ignores a hide on a listing already on the website: the editor unpublishes it there", async () => {
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("off_market");
+    property(h.db, COMPLETE_SALE.Id)!.status = "published";
+    mirror(h.db, COMPLETE_SALE.Id)!.hidden_at = new Date().toISOString();
+    await run();
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.state).toBe("on_website");
   });
 });
 
 describe("withdrawals", () => {
-  async function live() {
-    setAutoPublish(h.db, true);
+  async function published() {
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    property(h.db, COMPLETE_SALE.Id)!.status = "published";
     h.sweep = [];
   }
 
-  it("takes down a listing Salesforce says is unpublished", async () => {
-    await live();
+  it("records a listing Salesforce says is unpublished, and leaves the website's listing as it is", async () => {
+    await published();
     h.absences.set(COMPLETE_SALE.Id, { kind: "unpublished", reason: "Website_Status__c is blank in Salesforce" });
     const s = await run();
     expect(s.withdrawn).toBe(1);
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("off_market");
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
     expect(mirror(h.db, COMPLETE_SALE.Id)).toMatchObject({ state: "withdrawn", withdrawn_reason: "Website_Status__c is blank in Salesforce" });
   });
 
-  it("leaves a listing up when Salesforce will not say anything about it", async () => {
-    // A sharing rule changed, a permission set was edited: the record is
-    // invisible, not unpublished. This is the case that must never empty the
-    // website.
-    await live();
+  it("leaves a listing alone when Salesforce will not say anything about it", async () => {
+    await published();
     const s = await run();
     expect(s.invisible).toBe(1);
     expect(s.withdrawn).toBe(0);
@@ -359,31 +367,36 @@ describe("withdrawals", () => {
     expect(h.issues).toContain("Salesforce listings no longer visible to the integration user");
   });
 
-  it("brings a withdrawn listing back when Salesforce republishes it", async () => {
-    await live();
+  it("clears the withdrawal when Salesforce republishes it", async () => {
+    await published();
     h.absences.set(COMPLETE_SALE.Id, { kind: "deleted", reason: "Deleted in Salesforce" });
     await run();
     h.sweep = [COMPLETE_SALE];
     await run();
     expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
-    expect(mirror(h.db, COMPLETE_SALE.Id)).toMatchObject({ state: "live", withdrawn_at: null });
+    expect(mirror(h.db, COMPLETE_SALE.Id)).toMatchObject({ state: "on_website", withdrawn_at: null });
   });
 });
 
-describe("held listings", () => {
-  it("holds a listing whose location is unmapped, then releases it once mapped", async () => {
-    setAutoPublish(h.db, true);
+describe("before the draft", () => {
+  it("drafts a listing whose area is unmapped, and tells the editor to choose the area", async () => {
     h.sweep = [RENT_UNMAPPED];
     // The only photo is example.com's placeholder, which 404s. Give it a real one.
     h.download = async () => ({ ok: true, bytes: JPEG, sniffed: { mime: "image/jpeg", ext: "jpg" } });
     await run();
-    expect(mirror(h.db, RENT_UNMAPPED.Id)?.state).toBe("held");
-    expect(property(h.db, RENT_UNMAPPED.Id)?.status).toBe("draft");
+    const m = mirror(h.db, RENT_UNMAPPED.Id)!;
+    expect(m.state).toBe("on_website");
+    expect(m.holds).toEqual([]);
+    expect(m.unresolved).toEqual({});
+    expect((m.notes as { code: string; message: string }[]).find((n) => n.code === "draft_no_area")?.message).toMatch(
+      /^Salesforce gives the area as "Masdar City"/,
+    );
+    expect(property(h.db, RENT_UNMAPPED.Id)).toMatchObject({ status: "draft", area_id: null, mode: "rent" });
 
+    // A mapping made afterwards is for drafts still to come, not this one.
     h.db.seed("salesforce_mappings", { kind: "location", source_key: "masdar city", target_id: IDS.reem });
     await run({ trigger: "reapply", onlyStored: [RENT_UNMAPPED.Id] });
-    expect(mirror(h.db, RENT_UNMAPPED.Id)?.state).toBe("live");
-    expect(property(h.db, RENT_UNMAPPED.Id)).toMatchObject({ status: "published", area_id: IDS.reem, mode: "rent", property_form: null });
+    expect(property(h.db, RENT_UNMAPPED.Id)?.area_id).toBeNull();
   });
 
   it("re-applies a row stored before guide v1.3 from today's shape", async () => {
@@ -417,21 +430,20 @@ describe("held listings", () => {
     expect(m.snapshot).not.toHaveProperty("community");
   });
 
-  it("keeps a listing it cannot even name off the website entirely", async () => {
+  it("makes no draft of a listing it cannot even name", async () => {
     h.sweep = [SPARSE_PUBLISHED];
     await run();
     expect(h.db.rows("properties")).toHaveLength(0);
     expect(mirror(h.db, SPARSE_PUBLISHED.Id)?.state).toBe("held");
   });
 
-  it("holds a listing none of whose photos can be copied, and does not retry them every run", async () => {
-    setAutoPublish(h.db, true);
+  it("drafts a listing none of whose photos can be copied, says so, and does not retry them every run", async () => {
     const download = vi.fn(async () => ({ ok: false, permanent: true, reason: "HTTP 404" }));
     h.download = download;
     await run();
     const m = mirror(h.db, COMPLETE_SALE.Id)!;
-    expect(m.state).toBe("held");
-    expect((m.holds as { code: string }[]).map((x) => x.code)).toContain("photos_unavailable");
+    expect(m.state).toBe("on_website");
+    expect((m.notes as { code: string }[]).map((x) => x.code)).toContain("photos_failed");
     expect(Object.keys(m.image_failures as object)).toHaveLength(4);
     expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("draft");
 
@@ -440,8 +452,7 @@ describe("held listings", () => {
     expect(download).not.toHaveBeenCalled();
   });
 
-  it("waits for the whole gallery before a first appearance", async () => {
-    setAutoPublish(h.db, true);
+  it("waits for the whole gallery before making the draft", async () => {
     let calls = 0;
     h.download = async () =>
       ++calls === 2
@@ -449,19 +460,27 @@ describe("held listings", () => {
         : { ok: true, bytes: JPEG, sniffed: { mime: "image/jpeg", ext: "jpg" } };
     await run();
     expect((mirror(h.db, COMPLETE_SALE.Id)?.holds as { code: string }[]).map((x) => x.code)).toEqual(["photos_pending"]);
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("draft");
+    expect(h.db.rows("properties")).toHaveLength(0);
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    expect(p.status).toBe("draft");
+    expect(h.db.rows("property_media").filter((l) => l.property_id === p.id)).toHaveLength(4);
   });
 });
 
 describe("writeBackFor — what the CRM team sees", () => {
   const url = "https://www.bazarrealestate.ae/p/villa-baz-ad-01234";
   const theirs = { code: "no_permit_expiry" as const, fix: "salesforce" as const, message: "Permit_Expiry_Date_c__c on the Property is blank." };
-  const ours = { code: "unmapped_location" as const, fix: "website" as const, message: '"Sobha City" does not match an area.' };
+  const ours = { code: "photos_pending" as const, fix: "wait" as const, message: "1 of 4 photos copied so far." };
 
-  it("publishes with the URL and clears the error on success", () => {
-    expect(writeBackFor("live", [], url)).toEqual({ Website_Status__c: "Published", Website_Listing_URL__c: url, Website_Error__c: null });
+  it("publishes with the URL once an editor has published the draft", () => {
+    expect(writeBackFor("on_website", [], url)).toEqual({ Website_Status__c: "Published", Website_Listing_URL__c: url, Website_Error__c: null });
+  });
+
+  it("says a draft is a draft, without deactivating it", () => {
+    const draft = writeBackFor("on_website", [], null)!;
+    expect(draft).not.toHaveProperty("Website_Status__c");
+    expect(draft.Website_Error__c).toMatch(/^A draft on the website/);
   });
 
   it("deactivates only for what the CRM team can fix", () => {
@@ -470,11 +489,9 @@ describe("writeBackFor — what the CRM team sees", () => {
       Website_Listing_URL__c: null,
       Website_Error__c: theirs.message,
     });
-    // Waiting on us: stays in the published set, says why, goes live when done.
     const waiting = writeBackFor("held", [ours], null)!;
     expect(waiting).not.toHaveProperty("Website_Status__c");
-    expect(waiting.Website_Error__c).toBe(`Waiting on the Bazar website team: ${ours.message}`);
-    expect(writeBackFor("awaiting_approval", [], null)).not.toHaveProperty("Website_Status__c");
+    expect(waiting.Website_Error__c).toBe(`In progress: ${ours.message}`);
   });
 
   it("says nothing for a sandbox or a listing the CRM already withdrew", () => {
@@ -483,7 +500,7 @@ describe("writeBackFor — what the CRM team sees", () => {
   });
 
   it("sends only what would change, and leaves Republished alone", () => {
-    const want = writeBackFor("live", [], url)!;
+    const want = writeBackFor("on_website", [], url)!;
     expect(writeBackDelta(want, { websiteStatus: "Republished", websiteUrl: url, websiteError: null })).toEqual({});
     expect(writeBackDelta(want, { websiteStatus: "Published", websiteUrl: null, websiteError: "old" })).toEqual({
       Website_Listing_URL__c: url,
@@ -498,15 +515,17 @@ describe("write-back in a run", () => {
   }
 
   it("writes nothing until an admin turns it on", async () => {
-    setAutoPublish(h.db, true);
     await run();
-    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    property(h.db, COMPLETE_SALE.Id)!.status = "published";
+    await run();
     expect(h.patches).toEqual([]);
   });
 
-  it("tells Salesforce a live listing is published, where, and then stops repeating itself", async () => {
-    setAutoPublish(h.db, true);
+  it("tells Salesforce where a published listing is, and then stops repeating itself", async () => {
     setWriteBack(true);
+    await run();
+    h.patches = [];
+    property(h.db, COMPLETE_SALE.Id)!.status = "published";
     const s = await run();
     expect(s.writtenBack).toBe(1);
     const p = property(h.db, COMPLETE_SALE.Id)!;
@@ -527,25 +546,12 @@ describe("write-back in a run", () => {
     expect(h.patches).toEqual([]);
   });
 
-  it("deactivates a listing only the CRM team can fix, with the reason", async () => {
+  it("deactivates a listing too incomplete to draft, with the reason", async () => {
     setWriteBack(true);
-    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Permit_Expiry_Date_c__c: null } }];
+    h.sweep = [SPARSE_PUBLISHED];
     await run();
-    // No Website_Listing_URL__c: it was never live, so there is none to clear.
-    expect(h.patches[0].body).toEqual({
-      Website_Status__c: "Deactivated",
-      Website_Error__c: "Permit_Expiry_Date_c__c on the Property is blank.",
-    });
-  });
-
-  it("keeps a listing waiting on the website in the published set", async () => {
-    setWriteBack(true);
-    setAutoPublish(h.db, true);
-    h.sweep = [RENT_UNMAPPED];
-    await run();
-    expect(h.patches).toHaveLength(1);
-    expect(h.patches[0].body).not.toHaveProperty("Website_Status__c");
-    expect(String(h.patches[0].body.Website_Error__c)).toMatch(/^Waiting on the Bazar website team: "Masdar City"/);
+    expect(h.patches[0].body).toMatchObject({ Website_Status__c: "Deactivated" });
+    expect(String(h.patches[0].body.Website_Error__c)).toContain("Title__c on the Property is blank.");
   });
 
   it("never writes to a sandbox", async () => {
@@ -557,20 +563,21 @@ describe("write-back in a run", () => {
 
   it("keeps the reasons when a listing it deactivated leaves the published set", async () => {
     setWriteBack(true);
-    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Permit_Expiry_Date_c__c: null } }];
+    h.sweep = [SPARSE_PUBLISHED];
     await run();
     h.sweep = [];
-    h.absences.set(COMPLETE_SALE.Id, { kind: "unpublished", reason: 'Website_Status__c is "Deactivated" in Salesforce', status: "Deactivated" });
+    h.absences.set(SPARSE_PUBLISHED.Id, { kind: "unpublished", reason: 'Website_Status__c is "Deactivated" in Salesforce', status: "Deactivated" });
     await run();
-    const m = mirror(h.db, COMPLETE_SALE.Id)!;
+    const m = mirror(h.db, SPARSE_PUBLISHED.Id)!;
     expect(m.state).toBe("withdrawn");
-    expect((m.holds as { code: string }[]).map((x) => x.code)).toEqual(["no_permit_expiry"]);
+    expect((m.holds as { code: string }[]).map((x) => x.code)).toContain("no_title");
   });
 
   it("records a refused write-back on the listing and carries on", async () => {
     setWriteBack(true);
-    setAutoPublish(h.db, true);
     h.patchFails = true;
+    await run();
+    property(h.db, COMPLETE_SALE.Id)!.status = "published";
     const s = await run();
     expect(s.ok).toBe(false);
     expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");

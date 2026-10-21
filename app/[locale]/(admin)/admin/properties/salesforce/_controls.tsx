@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
-  approveSalesforceListing,
   saveSalesforceMapping,
   setSalesforceListingHidden,
   syncSalesforceListingsNow,
@@ -37,11 +36,9 @@ export function SyncNowButton() {
 
 export function SettingsSwitches({
   paused,
-  autoPublish,
   writeBack,
 }: {
   paused: boolean;
-  autoPublish: boolean;
   writeBack: boolean;
 }) {
   const [pending, start] = useTransition();
@@ -56,26 +53,6 @@ export function SettingsSwitches({
         }
       >
         {paused ? "Resume sync" : "Pause sync"}
-      </button>
-      <button
-        type="button"
-        disabled={pending}
-        className={BUTTON}
-        onClick={() => {
-          if (
-            !autoPublish &&
-            !window.confirm(
-              "Turn on auto-publish? A Salesforce listing that passes every check will go live on the website without anyone approving it.",
-            )
-          ) {
-            return;
-          }
-          start(async () =>
-            report(await updateListingSyncSettings({ autoPublish: !autoPublish })),
-          );
-        }}
-      >
-        {autoPublish ? "Turn off auto-publish" : "Turn on auto-publish"}
       </button>
       <button
         type="button"
@@ -108,18 +85,10 @@ export function ListingButtons({
 }) {
   const [pending, start] = useTransition();
   const run = (fn: () => Promise<ActionResult>) => start(async () => report(await fn()));
+  // Only before a draft exists: after that the listing is the editor's, and
+  // taking it down is the property's own Unpublish.
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {state === "awaiting_approval" ? (
-        <button
-          type="button"
-          disabled={pending}
-          className={PRIMARY}
-          onClick={() => run(() => approveSalesforceListing(sfListingId))}
-        >
-          Approve
-        </button>
-      ) : null}
       {state === "hidden" ? (
         <button
           type="button"
@@ -129,14 +98,14 @@ export function ListingButtons({
         >
           Allow on website
         </button>
-      ) : state === "live" || state === "held" || state === "awaiting_approval" ? (
+      ) : state === "held" ? (
         <button
           type="button"
           disabled={pending}
           className={BUTTON}
           onClick={() => run(() => setSalesforceListingHidden(sfListingId, true))}
         >
-          Hide from website
+          Don&rsquo;t bring in
         </button>
       ) : null}
     </div>

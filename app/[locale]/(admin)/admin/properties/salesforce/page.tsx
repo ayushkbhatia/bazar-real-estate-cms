@@ -24,21 +24,32 @@ import {
 export const dynamic = "force-dynamic";
 
 const STATE_LABEL: Record<ListingState, string> = {
+  on_website: "on the website",
+  held: "waiting",
+  hidden: "not brought in",
+  withdrawn: "withdrawn in Salesforce",
+  mirror_only: "sandbox",
+  // From before 0166; no run writes these now.
   live: "live",
   awaiting_approval: "awaiting approval",
-  held: "held",
-  hidden: "hidden",
-  withdrawn: "withdrawn",
-  mirror_only: "sandbox",
 };
 
 const STATE_STYLE: Record<ListingState, string> = {
+  on_website: "bg-bz-accent/15 text-bz-accent",
+  held: "bg-amber-100 text-amber-900",
+  hidden: "bg-bz-surface-2 text-bz-muted",
+  withdrawn: "bg-red-100 text-red-800",
+  mirror_only: "bg-bz-surface-2 text-bz-ink-2",
   live: "bg-bz-accent/15 text-bz-accent",
   awaiting_approval: "bg-amber-100 text-amber-900",
-  held: "bg-red-100 text-red-800",
-  hidden: "bg-bz-surface-2 text-bz-muted",
-  withdrawn: "bg-bz-surface-2 text-bz-muted",
-  mirror_only: "bg-bz-surface-2 text-bz-ink-2",
+};
+
+/** A draft's own status, beside the mirror's state. */
+const PROPERTY_STATUS: Record<string, string> = {
+  draft: "draft",
+  published: "published",
+  off_market: "off market",
+  archived: "archived",
 };
 
 const FIX_LABEL = {
@@ -97,11 +108,11 @@ function pendingMappings(rows: SalesforceListingRow[]) {
 /**
  * Salesforce listings — what the CRM has published, and what became of it.
  *
- * Ordered by who has to act: listings waiting for approval, then held ones
- * with their reasons, each reason labelled with whose job it is. A held
- * listing whose problem is a Salesforce field says which field; one whose
- * problem is ours (a location with no area) is fixed on this page, once, for
- * every listing that shares it.
+ * Each listing becomes a draft on the website once, and is the website's from
+ * then on (0166): edited and published in the property editor. This screen is
+ * for what comes before that — listings still waiting for their photos or too
+ * incomplete to draft, the ones nobody wants brought in — and for the CRM
+ * withdrawing a listing the website may still show, which comes first.
  */
 export default async function SalesforceListingsPage() {
   const { staff } = await requireRole(["admin", "editor", "agent"]);
@@ -152,13 +163,11 @@ export default async function SalesforceListingsPage() {
           </h1>
           <p className="mt-3 text-[14px] text-bz-muted leading-relaxed">
             Every fifteen minutes the website reads each listing marked Published for the website in
-            Salesforce. A complete one becomes a listing here; an incomplete one waits below with the
-            reason. Everything the listing page says about the property — title, summary and
-            description in English and Arabic, price, rooms, area, project, tenure, year built, view,
-            orientation, service charge, amenities, the Exclusive and Vacant on transfer labels,
-            permit and photos — comes from Salesforce and is overwritten on every sync: change it
-            there. The slug, the SEO fields, the advisor note and any other card labels are the
-            website&rsquo;s own.
+            Salesforce. A new one arrives once, as a draft with its photos, and is then the
+            website&rsquo;s: open it in the editor, change anything on it, and publish it there.
+            Later edits in Salesforce do not reach it, and nothing here takes it down — if the CRM
+            team withdraws a listing, it is flagged below and on its editor page for you to
+            decide.
           </p>
         </header>
 
@@ -180,9 +189,6 @@ export default async function SalesforceListingsPage() {
                   </span>
                 ) : null}
                 <span className="text-[10px] mono px-2 py-0.5 rounded uppercase tracking-wider bg-bz-bg border border-bz-border text-bz-ink-2">
-                  {settings.autoPublish ? "auto-publish on" : "approval required"}
-                </span>
-                <span className="text-[10px] mono px-2 py-0.5 rounded uppercase tracking-wider bg-bz-bg border border-bz-border text-bz-ink-2">
                   {settings.writeBack ? "writes back to Salesforce" : "read only"}
                 </span>
               </div>
@@ -199,11 +205,7 @@ export default async function SalesforceListingsPage() {
             </div>
             {isAdmin ? (
               <div className="flex flex-wrap items-center gap-2">
-                <SettingsSwitches
-                  paused={settings.paused}
-                  autoPublish={settings.autoPublish}
-                  writeBack={settings.writeBack}
-                />
+                <SettingsSwitches paused={settings.paused} writeBack={settings.writeBack} />
                 <SyncNowButton />
               </div>
             ) : null}
@@ -224,7 +226,7 @@ export default async function SalesforceListingsPage() {
           <section className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between">
               <Eyebrow>Needs a decision</Eyebrow>
-              <span className="text-[11.5px] text-bz-muted">answered once, for every listing</span>
+              <span className="text-[11.5px] text-bz-muted">answered once, for every draft still to come</span>
             </div>
             {pending.locations.length ? (
               <div className="rounded-lg border border-bz-border bg-bz-surface px-4 py-2">
@@ -295,7 +297,9 @@ export default async function SalesforceListingsPage() {
                           {[r.name, r.reference].filter(Boolean).join(" · ")}
                         </span>
                         {r.property ? (
-                          <span className="mono text-[11.5px] text-bz-muted">→ {r.property.reference}</span>
+                          <span className="mono text-[11.5px] text-bz-muted">
+                            → {r.property.reference} · {PROPERTY_STATUS[r.property.status] ?? r.property.status}
+                          </span>
                         ) : null}
                       </div>
                       <div className="mt-1.5 text-[14px] text-bz-ink break-words">
@@ -309,6 +313,11 @@ export default async function SalesforceListingsPage() {
 
                       {r.state === "withdrawn" && r.withdrawnReason ? (
                         <p className="mt-2 text-[12px] text-bz-ink-2">{r.withdrawnReason}.</p>
+                      ) : null}
+                      {r.state === "withdrawn" && r.property?.status === "published" ? (
+                        <p className="mt-1 text-[12px] text-red-700">
+                          Still published on the website. Unpublish it in the editor if it is no longer available.
+                        </p>
                       ) : null}
                       {r.holds.length > 0 ? (
                         <ul className="mt-2.5 flex flex-col gap-1">

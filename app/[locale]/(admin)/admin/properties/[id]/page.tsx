@@ -371,18 +371,12 @@ export default async function PropertyEditPage({ params }: PageProps) {
             propertyId={property.id}
             initial={cleanLifestyleTags(property.lifestyle_tags)}
           />
-          {salesforce ? (
-            <SalesforceSourceCard
-              listing={salesforce}
-              canDecide={!!me && (me.role === "admin" || me.role === "editor")}
-            />
-          ) : (
-            <PublishCard
-              propertyId={property.id}
-              status={property.status}
-              input={publishInput}
-            />
-          )}
+          <PublishCard
+            propertyId={property.id}
+            status={property.status}
+            input={publishInput}
+          />
+          {salesforce ? <SalesforceSourceCard listing={salesforce} /> : null}
         </aside>
       </div>
     </CmsShell>

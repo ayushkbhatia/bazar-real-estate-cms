@@ -113,10 +113,9 @@ export type Lookups = {
 };
 
 /**
- * The columns the sync owns on a Salesforce listing. Everything not named
- * here — slug, reference, SEO, the advisor note, featured flags, the card
- * labels other than the two built-ins — belongs to the website and is never
- * touched after creation.
+ * What a Salesforce listing's first draft is made of. The sync writes these
+ * once, when it creates the property row, and never again: from then on every
+ * column is the website's (0166).
  */
 export type SyncedFields = {
   title: string;
@@ -170,49 +169,9 @@ export type SyncedFields = {
   assigned_agent_id?: string;
 };
 
-/**
- * The columns an editor cannot change on a Salesforce listing, because the
- * next sync would change them back. The Arabic twins and the advisor are only
- * the CRM's some of the time — see `SyncedFields` and
- * `salesforceTwinColumns` — so they are not listed.
- */
-export const SALESFORCE_OWNED_COLUMNS = [
-  "title",
-  "short_description",
-  "description",
-  "mode",
-  "segment",
-  "type",
-  "property_form",
-  "beds",
-  "baths",
-  "built_up_ft2",
-  "plot_ft2",
-  "furnishing",
-  "parking_bays",
-  "floor",
-  "year_built",
-  "tenure",
-  "view",
-  "orientation",
-  "service_charge_per_ft2",
-  "geo",
-  "price_aed",
-  "area_id",
-  "sub_community_id",
-  "building_id",
-  "address_line",
-  "address_line_ar",
-  "development_id",
-  "developer_id",
-  "amenities",
-  "listing_permit_no",
-  "listing_permit_expires_at",
-] as const satisfies readonly (keyof SyncedFields)[];
-
 /** Each Arabic twin, the snapshot fields it comes from, and the editor's own
- *  length cap (lib/schemas/property.ts) — a synced value the editor's form
- *  would refuse would make every later save of the listing fail. */
+ *  length cap (lib/schemas/property.ts) — a drafted value the editor's form
+ *  would refuse would make every save of the draft fail. */
 const TWINS = [
   { column: "title_ar", english: "title", arabic: "titleAr", max: 160, html: false },
   { column: "short_description_ar", english: "shortDescription", arabic: "shortDescriptionAr", max: 480, html: false },
@@ -226,17 +185,6 @@ const TWINS = [
   max: number | null;
   html: boolean;
 }[];
-
-/**
- * The Arabic twins Salesforce owns on this listing right now: the ones it
- * wrote, and the ones whose English it leaves blank. The editor's save guard
- * and the sync both ask this, so they cannot disagree about whose a field is.
- */
-export function salesforceTwinColumns(
-  s: Pick<ListingSnapshot, (typeof TWINS)[number]["english"] | (typeof TWINS)[number]["arabic"]>,
-): string[] {
-  return TWINS.filter((t) => !s[t.english] || !!s[t.arabic]).map((t) => t.column);
-}
 
 export type CardFlags = {
   /** `Exclusive__c` / `Vacant_On_Transfer__c`. Null when the org hides the
@@ -1094,35 +1042,21 @@ export function applyCardFlags(current: unknown, cardFlags: CardFlags): Record<s
 // ── the decision ────────────────────────────────────────────────────────
 
 export type ListingState = Database["public"]["Enums"]["salesforce_listing_state"];
-type PropertyStatus = Database["public"]["Enums"]["property_status"];
 
+/**
+ * Where a listing stands. Once its draft is on the website nothing else
+ * counts — hiding, holds and approval only ever decided whether a draft was
+ * made. A withdrawal is recorded whatever the website has done with it.
+ */
 export function decideState(input: {
   sandbox: boolean;
   withdrawn: boolean;
+  onWebsite: boolean;
   hidden: boolean;
-  holds: readonly Hold[];
-  approved: boolean;
-  autoPublish: boolean;
 }): ListingState {
   if (input.withdrawn) return "withdrawn";
   if (input.sandbox) return "mirror_only";
+  if (input.onWebsite) return "on_website";
   if (input.hidden) return "hidden";
-  if (input.holds.length > 0) return "held";
-  if (!input.approved && !input.autoPublish) return "awaiting_approval";
-  return "live";
-}
-
-/**
- * The property status a state implies, given where the row is now.
- *
- * Only ever takes a listing down from `published` or puts one up; a draft that
- * is held stays a draft, and a listing the permit-expiry cron archived stays
- * archived until it is live again. Going down is `off_market`, which the
- * listing page answers with a 410 — the honest answer for a listing that is no
- * longer available, and reversible the moment it is.
- */
-export function targetStatus(state: ListingState, current: PropertyStatus | null): PropertyStatus {
-  if (state === "live") return "published";
-  if (current === "published") return "off_market";
-  return current ?? "draft";
+  return "held";
 }
