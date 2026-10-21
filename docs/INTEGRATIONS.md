@@ -331,14 +331,16 @@ queued on `enquiries.crm_erasure_due_at` for the same cron to retry. See
 ### Salesforce listings (Salesforce → website)
 
 Same credentials; nothing more to set. `/api/cron/salesforce-listing-sync`
-runs every fifteen minutes and turns every listing the CRM marks Published
-for the website into a listing here — held, with reasons, when it is
-incomplete. Everything an operator needs is on **/admin/properties/salesforce**:
-what is live, what is waiting for approval, why each held listing is held and
-whose job the fix is, the locations, developers and agents to map once, and
-the Pause / Sync now / auto-publish controls. The design, the field mapping
-and what may never happen (a sandbox publishing, a permissions change taking
-listings down) are in [SALESFORCE.md](SALESFORCE.md#listings--salesforce-to-website).
+runs every fifteen minutes and turns every new listing the CRM marks
+Published for the website into a **draft** here, once. From then on the
+listing is the website's: edited and published in the property editor, and
+never touched by the sync again (0166). **/admin/properties/salesforce** shows
+what is on the website, what is still waiting for its photos or too
+incomplete to draft, what the CRM has withdrawn, the locations, developers and
+agents to map for drafts still to come, and the Pause / Sync now controls.
+The design, the field mapping and what may never happen (a sandbox
+publishing, the sync overwriting an editor) are in
+[SALESFORCE.md](SALESFORCE.md#listings--salesforce-to-website).
 
 **Triage.** Every listing Salesforce has published, and what became of it:
 

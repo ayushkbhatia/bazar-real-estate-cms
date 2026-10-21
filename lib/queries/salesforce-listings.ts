@@ -90,15 +90,17 @@ function toRow(r: Record<string, unknown>): SalesforceListingRow {
 const SELECT =
   "sf_listing_id, org_host, sf_listing_name, sf_reference, snapshot, state, holds, notes, unresolved, images_total, images_ready, approved_at, hidden_at, withdrawn_at, withdrawn_reason, last_synced_at, last_seen_at, last_error, properties(id, slug, reference, status)";
 
-/** Held and awaiting first — the rows someone has to act on — then the rest,
- *  most recently changed first. */
+/** Withdrawn first — a listing the CRM took back that the website may still
+ *  show — then held, then the rest, most recently changed first. `live` and
+ *  `awaiting_approval` are states from before 0166 that no run writes now. */
 const STATE_ORDER: Record<ListingState, number> = {
-  awaiting_approval: 0,
+  withdrawn: 0,
   held: 1,
-  hidden: 2,
-  live: 3,
+  on_website: 2,
+  hidden: 3,
   mirror_only: 4,
-  withdrawn: 5,
+  live: 5,
+  awaiting_approval: 6,
 };
 
 export async function listSalesforceListings(): Promise<SalesforceListingRow[]> {
@@ -136,7 +138,6 @@ export async function getSalesforceListingForProperty(
 
 export type ListingSyncSettings = {
   paused: boolean;
-  autoPublish: boolean;
   writeBack: boolean;
   lastRunAt: string | null;
   lastSummary: Record<string, unknown>;
@@ -144,17 +145,16 @@ export type ListingSyncSettings = {
 
 export async function getListingSyncSettings(): Promise<ListingSyncSettings> {
   const admin = createAdminClient();
-  const empty = { paused: false, autoPublish: false, writeBack: false, lastRunAt: null, lastSummary: {} };
+  const empty = { paused: false, writeBack: false, lastRunAt: null, lastSummary: {} };
   if (!admin) return empty;
   const { data } = await admin
     .from("salesforce_listing_sync")
-    .select("paused, auto_publish, write_back, last_run_at, last_summary")
+    .select("paused, write_back, last_run_at, last_summary")
     .eq("id", 1)
     .maybeSingle();
   if (!data) return empty;
   return {
     paused: data.paused,
-    autoPublish: data.auto_publish,
     writeBack: data.write_back,
     lastRunAt: data.last_run_at,
     lastSummary: (data.last_summary as Record<string, unknown>) ?? {},

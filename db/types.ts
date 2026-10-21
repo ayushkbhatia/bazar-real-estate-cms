@@ -6306,6 +6306,7 @@ export type Database = {
         | "hidden"
         | "withdrawn"
         | "mirror_only"
+        | "on_website"
       salesforce_mapping_kind: "location" | "developer" | "agent"
       staff_role:
         | "admin"
@@ -6728,6 +6729,7 @@ export const Constants = {
         "hidden",
         "withdrawn",
         "mirror_only",
+        "on_website",
       ],
       salesforce_mapping_kind: ["location", "developer", "agent"],
       staff_role: [

@@ -17,13 +17,15 @@ import { allRows } from "@/lib/salesforce/listings/paginate";
  * Every write on the Salesforce listings screen.
  *
  * The mirror tables grant staff SELECT and nothing else, so these run with the
- * service role — after `requireRole` has decided the caller may. Approving,
- * hiding and mapping are editorial calls an editor makes every day; pausing
- * the sync and switching auto-publish change what reaches the public site
- * without a human looking, and are admin-only.
+ * service role — after `requireRole` has decided the caller may. Hiding and
+ * mapping are editorial calls; pausing the sync and write-back are admin-only.
+ *
+ * None of them reaches a listing whose draft is already on the website: that
+ * listing is edited and published in the property editor (0166). Hiding keeps
+ * a draft from being made; mapping decides what future drafts say.
  *
  * Each action re-applies the listings it touched from their stored snapshots,
- * so the answer is on the website by the time the toast appears — not after
+ * so the answer is on the screen by the time the toast appears — not after
  * the next fifteen-minute sweep.
  */
 
@@ -51,37 +53,6 @@ function outcome(summary: SyncSummary, done: string): ActionResult {
 function refresh(): void {
   revalidatePath("/admin/properties/salesforce");
   revalidatePath("/admin/properties");
-}
-
-export async function approveSalesforceListing(sfListingId: unknown): Promise<ActionResult> {
-  const { user } = await requireRole(EDIT_ROLES);
-  if (typeof sfListingId !== "string" || !SF_ID.test(sfListingId)) {
-    return { status: "error", message: "Bad listing id." };
-  }
-  const admin = createAdminClient();
-  if (!admin) return { status: "error", message: "Service-role key is not configured." };
-
-  const { error } = await admin
-    .from("salesforce_listings")
-    .update({
-      approved_at: new Date().toISOString(),
-      approved_by: user.id,
-      hidden_at: null,
-      hidden_by: null,
-    })
-    .eq("sf_listing_id", sfListingId);
-  if (error) return { status: "error", message: error.message };
-
-  await logAudit({
-    action: "salesforce.listing_approved",
-    target_kind: "salesforce_listing",
-    target_id: sfListingId,
-    before: null,
-    after: null,
-  });
-  const summary = await runListingSync({ trigger: "reapply", onlyStored: [sfListingId] });
-  refresh();
-  return outcome(summary, "Approved.");
 }
 
 export async function setSalesforceListingHidden(
@@ -114,7 +85,12 @@ export async function setSalesforceListingHidden(
   });
   const summary = await runListingSync({ trigger: "reapply", onlyStored: [sfListingId] });
   refresh();
-  return outcome(summary, hidden ? "Hidden from the website." : "Allowed back on the website.");
+  return outcome(
+    summary,
+    hidden
+      ? "Hidden. No draft is made for it."
+      : "Allowed. Its draft is made once its photos are copied.",
+  );
 }
 
 const KINDS = ["location", "developer", "agent"] as const;
@@ -220,9 +196,8 @@ export async function syncSalesforceListingsNow(): Promise<ActionResult> {
   }
   const parts = [
     `${summary.seen} published in Salesforce`,
-    summary.created ? `${summary.created} new` : null,
-    summary.published ? `${summary.published} put live` : null,
-    summary.unpublished ? `${summary.unpublished} taken down` : null,
+    summary.created ? `${summary.created} new draft${summary.created === 1 ? "" : "s"}` : null,
+    summary.withdrawn ? `${summary.withdrawn} withdrawn` : null,
     summary.imagesCopied ? `${summary.imagesCopied} photos copied` : null,
   ].filter(Boolean);
   return { status: "ok", message: `Synced: ${parts.join(", ")}.` };
@@ -230,17 +205,15 @@ export async function syncSalesforceListingsNow(): Promise<ActionResult> {
 
 export async function updateListingSyncSettings(input: {
   paused?: unknown;
-  autoPublish?: unknown;
   writeBack?: unknown;
 }): Promise<ActionResult> {
   const { user } = await requireRole(ADMIN_ROLES);
-  const patch: { paused?: boolean; auto_publish?: boolean; write_back?: boolean; updated_by: string } = {
+  const patch: { paused?: boolean; write_back?: boolean; updated_by: string } = {
     updated_by: user.id,
   };
   if (typeof input.paused === "boolean") patch.paused = input.paused;
-  if (typeof input.autoPublish === "boolean") patch.auto_publish = input.autoPublish;
   if (typeof input.writeBack === "boolean") patch.write_back = input.writeBack;
-  if (patch.paused === undefined && patch.auto_publish === undefined && patch.write_back === undefined) {
+  if (patch.paused === undefined && patch.write_back === undefined) {
     return { status: "error", message: "Nothing to change." };
   }
   const admin = createAdminClient();
@@ -253,7 +226,7 @@ export async function updateListingSyncSettings(input: {
     target_kind: "salesforce_listing_sync",
     target_id: "settings",
     before: null,
-    after: { paused: patch.paused, auto_publish: patch.auto_publish, write_back: patch.write_back },
+    after: { paused: patch.paused, write_back: patch.write_back },
   });
   refresh();
   return {
@@ -261,14 +234,10 @@ export async function updateListingSyncSettings(input: {
     message:
       patch.paused !== undefined
         ? patch.paused
-          ? "Paused. Nothing is fetched from Salesforce until you resume; approving, hiding and mapping here still apply."
+          ? "Paused. Nothing is fetched from Salesforce until you resume; hiding and mapping here still apply."
           : "Resumed."
-        : patch.write_back !== undefined
-          ? patch.write_back
-            ? "Write-back is on: each listing's website status, URL and reasons are sent to Salesforce on the next sync."
-            : "Write-back is off: nothing is written to Salesforce."
-          : patch.auto_publish
-            ? "Auto-publish is on: a listing that passes every check goes live without approval."
-            : "Auto-publish is off: new listings wait for approval.",
+        : patch.write_back
+          ? "Write-back is on: each listing's website status, URL and reasons are sent to Salesforce on the next sync."
+          : "Write-back is off: nothing is written to Salesforce.",
   };
 }

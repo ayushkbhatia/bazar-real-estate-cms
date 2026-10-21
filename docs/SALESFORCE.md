@@ -415,15 +415,18 @@ mapping, keyed on the User id).
    drops what it cannot see, keeps syncing, and reports the gap.
 2. **Withdrawals, on evidence only.** A listing we have seen that is missing
    from the sweep is asked about by id. Unpublished or deleted (`queryAll`)
-   → taken off the website. **Not visible at all → nothing changes** and an
-   issue is raised: that is what a sharing-rule or permission change looks
-   like, and it must never be able to empty the website.
-3. **Plan** (`plan.ts`, pure): snapshot → the website row, plus *holds* (why
-   it cannot be published, each tagged with who fixes it — Salesforce, the
-   website, or nobody: "photos still copying") and *notes*.
-4. **Content.** Create the property (`draft`, a fresh `BAZ-XX-0NNNN`
-   reference) or correct drift, copy photos, link them.
-5. **Status**, after re-reading the admin flags, so an admin who hides a
+   → recorded as **withdrawn** on the mirror, and flagged on the Salesforce
+   screen and the listing's editor page. The website's listing is not
+   touched (see "Who owns what"). **Not visible at all → nothing changes**
+   and an issue is raised: that is what a sharing-rule or permission change
+   looks like.
+3. **Plan** (`plan.ts`, pure): snapshot → the draft's fields, plus *holds*
+   (what the CRM left out, each tagged with who fixes it) and *notes*.
+4. **Content**, for a listing with no draft yet: copy its photos, and once
+   all of them are copied create the property — `draft`, a fresh
+   `BAZ-XX-0NNNN` reference, its photos linked. A listing whose draft exists
+   is skipped: not one write.
+5. **Mirror**, after re-reading the hidden flags, so an admin who hides a
    listing mid-run is not overridden by a decision made a minute earlier.
 
 The whole catalogue is swept each run rather than a `LastModifiedDate`
@@ -433,40 +436,52 @@ evidence. At this org's size that is one query. Revisit past a few thousand
 published listings.
 
 Stored snapshots carry a schema version (`v`, now 3). A re-apply — an
-admin's approval or mapping — plans from the stored snapshot without calling
+admin's hide, allow or mapping — plans from the stored snapshot without calling
 Salesforce, through `upgradeSnapshot`, so a row written before v1.3 plans as
 Salesforce would send it today, minus the fields it never had.
 
 ### Who owns what
 
-| Salesforce owns (overwritten every run) | The website owns (never touched after creation) |
-|---|---|
-| title, summary, description, mode, segment, type, completion form, beds, baths, sizes, furnishing, parking, floor, year built, tenure, view, orientation, service charge, map pin, price, area / sub-area, address line (both languages), project link, developer, amenities, permit number and expiry, photos from Salesforce | slug, reference, SEO, advisor note, featured flags, card labels other than the two below, photos an editor added |
-| the **Exclusive** and **Vacant on transfer** labels, when the checkbox is readable | every other card label |
-| an Arabic twin (title, summary, description, view, orientation) **when** the CRM wrote it — and cleared **when** the CRM leaves its English blank | the Arabic twin when the CRM wrote only the English |
-| the advisor **when** the CRM's agent maps to a staff member | the advisor when it does not |
+**Salesforce supplies the first draft; the website owns everything after
+that** (0166, the client's decision of 21 Oct 2026).
 
-Ownership is enforced by comparing each synced field with the row every run
-(so an editor's change to a Salesforce field is put back) and, before that
-can surprise anyone, by the editor itself: saving a Salesforce listing keeps
-Salesforce's values for those fields and says so; the map-pin, developer and
-advisor controls refuse with a pointer to Salesforce, and so does ticking one
-of the two Salesforce labels. `salesforceTwinColumns` (plan.ts) is the one
-answer to "whose is this Arabic twin?", asked by both the sync and the
-editor. The editor's publish card is replaced by a Salesforce card, because
-the sync owns the status. Synced text is clipped to the editor's own limits
-(`lib/schemas/property.ts`), so saving a synced listing can never fail
-validation.
+The sync creates a listing's property row **once**, as a `draft`, with every
+fact the CRM gave (the mapping table below) and its whole photo gallery. From
+that moment the row is an ordinary website listing:
 
-Status changes an editor makes anywhere else — the bulk bar, a CSV import —
-are caught by a trigger (`properties_salesforce_editor_status_tr`, 0136):
-taking a Salesforce listing off the website **hides** it (the sync keeps it
-off), publishing it approves and allows it. Only a person's change counts; the
-sync's own writes, as the service role, do not. Since 0159 the trigger writes
-the same audit row the screen's buttons do (`salesforce.listing_hidden`,
-`_allowed`, `_approved`, target the Salesforce listing id) whenever the change
-flips the listing, with the property, its reference and the status that caused
-it in `after`.
+- Every field is edited in the property editor — title, descriptions and
+  their Arabic, price, rooms, map pin, area, address line, developer,
+  project, permit, amenities, advisor, card labels (Exclusive and Vacant on
+  transfer included), photos. No control refuses a Salesforce listing.
+- It is published, unpublished and archived from the editor's own publish
+  card, behind the same publish gate as any listing.
+- The sync never writes the row, its photos or its status again. A later edit
+  in Salesforce reaches only the mirror's snapshot (shown on the Salesforce
+  screen for reference). The mirror's state is `on_website`.
+- **A withdrawal in Salesforce does not take the listing down.** It is
+  recorded on the mirror and shown as a warning on the editor page and the
+  Salesforce screen ("Still published on the website"), for an editor to
+  unpublish if the property is no longer available.
+- **Deleting the draft does not bring it back.** A listing whose draft was on
+  the website and is gone is marked hidden; *Allow on website* on the
+  Salesforce screen makes a fresh draft.
+
+What the CRM left out of the draft — a blank permit, an area or developer the
+website does not have — is not a hold any more: the draft is made anyway, the
+gaps are listed under the editor's Salesforce card ("What Salesforce left out
+of the draft"), and the publish gate refuses what the law requires (permit,
+developer, form) until an editor fills it.
+
+Before the draft exists, three things can still stop it: the CRM record is too
+incomplete to be a row at all (no title, offering, type or price — held), its
+photos are still copying (held, `photos_pending`), or an editor chose *Don't
+bring in* (hidden). Approval and auto-publish are gone: the sync never
+publishes, and `salesforce_listing_sync.auto_publish` is no longer read.
+
+Status changes an editor makes in bulk or by CSV still pass through the
+trigger `properties_salesforce_editor_status_tr` (0136, 0159), which stamps
+`hidden_at` / `approved_at` on the mirror and audits it. Those stamps no
+longer change anything for a listing whose draft exists.
 
 ### Mapping
 
@@ -511,10 +526,11 @@ comment in 0137 still does.
 
 | Website state | Written |
 |---|---|
-| live | `Published`, the listing's URL, error cleared |
-| held for something **Salesforce** must fix | `Deactivated`, the reasons — their contract: it leaves the published set until the CRM team fixes it and publishes it again |
-| held for something **we** must fix (an area to map), photos copying, awaiting approval | status untouched, so it stays in the sweep; the error field says what it is waiting for |
-| hidden by an editor | `Deactivated`, "taken off the website by the Bazar team" |
+| on the website, published by an editor | `Published`, the listing's URL, error cleared |
+| on the website, not published | status untouched; "A draft on the website. The Bazar team edit it and publish it there." |
+| too incomplete to draft, for something **Salesforce** must fix | `Deactivated`, the reasons — their contract: it leaves the published set until the CRM team fixes it and publishes it again |
+| photos still copying | status untouched, so it stays in the sweep; the error field says so |
+| not brought in by an editor | `Deactivated`, "taken off the website by the Bazar team" |
 | withdrawn by the CRM, or a sandbox | nothing |
 
 Only changed fields are sent, compared with what the sweep read back, so a
@@ -531,8 +547,8 @@ proven against the sandbox); pasted rich-text images through the rich-text
 image resource; web URLs over https only, with private addresses refused on
 every redirect hop, a 25 MB cap and the file type read from its bytes.
 Each photo is copied once (`salesforce_media`), a dead link is retried daily
-rather than every run, and a listing's first appearance waits for its whole
-gallery. Placeholder `example.com` URLs in the sandbox 404 and are reported.
+rather than every run, and a listing's draft waits for its whole gallery —
+once the draft exists its photos are the editor's. Placeholder `example.com` URLs in the sandbox 404 and are reported.
 
 ### Safety rails
 
@@ -540,13 +556,13 @@ gallery. Placeholder `example.com` URLs in the sandbox 404 and are reported.
   evaluated and shown on the admin screen — holds and all — and nothing
   reaches `properties` or the bucket. Proven by running the real sync
   against the sandbox with the production database.
-- **Approval first.** `salesforce_listing_sync.auto_publish` is off: the
-  first appearance of every listing waits for an admin's Approve. Approval is
-  sticky; turning auto-publish on later is one button.
+- **The sync never publishes.** Every Salesforce listing arrives as a draft
+  and goes live only when an editor publishes it.
 - **Pause.** One button stops all fetching and writing.
 - **Portal feeds skip Salesforce listings** (`lib/syndication/load.ts`):
   Salesforce publishes to Property Finder and Bayut itself, and a second copy
-  from us would list each one twice.
+  from us would list each one twice. Since 0166 an edit made on the website
+  does not reach the portals either: they show Salesforce's version.
 - **Leads close the loop.** An enquiry on a Salesforce listing reaches
   `Lead__c` with the CRM's own listing name (`LST-00003`) in
   `Property_Reference__c` and the website reference in the description.
@@ -652,15 +668,14 @@ Written before the listings guide arrived, as the decisions that are
 expensive to reverse after a first sync. Two changed once the real objects
 were visible, and why:
 
-- **Field-level ownership** — kept. The Arabic twins and the advisor became
-  Salesforce's *only when Salesforce supplies them*: the CRM turned out to
-  carry human-written Arabic, which is better than a machine draft, and an
-  assigned agent.
-- **Never auto-publish** — kept as the default, made a setting. A human
-  approves each listing's first appearance until an admin switches
-  auto-publish on; approval is per listing and sticky.
-- **Never hard-delete** — kept. Withdrawn is `off_market`, which the listing
-  page answers with a 410, and which reverses when Salesforce republishes.
+- **Field-level ownership** — replaced on 21 Oct 2026 (0166). Salesforce owned
+  its fields for as long as it published the listing, and the editor refused
+  to change them; the client needed to correct listings before posting them.
+  Salesforce now supplies the first draft only.
+- **Never auto-publish** — kept, and made absolute: the sync never publishes;
+  an editor does.
+- **Never hard-delete** — kept. A withdrawal is recorded, not acted on; the
+  website's listing stays until an editor decides.
 - **Poll, do not subscribe** — kept, as a full sweep rather than a
   `LastModifiedDate` watermark; see "How a run works".
 
@@ -672,8 +687,8 @@ were visible, and why:
 | 1 | Leads out: client, mapper, queue, cron, admin card | **Built** |
 | 2.5 | Exactly-once upsert, real picklists, required-field guard | **Built** |
 | 2 | PDPL: erasure and access requests reach the CRM | **Built** |
-| 3 | Listings in: sweep, mapper, drift correction, evidence-based withdrawal, sandbox mirror | **Built** |
+| 3 | Listings in: sweep, mapper, drift correction, evidence-based withdrawal, sandbox mirror | **Built**; drift correction and acting on withdrawals removed by 0166 |
 | 4 | Photos from Salesforce Files and URLs into the `media` bucket | **Built** |
-| 5 | Review queue: approval, hide/allow, mapping screen, editor guards | **Built** |
+| 5 | Review queue: approval, hide/allow, mapping screen, editor guards | **Built**; approval and the editor guards removed by 0166 |
 | 5.5 | Guide v1.2: permit expiry, community, website type, write-back (off until an admin enables it) | **Built** |
 | 6 | Production: leads live (credentials in Vercel); listings after P1 | Leads ready; listings blocked on Levarus |
