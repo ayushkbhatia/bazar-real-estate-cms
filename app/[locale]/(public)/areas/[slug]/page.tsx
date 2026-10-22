@@ -556,7 +556,7 @@ export default async function CommunityProfilePage({
         }}
         secondary={{
           label: sv("final-cta", "cta2_label") ?? t("cta.getConsultation"),
-          href: sv("final-cta", "cta2_href") ?? "/contact",
+          href: sv("final-cta", "cta2_href") ?? "/services/consultation",
         }}
       />
     ),
