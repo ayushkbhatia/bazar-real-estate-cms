@@ -91,9 +91,10 @@ describe("buildLeadPayload", () => {
 
   it("sends Preferred_Languages__c only with a value the picklist holds", () => {
     expect(buildLeadPayload(row({ locale: "ar" })).Preferred_Languages__c).toBe("Arabic");
-    // The picklist has no "English"; claiming Arabic for an English visitor
-    // would misroute them.
-    expect("Preferred_Languages__c" in buildLeadPayload(row({ locale: "en" }))).toBe(false);
+    expect(buildLeadPayload(row({ locale: "en" })).Preferred_Languages__c).toBe("English");
+    // A locale the picklist has no word for sends nothing rather than a value
+    // Salesforce would reject.
+    expect("Preferred_Languages__c" in buildLeadPayload(row({ locale: "fr" }))).toBe(false);
     for (const locale of ["ar", "en", "fr", ""]) {
       const v = preferredLanguageFor(locale);
       if (v) expect(PREFERRED_LANGUAGES as readonly string[]).toContain(v);

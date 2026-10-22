@@ -6,6 +6,7 @@ Two directions, one Connected App, one integration user.
 |---|---|---|
 | **Leads out** — website → Salesforce | Every public enquiry becomes a `Lead__c` record | **Built** (Phases 1, 2, 2.5) |
 | **Listings in** — Salesforce → website | Every listing the CRM marks Published for the website becomes a listing here | **Built** (Phase 3) — see [Listings](#listings--salesforce-to-website) |
+| **Areas out** — website → Salesforce | Every area added or renamed on the website reaches the `Area__c` / `Sub_Area__c` picklists; a delete is recorded, not sent (the API has none) | **Built** (0168) — see [Areas](#areas--website-to-salesforce) |
 
 Vendor documents: *Lead Creation API* (18 Sept 2026), *Web to Lead Creation*
 (23 Sept), the production edition of the same (24 Sept), its **v1.1 (1 Oct)**
@@ -52,7 +53,7 @@ custom, all documented in the vendor doc (v1.1) and nothing beyond them.
 | `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent` / `Other`. Required. |
 | `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
 | `Website_Listing_URL__c` | the page the lead came from, absolute | Every lead whose page is known: the listing for a listing enquiry (the page it was sent from, else its canonical `/p/<slug>-<reference>` — slugs alone repeat), the project for a project enquiry (else `/developments/<slug>`), otherwise the page the form sat on (`/buy`, `/tools/valuation`). Levarus's website lead assignment reads it (19 Oct 2026). Replaced `Property_Reference__c`, removed on 13 Oct 2026; the reference itself is in the description (`Property: …`). |
-| `Preferred_Languages__c` | `enquiries.locale` | Restricted picklist: `Arabic`, `Arabic & English` — no `English`. An `/ar` lead sends `Arabic`; an English one sends nothing until Levarus add `English` (asked 19 Oct 2026; `PREFERRED_LANGUAGE` in `leads.ts`). |
+| `Preferred_Languages__c` | `enquiries.locale` | Restricted picklist: `Arabic`, `Arabic & English`, `English` (added 22 Oct 2026). An `/ar` lead sends `Arabic`, an English-site lead `English`; `Arabic & English` is never claimed (`PREFERRED_LANGUAGE` in `leads.ts`). Leads synced before 22 Oct went without it on the English side. |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
 **On the two picklists.** Both are Required as of 23 Sept, which inverts the
@@ -567,6 +568,85 @@ once the draft exists its photos are the editor's. Placeholder `example.com` URL
   `Lead__c` with the CRM's own listing name (`LST-00003`) in
   `Property_Reference__c` and the website reference in the description.
 
+## Areas — website to Salesforce
+
+Vendor document: *Website Area Locations Sync* (Levarus, v1.0, 22 Oct 2026,
+production). Same Connected App and token as everything else; the run-as user
+needs Levarus's **Website Locations Admin** permission.
+
+`Area__c` and `Sub_Area__c` on a Salesforce listing are restricted picklists
+of the website's own area names, dependent on `Emirate__c` and `Area__c`; the
+listing sync places a listing by matching them back to `areas`. An area the
+website adds that the picklist lacks is an area no CRM user can list in.
+
+```
+POST /services/apexrest/properties/website-locations
+  UPSERT  { action, eventId, emirate, area, subAreas? }   add or reactivate
+  REPLACE { action, eventId, emirate, area, newArea, subAreas? }   rename an area
+GET  same path → { "status": "ok" }                         ping
+```
+
+**How it runs.** A trigger on `areas` (0168) writes a row to
+`salesforce_location_events` for every change Salesforce holds, with the
+payload fixed at that moment — a REPLACE needs the old name, which only the
+trigger sees. So every path that adds or renames an area enrols itself: the
+area editor, the property wizard's *New area*, a data migration. The area
+actions send it straight after the save (`after()`, so the editor never waits
+on the org); the lead-sync cron sends whatever that missed, every five
+minutes. `lib/salesforce/locations.ts` is the sender.
+
+| Website change | Request |
+|---|---|
+| `area` added | `UPSERT { emirate, area }` |
+| `sub_community` added under an area | `UPSERT { emirate, area: <parent>, subAreas: [name] }` |
+| `area` renamed, same emirate | `REPLACE { emirate, area: <old>, newArea: <new> }` |
+| any other change of name, kind or parent of either | `UPSERT` of where it is now |
+| `area` or `sub_community` deleted (0167's CMS delete) | `DELETE`, stored `held`, **never sent** |
+| `emirate` or `building`, a description, a slug, a photo | nothing |
+
+`eventId` is `WEB-AREA-<event uuid>`, so a Salesforce log line traces to its
+row. Names are trimmed; the emirate is the nearest `emirate` ancestor.
+
+**Order and retries.** Oldest first, and the queue stops behind an event that
+has to retry — an add that has not landed must not be overtaken by its
+rename. Each event is claimed (its `attempts` advanced, conditionally) before
+it is sent, so the action's drain and the cron's never double-send. Retryable
+failures back off 1m, 5m, 25m, 2h, 10h; after the fifth, or at once for a
+refusal (an unknown emirate, a 400, a 200 whose `status` is not `ok`), the row
+is `failed`, reported on the health page, and the queue moves on. An area with
+no emirate above it is failed locally with that reason and no call.
+
+**What the API cannot do.** No delete or deactivate, and no sub-area rename.
+So a deleted area, a renamed sub-area, or an area moved to another emirate
+leaves its old value active in Salesforce. Asked of Levarus (items 19–20
+below). Deletes are recorded anyway, `state = 'held'`, which the sender never
+reads: the list of values someone must retire in Salesforce by hand, and,
+once Levarus add a deactivate action, a backlog to send — map `DELETE` to
+their verb in `buildLocationRequest`, then
+`update salesforce_location_events set state = 'pending', next_attempt_at = now() where state = 'held';`.
+The CMS's delete message tells the editor Salesforce still lists the area.
+
+**Starting state (22 Oct 2026).** A describe of `Listing__c` showed every
+website area (31) and sub-area (7) already in the picklists, so nothing was
+backfilled. Salesforce also held four values the website does not: `Al
+Samha`, `Al Samha East` (the document's own examples), `Postman Active
+145820`, and `Al Shamkha`.
+
+Triage:
+
+```sql
+select created_at, state, attempts, payload, last_error, response
+  from salesforce_location_events
+ order by created_at desc
+ limit 20;
+
+-- Deleted on the website, still to retire in Salesforce:
+select created_at, payload from salesforce_location_events where state = 'held';
+```
+
+To resend a failed event after fixing its cause:
+`update salesforce_location_events set state = 'pending', attempts = 0, next_attempt_at = now() where id = '…';`
+
 ## Production status
 
 | | Sandbox | Production |
@@ -575,6 +655,7 @@ once the draft exists its photos are the editor's. Placeholder `example.com` URL
 | `Lead__c` create | ✅ | ✅ — live since 25 Sept |
 | `Property_Listing__c`, `Listing__c` visible | ✅ | ✅ — fixed 25 Sept; first sweep 1 Oct |
 | Write-back fields editable | ✅ (proven with a no-op PATCH, v1.2 names) | not yet tried — write-back is off |
+| Website Locations API | — | ✅ ping and token, 22 Oct 2026 (with the document's credentials) |
 
 The production sweep was unpaused on 1 Oct and has run every fifteen minutes
 since. Its first run found one listing, `LST-00001` — a sandbox test record
@@ -647,8 +728,9 @@ whole-number floor and the Arabic field lengths. Still open:
 
 15. **Edit access to `Mortgage_Service__c`** for the integration user. The
     field exists but is read-only to it (describe: `createable: false`).
-16. **An `English` value on `Preferred_Languages__c`.** It holds only
-    `Arabic` and `Arabic & English`, so an English-site lead sends nothing.
+16. ~~An `English` value on `Preferred_Languages__c`.~~ **Answered** by
+    22 Oct 2026 (seen in a describe): the picklist now holds `English`, and
+    every English-site lead sends it.
 17. Duplicate handling (Levarus, 19 Oct): a new email → new `Lead__c` and
     contact; same email + same project → a Re-Inquiry under the parent;
     same email + different project → new `Lead__c` on the same contact. The
@@ -661,6 +743,25 @@ whole-number floor and the Arabic field lengths. Still open:
     Levarus erase the Re-Inquiries of a parent we name. Until then each one
     is reported on the health page and on the DSR screen for a person to
     act on.
+
+### Raised 22 Oct 2026 (Website Locations Sync v1.0)
+
+19. **A way to retire an area.** The API adds and renames only, and the
+    CMS can delete an area since 22 Oct 2026 (#637). Salesforce needs a
+    `DEACTIVATE` action (`{ emirate, area }`, and `subAreas` to retire only
+    those); until then each website delete is a `held` row to act on by hand.
+20. **Sub-area rename.** REPLACE renames an area; a renamed sub-area can only
+    be UPSERTed under its new name, leaving the old one active. A
+    `REPLACE_SUB_AREA` (`area`, `subArea`, `newSubArea`), or `newSubArea` on
+    REPLACE, would close it.
+21. **Tidy the picklists.** `Al Samha`, `Al Samha East` and `Postman Active
+    145820` look like test values and should be deactivated; `Al Shamkha`
+    is in Salesforce and not on the website — add it on the website or
+    retire it there.
+22. **The response body.** The document gives none for POST. The sender
+    treats any 2xx as success unless its `status` is not `ok` or `success`
+    is false, and stores the body on the row; please confirm the shape.
+23. **Rotate the Connected App secret** — this document prints it too.
 
 ## Design rules that held
 

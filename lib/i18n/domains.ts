@@ -904,6 +904,11 @@ export const DOMAINS: Domain[] = [
     excluded: "Salesforce record ids still to pseudonymise after their mortgage request was deleted. Service role only; ids only.",
   },
   {
+    table: "salesforce_location_events",
+    columns: [],
+    excluded: "Area adds and renames queued for Salesforce's Website Locations API. Service role only; the names are the English values Salesforce's picklists hold.",
+  },
+  {
     table: "cta_clicks",
     columns: [],
     excluded:

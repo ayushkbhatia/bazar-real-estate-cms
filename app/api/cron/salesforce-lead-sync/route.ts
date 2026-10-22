@@ -1,6 +1,6 @@
 /**
  * Salesforce lead sync — drains the enquiry and mortgage-request queues into
- * `Lead__c`.
+ * `Lead__c`, and the website-area queue (0168) into the Website Locations API.
  *
  * ── Why a cron and not a call at submit time ─────────────────────────────
  * A lead is the one thing on this site that must never be lost. Calling
@@ -38,6 +38,7 @@ import {
   type LeadSourceRow,
 } from "@/lib/salesforce/leads";
 import { drainCrmErasures, drainLeadErasureQueue } from "@/lib/salesforce/erasure-queue";
+import { drainLocationEvents, type LocationDrainResult } from "@/lib/salesforce/locations";
 import {
   isSampleMortgageRequest,
   pushMortgageLead,
@@ -410,9 +411,23 @@ export async function GET(req: NextRequest) {
       await settle(admin, "mortgage_requests", row.id, attempts, result, tally);
     }
 
+    // Website areas (0168). Normally already sent by the area action itself;
+    // this sends what that missed. Its own try: an area that will not go must
+    // never stop a lead.
+    let locations: LocationDrainResult | { error: string };
+    try {
+      locations = await drainLocationEvents(admin);
+    } catch (err) {
+      await reportError(err, { source: "cron/salesforce-lead-sync/locations" });
+      locations = { error: err instanceof Error ? err.message : String(err) };
+    }
+
     // An outstanding erasure is the more serious of the two failure modes, so
     // it wins the single `last_error` slot the integrations card shows.
-    const surfaced = erasures.lastError ?? tally.lastError;
+    const surfaced =
+      erasures.lastError ??
+      tally.lastError ??
+      ("sent" in locations ? locations.lastError : locations.error);
     await recordIntegrationStatus(admin, {
       ok: !surfaced,
       error: surfaced,
@@ -420,7 +435,7 @@ export async function GET(req: NextRequest) {
 
     await recordHeartbeat("salesforce-lead-sync", {
       ok: true,
-      detail: `pushed ${tally.pushed}, blocked ${tally.blocked}, erasures ${erasures.scrubbed}`,
+      detail: `pushed ${tally.pushed}, blocked ${tally.blocked}, erasures ${erasures.scrubbed}, areas ${"sent" in locations ? locations.sent : "error"}`,
     });
     return NextResponse.json({
       ok: true,
@@ -431,6 +446,7 @@ export async function GET(req: NextRequest) {
       blocked: tally.blocked,
       skippedSamples,
       erasures,
+      locations,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

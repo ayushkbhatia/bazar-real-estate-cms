@@ -57,8 +57,8 @@ export type LeadPayload = {
    *  v1.1 (1 Oct 2026); Levarus's website lead assignment reads it. Replaced
    *  `Property_Reference__c`, removed from Lead__c on 13 Oct 2026. */
   Website_Listing_URL__c?: string;
-  /** Restricted picklist, Lead API v1.1: "Arabic" or "Arabic & English".
-   *  See PREFERRED_LANGUAGE. */
+  /** Restricted picklist: "Arabic", "Arabic & English" or "English" (added
+   *  22 Oct 2026). See PREFERRED_LANGUAGE. */
   Preferred_Languages__c?: string;
   /** A mortgage request's service: "Fast Pre-Approval (24-hour)" or
    *  "Mortgage Consultancy" — a restricted picklist of exactly those two,
@@ -220,16 +220,20 @@ export function leadSourceFor(source: EnquirySource): LeadSourceValue {
 }
 
 /**
- * `Preferred_Languages__c` — a restricted picklist of "Arabic" and
- * "Arabic & English", and nothing for English alone. The only signal this
- * site has is the language the visitor used it in, so an Arabic visitor is
- * "Arabic", and an English one sends nothing rather than claiming they speak
- * Arabic: asked of Levarus on 19 Oct 2026 to add "English". When they do,
- * it is one line here.
+ * `Preferred_Languages__c` — a restricted picklist of "Arabic",
+ * "Arabic & English" and "English". The only signal this site has is the
+ * language the visitor used it in, so a visitor on /ar is "Arabic" and one on
+ * the English site is "English". "Arabic & English" is never claimed: using
+ * one side of the site says nothing about the other.
+ *
+ * Until 22 Oct 2026 the picklist had no "English" (asked of Levarus on 19 Oct)
+ * and English visitors sent nothing. A locale outside the map still sends
+ * nothing rather than a value the picklist would reject.
  */
-export const PREFERRED_LANGUAGES = ["Arabic", "Arabic & English"] as const;
+export const PREFERRED_LANGUAGES = ["Arabic", "Arabic & English", "English"] as const;
 const PREFERRED_LANGUAGE: Record<string, (typeof PREFERRED_LANGUAGES)[number]> = {
   ar: "Arabic",
+  en: "English",
 };
 
 export function preferredLanguageFor(locale: string | null | undefined): string | undefined {

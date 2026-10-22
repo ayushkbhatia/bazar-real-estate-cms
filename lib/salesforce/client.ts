@@ -222,6 +222,7 @@ async function getToken(forceRefresh = false): Promise<CachedToken> {
 async function authedFetch(
   path: string,
   init: { method: "GET" | "POST" | "PATCH"; body?: unknown },
+  root: "data" | "apexrest" = "data",
 ): Promise<Response> {
   if (!isSalesforceConfigured) {
     throw new SalesforceError("Salesforce is not configured", {
@@ -232,7 +233,11 @@ async function authedFetch(
 
   const attempt = async (forceRefresh: boolean): Promise<Response> => {
     const { token, instanceUrl } = await getToken(forceRefresh);
-    const url = `${instanceUrl}/services/data/${salesforceApiVersion()}/${path.replace(/^\/+/, "")}`;
+    const base =
+      root === "data"
+        ? `${instanceUrl}/services/data/${salesforceApiVersion()}`
+        : `${instanceUrl}/services/apexrest`;
+    const url = `${base}/${path.replace(/^\/+/, "")}`;
     return fetch(url, {
       method: init.method,
       headers: {
@@ -284,8 +289,24 @@ export async function salesforceRequest<T = unknown>(
   path: string,
   init: { method: "GET" | "POST" | "PATCH"; body?: unknown },
 ): Promise<T | null> {
-  const res = await authedFetch(path, init);
+  return readJson<T>(await authedFetch(path, init));
+}
 
+/**
+ * One call to a custom Apex REST endpoint Levarus built in the org, e.g.
+ * `properties/website-locations` →
+ * `<instance>/services/apexrest/properties/website-locations`. Unversioned:
+ * an Apex endpoint has no API version in its path. Same token, same 401
+ * re-auth, same errors as `salesforceRequest`.
+ */
+export async function salesforceApexRequest<T = unknown>(
+  path: string,
+  init: { method: "GET" | "POST" | "PATCH"; body?: unknown },
+): Promise<T | null> {
+  return readJson<T>(await authedFetch(path, init, "apexrest"));
+}
+
+async function readJson<T>(res: Response): Promise<T | null> {
   if (res.status === 204) return null;
   if (!res.ok) throw await failure(res);
 
