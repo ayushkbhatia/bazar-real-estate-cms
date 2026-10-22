@@ -1,4 +1,6 @@
--- 0168 · Website areas pushed to Salesforce.
+-- 0169 · Website areas pushed to Salesforce. (Merged as 0168 beside
+-- 0168_property_mode_sale_or_rent; renumbered in the repo only, applied to prod
+-- as it was.)
 --
 -- Salesforce's `Area__c` and `Sub_Area__c` picklists hold the website's own
 -- area names (listing guide v1.3): a CRM user can only place a listing in an
