@@ -1,21 +1,21 @@
 /**
  * Which fact fills the fifth key-facts tile on a listing page.
  *
- * A villa's plot is what a buyer compares villas on, and in Abu Dhabi
- * almost every villa is freehold, so for villas the tile shows the plot size
- * instead of the tenure. The rule is keyed on the property type alone, so
- * every villa — today's and every one created later, by hand or from
+ * A villa's or townhouse's plot is what a buyer compares them on, and in Abu
+ * Dhabi almost every one is freehold, so for these types the tile shows the
+ * plot size instead of the tenure. The rule is keyed on the property type
+ * alone, so every villa and townhouse — today's and every one created later, by hand or from
  * Salesforce (`Plot_Size__c` → `plot_ft2`) — gets it with no per-listing
  * setting.
  *
- * A villa without a plot size shows no tile at all rather than an em-dash
+ * A listing of these types without a plot size shows no tile at all rather than an em-dash
  * that reads as "unknown plot", and it does not fall back to tenure: the
- * tenure moves to the specification table for every villa, so it is never
+ * tenure moves to the specification table for every one, so it is never
  * lost (see `tenureInSpecification`).
  */
 
 /** Property types whose key facts lead with the plot instead of tenure. */
-const PLOT_TYPES: ReadonlySet<string> = new Set(["villa"]);
+const PLOT_TYPES: ReadonlySet<string> = new Set(["villa", "townhouse"]);
 
 export type FifthKeyFact =
   | { kind: "plot"; ft2: number }
