@@ -105,9 +105,10 @@ describe("buildMortgageLeadPayload", () => {
     expect(p.Description__c).not.toMatch(/birth|passport|emirates|document|statement|consent/i);
   });
 
-  it("says the applicant's language only when the picklist has a word for it", () => {
+  it("says the applicant's language, when the picklist has a word for it", () => {
     expect(buildMortgageLeadPayload(row({ locale: "ar" }), SITE).Preferred_Languages__c).toBe("Arabic");
-    expect("Preferred_Languages__c" in buildMortgageLeadPayload(row({ locale: "en" }), SITE)).toBe(false);
+    expect(buildMortgageLeadPayload(row({ locale: "en" }), SITE).Preferred_Languages__c).toBe("English");
+    expect("Preferred_Languages__c" in buildMortgageLeadPayload(row({ locale: "fr" }), SITE)).toBe(false);
   });
 
   it("links the listing when the applicant started from one", () => {

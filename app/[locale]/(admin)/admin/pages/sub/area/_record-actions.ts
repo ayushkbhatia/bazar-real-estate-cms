@@ -1,12 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { drainLocationEvents } from "@/lib/salesforce/locations";
+import { reportError } from "@/lib/observability";
 import { slugify } from "@/lib/slug";
 import { subPageSlug } from "@/lib/master-pages/subpages";
 import { describeAreaBlockers } from "@/lib/area-usage";
@@ -36,6 +40,24 @@ function fieldErrorsFrom(
     if (key && !out[key]) out[key] = issue.message;
   }
   return out;
+}
+
+/**
+ * Tell Salesforce now rather than at the next cron. The save itself queued the
+ * event (0168's trigger on `areas`); this sends it once the response is out,
+ * so a slow or unreachable org never holds up the editor. Whatever fails here
+ * the lead-sync cron sends later.
+ */
+function syncLocationsAfterSave(): void {
+  const admin = createAdminClient();
+  if (!admin) return;
+  after(async () => {
+    try {
+      await drainLocationEvents(admin);
+    } catch (e) {
+      await reportError(e, { source: "salesforce/locations.after-save" });
+    }
+  });
 }
 
 /** The parent's kind, so the hierarchy rule can be checked before writing. */
@@ -146,6 +168,8 @@ export async function updateArea(
     before: before ?? null,
     after: { name: input.name, slug: input.slug },
   });
+
+  syncLocationsAfterSave();
 
   revalidatePath("/admin/pages/sub/area");
   revalidatePath(`/admin/areas/${id}`);
@@ -270,6 +294,8 @@ export async function createArea(raw: {
     after: { name: input.name, slug: input.slug, kind: input.kind },
   });
 
+  syncLocationsAfterSave();
+
   revalidatePath("/admin/pages/sub/area");
   revalidateLocalised("/areas");
   // The public guide exists from this moment — clear its path and the
@@ -375,7 +401,16 @@ export async function deleteArea(
   revalidateLocalised("/areas");
   revalidateLocalised(`/areas/${record.slug}`);
   revalidatePath("/sitemap.xml");
-  return { status: "ok", message: `Deleted "${record.name}".` };
+  // Salesforce's area picklists can't be told: the Website Locations API adds
+  // and renames only. 0168 records the delete as a held event for whoever
+  // retires the value there.
+  const inSalesforce = record.kind === "area" || record.kind === "sub_community";
+  return {
+    status: "ok",
+    message: inSalesforce
+      ? `Deleted "${record.name}". Salesforce still lists it as an area until it is removed there.`
+      : `Deleted "${record.name}".`,
+  };
 }
 
 /** Used by the create wizard so it can land on the new record's editor. */

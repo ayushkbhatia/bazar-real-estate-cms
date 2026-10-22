@@ -4260,6 +4260,53 @@ export type Database = {
         }
         Relationships: []
       }
+      salesforce_location_events: {
+        Row: {
+          area_id: string | null
+          attempts: number
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          response: Json | null
+          sent_at: string | null
+          state: string
+        }
+        Insert: {
+          area_id?: string | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload: Json
+          response?: Json | null
+          sent_at?: string | null
+          state?: string
+        }
+        Update: {
+          area_id?: string | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          response?: Json | null
+          sent_at?: string | null
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salesforce_location_events_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "areas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       salesforce_listing_sync: {
         Row: {
           auto_publish: boolean

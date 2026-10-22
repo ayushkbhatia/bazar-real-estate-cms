@@ -14,8 +14,12 @@ vi.mock("@/lib/env", () => ({
   isSalesforceConfigured: true,
 }));
 
-const { salesforceRequest, SalesforceError, __resetSalesforceTokenCache } =
-  await import("./client");
+const {
+  salesforceRequest,
+  salesforceApexRequest,
+  SalesforceError,
+  __resetSalesforceTokenCache,
+} = await import("./client");
 
 type Call = { url: string; init: RequestInit };
 
@@ -69,6 +73,41 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+describe("salesforceApexRequest", () => {
+  it("calls the unversioned Apex REST root with the same token", async () => {
+    mockFetch((url) =>
+      url.includes("/services/oauth2/token")
+        ? jsonResponse(200, TOKEN_OK)
+        : jsonResponse(200, { status: "ok" }),
+    );
+
+    const out = await salesforceApexRequest("properties/website-locations", {
+      method: "POST",
+      body: { emirate: "Abu Dhabi", area: "Yas Island" },
+    });
+
+    expect(out).toEqual({ status: "ok" });
+    expect(calls[1].url).toBe(`${INSTANCE}/services/apexrest/properties/website-locations`);
+    expect((calls[1].init.headers as Record<string, string>).Authorization).toBe(
+      `Bearer ${TOKEN_OK.access_token}`,
+    );
+  });
+
+  it("re-authenticates once on a 401", async () => {
+    let apexCalls = 0;
+    mockFetch((url) => {
+      if (url.includes("/services/oauth2/token")) return jsonResponse(200, TOKEN_OK);
+      apexCalls += 1;
+      return apexCalls === 1
+        ? jsonResponse(401, [{ errorCode: "INVALID_SESSION_ID", message: "Session expired" }])
+        : jsonResponse(200, { status: "ok" });
+    });
+
+    await salesforceApexRequest("properties/website-locations", { method: "POST", body: {} });
+    expect(calls.filter((c) => c.url.includes("/oauth2/token"))).toHaveLength(2);
+  });
 });
 
 describe("salesforceRequest", () => {
