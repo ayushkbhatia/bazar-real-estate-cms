@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
@@ -33,6 +34,46 @@ import type { MarqueeTile } from "../developers/_directory";
  */
 const SECONDS_PER_TILE = 197 / 30;
 
+/**
+ * How far below the fold the strip starts fetching every logo. Generous on
+ * purpose: the logos are small, and a visitor scrolling toward the section
+ * should find all of them already decoded.
+ */
+const WARM_MARGIN = "1200px 0px";
+
+/**
+ * True once the strip is within `WARM_MARGIN` of the viewport, and for good.
+ *
+ * Why the marquee can't leave this to the browser: native lazy loading treats
+ * an image clipped by an `overflow: hidden` ancestor as off-screen. That is
+ * every tile but the four or five in the window, so the rest waited until
+ * they slid in and then fetched — an empty white tile drifting into view and
+ * its logo popping in seconds later (measured on production: 5 of 76 loaded
+ * with the section in view). Switching all of them to eager once the section
+ * is near loads the whole set ahead of the animation, without spending the
+ * bytes on a visitor who never scrolls that far.
+ */
+function useNearViewport() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || near) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: WARM_MARGIN },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [near]);
+  return [ref, near] as const;
+}
+
 export function DeveloperMarquee({
   /**
    * The live developer directory — `marqueeTiles()`, read by the server
@@ -46,9 +87,14 @@ export function DeveloperMarquee({
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
   const loop = [...tiles, ...tiles];
+  const [ref, near] = useNearViewport();
 
   return (
-    <div className="bz-devmarquee" aria-label={t("marquee.developers")}>
+    <div
+      ref={ref}
+      className="bz-devmarquee"
+      aria-label={t("marquee.developers")}
+    >
       <div
         className="bz-devmarquee__track"
         style={{
@@ -80,6 +126,18 @@ export function DeveloperMarquee({
                       : "bz-devmarquee__logo bz-devmarquee__logo--padded"
                   }
                   sizes="160px"
+                  // The duplicate copy asks for the same URL, so it is a
+                  // cache hit once the first copy has loaded. Low priority
+                  // keeps the warm-up out of the way of the page above.
+                  loading={near ? "eager" : "lazy"}
+                  fetchPriority="low"
+                  // Fades in rather than popping, for a connection slow enough
+                  // that a tile still reaches the window before its logo.
+                  // next/image also fires this for an image that finished
+                  // before hydration, so nothing is left at opacity 0.
+                  onLoad={(e) => {
+                    e.currentTarget.dataset.loaded = "";
+                  }}
                 />
               ) : (
                 // A developer added in the CMS with no logo yet: its name,
@@ -153,6 +211,13 @@ export function DeveloperMarquee({
           width: 132px;
           height: 48px;
           object-fit: contain;
+          opacity: 0;
+          transition: opacity 400ms ease;
+        }
+        .bz-devmarquee__logo[data-loaded] { opacity: 1; }
+        /* Without script there is no onLoad to reveal a logo. */
+        @media (scripting: none) {
+          .bz-devmarquee__logo { opacity: 1; }
         }
         /* An upload or padded master canvas carries its padding inside the
            frame, so it needs a taller box for comparable weight — the same
