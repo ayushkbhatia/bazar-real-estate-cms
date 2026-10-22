@@ -82,7 +82,7 @@ import { area, text } from "./fields";
 import type { FieldDef, MasterPageDef, MasterPageKey, SectionDef } from "./types";
 
 /**
- * Which search surface a header belongs to. Not a row value: since 0167 a
+ * Which search surface a header belongs to. Not a row value: since 0168 a
  * listing's `mode` is only buy or rent, but /off-plan/search keeps a heading
  * of its own and so does the commercial search, so the surfaces are named
  * here rather than borrowed from the column.

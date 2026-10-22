@@ -20,7 +20,7 @@ export type FeedProperty = {
   title: string;
   description: string | null;
   type: string;
-  /** Sale or rent — the only modes a row can hold since 0167. */
+  /** Sale or rent — the only modes a row can hold since 0168. */
   mode: "buy" | "rent";
   beds: number;
   baths: number;

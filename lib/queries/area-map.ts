@@ -32,7 +32,7 @@ import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 export type LngLat = { lng: number; lat: number };
 
 /** `properties.mode` — the listing bucket a surface is scoped to. */
-/** Sale or rent — the two modes a row can hold since 0167. */
+/** Sale or rent — the two modes a row can hold since 0168. */
 export type ListingMode = "buy" | "rent";
 export type ListingSegment = "residential" | "commercial";
 

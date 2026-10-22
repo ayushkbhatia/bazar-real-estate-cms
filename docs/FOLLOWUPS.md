@@ -1791,7 +1791,7 @@ surface reads the seed roster any more. These are the loose ends:
 
 - [compare] **The compare page's "Mode" row says "Buy · resale" for every
   ready-new sale.** `lib/compare.ts` reads `mode.buy` from
-  `messages/*/tools.json` for any sale not off-plan (since 0167 off-plan reads
+  `messages/*/tools.json` for any sale not off-plan (since 0168 off-plan reads
   `property_form`). Two published ready-new listings get the wrong word. "Done"
   is a row keyed on `property_form` (Off-plan / Ready (new) / Resale) with
   Arabic twins, or `mode.buy` reworded to plain "Buy".

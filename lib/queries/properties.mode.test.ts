@@ -6,9 +6,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 /**
  * Sale or rent, exactly.
  *
- * Until 0167 `buy` was an umbrella the query layer expanded to
+ * Until 0168 `buy` was an umbrella the query layer expanded to
  * `in ('buy','off_plan')`, because off-plan stock was filed under its own
- * mode. 0167 re-filed those rows as `buy` (off-plan lives on `property_form`)
+ * mode. 0168 re-filed those rows as `buy` (off-plan lives on `property_form`)
  * and a CHECK holds the column to buy/rent, so the filter is a plain `eq`.
  * The stub returns whatever it is given regardless of filter, so these
  * assert on the *filter calls the query builder receives*.

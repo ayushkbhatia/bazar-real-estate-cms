@@ -28,7 +28,7 @@ function makeProperty(over: Partial<ScorableProperty>): ScorableProperty {
 }
 
 describe("scoreProperty", () => {
-  it("matches an off-plan brief on the sale's completion form (0167)", () => {
+  it("matches an off-plan brief on the sale's completion form (0168)", () => {
     const brief: ConciergeBrief = { mode: "off_plan", chips: [] };
     const offPlan = scoreProperty(makeProperty({ form: "off_plan" }), brief);
     expect(offPlan.factors[0].status).toBe("match");

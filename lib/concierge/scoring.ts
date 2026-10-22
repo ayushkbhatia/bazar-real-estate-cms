@@ -15,7 +15,7 @@ export type ScorableProperty = {
   title: string;
   price_aed: number;
   mode: "buy" | "rent";
-  /** Off-plan is a completion form of a sale since 0167, not a mode. */
+  /** Off-plan is a completion form of a sale since 0168, not a mode. */
   form: "off_plan" | "ready_new" | "resale" | null;
   segment: "residential" | "commercial";
   type: string;
@@ -178,7 +178,7 @@ export function scoreProperty(
   // Mode
   if (brief.mode) {
     // The brief keeps the visitor's own words — "off-plan", "commercial" —
-    // which since 0167 are a sale's completion form and the building's
+    // which since 0168 are a sale's completion form and the building's
     // segment, not values of the listing's mode.
     const matches =
       brief.mode === "off_plan"

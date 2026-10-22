@@ -210,7 +210,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
     description: property.description,
     description_ar: property.description_ar,
     type: property.type,
-    // The enum still lists off_plan and commercial; the CHECK from 0167 keeps
+    // The enum still lists off_plan and commercial; the CHECK from 0168 keeps
     // every row on buy or rent, which is all the picker offers.
     mode: property.mode === "rent" ? "rent" : "buy",
     segment: property.segment,

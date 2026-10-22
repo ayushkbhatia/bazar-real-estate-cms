@@ -183,7 +183,7 @@ function priceAndTermsGroup(
         "ppf",
         map(rows, (p) => ({ kind: "aedPerFt2", value: pricePerFt2(p) })),
       ),
-      // Off-plan is a sale filed under its completion form since 0167; the row
+      // Off-plan is a sale filed under its completion form since 0168; the row
       // still names it, as it did when off-plan was a mode of its own.
       row(
         "mode",

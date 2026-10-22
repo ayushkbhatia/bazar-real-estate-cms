@@ -169,7 +169,7 @@ describe("tallyAreaListings", () => {
   const geo = { lat: 24.5, lng: 54.4 };
   // Shaped like production at the time of the fix: Yas Island's stock mostly
   // one mode, and /commercial printing "14" off exactly this. (The modes were
-  // off_plan and commercial then; 0167 left buy and rent.)
+  // off_plan and commercial then; 0168 left buy and rent.)
   const rows = [
     { area_id: "yas", geo, mode: "buy" },
     { area_id: "yas", geo, mode: "buy" },

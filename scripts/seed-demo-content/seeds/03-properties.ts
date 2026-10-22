@@ -55,7 +55,7 @@ function buildRow(p: PropertySeed, ctx: SeedContext) {
     title: p.title,
     short_description: p.short_description,
     description: p.description,
-    // The seed keeps its four demo buckets; the row has two modes since 0167.
+    // The seed keeps its four demo buckets; the row has two modes since 0168.
     // Off-plan is a sale's completion form, commercial is the building's
     // segment, and the CHECK rejects either as a mode.
     mode: p.mode === "rent" ? ("rent" as const) : ("buy" as const),

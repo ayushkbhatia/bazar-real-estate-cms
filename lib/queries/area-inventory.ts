@@ -148,7 +148,7 @@ export async function getAreaInventory(
 
     const [sale, rent, allDevelopments] = await Promise.all([
       // "For sale" is everything that is not a tenancy: ready, resale and
-      // off-plan, residential or commercial. Since 0167 that is mode = 'buy'.
+      // off-plan, residential or commercial. Since 0168 that is mode = 'buy'.
       base().eq("mode", "buy").limit(limit),
       base().eq("mode", "rent").limit(limit),
       listPublishedDevelopments(),

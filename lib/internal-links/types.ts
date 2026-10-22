@@ -39,7 +39,7 @@ export type ResolvedPropertyLink = Common & {
   reference: string;
   area: string | null;
   mode: Enums["property_mode"];
-  /** Off-plan, ready or resale. Off-plan is read from here, not `mode` (0167). */
+  /** Off-plan, ready or resale. Off-plan is read from here, not `mode` (0168). */
   form: Enums["property_form"] | null;
   type: Enums["property_type"];
   priceAed: number | null;

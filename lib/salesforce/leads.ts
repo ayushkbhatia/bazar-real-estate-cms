@@ -147,7 +147,7 @@ const INTENT_INQUIRY_TYPE: Record<string, InquiryType> = {
 };
 
 /** The listing's own mode, where a listing is attached. Sale or rent only
- *  since 0167 — the enum's retired off_plan/commercial labels can no longer
+ *  since 0168 — the enum's retired off_plan/commercial labels can no longer
  *  appear on a row, and an unmapped value falls through to intent or source. */
 const MODE_INQUIRY_TYPE: Partial<Record<PropertyMode, InquiryType>> = {
   buy: "Buy",

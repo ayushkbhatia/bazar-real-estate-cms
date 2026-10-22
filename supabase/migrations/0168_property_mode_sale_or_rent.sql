@@ -1,4 +1,4 @@
--- 0167_property_mode_sale_or_rent.sql
+-- 0168_property_mode_sale_or_rent.sql
 --
 -- `properties.mode` is the transaction, and a transaction is a sale or a
 -- letting. Nothing else.
@@ -62,7 +62,7 @@ alter table public.properties
   check (mode in ('buy'::public.property_mode, 'rent'::public.property_mode));
 
 comment on column public.properties.mode is
-  'The transaction: buy (for sale) or rent (to let). Held to those two by properties_mode_sale_or_rent_ck since 0167; the enum''s off_plan and commercial labels are retired. Off-plan is property_form; commercial is segment.';
+  'The transaction: buy (for sale) or rent (to let). Held to those two by properties_mode_sale_or_rent_ck since 0168; the enum''s off_plan and commercial labels are retired. Off-plan is property_form; commercial is segment.';
 
 comment on column public.properties.property_form is
   'Sale-side completion form: off_plan = not yet completed, bought before handover; ready_new = developer first sale, never previously owned; resale = previously owned. NULL for rentals, and for sale listings nobody has classified yet — publishing one is blocked in lib/publishability.ts.';

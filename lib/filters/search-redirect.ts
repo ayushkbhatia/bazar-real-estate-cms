@@ -75,7 +75,7 @@ export function searchRedirectTarget(
  *
  * The route is retired rather than deleted: old links to it still exist, and
  * the `/commercial` marketing landing above it is untouched (the mode value
- * itself is gone since 0167). This is the one URL that has to move, and
+ * itself is gone since 0168). This is the one URL that has to move, and
  * every existing filter on it survives the move.
  *
  * 307, not 308: it is the same posture as the other redirects in this module —

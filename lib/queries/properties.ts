@@ -195,7 +195,7 @@ async function resolveAreaId(
 export async function listPublishedProperties(opts: {
   /**
    * Sale or rent. Off-plan stock is sale stock filed under its completion
-   * form (0167), so a plain `eq` is the whole story — the `buy` → `in
+   * form (0168), so a plain `eq` is the whole story — the `buy` → `in
    * ('buy','off_plan')` umbrella this used to expand is gone with the value.
    */
   mode?: PropertyMode;

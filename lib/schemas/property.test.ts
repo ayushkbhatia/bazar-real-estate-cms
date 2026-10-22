@@ -388,7 +388,7 @@ describe("isSaleMode", () => {
     expect(isSaleMode("buy")).toBe(true);
   });
 
-  it("no longer treats the retired enum labels as modes (0167)", () => {
+  it("no longer treats the retired enum labels as modes (0168)", () => {
     // Off-plan is a property_form and commercial a segment; the CHECK keeps
     // both off `mode`, so neither can reach a picker.
     expect(isSaleMode("off_plan")).toBe(false);
@@ -450,7 +450,7 @@ describe("property_form validation", () => {
     expect(res.success).toBe(true);
   });
 
-  it("rejects the retired modes (0167)", () => {
+  it("rejects the retired modes (0168)", () => {
     for (const mode of ["off_plan", "commercial"]) {
       const res = propertyOverviewSchema.safeParse({
         ...BASE_OVERVIEW,

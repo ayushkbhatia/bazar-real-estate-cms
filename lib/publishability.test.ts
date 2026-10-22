@@ -101,7 +101,7 @@ describe("evaluatePublishability", () => {
       expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
     });
 
-    it("passes an off-plan sale — off-plan is a form of buy since 0167", () => {
+    it("passes an off-plan sale — off-plan is a form of buy since 0168", () => {
       const res = evaluatePublishability({
         ...base(),
         mode: "buy",
