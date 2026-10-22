@@ -14,6 +14,7 @@ import {
   type UploadError,
   type UploadItem,
 } from "@/lib/mortgage-requests/client/upload-queue";
+import { measureImage, UNMEASURED, type ArtFit } from "@/lib/mortgage-requests/client/art-fit";
 import { cn } from "@/lib/utils";
 import { DOC_GLYPH, Glyph } from "@/components/mortgage/glyphs";
 import { CheckMark, FlowButton, Pill, Tick } from "./primitives";
@@ -61,6 +62,56 @@ const ART_BORDER: Record<TileState, string> = {
   error: "border-[var(--mrq-badge-error)]",
 };
 
+/** Each image's fit, measured once per page however many tiles draw it. */
+const FITS = new Map<string, ArtFit>();
+
+/**
+ * The art inside its tile, fitted to it by its own pixels (art-fit.ts):
+ * hidden until measured, so it never jumps. Optimised rather than served as
+ * uploaded: an editor's upload can be a 1536 px, 4 MB PNG, and the tile is
+ * 56 px. `width` is twice the tile's because trimmed art can be drawn larger
+ * than the tile. Should the optimiser fail, the upload itself is drawn.
+ */
+function FittedArt({ src, size }: { src: string; size: number }) {
+  const [fit, setFit] = useState<ArtFit | null>(() => FITS.get(src) ?? null);
+  const [original, setOriginal] = useState(false);
+  const place = fit ?? UNMEASURED;
+  return (
+    <span className="absolute inset-0 overflow-hidden rounded-[inherit]">
+      <Image
+        src={src}
+        alt=""
+        width={size * 2}
+        height={size * 2}
+        crossOrigin="anonymous"
+        unoptimized={original}
+        onError={() => setOriginal(true)}
+        onLoad={(e) => {
+          if (fit) return;
+          const measured = measureImage(e.currentTarget);
+          FITS.set(src, measured);
+          setFit(measured);
+        }}
+        className={cn(
+          "absolute max-w-none transition-opacity duration-150",
+          place.mode === "cover" ? "inset-0 size-full object-cover" : "object-fill",
+          fit ? "opacity-100" : "opacity-0",
+        )}
+        style={
+          place.mode === "contain"
+            ? {
+                left: `${place.left * 100}%`,
+                top: `${place.top * 100}%`,
+                width: `${place.width * 100}%`,
+                height: `${place.height * 100}%`,
+              }
+            : undefined
+        }
+      />
+    </span>
+  );
+}
+
 export function DocumentIcon({ kind, state = "empty", size = 44 }: { kind: DocKind; state?: TileState; size?: number }) {
   const art = useDocArt()[kind] ?? DOC_ART[kind];
   return (
@@ -73,7 +124,7 @@ export function DocumentIcon({ kind, state = "empty", size = 44 }: { kind: DocKi
       style={{ width: size, height: size, borderRadius: Math.round(size * 0.24) }}
     >
       {art ? (
-        <Image src={art} alt="" width={size} height={size} unoptimized className="size-[84%] object-contain" />
+        <FittedArt key={art} src={art} size={size} />
       ) : (
         <Glyph name={DOC_GLYPH[kind]} size={Math.round(size * 0.46)} />
       )}

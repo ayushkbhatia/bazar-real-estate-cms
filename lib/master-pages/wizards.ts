@@ -250,7 +250,7 @@ const ICONS_SECTION: SectionDef = {
   locked: true,
   placeAfter: "documents",
   dataNote:
-    "Square artwork reads best: the tile is white and the picture is drawn at about 84% of it, so a transparent PNG, WebP or SVG on no background, or one drawn on white, fits. Alt text isn't used: the tile sits beside the document's name, which is what a screen reader reads.",
+    "Any image fits its tile by itself. Art on a transparent or white background is trimmed to what is drawn and centred at about 84% of the tile; art with its own background fills the tile edge to edge, so keep its subject away from the corners. Alt text isn't used: the tile sits beside the document's name, which is what a screen reader reads.",
   fields: DOC_KINDS.map((kind) =>
     image(kind, EN.get(`doc.${docMessageKey(kind)}.name`) ?? kind, "Empty shows the shipped illustration."),
   ),
