@@ -8,12 +8,16 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { slugify } from "@/lib/slug";
+import { subPageSlug } from "@/lib/master-pages/subpages";
+import { describeAreaBlockers } from "@/lib/area-usage";
+import { getAreaUsage } from "@/lib/queries/area-usage";
 import {
   areaCreateSchema,
   areaEditSchema,
   normaliseAreaInput,
   parentError,
   AREA_EDIT_ROLES,
+  AREA_DELETE_ROLES,
   type AreaKind,
 } from "@/lib/schemas/area";
 
@@ -282,6 +286,96 @@ export async function createArea(raw: {
       kind: data.kind as AreaKind,
     },
   };
+}
+
+export type DeleteAreaResult =
+  | { status: "ok"; message: string }
+  | { status: "error"; message: string };
+
+/**
+ * Permanently delete an area — its record, its guide content and its page
+ * document.
+ *
+ * Refused while any listing, project or child area still sits in it: those
+ * links used to be ON DELETE SET NULL, so a delete quietly dropped the records
+ * out of every area filter and breadcrumb. Migration 0167 makes the database
+ * refuse it as well; this check runs first so the editor is told which records
+ * to move, and a 23503 from the trigger (a listing added in the meantime) is
+ * passed back in its own words.
+ */
+export async function deleteArea(
+  id: string,
+  /** Typed by the operator; must match the area name exactly. */
+  confirmation: string,
+): Promise<DeleteAreaResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(AREA_DELETE_ROLES);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: record, error: readError } = await supabase
+    .from("areas")
+    .select("id, name, slug, kind, parent_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (readError) return { status: "error", message: readError.message };
+  if (!record) return { status: "error", message: "Area not found." };
+
+  const blockers = describeAreaBlockers(
+    await getAreaUsage({ id: record.id, slug: record.slug }),
+  );
+  if (blockers)
+    return {
+      status: "error",
+      message: `${record.name} still has ${blockers}. Move them to another area first — nothing was deleted.`,
+    };
+
+  if (confirmation.trim() !== record.name)
+    return {
+      status: "error",
+      message: "The name you typed doesn't match, so nothing was deleted.",
+    };
+
+  const { data: deleted, error } = await supabase
+    .from("areas")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  // A 23503 here is 0167's trigger, whose message already names what is linked.
+  if (error) return { status: "error", message: error.message };
+  if (!deleted || deleted.length === 0)
+    return {
+      status: "error",
+      message: "Not deleted — your account may not be allowed to delete areas.",
+    };
+
+  // The page document is keyed by slug, not a foreign key, so nothing cascades
+  // to it. Left behind, an area recreated under the same slug would silently
+  // inherit the old layout.
+  await supabase
+    .from("pages")
+    .delete()
+    .eq("slug", subPageSlug("area", record.slug));
+
+  // The audit entry is the only record that this area ever existed.
+  await logAudit({
+    action: "area.delete",
+    target_kind: "area",
+    target_id: record.id,
+    before: {
+      name: record.name,
+      slug: record.slug,
+      kind: record.kind,
+      parent_id: record.parent_id,
+    },
+    after: null,
+  });
+
+  revalidatePath("/admin/pages/sub/area");
+  revalidateLocalised("/areas");
+  revalidateLocalised(`/areas/${record.slug}`);
+  revalidatePath("/sitemap.xml");
+  return { status: "ok", message: `Deleted "${record.name}".` };
 }
 
 /** Used by the create wizard so it can land on the new record's editor. */
