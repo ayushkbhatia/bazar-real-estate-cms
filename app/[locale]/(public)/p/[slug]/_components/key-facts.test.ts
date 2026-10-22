@@ -18,8 +18,16 @@ describe("fifthKeyFact", () => {
     expect(fifthKeyFact({ type: "villa", plot_ft2: 0 })).toBeNull();
   });
 
+  it("shows the plot for a townhouse, and omits the tile without one", () => {
+    expect(fifthKeyFact({ type: "townhouse", plot_ft2: 2400 })).toEqual({
+      kind: "plot",
+      ft2: 2400,
+    });
+    expect(fifthKeyFact({ type: "townhouse", plot_ft2: null })).toBeNull();
+  });
+
   it("keeps tenure for every other type, plot or not", () => {
-    for (const type of ["apartment", "townhouse", "penthouse", "commercial_villa"]) {
+    for (const type of ["apartment", "penthouse", "commercial_villa"]) {
       expect(fifthKeyFact({ type, plot_ft2: 3000 })).toEqual({ kind: "tenure" });
       expect(fifthKeyFact({ type, plot_ft2: null })).toEqual({ kind: "tenure" });
     }
@@ -34,6 +42,8 @@ describe("specification swap", () => {
 
   it("leaves the table as it was for other types", () => {
     expect(tenureInSpecification("apartment")).toBe(false);
-    expect(plotInSpecification("townhouse")).toBe(true);
+    expect(plotInSpecification("penthouse")).toBe(true);
+    expect(tenureInSpecification("townhouse")).toBe(true);
+    expect(plotInSpecification("townhouse")).toBe(false);
   });
 });
