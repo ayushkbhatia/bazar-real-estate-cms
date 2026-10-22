@@ -6,12 +6,13 @@ import { localiseDestination } from "@/lib/i18n/locale-redirects";
 import { PREFS_COOKIE, encodePrefs, decodePrefs } from "@/lib/preferences/cookie";
 
 /**
- * English-only paths (lib/i18n/english-only.ts): the CMS, and the mortgage
- * application flow until its Arabic is approved (D12).
+ * English-only paths (lib/i18n/english-only.ts): the CMS. The mortgage
+ * application flow left the list when its Arabic launched (D12), so it is now
+ * served like any other public page — and the tests below hold that, too.
  *
  * The three places that ask have to agree, or an Arabic-preferring visitor
- * loops: the proxy sends `/ar/mortgages/…` to English, so it must never send
- * `/mortgages/…` to Arabic, and no link or redirect may point at `/ar/mortgages`.
+ * loops: the proxy sends `/ar/admin/…` to English, so it must never send
+ * `/admin/…` to Arabic, and no link or redirect may point at `/ar/admin`.
  */
 
 vi.mock("@/lib/supabase/proxy", () => ({
@@ -33,32 +34,22 @@ function get(url: string, cookie?: string) {
 const arabicVisitor = encodePrefs({ ...decodePrefs(undefined), locale: "ar" });
 
 describe("English-only paths", () => {
-  it("knows the CMS and the mortgage flow, and nothing that merely starts like them", () => {
+  it("knows the CMS, and nothing that merely starts like it", () => {
     expect(isEnglishOnlyPath("/admin")).toBe(true);
     expect(isEnglishOnlyPath("/admin/mortgages")).toBe(true);
-    expect(isEnglishOnlyPath("/mortgages/apply")).toBe(true);
-    expect(isEnglishOnlyPath("/mortgages/apply?service=pre_approval")).toBe(true);
-    expect(isEnglishOnlyPath("/mortgages")).toBe(true);
-    expect(isEnglishOnlyPath("/mortgages-guide")).toBe(false);
+    expect(isEnglishOnlyPath("/admin/enquiries?x=1")).toBe(true);
     expect(isEnglishOnlyPath("/administrative-areas")).toBe(false);
     expect(isEnglishOnlyPath("/tools/mortgage")).toBe(false);
   });
 
-  it("sends /ar/mortgages back to English, keeping the entry link's query and saying it came from /ar", async () => {
-    const res = await get("/ar/mortgages/apply?service=pre_approval&from=home");
+  it("sends /ar/admin back to /admin, keeping the query", async () => {
+    const res = await get("/ar/admin/enquiries?status=new");
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe(
-      "https://bazar.test/mortgages/apply?service=pre_approval&from=home&site=ar",
-    );
+    expect(res.headers.get("location")).toBe("https://bazar.test/admin/enquiries?status=new");
   });
 
-  it("still sends /ar/admin back to /admin", async () => {
-    const res = await get("/ar/admin/enquiries");
-    expect(res.headers.get("location")).toBe("https://bazar.test/admin/enquiries");
-  });
-
-  it("never sends an Arabic-preferring visitor from the flow to /ar", async () => {
-    const res = await get("/mortgages/apply", arabicVisitor);
+  it("never sends an Arabic-preferring visitor from the CMS to /ar", async () => {
+    const res = await get("/admin/enquiries", arabicVisitor);
     expect(res.headers.get("location")).toBeNull();
     expect(res.headers.get("x-test-passthrough")).toBe("1");
   });
@@ -69,20 +60,40 @@ describe("English-only paths", () => {
     expect(res.headers.get("location")).toBe("https://bazar.test/ar/buy");
   });
 
-  it("never prefixes a link to the flow from an Arabic page, but marks it as from the Arabic site", () => {
-    expect(localiseHref("/mortgages/apply?service=pre_approval&from=home", "ar")).toBe(
-      "/mortgages/apply?service=pre_approval&from=home&site=ar",
-    );
-    expect(localiseHref("/mortgages/apply", "ar")).toBe("/mortgages/apply?site=ar");
-    expect(localiseHref("/mortgages/apply?site=en#top", "ar")).toBe("/mortgages/apply?site=ar#top");
-    // English pages and the CMS are left as they are.
-    expect(localiseHref("/mortgages/apply?service=pre_approval", "en")).toBe("/mortgages/apply?service=pre_approval");
+  it("never prefixes a link to the CMS from an Arabic page", () => {
     expect(localiseHref("/admin/enquiries", "ar")).toBe("/admin/enquiries");
+    expect(localiseDestination("/admin/login", "ar")).toBe("/admin/login");
+  });
+});
+
+describe("the mortgage flow, since its Arabic launched (D12)", () => {
+  it("is not English-only", () => {
+    expect(isEnglishOnlyPath("/mortgages")).toBe(false);
+    expect(isEnglishOnlyPath("/mortgages/apply?service=pre_approval")).toBe(false);
+    expect(isEnglishOnlyPath("/mortgages/r/abc")).toBe(false);
+  });
+
+  it("serves /ar/mortgages in Arabic rather than sending it to English", async () => {
+    const res = await get("/ar/mortgages/apply?service=pre_approval&from=home");
+    expect(res.headers.get("location")).toBeNull();
+  });
+
+  it("sends an Arabic-preferring visitor from the English flow to the Arabic one, query and all", async () => {
+    const res = await get("/mortgages/apply?service=pre_approval&from=home", arabicVisitor);
+    expect(res.status).toBe(307);
+    expect(res.headers.get("location")).toBe("https://bazar.test/ar/mortgages/apply?service=pre_approval&from=home");
+  });
+
+  it("prefixes a link to the flow from an Arabic page, and leaves an English one alone", () => {
+    expect(localiseHref("/mortgages/apply?service=pre_approval&from=home", "ar")).toBe(
+      "/ar/mortgages/apply?service=pre_approval&from=home",
+    );
+    expect(localiseHref("/mortgages/apply", "ar")).toBe("/ar/mortgages/apply");
+    expect(localiseHref("/mortgages/apply?service=pre_approval", "en")).toBe("/mortgages/apply?service=pre_approval");
     expect(localiseHref("/tools/mortgage", "ar")).toBe("/ar/tools/mortgage");
   });
 
-  it("never gives a redirect's Arabic twin an /ar/mortgages destination", () => {
-    expect(localiseDestination("/mortgages/apply", "ar")).toBe("/mortgages/apply");
-    expect(localiseDestination("/tools/mortgage", "ar")).toBe("/ar/tools/mortgage");
+  it("gives a redirect into the flow an Arabic twin", () => {
+    expect(localiseDestination("/mortgages/apply", "ar")).toBe("/ar/mortgages/apply");
   });
 });

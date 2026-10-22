@@ -4,6 +4,7 @@ import { getMessages } from "next-intl/server";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { Locale } from "@/lib/i18n/locales";
+import { isolateLtr } from "@/lib/i18n/bidi";
 import { parseStoredSections, resolveSections, type ResolvedSection } from "@/lib/master-pages";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 import { attachImageUrls } from "@/lib/queries/section-images";
@@ -106,7 +107,10 @@ export function wizardOverlay(sections: readonly ResolvedSection[], locale: Loca
     for (const field of section.def.fields) {
       const value = section.values[field.key];
       if (typeof value !== "string" || !value.trim()) continue;
-      const base = locale === "ar" ? (catalogueArabic(field.key) ?? catalogueEnglish(field.key)) : catalogueEnglish(field.key);
+      // A data message ("{label}, {prefix}", a phone number) has no Arabic field: its one value is the
+      // English, so it overrides the Arabic catalogue only once an editor changes it.
+      const data = "i18n" in field && field.i18n === false;
+      const base = locale === "ar" && !data ? (catalogueArabic(field.key) ?? catalogueEnglish(field.key)) : catalogueEnglish(field.key);
       if (value !== base) setPath(messages, field.key, value);
     }
   }
@@ -124,14 +128,44 @@ export function overlayMessages<T>(base: T, overlay: Messages): T {
   return out as T;
 }
 
+/** A run of digit groups — "+971 2 632 2223", "50 000 0000" — anywhere in a message. */
+const NUMBER_RUN = /\+?\d+(?:[ \u00a0]\d+)+/g;
+
+/**
+ * Every message with its number runs set left to right, for a right-to-left
+ * page. Right to left, "+971 2 632 2223" inside a sentence comes out as
+ * "2223 632 2 971+" (the plus and the spaces are neutral); Bazar writes phone
+ * numbers straight into the copy (W8's "call the mortgage team on …", the
+ * mobile error's example), and an editor can add one anywhere, so this runs
+ * over the whole namespace, the editor's words included, rather than at each
+ * call site. An ICU argument or plural branch has no run of spaced digits, so
+ * the syntax is untouched.
+ */
+export function isolateNumberRuns<T>(messages: T): T {
+  if (typeof messages === "string") return messages.replace(NUMBER_RUN, (run) => isolateLtr(run)) as T;
+  if (!messages || typeof messages !== "object") return messages;
+  return Object.fromEntries(Object.entries(messages).map(([k, v]) => [k, isolateNumberRuns(v)])) as T;
+}
+
+/**
+ * The whole `mortgage` namespace one locale renders: the catalogue with the
+ * editor's overlay laid over it, and on a right-to-left page its number runs
+ * isolated. Handed to `RouteMessages` as the override, so it replaces the
+ * catalogue key for key.
+ */
+export async function getMortgageMessages(locale: Locale): Promise<Messages> {
+  const [all, overlay] = await Promise.all([getMessages({ locale }), getMortgageWizardOverlay(locale)]);
+  const mortgage = overlayMessages((all as Record<string, unknown>).mortgage as Messages, overlay.messages);
+  return locale === "ar" ? isolateNumberRuns(mortgage) : mortgage;
+}
+
 /**
  * The mortgage flow's translator for server components (the shell, the
  * secure link's messages, the page title): the catalogue with the editor's
  * overlay, as `RouteMessages` hands the client components.
  */
 export async function getMortgageTranslator(locale: Locale) {
-  const [all, overlay] = await Promise.all([getMessages({ locale }), getMortgageWizardOverlay(locale)]);
-  const mortgage = overlayMessages((all as Record<string, unknown>).mortgage as Messages, overlay.messages);
+  const mortgage = await getMortgageMessages(locale);
   return createTranslator({
     locale,
     // Typed as the catalogue it is laid over, so `t("…")` keeps checking its keys.

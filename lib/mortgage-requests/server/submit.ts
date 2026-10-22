@@ -9,7 +9,8 @@
  *      before the draft is looked at, because a draft that was submitted is
  *      claimed and would otherwise answer 409 to the applicant's own retry.
  *   2. The draft's token, for a pre-approval.
- *   3. The promise's due time from sla.ts, and the consent's text by version.
+ *   3. The promise's due time from sla.ts, and the consent's text as the
+ *      page showed it, in the language it was read in (consent-wording.ts).
  *   4. `mortgage_create_request()` creates the request, its documents and
  *      consent, attaches the draft's files and queues the confirmation email,
  *      all in one transaction (0141). A file not yet checked refuses the whole
@@ -21,9 +22,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isIP } from "node:net";
 import { z } from "zod";
-import { CONSENT_WORDINGS, isConsentVersion } from "../consent";
+import { isConsentVersion } from "../consent";
 import { detailsSchema, ENTRY_POINTS, propertyPriceSchema, type Service } from "../details";
 import { clockDueFrom } from "../sla";
+import { consentWordingShown } from "./consent-wording";
 import { authoriseDraft, FILE_COLUMNS, retireFiles, type DraftDeps, type FileRow } from "./drafts";
 import { MortgageApiError } from "./errors";
 import { loadMortgageSettings } from "./settings";
@@ -44,6 +46,8 @@ export function submitBodySchema(now: () => Date = () => new Date()) {
       .transform((v) => (v && PROPERTY_REF.test(v) ? v : undefined)),
     // Which version of the site the applicant came from (0155); absent or unknown reads as English.
     siteLocale: z.enum(["en", "ar"]).catch("en"),
+    // The language the applicant applied in: the request's `locale`, which every email to them reads. Absent reads as English.
+    locale: z.enum(["en", "ar"]).catch("en"),
     // W2's optional desired property price (0163), whole dirhams. Never refused: a bad value reads as not given.
     propertyPriceAed: propertyPriceSchema,
   };
@@ -144,7 +148,7 @@ export async function submitRequest(
     if (!isConsentVersion(body.consent.wordingVersion)) {
       throw new MortgageApiError(422, "invalid", "unknown consent wording", {}, "consent");
     }
-    consentText = CONSENT_WORDINGS[body.consent.wordingVersion];
+    consentText = await consentWordingShown(deps.db, body.locale);
     await authoriseDraft(deps, body.draftId, input.draftToken);
     await retireUnlisted(deps, body.draftId, body.fileIds);
     dueAt = clockDueFrom(now, (await loadMortgageSettings(deps.db)).policy);
@@ -168,7 +172,7 @@ export async function submitRequest(
     p_user_agent: input.userAgent ? input.userAgent.slice(0, 500) : null,
     p_sla_due_at: dueAt,
     p_draft_id: body.service === "pre_approval" ? body.draftId : null,
-    p_locale: "en",
+    p_locale: body.locale,
     p_at: now.toISOString(),
   });
   if (error) {
@@ -192,7 +196,8 @@ export async function submitRequest(
  * Which version of the site the request came from (0155 `site_locale`, C1's
  * Website column). Written right after the request is made rather than by
  * mortgage_create_request(), whose `p_locale` is the language Bazar writes to
- * the applicant in: English until the flow's Arabic is approved (D12). Best
+ * the applicant in — the flow's language, which since its Arabic launched
+ * (D12) is usually the same, but not for a link written before then. Best
  * effort: a failed write leaves the column null, which the queue shows as
  * unknown, and never fails a submission that has already been made.
  */

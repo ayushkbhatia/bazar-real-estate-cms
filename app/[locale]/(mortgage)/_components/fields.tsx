@@ -9,6 +9,11 @@ import { Glyph } from "@/components/mortgage/glyphs";
  * an optional fixed prefix ("+971"), a hint under it — replaced by the error
  * when there is one (FE-1's proposed style: a danger border and a 12px danger
  * message).
+ *
+ * `ltr` is for a value written left to right on every page — a mobile number,
+ * a date of birth, an email. Right to left, the field keeps that order (prefix
+ * first, "+971 | 50 123 4567"), and a field without a prefix still sits on the
+ * right with the rest of the form.
  */
 export const TextField = forwardRef<
   HTMLInputElement,
@@ -21,8 +26,10 @@ export const TextField = forwardRef<
     suffix?: ReactNode;
     /** The accessible name when the prefix belongs in it ("Mobile number, +971"). */
     accessibleLabel?: string;
+    /** The value reads left to right whatever the page's direction. */
+    ltr?: boolean;
   }
->(function TextField({ label, hint, error, prefix, suffix, accessibleLabel, className, id, ...input }, ref) {
+>(function TextField({ label, hint, error, prefix, suffix, accessibleLabel, ltr, className, id, ...input }, ref) {
   const auto = useId();
   const inputId = id ?? auto;
   const noteId = `${inputId}-note`;
@@ -34,19 +41,22 @@ export const TextField = forwardRef<
       aria-invalid={invalid || undefined}
       aria-describedby={hint || error ? noteId : undefined}
       aria-label={accessibleLabel}
+      dir={ltr ? "ltr" : undefined}
       className={cn(
         "h-[50px] w-full min-w-0 flex-1 border bg-bz-surface px-4 text-[16px] text-bz-ink outline-none transition-colors md:text-[15px]",
         "placeholder:text-bz-muted-2 focus:border-bz-ink-2",
         prefix ? "rounded-e-[10px]" : "rounded-[10px]",
         invalid ? "border-[var(--mrq-badge-error)]" : "border-bz-border",
         suffix && "pe-14",
+        // End of a left-to-right box: the right, where the rest of an Arabic form starts.
+        ltr && !prefix && "rtl:text-end",
         className,
       )}
       {...input}
     />
   );
   const control = suffix ? (
-    <div className="relative min-w-0 flex-1">
+    <div className="relative min-w-0 flex-1" dir={ltr ? "ltr" : undefined}>
       {field}
       <div className="absolute inset-y-0 end-1.5 flex items-center">{suffix}</div>
     </div>
@@ -59,7 +69,7 @@ export const TextField = forwardRef<
         {label}
       </label>
       {prefix ? (
-        <div className="flex">
+        <div className="flex" dir={ltr ? "ltr" : undefined}>
           <span
             aria-hidden
             className={cn(

@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 import { describe, expect, it } from "vitest";
-import { bearerToken, hashToken, newToken, tokenMatches } from "./tokens";
+import { bearerToken, hashToken, newToken, secureLinkPath, tokenMatches } from "./tokens";
 
 describe("draft and link tokens (SPEC §8)", () => {
   it("are 256-bit random, URL-safe, and different every time", () => {
@@ -28,5 +28,13 @@ describe("draft and link tokens (SPEC §8)", () => {
     expect(bearerToken(new Headers({ authorization: `Basic ${token}` }))).toBeNull();
     expect(bearerToken(new Headers({ authorization: "Bearer short" }))).toBeNull();
     expect(bearerToken(new Headers())).toBeNull();
+  });
+});
+
+describe("secure link paths", () => {
+  it("open in the language the applicant applied in", () => {
+    expect(secureLinkPath("abc", "en")).toBe("/mortgages/r/abc");
+    expect(secureLinkPath("abc", null)).toBe("/mortgages/r/abc");
+    expect(secureLinkPath("abc", "ar")).toBe("/ar/mortgages/r/abc");
   });
 });

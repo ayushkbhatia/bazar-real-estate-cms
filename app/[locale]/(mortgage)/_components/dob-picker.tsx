@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useLocale } from "next-intl";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -13,6 +14,8 @@ import {
   yearOptions,
 } from "@/lib/mortgage-requests/calendar";
 import { dubaiDateKey, dubaiDayStart } from "@/lib/mortgage-requests/dubai-time";
+import { localeDateTag } from "@/lib/i18n/dates";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { cn } from "@/lib/utils";
 
 export type DobPickerLabels = {
@@ -23,22 +26,26 @@ export type DobPickerLabels = {
   next: string;
 };
 
-const MONTHS = Array.from({ length: 12 }, (_, m) =>
-  new Intl.DateTimeFormat("en-GB", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m, 1))),
-);
-// 1 January 2001 was a Monday: seven days from it are the week, Monday first.
-const WEEKDAYS = Array.from({ length: 7 }, (_, d) => {
-  const at = new Date(Date.UTC(2001, 0, 1 + d));
-  return {
-    short: new Intl.DateTimeFormat("en-GB", { weekday: "narrow", timeZone: "UTC" }).format(at),
-    long: new Intl.DateTimeFormat("en-GB", { weekday: "long", timeZone: "UTC" }).format(at),
+/** Month and weekday names, and a day's spoken label, in the flow's language (Western digits in both). */
+function calendarNames(locale: Locale) {
+  const tag = localeDateTag(locale);
+  const months = Array.from({ length: 12 }, (_, m) =>
+    new Intl.DateTimeFormat(tag, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2001, m, 1))),
+  );
+  // 1 January 2001 was a Monday: seven days from it are the week, Monday first.
+  const weekdays = Array.from({ length: 7 }, (_, d) => {
+    const at = new Date(Date.UTC(2001, 0, 1 + d));
+    return {
+      short: new Intl.DateTimeFormat(tag, { weekday: "narrow", timeZone: "UTC" }).format(at),
+      long: new Intl.DateTimeFormat(tag, { weekday: "long", timeZone: "UTC" }).format(at),
+    };
+  });
+  const dayFormat = new Intl.DateTimeFormat(tag, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  const dayLabel = (iso: string) => {
+    const [y, m, d] = iso.split("-").map(Number) as [number, number, number];
+    return dayFormat.format(new Date(Date.UTC(y, m - 1, d)));
   };
-});
-const DAY_LABEL = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
-
-function dayLabel(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number) as [number, number, number];
-  return DAY_LABEL.format(new Date(Date.UTC(y, m - 1, d)));
+  return { months, weekdays, dayLabel };
 }
 
 /**
@@ -48,7 +55,9 @@ function dayLabel(iso: string): string {
  *
  * The grid is a single tab stop (roving focus): arrows move a day or a week,
  * Page Up/Down a month, Home/End the week's ends, Enter or Space picks.
- * Today and later are disabled, as `dobRule` would refuse them.
+ * Today and later are disabled, as `dobRule` would refuse them. Right to
+ * left, the arrows and chevrons follow what the reader sees: ← is the next
+ * day, as the grid runs from the right.
  */
 export function DobPicker({
   value,
@@ -60,6 +69,9 @@ export function DobPicker({
   onPick: (iso: string) => void;
   labels: DobPickerLabels;
 }) {
+  const locale = asLocale(useLocale());
+  const rtl = locale === "ar";
+  const { months: MONTHS, weekdays: WEEKDAYS, dayLabel } = useMemo(() => calendarNames(locale), [locale]);
   const [open, setOpen] = useState(false);
   // Read when the calendar opens (an event, not a render), so a tab left open overnight still knows today.
   const [today, setToday] = useState(() => dubaiDateKey(dubaiDayStart(Date.now())));
@@ -114,8 +126,8 @@ export function DobPicker({
     const from = tabStop!;
     const weekday = (new Date(`${from}T00:00:00Z`).getUTCDay() + 6) % 7;
     const keys: Record<string, () => string> = {
-      ArrowLeft: () => addDays(from, -1),
-      ArrowRight: () => addDays(from, 1),
+      ArrowLeft: () => addDays(from, rtl ? 1 : -1),
+      ArrowRight: () => addDays(from, rtl ? -1 : 1),
       ArrowUp: () => addDays(from, -7),
       ArrowDown: () => addDays(from, 7),
       PageUp: () => addMonths(from, e.shiftKey ? -12 : -1),

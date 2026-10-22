@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "@/components/i18n/link";
+import { isolateAuto, isolateLtr } from "@/lib/i18n/bidi";
 
 /**
  * The rich-text tags the flow's copy uses (00-foundations §12): `<b>` is 600
@@ -10,6 +11,29 @@ export const richTags = {
   b: (chunks: ReactNode) => <b className="font-semibold text-bz-ink">{chunks}</b>,
   ink: (chunks: ReactNode) => <span className="text-bz-ink">{chunks}</span>,
 };
+
+/**
+ * A value that reads left to right whatever the page does: a phone number,
+ * an email, a date of birth. Right to left, "+971 50 218 4417" would
+ * otherwise come out as "4417 218 50 971+" and "14 / 03 / 1990" as
+ * "1990 / 03 / 14". `<bdi dir="ltr">` isolates it from the sentence around it.
+ */
+export function Ltr({ children }: { children: ReactNode }) {
+  return <bdi dir="ltr">{children}</bdi>;
+}
+
+/**
+ * The same for a value dropped into a message as an argument, where no markup
+ * can go: wrapped in an isolate (`lib/i18n/bidi`), so a masked mobile,
+ * a reference or a Latin name keeps its own order inside an Arabic sentence.
+ * A value with letters takes their direction (FIRST STRONG ISOLATE: an Arabic
+ * name stays right to left); one without — "+971 50 ••• 4567" — is set left to
+ * right (LEFT-TO-RIGHT ISOLATE), since Chrome reads an FSI with nothing strong
+ * in it as the sentence's direction. Invisible, and harmless in English.
+ */
+export function isolate(value: string): string {
+  return /\p{L}/u.test(value) ? isolateAuto(value) : isolateLtr(value);
+}
 
 /** `<link>` as a link to `href`, underlined in ink-2 as W3's fine print shows it. */
 export function linkTag(href: string) {
@@ -43,6 +67,8 @@ export function contactTags(telHref: string, whatsappHref: string) {
       return (
         <a
           href={href}
+          // A number keeps its order inside an Arabic sentence.
+          {...(written ? { dir: "ltr" } : {})}
           className="text-bz-ink hover:underline"
           {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
         >

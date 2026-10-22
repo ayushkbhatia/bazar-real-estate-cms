@@ -26,6 +26,8 @@ export type SubmitBody =
       entryPoint: EntryPoint;
       propertyRef?: string;
       siteLocale?: "en" | "ar";
+      /** The language the applicant applied in: Bazar writes to them in it. */
+      locale?: "en" | "ar";
     }
   | {
       service: "pre_approval";
@@ -37,6 +39,8 @@ export type SubmitBody =
       entryPoint: EntryPoint;
       propertyRef?: string;
       siteLocale?: "en" | "ar";
+      /** The language the applicant applied in: Bazar writes to them in it. */
+      locale?: "en" | "ar";
     };
 
 export type SubmitResponse = {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   DETAIL_FIELDS,
@@ -33,6 +32,7 @@ import { Divider, RailCard } from "../../../_components/primitives";
 import { richTags } from "../../../_components/rich";
 import { FlowHeading } from "../../../_components/steps";
 import { SelectionSummary } from "../../../_components/summary";
+import { useFlowRouter } from "../../../_components/use-flow-router";
 
 type Errors = Partial<Record<DetailField, DetailRule>>;
 
@@ -63,7 +63,7 @@ function ruleFor(field: DetailField, draft: DetailsDraft): DetailRule | null {
 export function PersonalDetails() {
   const t = useTranslations("mortgage");
   const flow = useWizardFlow();
-  const router = useRouter();
+  const router = useFlowRouter();
   const [state, update] = useGuardedState("details");
   const [checked, setErrors] = useState<Errors>({});
   const refs = useRef<Partial<Record<DetailField, HTMLInputElement | null>>>({});
@@ -278,6 +278,7 @@ export function PersonalDetails() {
             ref={(el) => void (refs.current.dateOfBirth = el)}
             label={t("field.dateOfBirth")}
             name="bday"
+            ltr
             autoComplete="bday"
             inputMode="numeric"
             placeholder={t("w2.dateOfBirth.placeholder")}
@@ -318,6 +319,7 @@ export function PersonalDetails() {
             prefix={t("w2.mobile.prefix")}
             type="tel"
             name="tel-national"
+            ltr
             autoComplete="tel-national"
             inputMode="tel"
             placeholder={t("w2.mobile.placeholder")}
@@ -331,6 +333,7 @@ export function PersonalDetails() {
             label={t("field.email")}
             type="email"
             name="email"
+            ltr
             autoComplete="email"
             placeholder={t("w2.email.placeholder")}
             error={message("email")}

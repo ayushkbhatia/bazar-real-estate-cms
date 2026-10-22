@@ -23,7 +23,7 @@ import {
   type MortgageActionResult,
 } from "@/lib/mortgage-requests/server/cms-kit";
 import { loadMortgageSettings } from "@/lib/mortgage-requests/server/settings";
-import { hashToken, newToken } from "@/lib/mortgage-requests/server/tokens";
+import { hashToken, newToken, secureLinkPath } from "@/lib/mortgage-requests/server/tokens";
 
 /**
  * The document viewer's actions (C3/C4; SPEC §4.3 `setCheck`,
@@ -281,7 +281,7 @@ export async function requestReupload(input: z.input<typeof reuploadInput>): Pro
       adviserName: s.staff.display_name,
       documentName: mortgageDocumentName(b.kind, request.locale === "ar" ? "ar" : "en"),
       message: b.message,
-      link: `${emailSiteUrl()}/mortgages/r/${token}`,
+      link: `${emailSiteUrl()}${secureLinkPath(token, request.locale)}`,
       expiresAt,
     },
     request.locale === "ar" ? "ar" : "en",

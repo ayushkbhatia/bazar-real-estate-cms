@@ -1743,3 +1743,55 @@ mortgage work.
 - **Open:** nothing reads `mortgage_admin` in the database tests yet
   (`test:db` needs the local stack).
 
+
+## Arabic wizard · 22 Oct 2026 (D12)
+
+The application, W1–W8, in Arabic when it is opened from the Arabic site.
+
+- **Built.** `/mortgages` is off `ENGLISH_ONLY_PREFIXES`, so the proxy no
+  longer sends `/ar/mortgages/…` to English, sends an Arabic-preferring
+  visitor from `/mortgages/…` to `/ar/mortgages/…` like any page, and every
+  entry link on an /ar page (the mortgage page's hero and bands, the home
+  page, a listing) is localised to `/ar/mortgages/apply…`. The layout no
+  longer 404s a non-English tree; `[locale]/layout.tsx` sets `lang`/`dir`.
+  - Steps that move by code keep the language (`useFlowRouter`); Exit goes to
+    the mortgage page in the flow's language.
+  - Submit sends `locale` (the screen's language) → `mortgage_create_request`'s
+    `p_locale`, which every applicant email and the Salesforce lead's
+    `Preferred_Languages__c` already read. `site_locale` falls back to the
+    flow's language when neither `?site=` nor a referrer says.
+  - Secure links in the invite and re-upload emails open `/ar/mortgages/r/…`
+    for an Arabic applicant (`secureLinkPath`); the link's dead-end messages
+    are in the page's language.
+  - **Consent record fixed.** The stored consent text was looked up by version
+    (the shipped English), while the page showed the Wizards editor's wording —
+    which Bazar rewrote on 20 Oct, so records since then didn't say what the
+    applicant read. `server/consent-wording.ts` now stores the sentence the
+    page showed, in its language, editor's wording included (W5/W6 and the
+    invite).
+  - Right to left: dates and months through `Intl` (`ar-AE-u-nu-latn`) on W6,
+    W7, W8 and the date-of-birth calendar (Arabic month and weekday names,
+    arrows mirrored); mobile, date of birth and email fields stay left to right
+    (`TextField ltr`); phone numbers, references and masked mobiles are
+    isolated, in markup (`Ltr`, the contact links) and in messages
+    (`isolate`, and `getMortgageMessages` isolates every spaced number run in
+    the Arabic namespace, editor's words included); the price reads
+    "2,500,000 درهم". The CTA arrows were mirrored twice (a class and the
+    global RTL rule) and pointed the wrong way; the class is gone.
+  - **Overlay fix:** a data message ("{label}, {prefix}") has no Arabic field,
+    so its English overrode the Arabic catalogue on /ar. It now overrides only
+    once edited.
+  - C2/C6 show a **Language** row ("Arabic · emails to them go in Arabic").
+  - Pages & blocks → Wizards says what the Arabic is for and links to the
+    Arabic wizard.
+- **Verified** in the browser on /ar: W1, W2 (validation, calendar), W3, W6
+  (the gallery), W7 (from a stored summary) and a dead secure link; 375px has
+  no horizontal scroll. Nothing was submitted (dev reads production).
+- **Open.**
+  - The mortgage emails in Content assets have Arabic written but are all
+    **drafts**: until Bazar publishes them, an Arabic applicant's emails go in
+    the built-in English.
+  - The Arabic on screen is Bazar's where they wrote it (most screens) and the
+    machine draft (ADR-0008) elsewhere; counted phrases stay catalogue-only.
+  - `test:db` (`submit.db.test.ts`) needs the local stack.
+

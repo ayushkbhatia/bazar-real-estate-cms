@@ -919,8 +919,9 @@ export async function enquiryAcknowledgementEmail(
 
 /**
  * The applicant's confirmation of a Mortgage Consultancy request. `locale` is
- * the language they applied in; the flow is English-only until its Arabic is
- * approved (docs/mortgage/DECISIONS.md D12), so today that is "en".
+ * the language they applied in (the request's `locale`: "ar" from
+ * /ar/mortgages since the flow's Arabic launched, D12). Arabic comes from the
+ * row's Arabic twin while it is published; the built-in is English.
  */
 export function mortgageConsultancyReceivedEmail(
   opts: MortgageReceivedOpts,

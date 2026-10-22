@@ -2,10 +2,10 @@
  * Paths served in English only, whatever the visitor's language.
  *
  *   - `/admin` — the CMS, permanently (ADR-0007).
- *   - `/mortgages` — the mortgage application flow, for now. SPEC §1 ships it
- *     in English; its Arabic catalogue is a machine draft nobody has approved,
- *     and the consent it shows is legal text (decision D12). Taking it off
- *     this list is the Arabic launch for the flow.
+ *
+ * The mortgage application flow (`/mortgages`) was on this list until its
+ * Arabic launched (decision D12, 22 Oct 2026): `/ar/mortgages/…` now serves
+ * the flow in Arabic, and a link from an /ar page leads there.
  *
  * Three places ask, and they have to agree or a visitor loops: the proxy
  * redirects `/ar/<path>` back to English and never sends an Arabic-preferring
@@ -14,9 +14,9 @@
  * destination.
  */
 
-export const ENGLISH_ONLY_PREFIXES = ["/admin", "/mortgages"] as const;
+export const ENGLISH_ONLY_PREFIXES = ["/admin"] as const;
 
-/** `/mortgages/apply?service=x` → true. Takes an unprefixed path; query and hash are ignored. */
+/** `/admin/enquiries?x=1` → true. Takes an unprefixed path; query and hash are ignored. */
 export function isEnglishOnlyPath(path: string): boolean {
   const cut = path.search(/[?#]/);
   const pathname = cut === -1 ? path : path.slice(0, cut);

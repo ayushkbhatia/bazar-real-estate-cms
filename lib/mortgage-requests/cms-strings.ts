@@ -561,8 +561,13 @@ export const CMS_MESSAGES = {
     "dobAge": "{date} · {age}",
     "email": "Email",
     "fullName": "Full name",
+    "language": "Language",
     "mobile": "Mobile",
     "startedFrom": "Started from"
+  },
+  "language": {
+    "ar": "Arabic · emails to them go in Arabic",
+    "en": "English"
   },
   "format": {
     "office": "Office meeting",
@@ -698,6 +703,9 @@ export const CMS_MESSAGES = {
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
   "propertyPrice.chip",
+  "field.language",
+  "language.ar",
+  "language.en",
   "activity.assigned.invite",
   "activity.atRisk",
   "activity.booked.sub",

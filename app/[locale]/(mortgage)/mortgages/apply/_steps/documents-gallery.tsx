@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { asLocale } from "@/lib/i18n/locales";
 import { MB, type DocKind } from "@/lib/mortgage-requests/documents";
 import { formatMonthYear } from "@/lib/mortgage-requests/format";
 import { completion, rowView, type UploadItem } from "@/lib/mortgage-requests/client/upload-queue";
@@ -42,6 +43,7 @@ const noop = () => undefined;
 
 export function DocumentsGallery() {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const done = completion(KINDS, W6_FILES);
   return (
     <FlowPage
@@ -80,7 +82,7 @@ export function DocumentsGallery() {
             view={rowView(kind, W6_FILES)}
             note={
               kind === "bank_statements_12m"
-                ? t("docs.monthsRange", { from: formatMonthYear("2025-09"), to: formatMonthYear("2026-08") })
+                ? t("docs.monthsRange", { from: formatMonthYear("2025-09", locale), to: formatMonthYear("2026-08", locale) })
                 : undefined
             }
             onPick={noop}

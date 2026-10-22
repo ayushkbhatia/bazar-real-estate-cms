@@ -20,6 +20,7 @@
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import arMessages from "@/messages/ar/mortgage.json";
 import { CONSENT_WORDINGS, CURRENT_CONSENT_VERSION } from "./consent";
 import type { DocKind } from "./documents";
 import { clockDueFrom, slaPolicy } from "./sla";
@@ -164,7 +165,7 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
     );
     expect(counts).toEqual({ emirates_id: 2, passport: 1, salary_certificate: 1, bank_statements_3m: 2 });
 
-    // The consent text is the version's, not anything the browser sent.
+    // The consent text is the page's (the catalogue's English here), not anything the browser sent.
     const { data: consent } = await service.from("mortgage_consents").select("*").eq("request_id", result.requestId).single();
     expect(consent).toMatchObject({
       wording_version: CURRENT_CONSENT_VERSION,
@@ -180,6 +181,17 @@ describe.skipIf(!stack)("mortgage submit (local Supabase)", () => {
       .eq("request_id", result.requestId)
       .eq("kind", "applicant_received");
     expect(outbox).toEqual([{ kind: "applicant_received", channel: "email", status: "queued" }]);
+  });
+
+  it("applies in Arabic from /ar: the request writes to them in Arabic and the consent is stored as the page showed it", async () => {
+    const draft = await newDraft();
+    const files = await salariedSet(draft);
+    const body = submitBodySchema().parse({ ...preApproval(draft, files), siteLocale: "ar", locale: "ar" });
+    const result = await submitRequest(deps, { body, idempotencyKey: key(), draftToken: draft.draftToken, ip: null, userAgent: null });
+    expect(await request(result.requestId)).toMatchObject({ locale: "ar", site_locale: "ar" });
+    const { data: consent } = await service.from("mortgage_consents").select("wording_version, wording_text").eq("request_id", result.requestId).single();
+    // The local stack has no Wizards document, so the page showed the catalogue's Arabic.
+    expect(consent).toEqual({ wording_version: CURRENT_CONSENT_VERSION, wording_text: arMessages.consent.label });
   });
 
   it("answers a repeated key with the request it already made, draft claimed or not", async () => {

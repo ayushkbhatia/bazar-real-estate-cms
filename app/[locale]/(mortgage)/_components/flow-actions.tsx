@@ -43,7 +43,7 @@ export function FlowActions({
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-[18px]">
         {backHref ? (
           <FlowLinkButton kind="ghost" href={backHref} className="self-start md:self-auto">
-            <ArrowLeft size={16} strokeWidth={1.6} className="rtl:-scale-x-100" aria-hidden />
+            <ArrowLeft size={16} strokeWidth={1.6} aria-hidden />
             {t("actions.back")}
           </FlowLinkButton>
         ) : null}
@@ -70,7 +70,7 @@ export function FlowActions({
         >
           {busy ? <Loader2 size={16} className="animate-spin motion-reduce:animate-none" aria-hidden /> : null}
           {cta}
-          {arrow && !busy ? <ArrowRight size={16} strokeWidth={1.6} className="rtl:-scale-x-100" aria-hidden /> : null}
+          {arrow && !busy ? <ArrowRight size={16} strokeWidth={1.6} aria-hidden /> : null}
           {busy ? <span className="sr-only">{t("submit.sending")}</span> : null}
         </button>
       </div>

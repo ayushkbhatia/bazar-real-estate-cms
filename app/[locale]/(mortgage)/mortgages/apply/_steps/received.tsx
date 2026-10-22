@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { asLocale } from "@/lib/i18n/locales";
 import { formatDayTime, formatMobile, formatTime, maskMobile } from "@/lib/mortgage-requests/format";
 import type { SubmittedSummary } from "@/lib/mortgage-requests/client/apply-state";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
@@ -9,7 +10,7 @@ import { docKey, DocumentIcon } from "../../../_components/documents";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { FlowLinkButton, RailCard } from "../../../_components/primitives";
-import { richTags } from "../../../_components/rich";
+import { isolate, Ltr, richTags } from "../../../_components/rich";
 import { ConfirmationHeading, ProgressTrack } from "../../../_components/steps";
 import { KeyValueList } from "../../../_components/summary";
 
@@ -61,20 +62,21 @@ function Onward({ s }: { s: SubmittedSummary }) {
 /** W4 · Consultancy — request received. */
 function ConsultancyReceived({ s }: { s: SubmittedSummary }) {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const rows = useSummaryRows(s);
   const rail = (
     <RailCard title={t("w4.rail.title")}>
       <div className="ph-no-capture">
-        <KeyValueList rows={[...rows, [t("summary.received"), formatDayTime(s.submittedAt)]]} />
+        <KeyValueList rows={[...rows, [t("summary.received"), formatDayTime(s.submittedAt, locale)]]} />
         <div className="mt-[18px] border-t border-bz-border pt-4">
           <div className="text-[12px] text-bz-muted">{t("w4.rail.contactOn")}</div>
           <div className="mt-1.5 flex items-center gap-2 text-[13.5px]">
             <Glyph name="phone" />
-            {formatMobile(s.mobile)}
+            <Ltr>{formatMobile(s.mobile)}</Ltr>
           </div>
           <div className="mt-1.5 flex items-center gap-2 text-[13.5px] break-all">
             <Glyph name="mail" className="shrink-0" />
-            {s.email}
+            <Ltr>{s.email}</Ltr>
           </div>
         </div>
       </div>
@@ -115,6 +117,7 @@ export function ApplicationReceived({
   stepper?: boolean;
 }) {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const rows = useSummaryRows(s);
   const rail = (
     <RailCard title={t("w7.rail.title")}>
@@ -147,7 +150,7 @@ export function ApplicationReceived({
             <div>
               <div className="text-[12px] opacity-70">{t("w7.due.label")}</div>
               <time dateTime={s.dueAt} className="serif mt-0.5 block text-[30px] leading-[1.1]">
-                {formatDayTime(s.dueAt)}
+                {formatDayTime(s.dueAt, locale)}
               </time>
             </div>
           </div>
@@ -159,7 +162,7 @@ export function ApplicationReceived({
           items={[
             {
               body: <b className="font-semibold text-bz-ink">{t("w7.track.submitted")}</b>,
-              meta: formatDayTime(s.submittedAt),
+              meta: formatDayTime(s.submittedAt, locale),
             },
             { body: t.rich("preNext.review", richTags) },
             { body: t.rich("preNext.price", richTags) },
@@ -171,7 +174,7 @@ export function ApplicationReceived({
         <span className="mt-px text-bz-accent">
           <Glyph name="chat" />
         </span>
-        <span>{t.rich("w7.whatsapp", { ...richTags, maskedMobile: maskedMobile ?? maskMobile(s.mobile) })}</span>
+        <span>{t.rich("w7.whatsapp", { ...richTags, maskedMobile: isolate(maskedMobile ?? maskMobile(s.mobile)) })}</span>
       </div>
       <Onward s={s} />
     </FlowPage>

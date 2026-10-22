@@ -64,7 +64,7 @@ export function DetailsSummary({
 }: {
   title: string;
   edit: { label: string; href: string };
-  rows: readonly [label: string, value: string][];
+  rows: readonly [label: string, value: ReactNode][];
 }) {
   return (
     <section className="ph-no-capture mt-4 rounded-[14px] border border-bz-border bg-bz-surface">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type DragEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RefreshCw, Upload } from "lucide-react";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { contiguous, formatMonthAbbrev, formatMonthSpan, type Coverage } from "@/lib/mortgage-requests/coverage";
@@ -12,12 +12,13 @@ import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { sendReupload } from "@/lib/mortgage-requests/client/link-api";
 import { isInFlight, rowAction, rowView } from "@/lib/mortgage-requests/client/upload-queue";
 import type { ReuploadContext, StaffCard } from "@/lib/mortgage-requests/server/links";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { cn } from "@/lib/utils";
 import { docKey, DocumentIcon, UploadedFile, useUploadErrorMessage } from "../../../../_components/documents";
 import { FlowActions } from "../../../../_components/flow-actions";
 import { FlowPage } from "../../../../_components/flow-page";
 import { FlowButton, NoteRow, Pill, RailCard } from "../../../../_components/primitives";
-import { richTags } from "../../../../_components/rich";
+import { isolate, richTags } from "../../../../_components/rich";
 import { ConfirmationHeading, FlowHeading, NextSteps } from "../../../../_components/steps";
 import { useLinkUploads, useUploadAnnouncement, type ReadyFile } from "./use-link-uploads";
 
@@ -29,7 +30,7 @@ export function SecurePill({ fullName, sentTo }: { fullName: string; sentTo: str
       <span className="flex shrink-0 text-[oklch(0.5_0.12_145)]">
         <Glyph name="lock" size={14} />
       </span>
-      {t("w8.secure", { fullName, maskedMobile: sentTo })}
+      {t("w8.secure", { fullName: isolate(fullName), maskedMobile: isolate(sentTo) })}
     </div>
   );
 }
@@ -37,7 +38,8 @@ export function SecurePill({ fullName, sentTo }: { fullName: string; sentTo: str
 /** The adviser's message: plain text from the CMS, escaped by React, its line breaks kept. */
 function AdviserMessage({ adviser, sentAt, message }: { adviser: StaffCard | null; sentAt: string; message: string }) {
   const t = useTranslations("mortgage");
-  const when = formatDayTime(sentAt);
+  const locale = asLocale(useLocale());
+  const when = formatDayTime(sentAt, locale);
   return (
     <div className="mt-8 flex gap-3.5 rounded-[14px] border border-bz-border bg-bz-surface px-5 py-[18px]">
       <span
@@ -60,13 +62,14 @@ function AdviserMessage({ adviser, sentAt, message }: { adviser: StaffCard | nul
 }
 
 /** A run of months as the legend writes it: a span when unbroken, a list when not. */
-function monthsText(months: readonly string[]): string {
-  return contiguous(months) ? formatMonthSpan(months[0]!, months.at(-1)!) : formatMonthList(months);
+function monthsText(months: readonly string[], locale: Locale): string {
+  return contiguous(months) ? formatMonthSpan(months[0]!, months.at(-1)!, locale) : formatMonthList(months, locale);
 }
 
 /** The months the statements must cover: received in green, missing dashed (W8, C4). */
 function CoverageGrid({ coverage: cov }: { coverage: Coverage }) {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   return (
     <>
       <div className="grid grid-cols-6 gap-1 md:grid-cols-12" aria-hidden>
@@ -81,7 +84,7 @@ function CoverageGrid({ coverage: cov }: { coverage: Coverage }) {
             )}
           >
             <span className={cn("text-[11.5px] font-medium", received ? "text-[oklch(0.35_0.08_145)]" : "text-[oklch(0.48_0.15_28)]")}>
-              {formatMonthAbbrev(month)}
+              {formatMonthAbbrev(month, locale)}
             </span>
             <span className={cn("mono text-[9.5px]", received ? "text-[oklch(0.45_0.06_145)]" : "text-[oklch(0.55_0.12_28)]")}>
               ’{month.slice(2, 4)}
@@ -90,9 +93,9 @@ function CoverageGrid({ coverage: cov }: { coverage: Coverage }) {
         ))}
       </div>
       <div className="mt-2 flex flex-col gap-1 text-[12px] text-bz-muted md:flex-row md:justify-between md:gap-4">
-        <span>{cov.received.length ? t("w8.coverage.received", { range: monthsText(cov.received) }) : null}</span>
+        <span>{cov.received.length ? t("w8.coverage.received", { range: monthsText(cov.received, locale) }) : null}</span>
         {cov.missing.length ? (
-          <span className="text-[oklch(0.48_0.15_28)]">{t("w8.coverage.needed", { range: monthsText(cov.missing) })}</span>
+          <span className="text-[oklch(0.48_0.15_28)]">{t("w8.coverage.needed", { range: monthsText(cov.missing, locale) })}</span>
         ) : null}
       </div>
     </>
@@ -107,6 +110,7 @@ function CoverageGrid({ coverage: cov }: { coverage: Coverage }) {
  */
 export function ReuploadVerified({ token, context, ready }: { token: string; context: ReuploadContext; ready: readonly ReadyFile[] }) {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const errorMessage = useUploadErrorMessage();
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -173,7 +177,7 @@ export function ReuploadVerified({ token, context, ready }: { token: string; con
     return (
       <FlowPage>
         <ConfirmationHeading
-          eyebrow={t("w8.eyebrow", { reference: context.reference })}
+          eyebrow={t("w8.eyebrow", { reference: isolate(context.reference) })}
           title={t("w8.sent.title", { firstName })}
           body={t("w8.sent.body", { adviserFirstName })}
         />
@@ -184,7 +188,7 @@ export function ReuploadVerified({ token, context, ready }: { token: string; con
   const statementsShort = cov !== null && !cov.complete;
   const noun = t(`doc.${key}.name`);
   const instruction = statementsShort
-    ? t.rich("w8.drop.instruction", { ...richTags, months: formatMonthList(cov.missing, "en", "long") })
+    ? t.rich("w8.drop.instruction", { ...richTags, months: formatMonthList(cov.missing, locale, "long") })
     : doc.replace
       ? t.rich("w8.drop.replace", { ...richTags, document: noun.toLowerCase() })
       : t.rich("w8.drop.add", { ...richTags, document: noun.toLowerCase() });
@@ -217,7 +221,7 @@ export function ReuploadVerified({ token, context, ready }: { token: string; con
         </>
       }
     >
-      <FlowHeading eyebrow={t("w8.eyebrow", { reference: context.reference })} title={t("w8.title")} lede={lede} />
+      <FlowHeading eyebrow={t("w8.eyebrow", { reference: isolate(context.reference) })} title={t("w8.title")} lede={lede} />
 
       <AdviserMessage adviser={context.adviser} sentAt={context.request.sentAt} message={context.request.message} />
 
