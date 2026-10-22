@@ -2,11 +2,13 @@
  * The consent an applicant gives on W5/W6 before a Fast Pre-Approval
  * (docs/mortgage/SPEC.md §3, `mortgage_consents`; decision D2).
  *
- * The browser sends only `{ given: true, wordingVersion }`. The text stored
- * with the request is looked up here by that version, never taken from the
- * request body, so the record says exactly what the page said. Change the
- * wording by adding a version, never by editing one: every consent row points
- * at the version it was given under.
+ * The browser sends only `{ given: true, wordingVersion }` (and the language
+ * the page was in). The text stored with the request is never taken from the
+ * request body: the server looks up the sentence the page showed — the
+ * Wizards editor's wording, else the catalogue's, in the page's language
+ * (server/consent-wording.ts) — so the record says exactly what the page said.
+ * The versions below are the shipped English wordings; every consent row
+ * points at the version it was given under.
  *
  * `consent.test.ts` holds each version's text equal to `consent.label` in
  * messages/en/mortgage.json, which is what W5 and W6 render.

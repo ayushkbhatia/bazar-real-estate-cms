@@ -50,7 +50,7 @@ export async function FlowFooter({ locale }: { locale: Locale }) {
         <Link href="/legal/terms" className="hover:text-bz-ink">
           {t("shell.footer.terms")}
         </Link>
-        <a href={telHref(phone)} className="hover:text-bz-ink">
+        <a href={telHref(phone)} dir="ltr" className="hover:text-bz-ink">
           {phone}
         </a>
       </span>

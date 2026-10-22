@@ -540,6 +540,8 @@ export type RequestFile = {
   /** The applicant's desired property price, "AED 2,500,000" (0163); null when they didn't give one. */
   propertyPrice: string | null;
   startedFrom: string;
+  /** The language they applied in, which every email to them is written in. */
+  language: string;
   submittedAt: string;
   submittedDisplay: string;
   /** C6's header: "Received today 09:47 · first contact 10:52". */
@@ -592,6 +594,7 @@ type RequestDbRow = SlaFields & {
   employment_type: Employment;
   property_price_aed: number | null;
   entry_point: string;
+  locale: "en" | "ar";
   owner_staff_id: string | null;
   submitted_at: string;
   first_contact_at: string | null;
@@ -632,7 +635,7 @@ export async function getRequestFile(
   const { data: found, error } = await db
     .from("mortgage_requests")
     .select(
-      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, property_price_aed, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, stage_id, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
+      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, property_price_aed, entry_point, locale, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, stage_id, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
     )
     .eq("reference", reference)
     .maybeSingle();
@@ -816,6 +819,7 @@ export async function getRequestFile(
     residencyWithLtv: t("residency.withLtv", { residency: t(RESIDENCY_KEY[r.residency]), ltv }),
     propertyPrice: r.property_price_aed ? t("propertyPrice.chip", { price: formatAed(r.property_price_aed) }) : null,
     startedFrom: t(ENTRY_KEY[r.entry_point] ?? "entry.direct"),
+    language: t(r.locale === "ar" ? "language.ar" : "language.en"),
     submittedAt: r.submitted_at,
     submittedDisplay: formatDayTime(r.submitted_at),
     receivedLine: r.first_contact_at

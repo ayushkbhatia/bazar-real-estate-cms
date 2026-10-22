@@ -284,7 +284,7 @@ function buildSections(): SectionDef[] {
       description: screen.description,
       locked: true,
       dataNote:
-        "Keep anything in {curly braces} and the <b>…</b> or <ink>…</ink> marks: they're filled in, or styled, as the applicant reads it. The wizard is in English for now (decision D12); the Arabic is kept for when it opens in Arabic.",
+        "Keep anything in {curly braces} and the <b>…</b> or <ink>…</ink> marks: they're filled in, or styled, as the applicant reads it. The Arabic is what the wizard shows on the Arabic site (/ar/mortgages/apply), right to left; a field whose Arabic is left as shipped keeps the shipped wording. Phone numbers read left to right in both.",
       fields: paths.map(fieldFor),
       defaults,
     };
@@ -310,7 +310,7 @@ export const WIZARDS: readonly WizardDef[] = [
     key: "mortgage-application",
     label: "Mortgage application",
     description:
-      "Fast Pre-Approval and Mortgage Consultancy: every screen of /mortgages/apply and the secure link, word for word, and what the flow shows.",
+      "Fast Pre-Approval and Mortgage Consultancy: every screen of /mortgages/apply and the secure link, word for word in English and Arabic, and what the flow shows.",
     path: "/mortgages/apply",
     namespace: "mortgage",
   },

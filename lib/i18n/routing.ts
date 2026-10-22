@@ -86,9 +86,9 @@ export function internalPath(pathname: string): string {
  *     refuses to rewrite (`lib/i18n/non-localised.ts`). A prefixed `/ar/api/…`
  *     is a 404, and on a form POST that reads as the feature being broken
  *     rather than the link being wrong.
- *   - **An English-only path.** The CMS, permanently (ADR-0007), and the
- *     mortgage flow for now (lib/i18n/english-only.ts); the proxy redirects
- *     `/ar/admin` back to `/admin`. Prefixing one would mean every such link
+ *   - **An English-only path.** The CMS, permanently (ADR-0007;
+ *     lib/i18n/english-only.ts); the proxy redirects `/ar/admin` back to
+ *     `/admin`. Prefixing one would mean every such link
  *     taken from an Arabic public page costs a redirect.
  *   - **A file.** A last segment containing a dot is a static asset served
  *     from `public/`, and the proxy matcher deliberately does not see it, so
@@ -109,32 +109,23 @@ export function localiseHref(href: string, locale: Locale): string {
 
   if (localeFromPathname(pathname)) return href;
   if (isNonLocalisedPath(pathname)) return href;
-  if (isEnglishOnlyPath(pathname)) return withSiteLocale(href, pathname, locale);
+  if (isEnglishOnlyPath(pathname)) return href;
   if (hasFileExtension(pathname)) return href;
 
   return `${withLocalePrefix(pathname, locale)}${tail}`;
 }
 
 /**
- * Query param by which a link into the mortgage flow says which version of
- * the site it was on. The flow is English only (D12), so a visitor on an /ar
- * page lands on the English form, and this is what lets the team's queue say
- * the request came from the Arabic site (0155 `site_locale`). Not `lang`:
- * the proxy strips that one, the old WordPress site's parameter.
+ * Query param by which a link into the mortgage flow said which version of
+ * the site it was on, while the flow was English only (D12): a visitor on an
+ * /ar page landed on the English form carrying `site=ar`, for the team's queue
+ * (0155 `site_locale`). Since the flow's Arabic launched, links from /ar pages
+ * lead to /ar/mortgages and nothing adds it; the flow still reads it, so a
+ * link written before then (a bookmark, a cached page) keeps saying where it
+ * came from. Not `lang`: the proxy strips that one, the old WordPress site's
+ * parameter.
  */
 export const SITE_LOCALE_PARAM = "site";
-
-/** An English-only link from a non-default-locale page: `/mortgages/...` gets `site=<locale>`; `/admin` stays as it is. */
-function withSiteLocale(href: string, pathname: string, locale: Locale): string {
-  if (pathname !== "/mortgages" && !pathname.startsWith("/mortgages/")) return href;
-  const hash = href.indexOf("#");
-  const beforeHash = hash === -1 ? href : href.slice(0, hash);
-  const after = hash === -1 ? "" : href.slice(hash);
-  const q = beforeHash.indexOf("?");
-  const params = new URLSearchParams(q === -1 ? "" : beforeHash.slice(q + 1));
-  params.set(SITE_LOCALE_PARAM, locale);
-  return `${pathname}?${params.toString()}${after}`;
-}
 
 /** `/x/report.pdf` -> true, `/areas/al-reem` -> false. */
 function hasFileExtension(pathname: string): boolean {

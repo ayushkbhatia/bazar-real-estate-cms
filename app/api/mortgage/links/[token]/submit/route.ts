@@ -19,6 +19,8 @@ const Body = z.object({
   fileIds: z.array(z.string().regex(UUID, "invalid")).min(1).max(30),
   /** The invite only: the same consent as W5/W6. */
   consent: z.object({ given: z.literal(true), wordingVersion: z.string().max(40) }).optional(),
+  /** The language the page was read in: the consent is stored as it showed it. */
+  locale: z.enum(["en", "ar"]).catch("en"),
 });
 
 /**
@@ -51,6 +53,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ token: str
       const created = await submitInvite(deps, link, {
         fileIds: body.fileIds,
         consentVersion: body.consent.wordingVersion,
+        locale: body.locale,
         submissionKey: key ?? crypto.randomUUID(),
         ip: extractClientIp(req.headers),
         userAgent: req.headers.get("user-agent"),

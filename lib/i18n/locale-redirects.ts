@@ -35,7 +35,7 @@ import { isNonLocalisedPath } from "./non-localised";
  *
  *   - **Non-localised routes** (`lib/i18n/non-localised.ts`) — `/api/*`,
  *     `/sold/*`, `/sso/*` and friends live outside `[locale]` by contract.
- *   - **An English-only path** (`/admin`, `/mortgages`; lib/i18n/english-only.ts)
+ *   - **An English-only path** (`/admin`; lib/i18n/english-only.ts)
  *     — `proxy.ts` bounces `/ar/admin` straight back out, so `/ar/sign-in` →
  *     `/ar/admin/login` would redirect twice to reach where one hop already goes.
  *   - **Absolute URLs** — another origin has no locale of ours.

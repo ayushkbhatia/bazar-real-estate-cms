@@ -14,7 +14,8 @@ import {
   wizardStoredValues,
   docIconUrls,
 } from "./wizards";
-import { overlayMessages, wizardOverlay } from "@/lib/queries/wizards";
+import { isolateNumberRuns, overlayMessages, wizardOverlay } from "@/lib/queries/wizards";
+import { LRI, PDI } from "@/lib/i18n/bidi";
 
 type Tree = { [k: string]: string | Tree };
 const flat = (tree: Tree, p = ""): [string, string][] =>
@@ -104,6 +105,40 @@ describe("Wizards → Mortgage application", () => {
     expect((merged.w1 as Tree).lede).toBe((en as unknown as Tree & { w1: Tree }).w1.lede);
     // Nothing stored: nothing laid over.
     expect(wizardOverlay(resolveSections(def, null, "en"), "en").messages).toEqual({});
+  });
+
+  it("lays the Arabic an editor wrote over the Arabic catalogue, and nothing when nothing is stored", () => {
+    const stored = wizardStoredValues(docWith("w1", { "w1.title_ar": "كيف نساعدك؟" }));
+    const overlay = wizardOverlay(resolveSections(def, stored, "ar"), "ar");
+    expect(overlay.messages).toEqual({ w1: { title: "كيف نساعدك؟" } });
+    expect(wizardOverlay(resolveSections(def, null, "ar"), "ar").messages).toEqual({});
+  });
+
+  it("keeps a data message's Arabic until its one value is edited", () => {
+    // "{label}, {prefix}" has no Arabic field; the Arabic catalogue writes it with an Arabic comma.
+    const key = "w2.mobile.label";
+    expect(EN.get(key)).not.toBe(AR.get(key));
+    expect(wizardOverlay(resolveSections(def, wizardStoredValues(docWith("w2", {})), "ar"), "ar").messages).toEqual({});
+    const edited = wizardStoredValues(docWith("w2", { [key]: "{label} ({prefix})" }));
+    expect(wizardOverlay(resolveSections(def, edited, "ar"), "ar").messages).toEqual({ w2: { mobile: { label: "{label} ({prefix})" } } });
+  });
+
+  it("sets every spaced number left to right for an Arabic page, and leaves ICU alone", () => {
+    const out = isolateNumberRuns({
+      a: "اتصل على +971 2 632 2223.",
+      b: { c: "مثل 50 000 0000" },
+      d: "{count, plural, one {ملف واحد} other {# ملفات}}",
+      e: "ADM: 202400997397",
+    });
+    expect(out.a).toBe(`اتصل على ${LRI}+971 2 632 2223${PDI}.`);
+    expect(out.b.c).toBe(`مثل ${LRI}50 000 0000${PDI}`);
+    expect(out.d).toBe("{count, plural, one {ملف واحد} other {# ملفات}}");
+    expect(out.e).toBe("ADM: 202400997397");
+    // Every message in the Arabic catalogue still formats after it.
+    for (const [key, message] of AR) {
+      const isolated = isolateNumberRuns(message);
+      expect(isolated.replace(/[\u2066-\u2069]/g, ""), key).toBe(message);
+    }
   });
 
   it("offers an image per document kind, empty by default, kept as set on save", () => {

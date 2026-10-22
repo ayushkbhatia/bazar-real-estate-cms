@@ -62,15 +62,26 @@ export default async function WizardEditorPage({ params }: { params: Promise<{ k
         </span>
       }
       secondary={
-        <Link
-          href={wizard.path}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
-        >
-          Open the wizard
-          <ExternalLink size={12} />
-        </Link>
+        <span className="inline-flex items-center gap-4">
+          <Link
+            href={wizard.path}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+          >
+            Open the wizard
+            <ExternalLink size={12} />
+          </Link>
+          <Link
+            href={`/ar${wizard.path}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+          >
+            In Arabic
+            <ExternalLink size={12} />
+          </Link>
+        </span>
       }
     >
       <div className="flex max-w-[860px] flex-col gap-5">
@@ -78,10 +89,17 @@ export default async function WizardEditorPage({ params }: { params: Promise<{ k
           <h2 className="text-[13.5px] font-medium">Every screen, word for word</h2>
           <p className="mt-1 text-[12.5px] leading-relaxed text-bz-ink-2">
             The {MORTGAGE_EDITABLE_KEYS.length} messages an applicant reads on{" "}
-            <span className="mono">/mortgages/apply</span>{" "}and on the secure link the team sends, one section per screen
+            <span className="mono">/mortgages/apply</span>{" "}(and{" "}<span className="mono">/ar/mortgages/apply</span>, in
+            Arabic) and on the secure link the team sends, one section per screen
             in the order they meet them: headings, intros, buttons, field labels and placeholders, hints, the messages a
             mistake shows, and each document&apos;s name. A save goes live on the next screen an applicant opens. Fields
             marked <em>awaiting sign-off</em> still carry wording the design or compliance owes.
+          </p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-bz-ink-2">
+            <b>Arabic.</b>{" "}Each field has its Arabic under the English (open it with <b>العربية</b>): that is what an
+            applicant on the Arabic site reads, and what is recorded when they tick the consent. An Arabic applicant&apos;s
+            emails go in Arabic too, from the Arabic of each email in Content assets → Site emails; where that is blank,
+            the email goes in English.
           </p>
           <p className="mt-2 text-[12.5px] leading-relaxed text-bz-ink-2">
             The <b>Flow</b>{" "}section switches what the wizard shows. What it asks for — which documents, the formats and

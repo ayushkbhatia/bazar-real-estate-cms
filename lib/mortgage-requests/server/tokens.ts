@@ -20,6 +20,15 @@ export function tokenMatches(token: string, storedHash: string): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+/**
+ * The path a secure link's email carries: in Arabic for an applicant who
+ * applied in Arabic (the request's `locale`), so the page that opens is in
+ * the language the email is.
+ */
+export function secureLinkPath(token: string, locale: string | null | undefined): string {
+  return `${locale === "ar" ? "/ar" : ""}/mortgages/r/${token}`;
+}
+
 /** The token from `Authorization: Bearer …`, or null. */
 export function bearerToken(headers: Headers): string | null {
   const value = headers.get("authorization");

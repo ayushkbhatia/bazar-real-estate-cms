@@ -15,7 +15,7 @@ import { salesforceApexRequest, SalesforceError } from "./client";
  * that the picklist lacks is an area no CRM user can file a listing under.
  * This keeps the picklists in step: an add is an UPSERT, a rename a REPLACE.
  *
- * Migration 0168's trigger on `areas` writes the events, with the payload
+ * Migration 0169's trigger on `areas` writes the events, with the payload
  * fixed at the moment of the change; this file only sends them. Both callers
  * — the area actions straight after a save, and the lead-sync cron for
  * anything that failed — drain the same queue, in order.
@@ -35,7 +35,7 @@ const CLAIM_MINUTES = 2;
 
 /**
  * What the trigger stores. A `DELETE` is stored `held` and never picked up:
- * the API has no verb for it (see 0168).
+ * the API has no verb for it (see 0169).
  */
 export type LocationEventPayload = {
   action: "UPSERT" | "REPLACE" | "DELETE";

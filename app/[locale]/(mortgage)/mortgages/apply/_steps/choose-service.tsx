@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Service } from "@/lib/mortgage-requests/details";
 import { applyEntry, type EntryParams, FLOW_PATHS, returnPathFrom, siteLocaleFromReferrer } from "@/lib/mortgage-requests/client/apply-state";
 import { useApplyState } from "@/lib/mortgage-requests/client/apply-store";
@@ -14,6 +13,7 @@ import { Divider, NoteRow, RailCard } from "../../../_components/primitives";
 import { contactTags } from "../../../_components/rich";
 import { FlowHeading } from "../../../_components/steps";
 import { useWizardFlow } from "../../../_components/wizard-flow";
+import { useFlowRouter } from "../../../_components/use-flow-router";
 
 const PHONE = "tel:+97126322223";
 const WHATSAPP = "https://wa.me/971506911103";
@@ -26,7 +26,8 @@ const WHATSAPP = "https://wa.me/971506911103";
  */
 export function ChooseService({ entry }: { entry: EntryParams }) {
   const t = useTranslations("mortgage");
-  const router = useRouter();
+  const locale = useLocale();
+  const router = useFlowRouter();
   const [state, update] = useApplyState();
   const flow = useWizardFlow();
   const applied = useRef(false);
@@ -36,7 +37,9 @@ export function ChooseService({ entry }: { entry: EntryParams }) {
     if (!state || applied.current) return;
     applied.current = true;
     const back = returnPathFrom(document.referrer, window.location.origin);
-    const next = applyEntry(state, entry, back ?? state.returnTo, siteLocaleFromReferrer(document.referrer, window.location.origin));
+    // Which version of the site they came from: the link's `site=`, else the page before, else the one they're on.
+    const site = siteLocaleFromReferrer(document.referrer, window.location.origin) ?? (locale === "ar" ? "ar" : "en");
+    const next = applyEntry(state, entry, back ?? state.returnTo, site);
     update(() => next);
     trackMortgage("mortgage_apply_viewed", { step: "service", entry_point: next.entryPoint });
     // Chosen on the mortgage page already: this step is done, go on to the details.
@@ -44,7 +47,7 @@ export function ChooseService({ entry }: { entry: EntryParams }) {
       trackMortgage("mortgage_service_selected", { service: next.service, entry_point: next.entryPoint });
       router.replace(FLOW_PATHS.details);
     }
-  }, [state, entry, update, router]);
+  }, [state, entry, update, router, locale]);
 
   if (!state) return <FlowPending />;
 

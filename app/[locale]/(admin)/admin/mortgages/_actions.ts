@@ -29,7 +29,7 @@ import {
 import { listQueue, loadAdviserCalendar, type QueueResult } from "@/lib/mortgage-requests/server/cms-queries";
 import { deliverNotifications } from "@/lib/mortgage-requests/server/notify";
 import { loadMortgageSettings } from "@/lib/mortgage-requests/server/settings";
-import { hashToken, newToken } from "@/lib/mortgage-requests/server/tokens";
+import { hashToken, newToken, secureLinkPath } from "@/lib/mortgage-requests/server/tokens";
 
 /**
  * The mortgage team's actions (docs/mortgage SPEC §4.3; cms/00-foundations §8).
@@ -291,7 +291,7 @@ export async function sendPreapprovalInvite(input: Target): Promise<MortgageActi
       name: request.full_name,
       reference: request.reference,
       adviserName: s.staff.display_name,
-      link: `${emailSiteUrl()}/mortgages/r/${token}`,
+      link: `${emailSiteUrl()}${secureLinkPath(token, request.locale)}`,
       expiresAt,
     },
     request.locale === "ar" ? "ar" : "en",

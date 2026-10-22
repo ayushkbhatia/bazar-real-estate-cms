@@ -8,6 +8,9 @@
  * (`period_from` the first of a month, `period_to` the last).
  */
 
+import { localeDateTag } from "@/lib/i18n/dates";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+
 const EN_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 const EN_MONTHS_LONG = [
   "January",
@@ -78,12 +81,21 @@ export function contiguous(months: readonly string[]): boolean {
  * A span of months, short: "Jun 2026", "Jun – Aug 2026", "Sep 2025 – May 2026"
  * (W8's legend).
  */
-export function formatMonthSpan(first: string, last: string): string {
+export function formatMonthSpan(first: string, last: string, locale: Locale = DEFAULT_LOCALE): string {
   const a = parse(first);
   const b = parse(last);
-  if (first === last) return `${EN_MONTHS[a.month - 1]} ${a.year}`;
-  if (a.year === b.year) return `${EN_MONTHS[a.month - 1]} – ${EN_MONTHS[b.month - 1]} ${b.year}`;
-  return `${EN_MONTHS[a.month - 1]} ${a.year} – ${EN_MONTHS[b.month - 1]} ${b.year}`;
+  const name = (month: number) => shortMonth(month, locale);
+  if (first === last) return `${name(a.month)} ${a.year}`;
+  if (a.year === b.year) return `${name(a.month)} – ${name(b.month)} ${b.year}`;
+  return `${name(a.month)} ${a.year} – ${name(b.month)} ${b.year}`;
+}
+
+/** A month's short name: the fixed English one, or the locale's from Intl (Arabic has no short form, so "سبتمبر"). */
+function shortMonth(month: number, locale: Locale): string {
+  if (locale === "en") return EN_MONTHS[month - 1]!;
+  return new Intl.DateTimeFormat(localeDateTag(locale), { month: "short", timeZone: "UTC" }).format(
+    new Date(Date.UTC(2000, month - 1, 15)),
+  );
 }
 
 /**
@@ -106,8 +118,8 @@ export function formatMonthProse(first: string, last: string): string {
 }
 
 /** A month's short name alone, for a coverage tile: "Sep". */
-export function formatMonthAbbrev(ym: string): string {
-  return EN_MONTHS[parse(ym).month - 1]!;
+export function formatMonthAbbrev(ym: string, locale: Locale = DEFAULT_LOCALE): string {
+  return shortMonth(parse(ym).month, locale);
 }
 
 /** The month the dropdowns list: "Sep 2025". */

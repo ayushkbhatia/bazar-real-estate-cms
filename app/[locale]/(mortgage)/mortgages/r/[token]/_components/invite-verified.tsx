@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { asLocale } from "@/lib/i18n/locales";
 import { CURRENT_CONSENT_VERSION } from "@/lib/mortgage-requests/consent";
 import { requiredStatementMonths, type DocKind } from "@/lib/mortgage-requests/documents";
 import { formatMonthList, formatMonthYear } from "@/lib/mortgage-requests/format";
@@ -15,7 +16,7 @@ import { ConsentCheckbox, DocumentUploadRow } from "../../../../_components/docu
 import { FlowActions } from "../../../../_components/flow-actions";
 import { FlowPage } from "../../../../_components/flow-page";
 import { NoteRow, RailCard } from "../../../../_components/primitives";
-import { richTags } from "../../../../_components/rich";
+import { isolate, richTags } from "../../../../_components/rich";
 import { FlowHeading, NextSteps } from "../../../../_components/steps";
 import { SubmitAlert } from "../../../../_components/submit-alert";
 import { ApplicationReceived } from "../../../apply/_steps/received";
@@ -30,6 +31,7 @@ import { useLinkUploads, useUploadAnnouncement, type ReadyFile } from "./use-lin
  */
 export function InviteVerified({ token, context, ready }: { token: string; context: InviteContext; ready: readonly ReadyFile[] }) {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const kinds = context.kinds;
   const { items, announcement, actions } = useLinkUploads(token, ready);
   const liveText = useUploadAnnouncement(announcement);
@@ -46,13 +48,13 @@ export function InviteVerified({ token, context, ready }: { token: string; conte
     const notes: Partial<Record<DocKind, string>> = {};
     for (const kind of kinds) {
       const months = requiredStatementMonths(kind, now);
-      if (months.length === 3) notes[kind] = formatMonthList(months);
+      if (months.length === 3) notes[kind] = formatMonthList(months, locale);
       else if (months.length > 3) {
-        notes[kind] = t("docs.monthsRange", { from: formatMonthYear(months[0]!), to: formatMonthYear(months.at(-1)!) });
+        notes[kind] = t("docs.monthsRange", { from: formatMonthYear(months[0]!, locale), to: formatMonthYear(months.at(-1)!, locale) });
       }
     }
     return notes;
-  }, [kinds, t]);
+  }, [kinds, t, locale]);
 
   if (done) return <ApplicationReceived s={done} maskedMobile={context.applicant.maskedMobile} stepper={false} />;
 
@@ -73,7 +75,11 @@ export function InviteVerified({ token, context, ready }: { token: string; conte
     setFailure(null);
     const fileIds = items.filter((i) => i.stage === "ready" && i.fileId && !i.replacedBy).map((i) => i.fileId!);
     try {
-      const made = await submitInvite(token, { fileIds, consent: { given: true, wordingVersion: CURRENT_CONSENT_VERSION } }, idempotencyKey);
+      const made = await submitInvite(
+        token,
+        { fileIds, consent: { given: true, wordingVersion: CURRENT_CONSENT_VERSION }, locale },
+        idempotencyKey,
+      );
       trackMortgage("mortgage_invite_submitted", { employment_type: context.employment });
       setDone({
         reference: made.reference,
@@ -113,7 +119,7 @@ export function InviteVerified({ token, context, ready }: { token: string; conte
       }
     >
       <FlowHeading
-        eyebrow={t("w8.invite.eyebrow", { reference: context.reference })}
+        eyebrow={t("w8.invite.eyebrow", { reference: isolate(context.reference) })}
         title={context.employment === "business_owner" ? t("w6.title") : t("w5.title")}
         lede={t("w8.invite.lede")}
       />

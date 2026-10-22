@@ -329,6 +329,7 @@ function PreApproval({
                   [t("field.email"), file.email],
                   [t("c2.applicant.submitted"), file.submittedDisplay],
                   [t("field.startedFrom"), file.startedFrom],
+                  [t("field.language"), file.language],
                 ] as const
               ).map(([label, value]) => (
                 <div key={label} className="min-w-0">
@@ -578,6 +579,7 @@ function Consultancy({
                 [t("field.mobile"), file.mobileDisplay],
                 [t("field.email"), file.email],
                 [t("field.startedFrom"), file.startedFrom],
+                [t("field.language"), file.language],
               ]}
             />
           </Card>

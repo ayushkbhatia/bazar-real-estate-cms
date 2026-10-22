@@ -38,7 +38,7 @@ export function sendReupload(token: string, fileIds: string[]): Promise<{ sent: 
 
 export function submitInvite(
   token: string,
-  body: { fileIds: string[]; consent: { given: true; wordingVersion: string } },
+  body: { fileIds: string[]; consent: { given: true; wordingVersion: string }; locale?: "en" | "ar" },
   idempotencyKey: string,
 ): Promise<{ reference: string; submittedAt: string; dueAt: string | null }> {
   return call(`${base(token)}/submit`, {

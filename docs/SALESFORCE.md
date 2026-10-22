@@ -6,7 +6,7 @@ Two directions, one Connected App, one integration user.
 |---|---|---|
 | **Leads out** — website → Salesforce | Every public enquiry becomes a `Lead__c` record | **Built** (Phases 1, 2, 2.5) |
 | **Listings in** — Salesforce → website | Every listing the CRM marks Published for the website becomes a listing here | **Built** (Phase 3) — see [Listings](#listings--salesforce-to-website) |
-| **Areas out** — website → Salesforce | Every area added or renamed on the website reaches the `Area__c` / `Sub_Area__c` picklists; a delete is recorded, not sent (the API has none) | **Built** (0168) — see [Areas](#areas--website-to-salesforce) |
+| **Areas out** — website → Salesforce | Every area added or renamed on the website reaches the `Area__c` / `Sub_Area__c` picklists; a delete is recorded, not sent (the API has none) | **Built** (0169) — see [Areas](#areas--website-to-salesforce) |
 
 Vendor documents: *Lead Creation API* (18 Sept 2026), *Web to Lead Creation*
 (23 Sept), the production edition of the same (24 Sept), its **v1.1 (1 Oct)**
@@ -586,7 +586,7 @@ POST /services/apexrest/properties/website-locations
 GET  same path → { "status": "ok" }                         ping
 ```
 
-**How it runs.** A trigger on `areas` (0168) writes a row to
+**How it runs.** A trigger on `areas` (0169) writes a row to
 `salesforce_location_events` for every change Salesforce holds, with the
 payload fixed at that moment — a REPLACE needs the old name, which only the
 trigger sees. So every path that adds or renames an area enrols itself: the

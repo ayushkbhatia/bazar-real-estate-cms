@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { parsePropertyPrice, validateDetails } from "@/lib/mortgage-requests/details";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
 import { ApiError, submitRequest, type SubmitBody } from "@/lib/mortgage-requests/client/api";
 import { afterSubmit, FLOW_PATHS, type ApplyState } from "@/lib/mortgage-requests/client/apply-state";
 import { setApplyState } from "@/lib/mortgage-requests/client/apply-store";
 import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
+import { useFlowRouter } from "./use-flow-router";
 
 export type SubmitFailure = { message: string; code: string };
 
@@ -21,7 +21,8 @@ export type SubmitFailure = { message: string; code: string };
  */
 export function useSubmit() {
   const t = useTranslations("mortgage");
-  const router = useRouter();
+  const locale: "en" | "ar" = useLocale() === "ar" ? "ar" : "en";
+  const router = useFlowRouter();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<SubmitFailure | null>(null);
 
@@ -52,7 +53,9 @@ export function useSubmit() {
           details,
           entryPoint: state.entryPoint,
           ...(state.propertyRef ? { propertyRef: state.propertyRef } : {}),
-          siteLocale: state.siteLocale ?? "en",
+          siteLocale: state.siteLocale ?? locale,
+          // The language this screen is in: the confirmation and every later email follow it.
+          locale,
           propertyPriceAed: parsePropertyPrice(state.details.propertyPrice),
         };
         const body: SubmitBody =
@@ -117,7 +120,7 @@ export function useSubmit() {
         setBusy(false);
       }
     },
-    [router, t],
+    [router, t, locale],
   );
 
   return { submit, busy, failure, clearFailure: () => setFailure(null) };

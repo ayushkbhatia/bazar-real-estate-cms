@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { asLocale } from "@/lib/i18n/locales";
 import { CURRENT_CONSENT_VERSION } from "@/lib/mortgage-requests/consent";
 import {
   DOCUMENT_SETS,
@@ -31,6 +32,7 @@ import { useSubmit } from "../../../_components/use-submit";
  */
 export function UploadDocuments() {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const [state, update] = useGuardedState("documents");
   const employment = state?.details.employmentType ?? "salaried";
   const kinds = DOCUMENT_SETS[employment];
@@ -63,16 +65,16 @@ export function UploadDocuments() {
     const notes: Partial<Record<DocKind, string>> = {};
     for (const kind of kinds) {
       const months = requiredStatementMonths(kind, now);
-      if (months.length === 3) notes[kind] = formatMonthList(months);
+      if (months.length === 3) notes[kind] = formatMonthList(months, locale);
       else if (months.length > 3) {
         notes[kind] = t("docs.monthsRange", {
-          from: formatMonthYear(months[0]!),
-          to: formatMonthYear(months.at(-1)!),
+          from: formatMonthYear(months[0]!, locale),
+          to: formatMonthYear(months.at(-1)!, locale),
         });
       }
     }
     return notes;
-  }, [kinds, t]);
+  }, [kinds, t, locale]);
 
   if (!state) return <FlowPending />;
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import { guardRedirect, type ApplyState, type FlowRoute } from "@/lib/mortgage-requests/client/apply-state";
 import { useApplyState } from "@/lib/mortgage-requests/client/apply-store";
 import { FlowStepper } from "./steps";
+import { useFlowRouter } from "./use-flow-router";
 
 /**
  * A step's page inside the shell (00-foundations §4): the stepper, an
@@ -47,7 +47,7 @@ export function FlowPage({
  */
 export function useGuardedState(route: FlowRoute): [ApplyState | null, ReturnType<typeof useApplyState>[1]] {
   const [state, update] = useApplyState();
-  const router = useRouter();
+  const router = useFlowRouter();
   const target = state ? guardRedirect(state, route) : null;
   useEffect(() => {
     if (target) router.replace(target);

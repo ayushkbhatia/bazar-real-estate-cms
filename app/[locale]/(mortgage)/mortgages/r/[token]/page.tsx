@@ -32,21 +32,22 @@ export const metadata: Metadata = {
 };
 
 export default async function SecureLinkPage({ params }: { params: Promise<{ locale: string; token: string }> }) {
-  const { locale, token } = await params;
-  setRequestLocale(asLocale(locale));
+  const { token } = await params;
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
   const db = createAdminClient();
-  if (!db) return <LinkMessage state="unavailable" purpose={null} />;
+  if (!db) return <LinkMessage locale={locale} state="unavailable" purpose={null} />;
   const link = await findLink(db, token);
   const jar = await cookies();
   const state = linkState(link, new Date(), link ? (jar.get(sessionCookieName(link.id))?.value ?? null) : null);
 
   if (!link || state === "unavailable" || state === "expired" || state === "locked") {
-    return <LinkMessage state={state === "expired" || state === "locked" ? state : "unavailable"} purpose={link?.purpose ?? null} />;
+    return <LinkMessage locale={locale} state={state === "expired" || state === "locked" ? state : "unavailable"} purpose={link?.purpose ?? null} />;
   }
   if (state === "used") {
     const reference = link.purpose === "preapproval_invite" ? await inviteOutcome(db, link) : null;
-    return <LinkMessage state="used" purpose={link.purpose} reference={reference} />;
+    return <LinkMessage locale={locale} state="used" purpose={link.purpose} reference={reference} />;
   }
   if (state === "code") return <CodeGate token={token} purpose={link.purpose} />;
 

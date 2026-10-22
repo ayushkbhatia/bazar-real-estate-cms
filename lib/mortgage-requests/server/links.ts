@@ -22,7 +22,8 @@ import { isIP } from "node:net";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { mortgageCodeEmail } from "@/lib/content-assets/system-emails";
 import { sendEmail, type SendEmailInput, type SendEmailResult } from "@/lib/email";
-import { CONSENT_WORDINGS, isConsentVersion } from "../consent";
+import { isConsentVersion } from "../consent";
+import { consentWordingShown, type ConsentLocale } from "./consent-wording";
 import { coverage, monthOf, type Coverage } from "../coverage";
 import { DOCUMENT_RULES, DOCUMENT_SETS, requiredStatementMonths, type DocKind, type EmploymentType } from "../documents";
 import { maskMobile } from "../format";
@@ -542,7 +543,15 @@ export async function fulfilReupload(
 export async function submitInvite(
   deps: DraftDeps,
   link: LinkRow,
-  input: { fileIds: readonly string[]; consentVersion: string; submissionKey: string; ip: string | null; userAgent: string | null },
+  input: {
+    fileIds: readonly string[];
+    consentVersion: string;
+    /** The language the invite page was read in, for the consent's text. */
+    locale?: ConsentLocale;
+    submissionKey: string;
+    ip: string | null;
+    userAgent: string | null;
+  },
 ): Promise<{ requestId: string; reference: string; submittedAt: string; dueAt: string | null }> {
   if (link.purpose !== "preapproval_invite") throw new MortgageApiError(410, "link_unavailable");
   if (!link.draft_id) throw new MortgageApiError(409, "files_not_ready");
@@ -551,14 +560,18 @@ export async function submitInvite(
   }
   const now = nowOf(deps);
   await retireUnlisted(deps, link.draft_id, input.fileIds);
-  const dueAt = clockDueFrom(now, (await loadMortgageSettings(deps.db)).policy);
+  const [{ policy }, consentText] = await Promise.all([
+    loadMortgageSettings(deps.db),
+    consentWordingShown(deps.db, input.locale ?? "en"),
+  ]);
+  const dueAt = clockDueFrom(now, policy);
 
   const { data, error } = await deps.db.rpc("mortgage_submit_invite", {
     p_link_id: link.id,
     p_draft_id: link.draft_id,
     p_submission_key: input.submissionKey,
     p_consent_version: input.consentVersion,
-    p_consent_text: CONSENT_WORDINGS[input.consentVersion],
+    p_consent_text: consentText,
     p_ip: input.ip && isIP(input.ip) ? input.ip : null,
     p_user_agent: input.userAgent ? input.userAgent.slice(0, 500) : null,
     p_sla_due_at: dueAt,

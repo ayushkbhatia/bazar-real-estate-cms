@@ -74,9 +74,14 @@ export function maskMobile(e164: string): string {
   return m ? `+971 ${m[1]} ••• ${m[2]}` : e164;
 }
 
-/** 2500000 → "AED 2,500,000": the desired property price, wherever it is shown back. */
-export function formatAed(amount: number): string {
-  return `AED ${String(Math.round(amount)).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+/**
+ * 2500000 → "AED 2,500,000": the desired property price, wherever it is shown
+ * back. Arabic trails the figure with its currency word, as the site writes
+ * prices ("2,500,000 درهم"); `label` is the word the screen already shows.
+ */
+export function formatAed(amount: number, locale: Locale = DEFAULT_LOCALE, label?: string): string {
+  const figure = String(Math.round(amount)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return locale === "ar" ? `${figure} ${label ?? "درهم"}` : `${label ?? "AED"} ${figure}`;
 }
 
 /** Bytes in MB (1 MB = 1,048,576 bytes) to one decimal: "14.8", "2.0". */

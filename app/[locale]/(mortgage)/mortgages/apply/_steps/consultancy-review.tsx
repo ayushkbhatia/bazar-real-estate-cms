@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { asLocale } from "@/lib/i18n/locales";
 import { parsePropertyPrice, validateDetails } from "@/lib/mortgage-requests/details";
 import { formatAed, formatDob, formatMobile } from "@/lib/mortgage-requests/format";
 import { FLOW_PATHS } from "@/lib/mortgage-requests/client/apply-state";
@@ -9,7 +10,7 @@ import { trackMortgage } from "@/lib/mortgage-requests/client/analytics";
 import { FlowActions } from "../../../_components/flow-actions";
 import { FlowPage, FlowPending, useGuardedState } from "../../../_components/flow-page";
 import { RailCard, Tick } from "../../../_components/primitives";
-import { linkTag, richTags } from "../../../_components/rich";
+import { linkTag, Ltr, richTags } from "../../../_components/rich";
 import { FlowHeading, NextSteps } from "../../../_components/steps";
 import { DetailsSummary, SelectionSummary } from "../../../_components/summary";
 import { useSubmit } from "../../../_components/use-submit";
@@ -22,6 +23,7 @@ import { SubmitAlert } from "../../../_components/submit-alert";
  */
 export function ConsultancyReview() {
   const t = useTranslations("mortgage");
+  const locale = asLocale(useLocale());
   const [state] = useGuardedState("review");
   const { submit, busy, failure } = useSubmit();
   const viewed = useRef(false);
@@ -82,10 +84,10 @@ export function ConsultancyReview() {
         edit={{ label: t("w3.details.edit"), href: FLOW_PATHS.details }}
         rows={[
           [t("field.fullName"), d.fullName],
-          [t("field.dateOfBirth"), formatDob(d.dateOfBirth)],
-          [t("field.mobile"), formatMobile(d.mobile)],
-          [t("field.email"), d.email],
-          ...(price ? [[t("field.propertyPrice"), formatAed(price)] as [string, string]] : []),
+          [t("field.dateOfBirth"), <Ltr key="dob">{formatDob(d.dateOfBirth)}</Ltr>],
+          [t("field.mobile"), <Ltr key="mobile">{formatMobile(d.mobile)}</Ltr>],
+          [t("field.email"), <Ltr key="email">{d.email}</Ltr>],
+          ...(price ? [[t("field.propertyPrice"), formatAed(price, locale, t("w2.propertyPrice.prefix"))] as [string, string]] : []),
         ]}
       />
 
