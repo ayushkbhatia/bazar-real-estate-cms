@@ -8,7 +8,7 @@ import { COMPARE_CAP } from "@/lib/compare-store";
 import type { Database } from "@/db/types";
 
 const COMPARE_FIELDS =
-  "id, reference, slug, title, title_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, floor, year_built, tenure, furnishing, view, view_ar, parking_bays, service_charge_per_ft2, amenities, flags, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, plot_ft2, floor, year_built, tenure, furnishing, view, view_ar, parking_bays, service_charge_per_ft2, amenities, flags, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: Database["public"]["Enums"]["property_media_role"];
@@ -26,6 +26,7 @@ export type ComparableProperty = {
   title: string;
   price_aed: number;
   mode: Database["public"]["Enums"]["property_mode"];
+  property_form: Database["public"]["Enums"]["property_form"] | null;
   status: Database["public"]["Enums"]["property_status"];
   type: Database["public"]["Enums"]["property_type"];
   beds: number;

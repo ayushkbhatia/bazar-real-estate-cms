@@ -210,10 +210,11 @@ export default async function PropertyEditPage({ params }: PageProps) {
     description: property.description,
     description_ar: property.description_ar,
     type: property.type,
-    mode: property.mode,
+    // The enum still lists off_plan and commercial; the CHECK from 0168 keeps
+    // every row on buy or rent, which is all the picker offers.
+    mode: property.mode === "rent" ? "rent" : "buy",
     segment: property.segment,
-    // 'off_plan' exists in the DB enum but is not offered in the picker, so
-    // narrow anything unselectable to null rather than seeding the form with
+    // Narrow anything unselectable to null rather than seeding the form with
     // a value it can't render.
     property_form: toSelectableForm(property.property_form),
     price_aed: Number(property.price_aed),

@@ -84,7 +84,7 @@ export async function RentAreaMap({
       heading={heading}
       body={body ?? undefined}
       allHref={allHref}
-      allLabel={t(mode === "commercial" ? "allCommercial" : "allRentals")}
+      allLabel={t(segment === "commercial" ? "allCommercial" : "allRentals")}
     />
   );
 }

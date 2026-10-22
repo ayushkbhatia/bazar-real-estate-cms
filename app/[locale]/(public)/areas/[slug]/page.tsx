@@ -251,8 +251,8 @@ export default async function CommunityProfilePage({
   const projectCount = inventory.developmentTotal;
   //
   // The link goes to the communities band on this page, not to
-  // /off-plan/search: that route searches `properties` with mode = 'off_plan',
-  // so for an area with no property rows it is empty by construction — the
+  // /off-plan/search: that route searches `properties` (sale stock), so for
+  // an area with no property rows it is empty by construction — the
   // exact dead end this copy exists to avoid. The project cards are already
   //higher up the page.
   const saleEmpty =

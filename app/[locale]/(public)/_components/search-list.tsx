@@ -5,6 +5,7 @@ import { listPublishedProperties, propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
+import type { SearchSurface } from "@/lib/master-pages/search-headers";
 import { currentLocale } from "@/lib/i18n/current";
 import { getPublicUnitLabels } from "@/lib/queries/site-settings";
 import { formatPrice } from "@/lib/preferences/formatters";
@@ -38,7 +39,6 @@ import { GalleryPrefetch } from "./gallery-prefetch";
 import { fetchGalleryPreviews } from "@/lib/queries/property-gallery-preview";
 import { GALLERY_VISIBLE_TILES } from "../p/[slug]/_components/gallery-sizes";
 
-type Mode = Database["public"]["Enums"]["property_mode"];
 type Form = Database["public"]["Enums"]["property_form"];
 
 /**
@@ -152,7 +152,13 @@ export async function SearchList({
   filters,
   searchParams,
 }: {
-  mode: Mode;
+  /**
+   * The surface, which picks the heading above the filter bar. The rows
+   * follow from it: /rent/search lists tenancies, every other surface lists
+   * sale stock. /off-plan/search is sale stock under its own heading, at the
+   * client's request (Oct 2026) — the same rows /buy/search shows.
+   */
+  mode: SearchSurface;
   /**
    * Optional completion-form narrowing for sale stock (/buy/ready,
    * /buy/resale). Omitted by every other caller, which keeps showing the
@@ -201,7 +207,7 @@ export async function SearchList({
    */
   const [{ rows, total }, areas, copy] = await Promise.all([
     listPublishedProperties({
-      mode,
+      mode: mode === "rent" ? "rent" : "buy",
       form: effectiveForm,
       filters,
       limit: PAGE_SIZE,

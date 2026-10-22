@@ -2,7 +2,16 @@ import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
 import { MAX_AMENITIES, normaliseAmenityList } from "@/lib/amenities";
 
-export const PROPERTY_MODES = ["buy", "rent", "off_plan", "commercial"] as const;
+/** The transaction: for sale or to let, and nothing else (0168).
+ *
+ *  `mode` used to carry `off_plan` and `commercial` too, which are not
+ *  transactions — off-plan is a completion form (`property_form`) and
+ *  commercial is a kind of building (`segment`, 0121). Both already lived on
+ *  their own axes; 0168 re-filed the off-plan rows as `buy` and a CHECK now
+ *  holds the column to these two. The Postgres enum still lists all four
+ *  (there is no DROP VALUE), so the generated `db/types.ts` does too — this
+ *  list, not that one, is what the app writes. */
+export const PROPERTY_MODES = ["buy", "rent"] as const;
 export type PropertyMode = (typeof PROPERTY_MODES)[number];
 
 /** Single source of truth for mode labels — both the create sheet and the
@@ -10,19 +19,10 @@ export type PropertyMode = (typeof PROPERTY_MODES)[number];
 export const PROPERTY_MODE_LABELS: Record<PropertyMode, string> = {
   buy: "For sale",
   rent: "For rent",
-  off_plan: "Off-plan",
-  commercial: "Commercial",
 };
 
-/** Property form — where a sale listing sits on the completion axis.
- *
- *  'off_plan' became writable in 0110. It used to be excluded here on the
- *  grounds that `mode = 'off_plan'` already said it and two spellings are a
- *  trap — but the mode axis is the *transaction* axis, and leaving off-plan
- *  there alone said off-plan was not a purchase. It is one. The duplication is
- *  deliberate and the DB keeps the two in step: a trigger fills this column on
- *  any row whose mode is off_plan, so an operator never has to set both.
- */
+/** Property form — where a sale listing sits on the completion axis. The
+ *  only place off-plan is recorded since 0168. */
 export const PROPERTY_FORMS = ["off_plan", "ready_new", "resale"] as const;
 export type PropertyForm = (typeof PROPERTY_FORMS)[number];
 
@@ -36,7 +36,7 @@ export const PROPERTY_FORM_LABELS: Record<PropertyForm, string> = {
  *  not about the building being recently finished — say so in the UI. */
 export const PROPERTY_FORM_HINTS: Record<PropertyForm, string> = {
   off_plan:
-    "Not yet completed — bought from the developer before handover. Set automatically when the mode is Off-plan.",
+    "Not yet completed — bought from the developer before handover.",
   ready_new:
     "Completed and sold directly by the developer — never previously owned. Not about how recently it was built.",
   resale: "Previously owned; being sold on by the current owner.",
@@ -46,15 +46,10 @@ export const PROPERTY_FORM_HINTS: Record<PropertyForm, string> = {
 export const PROPERTY_FORM_HELP =
   "How this home is coming to market. Off-plan: not yet completed. Ready (new): the developer's first sale, never previously owned. Resale: previously owned.";
 
-/** Modes that may carry a property form. Rent must not: the DB CHECK
- *  `properties_form_rent_null_ck` rejects a rent row with a non-null form.
- *  Off-plan is in the list since 0110 — the row carries `property_form =
- *  'off_plan'` as well as `mode = 'off_plan'`, so clearing the form on that
- *  mode would fight the DB trigger that writes it back. */
-const SALE_MODES: readonly PropertyMode[] = ["buy", "commercial", "off_plan"];
-
+/** A sale listing may carry a property form; a rental must not — the DB CHECK
+ *  `properties_form_rent_null_ck` rejects a rent row with a non-null form. */
 export function isSaleMode(mode: string | null | undefined): boolean {
-  return SALE_MODES.includes(mode as PropertyMode);
+  return mode === "buy";
 }
 
 /** Narrow any stored/loaded value to a form the pickers can actually show.
@@ -94,7 +89,7 @@ export const PROPERTY_TYPES = [
  * Residential or commercial — the BUILDING axis, and the second one a listing
  * has.
  *
- * `mode` is the transaction: for sale, to let, off-plan. `segment` is what kind
+ * `mode` is the transaction: for sale or to let. `segment` is what kind
  * of building it is. They were conflated because `mode` carried a `commercial`
  * value, which forced a commercial unit for rent to record one fact and drop
  * the other, and which put "Commercial" on the search surfaces as a fourth

@@ -478,7 +478,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             value: tenureLabel(property.tenure, t),
           }
         : null,
-      { label: t("spec.listingType"), value: t(`mode.${property.mode}`) },
+      // Off-plan is a sale's completion form since 0168, and still the
+      // listing type a buyer is told.
+      {
+        label: t("spec.listingType"),
+        value: t(
+          `mode.${property.mode === "buy" && property.property_form === "off_plan" ? "off_plan" : property.mode}`,
+        ),
+      },
       property.published_at
         ? {
             label: t("spec.listed"),

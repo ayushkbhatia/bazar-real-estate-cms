@@ -20,7 +20,8 @@ export type FeedProperty = {
   title: string;
   description: string | null;
   type: string;
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  /** Sale or rent — the only modes a row can hold since 0168. */
+  mode: "buy" | "rent";
   beds: number;
   baths: number;
   built_up_ft2: number | null;
@@ -51,8 +52,6 @@ const PROPERTY_TYPE_TO_PORTAL: Record<string, string> = {
 const MODE_TO_OFFERING: Record<FeedProperty["mode"], string> = {
   buy: "RS",
   rent: "RR",
-  off_plan: "RS",
-  commercial: "RS",
 };
 
 function escapeXml(s: string): string {

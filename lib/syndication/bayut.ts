@@ -22,8 +22,6 @@ const PROPERTY_TYPE_TO_BAYUT: Record<string, string> = {
 const MODE_TO_BAYUT_PURPOSE: Record<FeedProperty["mode"], string> = {
   buy: "Sale",
   rent: "Rent",
-  off_plan: "Sale",
-  commercial: "Sale",
 };
 
 function escapeXml(s: string): string {

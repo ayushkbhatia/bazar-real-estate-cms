@@ -1,14 +1,8 @@
 import type { Database } from "@/db/types";
+import { isSaleMode } from "@/lib/schemas/property";
 
 type PropertyForm = Database["public"]["Enums"]["property_form"];
 type PropertyMode = Database["public"]["Enums"]["property_mode"];
-
-/** Modes that are sold rather than let, and so need a completion form.
- *  Off-plan joined the list in 0110: it is a purchase, its rows carry
- *  `property_form = 'off_plan'`, and a DB trigger fills that value — so the
- *  check passes without an operator ever touching the picker. Leaving it out
- *  would exempt exactly the rows the /buy facet now depends on. */
-const SALE_MODES = ["buy", "commercial", "off_plan"] as const;
 
 export type PublishabilityInput = {
   status: string;
@@ -66,8 +60,7 @@ export function evaluatePublishability(
   // Rentals must keep the column NULL (DB check
   // `properties_form_rent_null_ck`), so they are not gated here.
   if (input.mode !== undefined && input.property_form !== undefined) {
-    const isSale = (SALE_MODES as readonly string[]).includes(input.mode);
-    if (isSale) {
+    if (isSaleMode(input.mode)) {
       const formPassed = input.property_form != null;
       checks.push({ label: "Sale form is set", passed: formPassed });
       if (!formPassed)

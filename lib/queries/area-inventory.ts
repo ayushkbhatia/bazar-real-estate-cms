@@ -67,7 +67,7 @@ export type AreaTree = { ids: string[]; slugs: string[] };
 export type AreaInventory = {
   /** The area's own id plus its sub-communities'. Empty when the slug is unknown. */
   areaIds: string[];
-  /** Everything that is not a tenancy — ready, resale, off-plan and commercial. */
+  /** Everything that is not a tenancy — ready, resale and off-plan, residential or commercial. */
   forSale: ListingRow[];
   forRent: ListingRow[];
   /** Published projects in the area, newest first. */
@@ -147,10 +147,9 @@ export async function getAreaInventory(
         .order("published_at", { ascending: false });
 
     const [sale, rent, allDevelopments] = await Promise.all([
-      // "For sale" is everything that is not a tenancy: ready, resale, off-plan
-      // and commercial all belong under it. Filtering on mode = 'buy' would
-      // empty the band on the islands whose stock is entirely off-plan.
-      base().neq("mode", "rent").limit(limit),
+      // "For sale" is everything that is not a tenancy: ready, resale and
+      // off-plan, residential or commercial. Since 0168 that is mode = 'buy'.
+      base().eq("mode", "buy").limit(limit),
       base().eq("mode", "rent").limit(limit),
       listPublishedDevelopments(),
     ]);

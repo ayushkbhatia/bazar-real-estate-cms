@@ -28,11 +28,11 @@ import {
   searchHeaderFor,
   searchHeaderPageDef,
   type SearchHeaderKey,
+  type SearchSurface,
 } from "@/lib/master-pages/search-headers";
 import { subPageSlug } from "@/lib/master-pages/subpages";
 import type {
   PropertyForm,
-  PropertyMode,
   PropertySegment,
 } from "@/lib/schemas/property";
 import type { Metadata } from "next";
@@ -107,7 +107,7 @@ export type SearchHeaderCopy = {
 
 export const getSearchHeaderCopy = cache(
   async (
-    mode: PropertyMode,
+    mode: SearchSurface,
     form?: PropertyForm | null,
     locale?: Locale,
     segment?: PropertySegment | null,
@@ -153,7 +153,7 @@ export type SearchHeaderMeta = { title: string; description: string };
 
 export const getSearchHeaderMeta = cache(
   async (
-    mode: PropertyMode,
+    mode: SearchSurface,
     form?: PropertyForm | null,
     locale?: Locale,
     segment?: PropertySegment | null,
@@ -187,7 +187,7 @@ export const getSearchHeaderMeta = cache(
  * publishing an empty `<title>`.
  */
 export async function searchHeaderMetadata(
-  mode: PropertyMode,
+  mode: SearchSurface,
   form: PropertyForm | null,
   locale: Locale,
   segment?: PropertySegment | null,

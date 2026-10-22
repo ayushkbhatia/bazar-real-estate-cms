@@ -1,5 +1,7 @@
 /**
- * 60 demo properties distributed across the four modes:
+ * 60 demo properties in four demo buckets (seeds/03-properties.ts files the
+ * off-plan bucket as mode buy + form off_plan and the commercial one as mode
+ * buy + segment commercial, since 0168):
  *   - 30 buy   (Saadiyat 12, Yas 8, Reem 6, Al Raha 4)
  *   - 15 rent  (Saadiyat 4, Reem 4, Yas 3, Corniche 2, Al Raha 2)
  *   - 10 off-plan (linked to existing developments)

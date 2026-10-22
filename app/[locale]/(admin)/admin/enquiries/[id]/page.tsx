@@ -61,8 +61,6 @@ const LISTING_STATUS: Record<string, string> = {
 const LISTING_MODE: Record<string, string> = {
   buy: "For sale",
   rent: "For rent",
-  off_plan: "Off-plan",
-  commercial: "Commercial",
 };
 
 const PROJECT_STATUS: Record<string, string> = {

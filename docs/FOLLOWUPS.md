@@ -305,7 +305,7 @@ quick grep can show "what's outstanding in my area."
   answer them.
   `app/[locale]/(public)/off-plan/page.tsx` builds `viewAllHref` as
   `/off-plan/search?area=<slug>`, but that route searches the `properties`
-  table for `mode = 'off_plan'` — individual units — while the rail above it
+  table — individual sale units — while the rail above it
   shows `developments`. For an area with projects but no unit rows the link
   lands on an empty result set: `/off-plan/search?area=hudayriyat-island`
   returns 0 despite three published projects there. Verified 2026-08-11; the
@@ -1788,3 +1788,10 @@ surface reads the seed roster any more. These are the loose ends:
   "Remove from shortlist" — on every listing card, in both locales. Noticed on
   `/ar/buy/search`. It is a brand component, so the fix (a `useTranslations`
   call, or labels passed in) wants the owner's go-ahead.
+
+- [compare] **The compare page's "Mode" row says "Buy · resale" for every
+  ready-new sale.** `lib/compare.ts` reads `mode.buy` from
+  `messages/*/tools.json` for any sale not off-plan (since 0168 off-plan reads
+  `property_form`). Two published ready-new listings get the wrong word. "Done"
+  is a row keyed on `property_form` (Off-plan / Ready (new) / Resale) with
+  Arabic twins, or `mode.buy` reworded to plain "Buy".

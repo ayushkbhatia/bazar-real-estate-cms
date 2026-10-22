@@ -487,7 +487,7 @@ longer change anything for a listing whose draft exists.
 
 | Salesforce | Website |
 |---|---|
-| `Sale_Rent__c` | `mode`: `rent`, or `buy` / `off_plan` by completion |
+| `Sale_Rent__c` | `mode`: `rent` or `buy` (off-plan is `property_form`, not a mode, since 0168) |
 | `ProjectStatus__c` | `property_form`: Resale → `resale`, Primary ready → `ready_new`, any Off-plan → `off_plan`; blank on a sale → held |
 | `Property_Type__c` | `type` + `segment`, Hotel Apartment and Commercial Villa included. "Other", or a value the website has never seen → held |
 | `Category__c` | `segment` |

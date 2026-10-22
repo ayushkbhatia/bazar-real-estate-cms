@@ -25,6 +25,7 @@ import {
   type LabelledPreferences,
 } from "@/lib/preferences";
 import { cn } from "@/lib/utils";
+import type { SearchSurface } from "@/lib/master-pages/search-headers";
 
 // T2-A — beds/baths chips. Studio (0) anchors the left side; "+" caps stay
 // at 5 (beds) and 4 (baths) to match the `lib/queries/properties.ts` `>=`
@@ -57,7 +58,7 @@ type Props = {
    * Retained so every call site keeps its existing shape; the bar no longer
    * varies by mode now that "Save search" is gone.
    */
-  mode?: "buy" | "rent" | "off_plan" | "commercial";
+  mode?: SearchSurface;
   areas: AreaOption[];
 };
 

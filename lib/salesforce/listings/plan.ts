@@ -25,7 +25,9 @@ import type { ImageRef, ListingSnapshot } from "./snapshot";
  */
 
 type PropertyType = Database["public"]["Enums"]["property_type"];
-type PropertyMode = Database["public"]["Enums"]["property_mode"];
+// Sale or rent: the CHECK from 0168 rejects any other mode, and this module
+// writes rows. Off-plan is carried on `property_form`.
+type PropertyMode = Extract<Database["public"]["Enums"]["property_mode"], "buy" | "rent">;
 type PropertyForm = Database["public"]["Enums"]["property_form"];
 type PropertySegment = Database["public"]["Enums"]["property_segment"];
 type PropertyFurnishing = Database["public"]["Enums"]["property_furnishing"];
@@ -744,7 +746,7 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
     mode = "rent";
   } else {
     form = formOf(s);
-    mode = form === "off_plan" ? "off_plan" : "buy";
+    mode = "buy";
     if (!form) {
       holds.push({
         code: "no_sale_form",
