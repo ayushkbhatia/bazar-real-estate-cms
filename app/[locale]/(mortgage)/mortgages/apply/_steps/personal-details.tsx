@@ -241,6 +241,23 @@ export function PersonalDetails() {
           ) : null}
         </fieldset>
 
+        {/* Third, after residency and employment: the budget frames the file before the contact details.
+            Optional and never checked: it gives the adviser a sense of the budget, and can't hold anyone up. */}
+        <div className="grid gap-x-4 md:grid-cols-2">
+          <TextField
+            label={t("field.propertyPrice")}
+            accessibleLabel={t("w2.propertyPrice.label", { label: t("field.propertyPrice"), prefix: t("w2.propertyPrice.prefix") })}
+            prefix={t("w2.propertyPrice.prefix")}
+            name="property-price"
+            autoComplete="off"
+            inputMode="numeric"
+            placeholder={t("w2.propertyPrice.placeholder")}
+            hint={t("w2.propertyPrice.hint")}
+            value={d.propertyPrice ?? ""}
+            onChange={(e) => set({ propertyPrice: maskPropertyPrice(e.target.value) })}
+          />
+        </div>
+
         <Divider />
 
         <div className="grid gap-x-4 gap-y-[22px] md:grid-cols-2">
@@ -321,19 +338,6 @@ export function PersonalDetails() {
             maxLength={254}
             onChange={(e) => set({ email: e.target.value })}
             onBlur={() => blur("email")}
-          />
-          {/* Optional and never checked: it gives the adviser a sense of the budget, and can't hold anyone up. */}
-          <TextField
-            label={t("field.propertyPrice")}
-            accessibleLabel={t("w2.propertyPrice.label", { label: t("field.propertyPrice"), prefix: t("w2.propertyPrice.prefix") })}
-            prefix={t("w2.propertyPrice.prefix")}
-            name="property-price"
-            autoComplete="off"
-            inputMode="numeric"
-            placeholder={t("w2.propertyPrice.placeholder")}
-            hint={t("w2.propertyPrice.hint")}
-            value={d.propertyPrice ?? ""}
-            onChange={(e) => set({ propertyPrice: maskPropertyPrice(e.target.value) })}
           />
         </div>
         <button type="submit" hidden aria-hidden tabIndex={-1} />
