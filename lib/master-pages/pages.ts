@@ -227,7 +227,7 @@ const HOME: MasterPageDef = {
         cta_label: "All locations",
         cta_href: "/areas",
         overview_name: "Abu Dhabi",
-        overview_href: "/areas",
+        overview_href: "/buy/search",
         overview_image: { media_id: null, alt: null, label: "abu dhabi" },
         cards: [],
       },

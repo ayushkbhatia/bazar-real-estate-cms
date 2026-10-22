@@ -34,7 +34,7 @@ export async function LocationBrowsing({
   ctaLabel = "All locations",
   ctaHref = "/areas",
   overviewName = "Abu Dhabi",
-  overviewHref = "/areas",
+  overviewHref = "/buy/search",
   overviewImageUrl,
   overviewImageAlt,
   overviewImageLabel,
@@ -121,7 +121,7 @@ export async function LocationBrowsing({
           link already goes where this tile goes.
         */}
         <Tile
-          href={overviewHref ?? "/areas"}
+          href={overviewHref ?? "/buy/search"}
           name={overviewName ?? "Abu Dhabi"}
           countLabel={t("cards.homesForSale", { count: total })}
           imgLabel={overviewImageLabel ?? "abu dhabi"}
