@@ -110,7 +110,7 @@ describe("buildLeadPayload", () => {
     // Both are Required as of the 23 Sept revision, so an omission is a
     // REQUIRED_FIELD_MISSING that loses the lead. No input may leave either
     // blank.
-    for (const mode of ["buy", "rent", "off_plan", "commercial"] as const) {
+    for (const mode of ["buy", "rent"] as const) {
       for (const src of ["property_page", "contact_page", "concierge"] as const) {
         const payload = buildLeadPayload(
           row({ property_mode: mode, source: src }),
@@ -131,7 +131,7 @@ describe("buildLeadPayload", () => {
       "brochure", "development_interest", "list_property",
       "property_management", "property_consultation",
     ] as const;
-    const MODES = [null, "buy", "rent", "off_plan", "commercial"] as const;
+    const MODES = [null, "buy", "rent"] as const;
     const INTENTS = [null, "buy", "sell", "rent", "invest", "manage"] as const;
 
     for (const source of SOURCES) {
@@ -263,13 +263,6 @@ describe("inquiryTypeFor", () => {
   it("reads the listing's mode when no intent was given", () => {
     expect(inquiryTypeFor(null, "buy", "contact_page")).toBe("Buy");
     expect(inquiryTypeFor(null, "rent", "contact_page")).toBe("Rent");
-    // Off-plan is a purchase — the unit is sold, it just is not built yet.
-    expect(inquiryTypeFor(null, "off_plan", "contact_page")).toBe("Buy");
-  });
-
-  it("does not guess from `commercial`, which conflates sale and lease", () => {
-    // Falls through to source/fallback rather than coin-flipping.
-    expect(inquiryTypeFor(null, "commercial", "valuation")).toBe("Sell");
   });
 
   it("recognises the seller-side forms", () => {

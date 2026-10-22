@@ -137,7 +137,7 @@ type RawRow = {
   title: string;
   short_description: string | null;
   price_aed: number | string;
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  mode: "buy" | "rent";
   type: string;
   beds: number;
   baths: number;

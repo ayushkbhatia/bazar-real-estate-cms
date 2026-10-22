@@ -9,6 +9,10 @@
  */
 import { z } from "zod";
 
+/** What the visitor asked for, in their terms. Wider than `properties.mode`
+ *  (buy/rent since 0167): off-plan and commercial stay here because a visitor
+ *  says them, and briefs persisted before 0167 carry them. Scoring maps them
+ *  onto `property_form` and `segment`. */
 export const PROPERTY_MODE_KEYS = ["buy", "rent", "off_plan", "commercial"] as const;
 
 export const briefChipSchema = z.object({

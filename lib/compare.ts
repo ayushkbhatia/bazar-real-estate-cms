@@ -183,7 +183,14 @@ function priceAndTermsGroup(
         "ppf",
         map(rows, (p) => ({ kind: "aedPerFt2", value: pricePerFt2(p) })),
       ),
-      row("mode", map(rows, (p) => msg(`mode.${p.mode}`))),
+      // Off-plan is a sale filed under its completion form since 0167; the row
+      // still names it, as it did when off-plan was a mode of its own.
+      row(
+        "mode",
+        map(rows, (p) =>
+          msg(`mode.${p.mode === "buy" && p.property_form === "off_plan" ? "off_plan" : p.mode}`),
+        ),
+      ),
       row(
         "tenure",
         map(rows, (p) => (p.tenure ? msg(`tenure.${p.tenure}`) : null)),
@@ -296,7 +303,7 @@ function investmentGroup(rows: ComparableProperty[]): AttributeGroup {
         "mortgage_eligible",
         map(rows, (p) =>
           // Off-plan: assume not mortgageable yet unless explicitly flagged.
-          p.mode === "off_plan"
+          p.property_form === "off_plan"
             ? Boolean(p.flags?.mortgage_eligible)
             : p.flags?.mortgage_eligible !== false,
         ),

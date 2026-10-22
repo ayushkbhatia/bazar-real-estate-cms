@@ -68,11 +68,9 @@ function useCardParts(link: ResolvedInternalLink): Parts {
       const mode =
         link.mode === "rent"
           ? tListing("forRent")
-          : link.mode === "off_plan"
+          : link.form === "off_plan"
             ? tListing("offPlan")
-            : link.mode === "commercial"
-              ? tType("commercial")
-              : tListing("forSale");
+            : tListing("forSale");
       const type = tType.has(link.type) ? tType(link.type) : null;
       const facts: ReactNode[] = [];
       if (link.beds != null) facts.push(tListing("bedrooms", { count: link.beds }));

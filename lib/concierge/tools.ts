@@ -41,7 +41,13 @@ export const CONCIERGE_TOOLS: AnthropicTool[] = [
     input_schema: {
       type: "object",
       properties: {
-        mode: { type: "string", enum: ["buy", "rent", "off_plan", "commercial"] },
+        mode: { type: "string", enum: ["buy", "rent"], description: "For sale (buy) or to rent." },
+        form: {
+          type: "string",
+          enum: ["off_plan", "ready_new", "resale"],
+          description: "Sale stock only: off-plan (not yet completed), ready_new (developer's first sale) or resale.",
+        },
+        segment: { type: "string", enum: ["residential", "commercial"] },
         type: { type: "string", description: "apartment, villa, penthouse, townhouse, etc." },
         beds_min: { type: "integer", minimum: 0, maximum: 50 },
         beds_max: { type: "integer", minimum: 0, maximum: 50 },
@@ -82,7 +88,7 @@ export const CONCIERGE_TOOLS: AnthropicTool[] = [
       required: ["area_slug"],
       properties: {
         area_slug: { type: "string" },
-        mode: { type: "string", enum: ["buy", "rent", "off_plan", "commercial"] },
+        mode: { type: "string", enum: ["buy", "rent"] },
       },
     },
   },
@@ -169,7 +175,7 @@ export const TOOL_HANDLERS: Record<ToolName, ToolHandler> = {
 };
 
 const SEARCH_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, type, beds, baths, built_up_ft2, amenities, flags, areas:area_id(name, slug)";
+  "id, reference, slug, title, short_description, price_aed, mode, property_form, segment, type, beds, baths, built_up_ft2, amenities, flags, areas:area_id(name, slug)";
 
 type RawSearchRow = {
   id: string;
@@ -179,6 +185,8 @@ type RawSearchRow = {
   short_description: string | null;
   price_aed: number | string;
   mode: ScorableProperty["mode"];
+  property_form: ScorableProperty["form"];
+  segment: ScorableProperty["segment"];
   type: string;
   beds: number;
   baths: number;
@@ -195,6 +203,8 @@ function rowToScorable(row: RawSearchRow): ScorableProperty {
     title: row.title,
     price_aed: Number(row.price_aed),
     mode: row.mode,
+    form: row.property_form,
+    segment: row.segment,
     type: row.type,
     beds: row.beds,
     baths: row.baths,
@@ -220,6 +230,13 @@ async function handleSearchProperties(
 
   if (typeof input.mode === "string")
     query = query.eq("mode", input.mode as ScorableProperty["mode"]);
+  if (typeof input.form === "string")
+    query = query.eq(
+      "property_form",
+      input.form as NonNullable<ScorableProperty["form"]>,
+    );
+  if (typeof input.segment === "string")
+    query = query.eq("segment", input.segment as ScorableProperty["segment"]);
   if (typeof input.type === "string")
     query = query.eq(
       "type",

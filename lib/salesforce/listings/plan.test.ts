@@ -86,7 +86,7 @@ describe("planListing — the v1.3 shapes", () => {
     const plan = planListing(toSnapshot(GUIDE_V13_PRODUCTION_SAMPLE), lookups(), NOW);
     expect(codes(plan.holds)).toEqual(["no_photos"]);
     expect(plan.fields).toMatchObject({
-      mode: "off_plan",
+      mode: "buy",
       property_form: "off_plan",
       type: "apartment",
       area_id: IDS.adgm,
@@ -165,7 +165,7 @@ describe("planListing — the v1.3 shapes", () => {
     expect(codes(plan.holds)).toContain("listing_expired");
     expect(plan.fields).toMatchObject({
       type: "villa",
-      mode: "off_plan",
+      mode: "buy",
       property_form: "off_plan",
       area_id: IDS.hudayriyat,
       developer_id: IDS.modon,

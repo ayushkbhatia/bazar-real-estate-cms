@@ -161,7 +161,7 @@ export const AREA_FIELDS = `id, slug, name, name_ar, description, description_ar
 
 export const DEVELOPMENT_FIELDS = `id, slug, name, name_ar, tagline, tagline_ar, starting_price, handover_date, developers:developer_id(name, name_ar), areas:area_id(name, name_ar), hero:hero_image_id(${MEDIA})`;
 
-export const PROPERTY_FIELDS = `id, reference, slug, title, title_ar, price_aed, mode, type, beds, baths, built_up_ft2, areas:area_id(name, name_ar), property_media(role, media:media_assets(${MEDIA}))`;
+export const PROPERTY_FIELDS = `id, reference, slug, title, title_ar, price_aed, mode, property_form, type, beds, baths, built_up_ft2, areas:area_id(name, name_ar), property_media(role, media:media_assets(${MEDIA}))`;
 
 async function loadAreas(
   client: Client,
@@ -286,6 +286,7 @@ export function shapeProperty(raw: Row, locale: Locale): ResolvedPropertyLink {
     name,
     area: str(join(row.areas, locale)?.name),
     mode: row.mode as ResolvedPropertyLink["mode"],
+    form: (row.property_form ?? null) as ResolvedPropertyLink["form"],
     type: row.type as ResolvedPropertyLink["type"],
     priceAed: num(row.price_aed),
     beds: num(row.beds),

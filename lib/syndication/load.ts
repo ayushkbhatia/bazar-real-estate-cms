@@ -104,7 +104,8 @@ type RawRow = {
   title: string;
   description: string | null;
   type: string;
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  /** Sale or rent — the only modes a row can hold since 0167. */
+  mode: "buy" | "rent";
   beds: number;
   baths: number;
   built_up_ft2: number | null;

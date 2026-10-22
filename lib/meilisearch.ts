@@ -25,7 +25,7 @@ export type IndexedProperty = {
   title: string;
   short_description: string | null;
   price_aed: number;
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  mode: "buy" | "rent";
   type: string;
   beds: number;
   baths: number;

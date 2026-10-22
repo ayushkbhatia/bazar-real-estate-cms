@@ -384,13 +384,15 @@ describe("PROPERTY_FORMS", () => {
 });
 
 describe("isSaleMode", () => {
-  it("treats buy and commercial as sale modes", () => {
+  it("treats buy as the sale mode", () => {
     expect(isSaleMode("buy")).toBe(true);
-    expect(isSaleMode("commercial")).toBe(true);
   });
 
-  it("counts off_plan as a sale mode — buying a plan is still buying", () => {
-    expect(isSaleMode("off_plan")).toBe(true);
+  it("no longer treats the retired enum labels as modes (0167)", () => {
+    // Off-plan is a property_form and commercial a segment; the CHECK keeps
+    // both off `mode`, so neither can reach a picker.
+    expect(isSaleMode("off_plan")).toBe(false);
+    expect(isSaleMode("commercial")).toBe(false);
   });
 
   it("excludes rent, which the DB check keeps form-free", () => {
@@ -425,15 +427,11 @@ describe("toSelectableForm", () => {
 describe("formForMode", () => {
   it("keeps the form on sale modes", () => {
     expect(formForMode("buy", "resale")).toBe("resale");
-    expect(formForMode("commercial", "ready_new")).toBe("ready_new");
+    expect(formForMode("buy", "off_plan")).toBe("off_plan");
   });
 
   it("clears the form when the mode moves to rent", () => {
     expect(formForMode("rent", "resale")).toBeNull();
-  });
-
-  it("keeps the form on off_plan, which is a sale mode now", () => {
-    expect(formForMode("off_plan", "off_plan")).toBe("off_plan");
   });
 
   it("stays null when there was no form to begin with", () => {
@@ -452,13 +450,15 @@ describe("property_form validation", () => {
     expect(res.success).toBe(true);
   });
 
-  it("accepts a form on a commercial listing", () => {
-    const res = propertyOverviewSchema.safeParse({
-      ...BASE_OVERVIEW,
-      mode: "commercial",
-      property_form: "resale",
-    });
-    expect(res.success).toBe(true);
+  it("rejects the retired modes (0167)", () => {
+    for (const mode of ["off_plan", "commercial"]) {
+      const res = propertyOverviewSchema.safeParse({
+        ...BASE_OVERVIEW,
+        mode,
+        property_form: "resale",
+      });
+      expect(res.success, mode).toBe(false);
+    }
   });
 
   it("rejects a form on a rent listing, flagged on property_form", () => {

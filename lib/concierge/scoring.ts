@@ -14,7 +14,10 @@ export type ScorableProperty = {
   reference: string;
   title: string;
   price_aed: number;
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  mode: "buy" | "rent";
+  /** Off-plan is a completion form of a sale since 0167, not a mode. */
+  form: "off_plan" | "ready_new" | "resale" | null;
+  segment: "residential" | "commercial";
   type: string;
   beds: number;
   baths: number;
@@ -174,7 +177,16 @@ export function scoreProperty(
 
   // Mode
   if (brief.mode) {
-    const status: FactorStatus = property.mode === brief.mode ? "match" : "miss";
+    // The brief keeps the visitor's own words — "off-plan", "commercial" —
+    // which since 0167 are a sale's completion form and the building's
+    // segment, not values of the listing's mode.
+    const matches =
+      brief.mode === "off_plan"
+        ? property.mode === "buy" && property.form === "off_plan"
+        : brief.mode === "commercial"
+          ? property.segment === "commercial"
+          : property.mode === brief.mode;
+    const status: FactorStatus = matches ? "match" : "miss";
     factors.push({
       label: status === "match" ? `For ${brief.mode}` : `For ${property.mode}, brief is ${brief.mode}`,
       status,

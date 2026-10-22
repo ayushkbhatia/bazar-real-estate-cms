@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
+import type { PropertyMode } from "@/lib/schemas/property";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
@@ -26,7 +27,7 @@ const LISTING_FIELDS =
   "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 const DETAIL_FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, name_ar, slug), developments:development_id(name, name_ar, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, name_ar, slug), developments:development_id(name, name_ar, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: Database["public"]["Enums"]["property_media_role"];
@@ -190,51 +191,14 @@ async function resolveAreaId(
   return data?.id ?? null;
 }
 
-/**
- * The row values a search surface means when it asks for one `mode`.
- *
- * "Buy" is an umbrella, not a row value. Someone browsing for sale wants
- * ready, resale *and* off-plan — a plan bought off-plan is still a purchase.
- * `properties.mode` records the narrower fact, so the buy surfaces have to
- * expand to both. Off-plan keeps its own route for visitors who specifically
- * want pre-handover stock; buy is the superset, not a competitor.
- *
- * This is not academic: every published row in the catalogue is `off_plan`
- * today, so `.eq('mode', 'buy')` renders /buy/search and the home page's
- * featured rail empty against a perfectly healthy catalogue.
- *
- * Off-plan is the same umbrella, at the client's request (Oct 2026): the
- * catalogue's `mode` split between `buy` and `off_plan` is not one the
- * client keeps consistently, so /off-plan/search narrowed to a fraction of
- * the sale stock /buy/search showed (12 apartments against 65). Both routes
- * now list the same rows; each keeps its own heading.
- *
- * Deliberately not `neq('rent')` — that is what the area guide's sale band
- * uses (`lib/queries/area-inventory.ts`), and it sweeps in `commercial`,
- * which has its own mode tab on the search surfaces.
- *
- * `form` still narrows on top: /buy/ready and /buy/resale filter
- * `property_form`, which off-plan rows do not carry, so they stay exact.
- */
-const MODE_UMBRELLA: Partial<Record<Mode, readonly Mode[]>> = {
-  buy: ["buy", "off_plan"],
-  off_plan: ["buy", "off_plan"],
-};
-
-/** Apply a mode filter, expanding the umbrella modes to the rows they cover. */
-function filterByMode<
-  T extends {
-    eq: (c: string, v: string) => T;
-    in: (c: string, v: readonly string[]) => T;
-  },
->(query: T, mode: Mode): T {
-  const umbrella = MODE_UMBRELLA[mode];
-  return umbrella ? query.in("mode", umbrella) : query.eq("mode", mode);
-}
-
 /** List published listings for the public marketplace. */
 export async function listPublishedProperties(opts: {
-  mode?: Mode;
+  /**
+   * Sale or rent. Off-plan stock is sale stock filed under its completion
+   * form (0167), so a plain `eq` is the whole story — the `buy` → `in
+   * ('buy','off_plan')` umbrella this used to expand is gone with the value.
+   */
+  mode?: PropertyMode;
   /** Narrows sale stock to one completion form — drives /buy/ready and /buy/resale. */
   form?: Form;
   filters?: PropertyFilters;
@@ -250,7 +214,7 @@ export async function listPublishedProperties(opts: {
     .eq("status", "published")
     .is("deleted_at", null);
 
-  if (opts.mode) query = filterByMode(query, opts.mode);
+  if (opts.mode) query = query.eq("mode", opts.mode);
   if (opts.form) query = query.eq("property_form", opts.form);
 
   const filters = opts.filters;
@@ -401,17 +365,13 @@ export async function getSimilarProperties(
 ): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
-  // Same umbrella as the search surfaces: "similar" to a sale listing means
-  // other sale stock, off-plan included.
-  let query = filterByMode(
-    supabase
-      .from("properties")
-      .select(LISTING_FIELDS)
-      .neq("id", excludeId)
-      .eq("status", "published")
-      .is("deleted_at", null),
-    mode,
-  )
+  let query = supabase
+    .from("properties")
+    .select(LISTING_FIELDS)
+    .neq("id", excludeId)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .eq("mode", mode)
     .order("published_at", { ascending: false })
     .limit(4);
   if (areaSlug) {

@@ -4,13 +4,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 /**
- * "Buy" is an umbrella over ready, resale and off-plan.
+ * Sale or rent, exactly.
  *
- * Every published row in the catalogue is `off_plan`, so an exact
- * `.eq('mode', 'buy')` renders /buy/search — and the home page's featured
- * rail — empty against a healthy catalogue. That is the regression this
- * pins, and it is invisible to any test that only counts returned rows:
- * the stub returns whatever it is given regardless of filter. So these
+ * Until 0167 `buy` was an umbrella the query layer expanded to
+ * `in ('buy','off_plan')`, because off-plan stock was filed under its own
+ * mode. 0167 re-filed those rows as `buy` (off-plan lives on `property_form`)
+ * and a CHECK holds the column to buy/rent, so the filter is a plain `eq`.
+ * The stub returns whatever it is given regardless of filter, so these
  * assert on the *filter calls the query builder receives*.
  */
 
@@ -62,19 +62,8 @@ beforeEach(() => {
 });
 
 describe("listPublishedProperties mode filter", () => {
-  it("expands buy to cover off-plan stock", async () => {
-    await listPublishedProperties({ mode: "buy" });
-    expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
-  });
-
-  it("expands off-plan to the same sale stock as buy", async () => {
-    // /off-plan/search and /buy/search list the same rows (client, Oct 2026).
-    await listPublishedProperties({ mode: "off_plan" });
-    expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
-  });
-
-  it("leaves the narrow modes exact", async () => {
-    for (const mode of ["rent", "commercial"] as const) {
+  it("filters sale and rent exactly", async () => {
+    for (const mode of ["buy", "rent"] as const) {
       calls = [];
       await listPublishedProperties({ mode });
       expect(modeFilter()).toEqual({ method: "eq", value: mode });
@@ -86,26 +75,25 @@ describe("listPublishedProperties mode filter", () => {
     expect(modeFilter()).toBeNull();
   });
 
-  it("still narrows by completion form on top of the umbrella", async () => {
-    // /buy/ready and /buy/resale stay exact: off-plan rows carry no
-    // `property_form`, so widening the mode cannot leak them in.
-    await listPublishedProperties({ mode: "buy", form: "ready_new" });
-    expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
+  it("narrows by completion form on top of the mode", async () => {
+    // /buy/ready, /buy/resale and /buy/search?form=off_plan.
+    await listPublishedProperties({ mode: "buy", form: "off_plan" });
+    expect(modeFilter()).toEqual({ method: "eq", value: "buy" });
     expect(
       calls.some(
         (c) =>
           c.method === "eq" &&
           c.args[0] === "property_form" &&
-          c.args[1] === "ready_new",
+          c.args[1] === "off_plan",
       ),
     ).toBe(true);
   });
 });
 
 describe("getSimilarProperties mode filter", () => {
-  it("uses the same umbrella, so a sale listing can suggest off-plan", async () => {
+  it("keeps a sale listing's suggestions to sale stock", async () => {
     await getSimilarProperties("id-1", null, "buy");
-    expect(modeFilter()).toEqual({ method: "in", value: ["buy", "off_plan"] });
+    expect(modeFilter()).toEqual({ method: "eq", value: "buy" });
   });
 
   it("keeps rent to rent", async () => {

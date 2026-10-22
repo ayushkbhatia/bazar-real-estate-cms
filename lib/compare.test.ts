@@ -17,6 +17,7 @@ function p(
     title: "Mamsha 3-bed",
     price_aed: 4_200_000,
     mode: "buy",
+    property_form: "resale",
     status: "published",
     type: "apartment",
     beds: 3,

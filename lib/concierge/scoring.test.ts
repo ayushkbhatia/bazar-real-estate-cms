@@ -13,6 +13,8 @@ function makeProperty(over: Partial<ScorableProperty>): ScorableProperty {
     title: "Sample villa",
     price_aed: 5_000_000,
     mode: "buy",
+    form: "resale",
+    segment: "residential",
     type: "villa",
     beds: 4,
     baths: 4,
@@ -26,6 +28,21 @@ function makeProperty(over: Partial<ScorableProperty>): ScorableProperty {
 }
 
 describe("scoreProperty", () => {
+  it("matches an off-plan brief on the sale's completion form (0167)", () => {
+    const brief: ConciergeBrief = { mode: "off_plan", chips: [] };
+    const offPlan = scoreProperty(makeProperty({ form: "off_plan" }), brief);
+    expect(offPlan.factors[0].status).toBe("match");
+    const resale = scoreProperty(makeProperty({ form: "resale" }), brief);
+    expect(resale.factors[0].status).toBe("miss");
+  });
+
+  it("matches a commercial brief on the segment, sale or rent", () => {
+    const brief: ConciergeBrief = { mode: "commercial", chips: [] };
+    const office = makeProperty({ mode: "rent", form: null, segment: "commercial" });
+    expect(scoreProperty(office, brief).factors[0].status).toBe("match");
+    expect(scoreProperty(makeProperty({}), brief).factors[0].status).toBe("miss");
+  });
+
   it("returns 50 when the brief is empty (no factors)", () => {
     const p = makeProperty({});
     const result = scoreProperty(p, { chips: [] });

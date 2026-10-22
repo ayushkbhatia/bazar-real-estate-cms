@@ -81,6 +81,14 @@ import type {
 import { area, text } from "./fields";
 import type { FieldDef, MasterPageDef, MasterPageKey, SectionDef } from "./types";
 
+/**
+ * Which search surface a header belongs to. Not a row value: since 0167 a
+ * listing's `mode` is only buy or rent, but /off-plan/search keeps a heading
+ * of its own and so does the commercial search, so the surfaces are named
+ * here rather than borrowed from the column.
+ */
+export type SearchSurface = PropertyMode | "off_plan" | "commercial";
+
 /** Keys are storage. Renaming one orphans its document — add, never rename. */
 export type SearchHeaderKey =
   | "buy"
@@ -101,7 +109,7 @@ export type SearchHeaderDef = {
    * already derives. `form` wins over `mode` there, so the three form facets
    * carry both and the four mode facets carry only a mode.
    */
-  match: { mode: PropertyMode; form?: PropertyForm };
+  match: { mode: SearchSurface; form?: PropertyForm };
   /** Where an editor goes to see it — the "View page" link. */
   publicPath: string;
   /**
@@ -439,7 +447,7 @@ export function isSearchHeaderKey(key: string): key is SearchHeaderKey {
  * so a new `property_form` value renders the umbrella copy rather than nothing.
  */
 export function searchHeaderFor(
-  mode: PropertyMode,
+  mode: SearchSurface,
   form?: PropertyForm | null,
   /**
    * The segmented control above the results, when one is applied.

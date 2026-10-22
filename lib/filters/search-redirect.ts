@@ -73,9 +73,9 @@ export function searchRedirectTarget(
  * asking the visitor to answer one question with the other question's answers.
  * The segment is now a filter that works on every search route.
  *
- * The route is retired rather than deleted: `mode = 'commercial'` still exists
- * in the database and in `PROPERTY_MODES`, and the `/commercial` marketing
- * landing above it is untouched. This is the one URL that has to move, and
+ * The route is retired rather than deleted: old links to it still exist, and
+ * the `/commercial` marketing landing above it is untouched (the mode value
+ * itself is gone since 0167). This is the one URL that has to move, and
  * every existing filter on it survives the move.
  *
  * 307, not 308: it is the same posture as the other redirects in this module —

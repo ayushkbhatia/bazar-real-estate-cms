@@ -40,6 +40,7 @@ const villa: Record_ = {
   reference: "BAZ-AD-01445",
   area: "Yas Island",
   mode: "buy",
+  form: "resale",
   type: "villa",
   priceAed: 13_300_000,
   beds: 5,
@@ -47,7 +48,7 @@ const villa: Record_ = {
   builtUpFt2: 5942,
   image: { url: "https://project-one.supabase.co/storage/v1/object/public/media/listings/a.jpg", alt: "Pool" },
 };
-const flat: Record_ = { ...villa, id: P2, name: "Marina flat", mode: "rent", type: "apartment", priceAed: 180_000, beds: 0, image: null };
+const flat: Record_ = { ...villa, id: P2, name: "Marina flat", mode: "rent", form: null, type: "apartment", priceAed: 180_000, beds: 0, image: null };
 
 const lookupOf = (records: Record_[], gone: string[] = []): Lookup => ({
   get(kind, id) {
