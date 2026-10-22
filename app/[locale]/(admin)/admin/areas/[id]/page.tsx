@@ -4,8 +4,11 @@ import { ChevronRight, ExternalLink, LayoutList } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import type { AreaKind } from "@/lib/schemas/area";
+import { getStaffRole } from "@/lib/auth";
+import { getAreaUsage } from "@/lib/queries/area-usage";
+import { AREA_DELETE_ROLES, type AreaKind } from "@/lib/schemas/area";
 import { AreaRecordForm, type AreaRecord } from "./_form";
+import { DeleteAreaCard } from "./_delete-card";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +38,17 @@ async function fetchParents() {
 
 export default async function AreaRecordPage({ params }: PageProps) {
   const { id } = await params;
-  const [area, parents] = await Promise.all([fetchArea(id), fetchParents()]);
+  const [area, parents, role] = await Promise.all([
+    fetchArea(id),
+    fetchParents(),
+    getStaffRole(),
+  ]);
   if (!area) notFound();
+  const usage = await getAreaUsage({ id: area.id, slug: area.slug });
+  // The action re-checks; this only stops offering a button that would 404.
+  const canDelete =
+    role !== null &&
+    (AREA_DELETE_ROLES as readonly string[]).includes(role);
 
   const seo = (area.seo_meta as Record<string, unknown> | null) ?? {};
   const geo = (area.geo as { lat?: unknown; lng?: unknown } | null) ?? {};
@@ -99,8 +111,15 @@ export default async function AreaRecordPage({ params }: PageProps) {
         </span>
       }
     >
-      <div className="max-w-[860px]">
+      <div className="max-w-[860px] flex flex-col gap-6">
         <AreaRecordForm initial={initial} parents={parents} />
+        <DeleteAreaCard
+          areaId={area.id}
+          name={area.name}
+          slug={area.slug}
+          usage={usage}
+          canDelete={canDelete}
+        />
       </div>
     </CmsShell>
   );

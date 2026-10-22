@@ -30,6 +30,9 @@ export type AreaKind = (typeof AREA_KINDS)[number];
  */
 export const AREA_EDIT_ROLES = ["admin", "editor", "marketing"] as const;
 
+/** Who may delete one — narrower, as with projects: marketing edits, doesn't remove. */
+export const AREA_DELETE_ROLES = ["admin", "editor"] as const;
+
 export const AREA_KIND_LABELS: Record<AreaKind, string> = {
   emirate: "Emirate",
   area: "Area",
