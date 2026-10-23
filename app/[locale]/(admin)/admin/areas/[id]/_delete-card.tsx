@@ -18,6 +18,7 @@ import {
 import {
   areaIsDeletable,
   describeAreaBlockers,
+  describeUnpublished,
   type AreaUsage,
   type AreaUsageGroup,
 } from "@/lib/area-usage";
@@ -26,11 +27,14 @@ import { deleteArea } from "../../pages/sub/area/_record-actions";
 /**
  * Delete an area, permanently.
  *
- * Offered only once nothing sits in it. A listing, project or child area that
- * points here is named, with a link to its editor, and the button stays
- * disabled until each has been moved — the database refuses the delete in any
- * case (migration 0167), so this is about saying which records, not about
- * enforcing it.
+ * Offered only once nothing live sits in it. A published listing, published
+ * project or child area that points here is named, with a link to its editor,
+ * and the button stays disabled until each has been moved — the database
+ * refuses the delete in any case (migrations 0167, 0170), so this is about
+ * saying which records, not about enforcing it.
+ *
+ * Unpublished listings and projects don't block. They are named too, as a
+ * warning: the delete leaves them without an area.
  *
  * When the area is free, the delete still asks: a dialog that spells out what
  * goes with it and wants the name typed back.
@@ -55,6 +59,7 @@ export function DeleteAreaCard({
 
   const deletable = areaIsDeletable(usage);
   const blockers = describeAreaBlockers(usage);
+  const unpublished = describeUnpublished(usage);
   const matches = typed.trim() === name;
 
   function close(next: boolean) {
@@ -96,12 +101,30 @@ export function DeleteAreaCard({
                 This area can&apos;t be deleted while it has {blockers}. Move
                 each one to another area first.
               </p>
-              <UsageList title="Listings" group={usage.properties} />
-              <UsageList title="Projects" group={usage.developments} />
+              <UsageList title="Published listings" group={usage.properties} />
+              <UsageList title="Published projects" group={usage.developments} />
               <UsageList title="Areas inside it" group={usage.children} />
             </div>
           ) : (
             <div className="mt-3">
+              {unpublished ? (
+                <div className="mb-3 rounded border border-bz-border bg-bz-bg px-3 py-2 text-[11.5px] text-bz-ink-2">
+                  <p>
+                    It still holds {unpublished}. None is on the site, so they
+                    don&apos;t stop the delete — but they&apos;ll be left
+                    without an area, and need one before they&apos;re
+                    published.
+                  </p>
+                  <UsageList
+                    title="Unpublished listings"
+                    group={usage.unpublished.properties}
+                  />
+                  <UsageList
+                    title="Unpublished projects"
+                    group={usage.unpublished.developments}
+                  />
+                </div>
+              ) : null}
               <Button
                 type="button"
                 size="sm"
@@ -129,8 +152,11 @@ export function DeleteAreaCard({
             <DialogDescription>
               Are you sure? The area and its guide page at{" "}
               <span className="mono">/areas/{slug}</span>, with its copy and
-              imagery, are removed for good. No listing, project or area sits
-              in it.
+              imagery, are removed for good. No published listing, published
+              project or area sits in it.
+              {unpublished
+                ? ` Its ${unpublished} will be left without an area.`
+                : ""}
               {usage.menuLinks > 0
                 ? ` ${usage.menuLinks} menu or footer ${usage.menuLinks === 1 ? "link points" : "links point"} at its page and will lead nowhere until changed.`
                 : ""}

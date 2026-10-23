@@ -13,8 +13,11 @@ import { drainLocationEvents } from "@/lib/salesforce/locations";
 import { reportError } from "@/lib/observability";
 import { slugify } from "@/lib/slug";
 import { subPageSlug } from "@/lib/master-pages/subpages";
-import { describeAreaBlockers } from "@/lib/area-usage";
-import { getAreaUsage } from "@/lib/queries/area-usage";
+import { describeAreaBlockers, describeUnpublished } from "@/lib/area-usage";
+import {
+  getAreaUsage,
+  getUnpublishedInArea,
+} from "@/lib/queries/area-usage";
 import {
   areaCreateSchema,
   areaEditSchema,
@@ -322,12 +325,15 @@ export type DeleteAreaResult =
  * Permanently delete an area — its record, its guide content and its page
  * document.
  *
- * Refused while any listing, project or child area still sits in it: those
- * links used to be ON DELETE SET NULL, so a delete quietly dropped the records
- * out of every area filter and breadcrumb. Migration 0167 makes the database
- * refuse it as well; this check runs first so the editor is told which records
- * to move, and a 23503 from the trigger (a listing added in the meantime) is
- * passed back in its own words.
+ * Refused while any published listing, published project or child area still
+ * sits in it: those links used to be ON DELETE SET NULL, so a delete quietly
+ * dropped the records out of every area filter and breadcrumb. Migrations 0167
+ * and 0170 make the database refuse it as well; this check runs first so the
+ * editor is told which records to move, and a 23503 from the trigger (a
+ * listing published in the meantime) is passed back in its own words.
+ *
+ * Unpublished listings and projects don't hold the area. The trigger detaches
+ * them in the same transaction; their ids go into the audit entry.
  */
 export async function deleteArea(
   id: string,
@@ -347,9 +353,8 @@ export async function deleteArea(
   if (readError) return { status: "error", message: readError.message };
   if (!record) return { status: "error", message: "Area not found." };
 
-  const blockers = describeAreaBlockers(
-    await getAreaUsage({ id: record.id, slug: record.slug }),
-  );
+  const usage = await getAreaUsage({ id: record.id, slug: record.slug });
+  const blockers = describeAreaBlockers(usage);
   if (blockers)
     return {
       status: "error",
@@ -361,6 +366,8 @@ export async function deleteArea(
       status: "error",
       message: "The name you typed doesn't match, so nothing was deleted.",
     };
+
+  const detached = await getUnpublishedInArea(record.id);
 
   const { data: deleted, error } = await supabase
     .from("areas")
@@ -393,6 +400,8 @@ export async function deleteArea(
       slug: record.slug,
       kind: record.kind,
       parent_id: record.parent_id,
+      detached_properties: detached.properties,
+      detached_developments: detached.developments,
     },
     after: null,
   });
@@ -405,11 +414,20 @@ export async function deleteArea(
   // and renames only. 0168 records the delete as a held event for whoever
   // retires the value there.
   const inSalesforce = record.kind === "area" || record.kind === "sub_community";
+  const unpublished = describeUnpublished(usage);
   return {
     status: "ok",
-    message: inSalesforce
-      ? `Deleted "${record.name}". Salesforce still lists it as an area until it is removed there.`
-      : `Deleted "${record.name}".`,
+    message: [
+      `Deleted "${record.name}".`,
+      unpublished
+        ? `Its ${unpublished} ${usage.unpublished.properties.count + usage.unpublished.developments.count === 1 ? "has" : "have"} no area now.`
+        : null,
+      inSalesforce
+        ? "Salesforce still lists it as an area until it is removed there."
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" "),
   };
 }
 
