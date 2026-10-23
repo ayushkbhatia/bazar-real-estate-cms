@@ -41,7 +41,25 @@ const inUse: AreaUsage = {
     sample: [{ id: "d1", label: "Nawayef", href: "/admin/developments/d1" }],
   },
   children: { count: 0, sample: [] },
+  unpublished: EMPTY_AREA_USAGE.unpublished,
   menuLinks: 0,
+};
+
+const draftsOnly: AreaUsage = {
+  ...EMPTY_AREA_USAGE,
+  unpublished: {
+    properties: {
+      count: 2,
+      sample: [
+        { id: "p2", label: "Draft villa · BZ-102", href: "/admin/properties/p2" },
+        { id: "p3", label: "Archived flat · BZ-103", href: "/admin/properties/p3" },
+      ],
+    },
+    developments: {
+      count: 1,
+      sample: [{ id: "d2", label: "Unlaunched", href: "/admin/developments/d2" }],
+    },
+  },
 };
 
 beforeEach(() => {
@@ -50,11 +68,13 @@ beforeEach(() => {
 });
 
 describe("DeleteAreaCard", () => {
-  it("refuses while listings or projects sit in the area, and names them", () => {
+  it("refuses while published listings or projects sit in the area, and names them", () => {
     setup({ usage: inUse });
     expect(screen.queryByRole("button", { name: /Delete area/ })).toBeNull();
     expect(
-      screen.getByText(/can't be deleted while it has 7 listings and 1 project/),
+      screen.getByText(
+        /can't be deleted while it has 7 published listings and 1 published project/,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Sea-view villa · BZ-101" }),
@@ -65,6 +85,25 @@ describe("DeleteAreaCard", () => {
     );
     // Seven listings, one shown: the rest are counted, not dropped.
     expect(screen.getByText("and 6 more")).toBeInTheDocument();
+  });
+
+  it("lets unpublished listings and projects through, naming what loses its area", () => {
+    setup({ usage: draftsOnly });
+    expect(screen.getByRole("button", { name: /Delete area/ })).toBeEnabled();
+    expect(
+      screen.getByText(/still holds 2 unpublished listings and 1 unpublished project/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Draft villa · BZ-102" }),
+    ).toHaveAttribute("href", "/admin/properties/p2");
+    expect(screen.getByRole("link", { name: "Unlaunched" })).toHaveAttribute(
+      "href",
+      "/admin/developments/d2",
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Delete area/ }));
+    expect(screen.getByRole("dialog")).toHaveTextContent(
+      /2 unpublished listings and 1 unpublished project will be left without an area/,
+    );
   });
 
   it("refuses while another area sits inside it", () => {
