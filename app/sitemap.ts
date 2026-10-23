@@ -4,7 +4,8 @@ import { isSupabaseConfigured, env } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { developmentUrl } from "@/lib/queries/development-utils";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { DEFAULT_LOCALE, LOCALES, localeUrl } from "@/lib/i18n/locales";
+import { sitemapAlternates } from "@/lib/i18n/metadata";
 import { listDevelopers } from "@/lib/queries/developers-extras";
 import { listAgents } from "@/lib/queries/agents";
 import { listPublishedPageSlugs } from "@/lib/queries/pages";
@@ -168,8 +169,6 @@ const STATIC_ROUTES: {
  *                       until the params are filtered by real DLD rows.
  *   /qr, /status, /forgot-password, /data-deleted, /newsletter/*, /sso, /auth
  *                     — utility surfaces, noindex or private.
- *   /ar/*             — the whole Arabic tree is disallowed in robots.ts
- *                       while it is under review.
  */
 
 /**
@@ -194,8 +193,29 @@ function siteUrl(): string {
   );
 }
 
+/**
+ * Every URL below, once per served locale.
+ *
+ * The list is built from English paths and each one is emitted for every
+ * locale in `LOCALES`, so `/buy` and `/ar/buy` are always advertised as a
+ * pair, each naming the other through `hreflang` alternates. Deriving the
+ * Arabic twin here, rather than listing it, means a new English route can
+ * never be advertised without its translation.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
+  return (await englishEntries(base)).flatMap((entry) => {
+    const path = entry.url.slice(base.length) || "/";
+    const alternates = sitemapAlternates(path);
+    return LOCALES.map((locale) => ({
+      ...entry,
+      url: `${base}${localeUrl(path, locale)}`,
+      alternates,
+    }));
+  });
+}
+
+async function englishEntries(base: string): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({

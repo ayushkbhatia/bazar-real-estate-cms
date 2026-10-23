@@ -6,7 +6,7 @@ import robots from "./robots";
 /**
  * A robots.txt `Disallow` is a PREFIX, not a path segment.
  *
- * `Disallow: /ar`, written to hide the Arabic tree while it is under review,
+ * `Disallow: /ar`, written to hide the Arabic tree while it was under review,
  * also matched `/areas`. Under RFC 9309 the longest matching rule wins, so it
  * beat the `Allow: /` beside it and took the whole area-guide tree out of
  * Google's index — `/areas` and all nineteen `/areas/<slug>` pages, none of
@@ -15,9 +15,9 @@ import robots from "./robots";
  *
  * The rule is three characters long, which is the whole problem: the shorter
  * a disallow is, the more of the site it can silently swallow. This test
- * walks the real public route tree and asserts that nothing outside the
- * Arabic locale is blocked, so the next short prefix is caught here rather
- * than in Search Console six weeks later.
+ * walks the real public route tree, in both locales, and asserts that none
+ * of it is blocked, so the next short prefix is caught here rather than in
+ * Search Console six weeks later.
  */
 
 /** RFC 9309 §2.2.2: longest matching rule wins; a tie goes to Allow. */
@@ -88,10 +88,11 @@ describe("robots.txt does not block the public site", () => {
     expect(blocked).toEqual([]);
   });
 
-  it("still hides the Arabic tree, which is what the /ar rules are for", () => {
-    for (const p of ["/ar", "/ar/", "/ar/buy", "/ar/areas/saadiyat-island"]) {
-      expect(isAllowed(rules, p), `${p} should be disallowed`).toBe(false);
-    }
+  it("allows every public route in Arabic too", () => {
+    const blocked = ["/ar", ...publicRoutePaths().map((p) => `/ar${p}`)].filter(
+      (p) => !isAllowed(rules, p),
+    );
+    expect(blocked).toEqual([]);
   });
 
   it("still hides the CMS, accounts and the API", () => {

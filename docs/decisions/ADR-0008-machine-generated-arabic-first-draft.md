@@ -117,6 +117,9 @@ it and `robots.ts` disallows `/ar`. Removing those two is the launch, and it is
 a separate decision from making the pages exist — deliberately, because an
 indexed URL is far harder to withdraw than a deployed one.
 
+**Launched 23 Oct 2026.** Both are gone, and `app/sitemap.ts` now emits every
+URL in both locales with `hreflang` alternates. `/ar` is indexed like English.
+
 ## Consequences
 
 **The client reviews prose, not blanks.** That is the entire point, and it is

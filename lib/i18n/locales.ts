@@ -13,11 +13,10 @@
  *   LOCALES      the locales actually served right now. Gates routing, the
  *                sitemap, `generateStaticParams`, and the navbar toggle.
  *
- * Arabic is now served. It is NOT indexed: `app/[locale]/layout.tsx` emits
- * `robots: noindex` for it and `robots.ts` disallows `/ar`, so the client can
- * review the whole site in Arabic without a single URL entering a search
- * index. Removing those two is the actual launch, and it is deliberately a
- * separate decision from making the pages exist.
+ * Arabic is served and, since 23 Oct 2026, indexed: `robots.ts` no longer
+ * disallows `/ar`, the layout no longer emits `noindex` for it, and the
+ * sitemap advertises every `/ar` twin. Until then the pages were served but
+ * hidden, so the client could review the whole site in Arabic first.
  *
  * This split is also the kill switch: once `/ar` is indexed, un-shipping it is
  * a 410-and-Search-Console exercise rather than a flag flip, so the flag has to
@@ -38,14 +37,11 @@ export const DEFAULT_LOCALE = "en" satisfies Locale;
  * was not updated when the flip happened, so it read as "not yet switched on"
  * directly above a list containing "ar".
  *
- * What the flip did NOT do is make Arabic public in the search sense: the
- * routes serve, but `app/[locale]/layout.tsx` still emits
- * `robots: { index: false, follow: false }` for `ar`, `app/robots.ts` still
- * carries `Disallow: /ar`, and `app/sitemap.ts` lists no `/ar` URL. That is
- * deliberate — the Arabic corpus is a machine first draft the client is still
- * reviewing (ADR-0008), and un-indexing is a 410-and-Search-Console exercise
- * rather than a revert. Removing the noindex is the remaining decision, and it
- * is a separate one from this list.
+ * Serving and indexing were two decisions. The flip here served Arabic;
+ * indexing it came later (ADR-0008 §7), by removing the robots.txt rule, the
+ * layout's `noindex` and the sitemap's omission. Taking `ar` back out of this
+ * list now would 404 indexed URLs — un-shipping is a 410-and-Search-Console
+ * exercise, not a revert.
  *
  * Everything downstream loops over this list, so the flip is one line. It was
  * exercised locally against a full build before shipping: 234 /ar/* routes
