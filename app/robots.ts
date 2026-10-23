@@ -12,29 +12,20 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         /*
-         * The Arabic tree is disallowed while it is under review.
+         * Arabic is indexed like English (launched 23 Oct 2026). Until then
+         * this list carried `/ar/` and `/ar$` to hide the machine-drafted
+         * Arabic tree while the client reviewed it (ADR-0008).
          *
-         * The pages carry `robots: noindex` too. Both, because they fail
-         * differently: a `noindex` meta tag requires the crawler to fetch and
-         * parse the page to learn it, and this is a whole locale tree of
-         * machine-generated copy that no human has read yet. Removing the two
-         * `/ar` lines is the Arabic launch.
+         * A Disallow is a PREFIX, not a path segment. The first version of
+         * that rule was a bare `/ar`, which also matched `/areas` — and under
+         * RFC 9309 the longest matching rule wins, so it beat the `Allow: /`
+         * above and took the whole area-guide tree out of Google's index.
          *
-         * They are written `/ar/` and `/ar$` rather than `/ar`, because a
-         * Disallow is a PREFIX, not a path segment. A bare `/ar` also matches
-         * `/areas` — and under RFC 9309 the longest matching rule wins, so it
-         * beat the `Allow: /` above and took the whole area-guide tree out of
-         * Google's index: /areas and all nineteen /areas/<slug> pages, none of
-         * which carry noindex and all of which the sitemap advertises.
-         *
-         * `/ar/` covers the tree; `/ar$` end-anchors the locale root, which is
-         * a real 200 page (`/ar/` 308s to it). Neither matches `/areas`.
-         *
-         * The other three are prefixes on purpose and collide with nothing:
+         * The three below are prefixes on purpose and collide with nothing:
          * no public route begins with `/admin`, `/account` or `/api`. Check
-         * before adding a short one.
+         * before adding a short one; robots.test.ts walks the route tree.
          */
-        disallow: ["/admin", "/account", "/api", "/ar/", "/ar$"],
+        disallow: ["/admin", "/account", "/api"],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

@@ -83,23 +83,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  /*
-   * Arabic is served but not indexed.
-   *
-   * The pages exist so the client can review them; they are not ready to be a
-   * search result. Those are different decisions and this keeps them separate
-   * — 2,237 strings have been generated and nobody has read them yet, and an
-   * indexed URL is far harder to take back than a deployed one (once /ar is in
-   * an index, un-shipping is a 410-and-Search-Console exercise rather than a
-   * flag flip, which is the reason `LOCALES` exists as its own list).
-   *
-   * Removing this and the `/ar` line in `robots.ts` is the launch.
-   *
-   * `params` is a route param, not a dynamic API, so reading it here does not
-   * take the route off prerendering — `check:routes` proves it.
-   */
   const { locale } = await params;
-  const unreviewed = locale === "ar";
 
   // Explicitly English. This reads only `favicon_url`, which has no Arabic
   // twin — and letting it fall through to the ambient locale would call a
@@ -118,7 +102,6 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(SITE_URL),
-    ...(unreviewed ? { robots: { index: false, follow: false } } : {}),
     title: {
       default: "Bazar Real Estate — Abu Dhabi, properly understood",
       template: "%s · Bazar",
@@ -127,7 +110,7 @@ export async function generateMetadata({
       "Bespoke real estate advisory and a curated marketplace for buyers, sellers, and investors across the United Arab Emirates.",
     openGraph: {
       type: "website",
-      locale: "en_AE",
+      locale: locale === "ar" ? "ar_AE" : "en_AE",
       siteName: "Bazar Real Estate",
     },
     icons: {
