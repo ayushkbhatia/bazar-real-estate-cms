@@ -32,6 +32,12 @@ export default async function OffPlanSearchPage({ params, searchParams }: PagePr
   return (
     <SearchList
       mode="off_plan"
+      // Off-plan stock only: ready and resale listings have their own pages
+      // under Buy (/buy/ready, /buy/resale). This route listed all sale stock
+      // from #581 until the client asked for it back (Oct 2026). The heading
+      // stays the off-plan surface's own — no header document matches this
+      // mode with a form, so `searchHeaderFor` falls through to it.
+      form="off_plan"
       filters={filters}
       searchParams={raw}
     />
