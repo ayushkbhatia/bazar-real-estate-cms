@@ -545,6 +545,14 @@ function buyRentSections(opts: {
         eyebrow(),
         heading(),
         body({ max: 400 }),
+        // Only /buy draws a link beside its map (BuyPropertiesMap); /rent and
+        // /commercial render a map with none, so they get no field for one.
+        ...("cta" in opts.map
+          ? [
+              text("cta", "Link label", { max: 60, optional: true }),
+              link("cta_href", "Link"),
+            ]
+          : []),
       ],
       defaults: opts.map,
     },
@@ -751,6 +759,8 @@ const BUY: MasterPageDef = {
       heading: "Buy across Abu Dhabi's communities.",
       body:
         "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.",
+      cta: "Browse all for sale",
+      cta_href: "/buy/search",
     },
     lead: {
       eyebrow: "Talk to an advisor",
@@ -771,7 +781,7 @@ const BUY: MasterPageDef = {
         name: "Off-Plan Properties",
         desc: "New launches with structured payment plans.",
         cta: "Browse off-plan",
-        href: "/off-plan",
+        href: "/off-plan/search",
         img: "off-plan tower · render",
         image: { media_id: null, alt: null, label: null },
       },

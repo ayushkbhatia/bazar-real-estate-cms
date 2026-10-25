@@ -19,6 +19,7 @@ import { ShortlistDrawer } from "./_components/shortlist-drawer";
 import { FooterTrust } from "./_components/footer-trust";
 import { FloatingCtaProvider } from "./_components/floating-cta-context";
 import { FloatingCtaRail } from "./_components/floating-cta-rail";
+import { NavImageWarmup } from "./_components/nav-image-warmup";
 
 export default async function PublicLayout({
   children,
@@ -100,6 +101,9 @@ export default async function PublicLayout({
           footerSlot={<MobilePreferences />}
           cta={headerCta}
         />
+        {/* Hovering a menu link warms that page's hero images. Beside the
+            nav, not in it — see the component. */}
+        <NavImageWarmup />
         {/*
         The header chrome that could not go in the header.
 

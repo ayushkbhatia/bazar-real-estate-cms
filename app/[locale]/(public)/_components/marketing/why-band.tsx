@@ -13,6 +13,17 @@ type Props = {
 };
 
 /**
+ * Bind a figure to the word after it with a no-break space, so a stat that
+ * wraps breaks before the number rather than between it and its unit. On /ar
+ * "أكثر من 20 عامًا" otherwise set as "أكثر من 20" over a lone "عامًا"; now
+ * it reads "أكثر من" over "20 عامًا". Done here rather than in the stored
+ * copy so an editor's rewrite keeps the behaviour.
+ */
+export function keepFigureWithUnit(value: string): string {
+  return value.replace(/(\d[\d.,+%]*)[ \t]+(?=\S)/g, "$1\u00A0");
+}
+
+/**
  * Dark "Why Bazar" closing band — ink background, serif statement, optional
  * stat grid. Full-bleed; used at most once or twice per page (the handoff's
  * `WhyBand`).
@@ -74,7 +85,7 @@ export function WhyBand({
                   className="serif text-white"
                   style={{ fontSize: fluid(48), letterSpacing: "-0.02em" }}
                 >
-                  {v}
+                  {keepFigureWithUnit(v)}
                 </div>
                 <div className="text-[12.5px] text-white/70 mt-1.5">{l}</div>
               </div>

@@ -4,11 +4,12 @@ import type { Metadata } from "next";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { getPartners } from "@/lib/queries/content-sections";
-import { str } from "@/lib/master-pages";
+import { img, str } from "@/lib/master-pages";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import type {
@@ -126,6 +127,7 @@ export default async function PartnersPage({
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
   const ctaV = v("cta");
+  const ctaImageUrl = img(ctaV, "image")?.url ?? null;
 
   // Which group bands actually render, in document order — so the stripe
   // alternates over what an editor left switched on rather than over the two
@@ -172,8 +174,29 @@ export default async function PartnersPage({
         key="cta"
         className="px-4 md:px-12 py-16 md:py-20 border-t border-bz-border"
       >
-        <div className="rounded-2xl bg-bz-ink text-white px-8 md:px-14 py-14 md:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div>
+        <div
+          className={cn(
+            "rounded-2xl bg-bz-ink text-white px-8 md:px-14 py-14 md:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8",
+            ctaImageUrl && "relative overflow-hidden",
+          )}
+        >
+          {ctaImageUrl ? (
+            <>
+              {/* The same treatment as the mortgage calculator's results box:
+                  decorative photo and scrim as positioned siblings, not a
+                  negative z-index, so axe measures the white type against
+                  them rather than the cream page two levels up. */}
+              <Image
+                src={ctaImageUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-bz-ink/80 via-bz-ink/55 to-bz-ink/85" />
+            </>
+          ) : null}
+          <div className="relative">
             {str(ctaV, "eyebrow") ? (
               <Eyebrow className="text-white/60">
                 {str(ctaV, "eyebrow")}
@@ -190,7 +213,7 @@ export default async function PartnersPage({
               {str(ctaV, "heading")}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="relative flex flex-wrap gap-3">
             <Button asChild className="bg-white text-bz-ink hover:bg-white/90">
               <Link href="/services/consultation">
                 {str(ctaV, "cta_label") ?? "Talk to an advisor"}
