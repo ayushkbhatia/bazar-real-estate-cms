@@ -726,6 +726,12 @@
     z-index: 7;
     width: 316px;
     max-width: calc(100% - 36px);
+    /* A phone's map frame can be as short as 320px. Capping the card at its
+       frame and letting the head shrink keeps both buttons on screen at
+       every size. */
+    max-height: calc(100% - 36px);
+    display: flex;
+    flex-direction: column;
     background: var(--bz-surface);
     border: 1px solid var(--bz-border);
     border-radius: 12px;
@@ -752,7 +758,11 @@
   }
   .bzmap-flyout__head {
     position: relative;
-    aspect-ratio: 16 / 8;
+    /* Landscape, 4:3, with the area guide's hero photo behind the name. */
+    aspect-ratio: 4 / 3;
+    flex: 0 1 auto;
+    min-height: 120px;
+    overflow: hidden;
     display: flex;
     align-items: flex-end;
     padding: 14px;
@@ -765,17 +775,15 @@
       var(--bz-ink);
     color: #fff;
   }
-  .bzmap-flyout__stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid var(--bz-border);
-    border-bottom: 1px solid var(--bz-border);
-  }
-  .bzmap-flyout__stats > div {
-    padding: 12px 14px;
-  }
-  .bzmap-flyout__stats > div + div {
-    border-inline-start: 1px solid var(--bz-border);
+  /* Darkens the foot of the photo so the white name reads over any image. */
+  .bzmap-flyout__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 40%,
+      rgba(0, 0, 0, 0.62) 100%
+    );
   }
 
   /* Hint pill */
@@ -883,6 +891,9 @@
       inset-inline-end: 12px;
       width: auto;
       max-width: none;
+      /* The sheet takes at most three quarters of the frame, so the map
+         stays visible; the head gives way first. */
+      max-height: 75%;
     }
     .bzmap-legend {
       display: none;

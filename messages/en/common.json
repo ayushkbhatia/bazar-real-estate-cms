@@ -42,16 +42,11 @@
     "areaGuide": "View community guide",
     "backToCity": "Back to city view",
     "comingSoon": "{emirate} is coming soon",
-    "count": {
-      "listing": "Listings",
-      "project": "Projects"
-    },
     "curating": "We’re curating listings here now.",
     "dotCta": {
       "listing": "View property",
       "project": "View project"
     },
-    "median": "Median /{unit}",
     "pinHint": {
       "listing": "Click an area pin — zoom in to see individual listings",
       "project": "Click an area pin — zoom in to see individual projects"
