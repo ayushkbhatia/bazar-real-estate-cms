@@ -31,7 +31,8 @@
     "exploreProperties": "استكشف العقارات",
     "getConsultation": "احصل على استشارة مجانية",
     "talkToAdvisor": "التحدث إلى مستشار",
-    "seeProjects": "{count, plural, zero {شاهد # مشاريع} one {شاهد المشروع} two {شاهد # مشروعين} few {شاهد # مشاريع} many {شاهد # مشروعًا} other {شاهد # مشروع}}"
+    "seeProjects": "{count, plural, zero {شاهد # مشاريع} one {شاهد المشروع} two {شاهد # مشروعين} few {شاهد # مشاريع} many {شاهد # مشروعًا} other {شاهد # مشروع}}",
+    "viewAllProjects": "{count, plural, zero {عرض المشاريع} one {عرض المشروع} two {عرض المشروعين} few {عرض جميع المشاريع (#)} many {عرض جميع المشاريع (#)} other {عرض جميع المشاريع (#)}}"
   },
   "empty": {
     "nothingPublished": "لا يوجد شيء منشور هنا حالياً.",

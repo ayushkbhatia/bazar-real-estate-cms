@@ -8,7 +8,6 @@ import {
   Eye,
   EyeOff,
   Mail,
-  MessageCircle,
   Phone,
   Plus,
   Save,
@@ -37,13 +36,17 @@ import {
   type FloatingCtaTokenValues,
   type FloatingCtaTokenScope,
 } from "@/lib/schemas/floating-cta";
+import {
+  WhatsAppGlyph,
+  type CtaIcon,
+} from "@/app/[locale]/(public)/_components/whatsapp-glyph";
 import { saveFloatingCtas } from "./_actions";
 
 const fieldCls =
   "bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]";
 
-const KIND_ICONS: Record<FloatingCtaKind, typeof Phone> = {
-  whatsapp: MessageCircle,
+const KIND_ICONS: Record<FloatingCtaKind, CtaIcon> = {
+  whatsapp: WhatsAppGlyph,
   call: Phone,
   email: Mail,
 };

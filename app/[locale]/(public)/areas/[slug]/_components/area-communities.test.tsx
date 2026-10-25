@@ -72,10 +72,11 @@ describe("AreaCommunities", () => {
         viewAllHref="/off-plan"
       />,
     );
-    // One card shown, three exist — the link is worth offering, and names the
-    // total rather than what is on screen.
+    // One card shown, three exist — the link is worth offering. Its words are
+    // `area.cta.viewAllProjects`, which names the total; `area` is a server
+    // namespace, so this harness renders the key path rather than the copy.
     expect(container.querySelector("a[href='/off-plan']")).toBeTruthy();
-    expect(screen.getByText(/view all 3 projects/i)).toBeTruthy();
+    expect(screen.getByText("area.cta.viewAllProjects")).toBeTruthy();
 
     // Every project already on screen: a "view all" here goes nowhere new.
     rerender(

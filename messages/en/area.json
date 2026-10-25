@@ -31,7 +31,8 @@
     "exploreProperties": "Explore properties",
     "getConsultation": "Get a free consultation",
     "talkToAdvisor": "Talk to an advisor",
-    "seeProjects": "{count, plural, one {See the project} other {See the # projects}}"
+    "seeProjects": "{count, plural, one {See the project} other {See the # projects}}",
+    "viewAllProjects": "{count, plural, one {View the project} other {View all # projects}}"
   },
   "empty": {
     "nothingPublished": "Nothing published here right now.",
