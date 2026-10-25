@@ -303,7 +303,9 @@ export function AreaCommunities({
               nowhere new. */}
           {viewAllHref && projectsTotal > projects.length ? (
             <Button asChild variant="outline">
-              <Link href={viewAllHref}>View all {projectsTotal} projects</Link>
+              <Link href={viewAllHref}>
+                {t("cta.viewAllProjects", { count: projectsTotal })}
+              </Link>
             </Button>
           ) : null}
         </div>

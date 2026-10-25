@@ -20,7 +20,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import {
   BRAND_NAME,
@@ -34,6 +34,7 @@ import {
   useFloatingCtaTarget,
   type FloatingCtaTargetValue,
 } from "./floating-cta-context";
+import { WhatsAppGlyph, type CtaIcon } from "./whatsapp-glyph";
 
 /** Where a click is recorded. See app/api/cta-click/route.ts. */
 const CLICK_ENDPOINT = "/api/cta-click";
@@ -41,8 +42,8 @@ const CLICK_ENDPOINT = "/api/cta-click";
 /** Scroll distance the rail waits for on a page long enough to allow it. */
 const REVEAL_AT = 480;
 
-const ICONS: Record<FloatingCtaKind, typeof Phone> = {
-  whatsapp: MessageCircle,
+const ICONS: Record<FloatingCtaKind, CtaIcon> = {
+  whatsapp: WhatsAppGlyph,
   call: Phone,
   email: Mail,
 };

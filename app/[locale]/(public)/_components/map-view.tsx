@@ -153,12 +153,18 @@ export function MapView({ pins, className }: Props) {
       el.className =
         "h-7 px-2 rounded-full bg-bz-navy hover:bg-bz-teal transition-colors text-white text-[12px] font-medium shadow-md whitespace-nowrap pointer-coarse:after:absolute pointer-coarse:after:content-[''] pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-2";
       el.textContent = label;
+      // The map container is `dir="ltr"` (a map never mirrors), and markers
+      // inherit it — so on /ar "4.2 مليون درهم" laid out with the figure on the
+      // left, the reverse of the same price on the listing card beside it.
+      // The pill and its popup are text, not geography: give them the page's
+      // direction back.
+      el.dir = rtl ? "rtl" : "ltr";
       el.setAttribute("aria-label", `${pin.title} — ${label}`);
 
       const popup = new Popup({ offset: 16, closeButton: false }).setHTML(
-        `<a href="${propertyUrl(pin)}" style="display:block;text-decoration:none;color:inherit;font-family:inherit;font-size:13px">
+        `<a href="${propertyUrl(pin)}" dir="${rtl ? "rtl" : "ltr"}" style="display:block;text-decoration:none;color:inherit;font-family:inherit;font-size:13px">
           <div style="font-weight:500;margin-bottom:2px">${escapeHtml(pin.title)}</div>
-          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#666">${escapeHtml(pin.reference)} · ${escapeHtml(label)}</div>
+          <div style="font-size:11px;color:#666">${escapeHtml(pin.reference)} · ${escapeHtml(label)}</div>
         </a>`,
       );
 
@@ -182,7 +188,7 @@ export function MapView({ pins, className }: Props) {
     // `prefs` is load-bearing: markers are imperative DOM, not React, so
     // nothing re-renders them on its own. Without it here the pins keep their
     // old currency until the pin set itself changes.
-  }, [pins, ready, prefs]);
+  }, [pins, ready, prefs, rtl]);
 
   // `bzmap` is what scopes the brand restyle of MapLibre's gesture overlay
   // (`globals.css`, `.bzmap .maplibregl-cooperative-gesture-screen`) — without

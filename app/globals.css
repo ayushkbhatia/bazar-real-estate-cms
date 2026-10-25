@@ -915,6 +915,18 @@
   }
 }
 
+/* The site's face on every map. maplibre-gl.css sets
+   `.maplibregl-map { font: 12px/20px "Helvetica Neue", Arial, … }` on the
+   container, so its price pills, popups and control labels drew in Helvetica
+   beside cards in Geist — and on /ar in a Latin face that has no Arabic, so the
+   device's fallback. That rule is unlayered, so it beats anything in
+   `@layer components`; `html` lifts this one past it on specificity rather
+   than on whichever stylesheet Next happens to link last. `--bz-font-sans` is
+   the Arabic body face under `:lang(ar)`. */
+html .maplibregl-map {
+  font-family: var(--bz-font-sans);
+}
+
 /* ─── Touch-target floor (coarse pointers only) ─────────────────────
    Unlayered on purpose, same reason as the two blocks below: Tailwind v4
    emits size utilities inside `@layer utilities`, and an unlayered normal
