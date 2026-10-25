@@ -369,6 +369,7 @@ export default async function ListYourPropertyPage({
               {str(faqV, "phone_intro")}{" "}
               <a
                 href={`tel:${deskPhone.replace(/\s+/g, "")}`}
+                dir="ltr"
                 className="text-bz-ink font-medium underline underline-offset-4 decoration-bz-taupe"
               >
                 {deskPhone}

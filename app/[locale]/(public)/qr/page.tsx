@@ -102,14 +102,16 @@ export default async function QrPage({
       <div key="p" className="space-y-0.5">
         <a
           href={telHref(phonePrimary)}
-          className="block text-[18px] hover:text-bz-accent"
+          dir="ltr"
+          className="block w-fit text-[18px] hover:text-bz-accent"
         >
           {phonePrimary}
         </a>
         {phoneSecondary ? (
           <a
             href={telHref(phoneSecondary)}
-            className="block text-[18px] hover:text-bz-accent"
+            dir="ltr"
+            className="block w-fit text-[18px] hover:text-bz-accent"
           >
             {phoneSecondary}
           </a>

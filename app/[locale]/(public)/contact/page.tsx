@@ -177,10 +177,18 @@ export default async function ContactPage({
         phones.length > 0 ? (
           <div className="space-y-0.5">
             {phones.map((number) => (
+              /*
+                `dir="ltr"` keeps "+971 2 632 2223" in that order on /ar, where
+                the bidi algorithm otherwise reads the groups right to left
+                ("2223 632 2 971+"). `w-fit` keeps the number on the start
+                side: an LTR block would align it to the left. Same as the
+                footer's numbers.
+              */
               <a
                 key={number}
                 href={telHref(number)}
-                className="block text-[18px] hover:text-bz-accent"
+                dir="ltr"
+                className="block w-fit text-[18px] hover:text-bz-accent"
               >
                 {number}
               </a>
