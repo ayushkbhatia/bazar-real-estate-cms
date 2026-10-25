@@ -155,14 +155,14 @@ export async function SearchList({
   /**
    * The surface, which picks the heading above the filter bar. The rows
    * follow from it: /rent/search lists tenancies, every other surface lists
-   * sale stock. /off-plan/search is sale stock under its own heading, at the
-   * client's request (Oct 2026) — the same rows /buy/search shows.
+   * sale stock. /off-plan/search narrows that to the off-plan form by
+   * passing `form` below.
    */
   mode: SearchSurface;
   /**
    * Optional completion-form narrowing for sale stock (/buy/ready,
-   * /buy/resale). Omitted by every other caller, which keeps showing the
-   * whole mode.
+   * /buy/resale, /off-plan/search). Omitted by every other caller, which
+   * keeps showing the whole mode.
    */
   form?: Form;
   filters: PropertyFilters;

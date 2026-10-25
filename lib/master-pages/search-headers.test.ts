@@ -112,6 +112,12 @@ describe("addressing", () => {
     // copy rather than nothing.
     expect(searchHeaderFor("rent", "resale").key).toBe("rent");
   });
+
+  it("keeps /off-plan/search on its own heading while it narrows to the off-plan form", () => {
+    // The route passes `form: "off_plan"` to list only off-plan stock; the
+    // heading must stay the off-plan surface's, not the buy slice's.
+    expect(searchHeaderFor("off_plan", "off_plan").key).toBe("off-plan");
+  });
 });
 
 /** Every field an editor can type prose into, English side. */
