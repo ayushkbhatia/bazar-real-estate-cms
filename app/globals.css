@@ -1049,6 +1049,14 @@
   transform: none;
 }
 
+/* The floating language + preferences cluster is pinned to the physical
+   right in both languages (`dir="ltr"` on its wrapper in the public layout),
+   so the bars it hangs over reserve the band on the right too, not at their
+   inline end. Unlayered so it beats the `px-*` utility on the same element. */
+.bz-pill-gutter {
+  padding-right: var(--bz-locale-pill-gutter);
+}
+
 /* 3 · Never mirror a map. Geography is not a reading direction: a flipped
    canvas would put Saadiyat west of the mainland. The GL container carries
    dir="ltr" in the components; this stops MapLibre's own injected controls

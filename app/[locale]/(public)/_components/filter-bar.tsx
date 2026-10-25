@@ -287,8 +287,9 @@ export function FilterBar({ areas }: Props) {
        * The bar losing that contest is not an improvement on its own, because
        * whatever the pill covers is unreachable either way and below `md` that
        * is the Filters button — the only route into the mobile filter sheet,
-       * per the note above. So the row reserves `--bz-locale-pill-gutter` at
-       * its inline end and both controls stay live. The token is declared in
+       * per the note above. So the row reserves `--bz-locale-pill-gutter` on
+       * the right (`.bz-pill-gutter`, physical because the pill is pinned
+       * right in both languages) and both controls stay live. The token is declared in
        * `globals.css` and steps down at `md` and up at `xl`, tracking the
        * pill's own width and the preferences pill that joins it.
        *
@@ -302,7 +303,7 @@ export function FilterBar({ areas }: Props) {
         pending && "opacity-90",
       )}
     >
-      <div className="flex flex-wrap items-center gap-3 pe-[var(--bz-locale-pill-gutter)]">
+      <div className="flex flex-wrap items-center gap-3 bz-pill-gutter">
         {/* Free-text search — full width on mobile, fixed on desktop */}
         <label className="relative flex-1 md:flex-none min-w-0">
           <span className="sr-only">{tr("filters.search")}</span>
