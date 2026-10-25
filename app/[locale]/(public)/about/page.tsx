@@ -412,7 +412,7 @@ export default async function AboutPage({
             {values.map(([t, d], i) => (
               <div
                 key={t}
-                className="pt-9 pb-2 lg:pe-6 lg:border-e border-bz-border last:border-e-0 lg:[&:not(:first-child)]:pl-6"
+                className="pt-9 pb-2 lg:pe-6 lg:border-e border-bz-border last:border-e-0 lg:[&:not(:first-child)]:ps-6"
               >
                 <div className="serif italic text-bz-accent text-[30px]">
                   {String(i + 1).padStart(2, "0")}
