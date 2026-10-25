@@ -51,10 +51,15 @@ export async function LocationBrowsing({
   const t = await getTranslations("area");
   const entries = await listAreasWithCounts();
   const total = entries.reduce((n, e) => n + e.listing_count, 0);
-  const countBySlug = new Map(entries.map((e) => [e.slug, e.listing_count]));
 
-  // Listing counts always come from live data; the card list only decides
-  // which cards appear, in what order, with which label, link and image.
+  /*
+   * A hand-picked card says "Explore homes", whatever its area holds. It used
+   * to show the live count when its slug matched an area, and only Al Raha's
+   * did — so one tile in eight read "3 homes for sale" beside seven "Explore
+   * homes" (client, Oct 2026). The fallback grid below keeps its counts: every
+   * tile there is an area with a count. The card list only decides which cards
+   * appear, in what order, with which label, link and image.
+   */
   const communities: {
     key: string;
     href: string;
@@ -69,15 +74,11 @@ export async function LocationBrowsing({
           .filter((c) => c.enabled !== false)
           .map((c, i) => {
             const slug = c.slug ?? "";
-            const count = countBySlug.get(slug);
             return {
               key: `${slug || "card"}-${i}`,
               href: c.href ?? (slug ? `/areas/${slug}` : "/areas"),
               name: c.name ?? slug,
-              countLabel:
-                count !== undefined
-                  ? t("cards.homesForSale", { count })
-                  : t("cards.exploreHomes"),
+              countLabel: t("cards.exploreHomes"),
               imgLabel: c.imageLabel ?? slug,
               imgUrl: c.imageUrl,
               imgAlt: c.imageAlt,

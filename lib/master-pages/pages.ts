@@ -185,7 +185,7 @@ const HOME: MasterPageDef = {
       label: "Location-based browsing",
       description: "Overview tile plus a grid of community cards.",
       dataNote:
-        "Listing counts on each card always come from live data. Leave the card list empty to show the top 8 published areas automatically.",
+        "Each card reads \"Explore homes\"; the overview tile shows the live count of homes for sale. Leave the card list empty to show the top 8 published areas automatically, each with its live count.",
       fields: [
         eyebrow(),
         heading(),
@@ -215,7 +215,7 @@ const HOME: MasterPageDef = {
               // failure an Arabic proofreader cannot see, because the Arabic
               // reads fine and what broke was the lookup.
               i18n: false,
-              help: "Matches the live listing count to this card.",
+              help: "Links the card to /areas/<slug> when Link is empty.",
             }),
           ],
         },
