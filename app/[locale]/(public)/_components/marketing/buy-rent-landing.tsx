@@ -130,9 +130,11 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
   const heroWrap = p.wide ? "" : "max-w-[1280px]";
   const heroImage = p.heroImageUrl ?? null;
 
+  // Every chip hidden in the editor draws no row at all, rather than an empty
+  // flex box still holding its `mt-7`.
   const heroChips = interactive ? (
     <HeroCategoryChips categories={p.categories!} />
-  ) : (
+  ) : (p.chips ?? []).length === 0 ? null : (
     <div className="flex flex-wrap gap-2 mt-7">
       {(p.chips ?? []).map((c, i) => {
         const base =

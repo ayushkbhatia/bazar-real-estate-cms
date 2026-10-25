@@ -500,7 +500,10 @@ function buyRentSections(opts: {
           "Background image",
           "Fills the whole hero behind the headline and form, with a dark scrim over it so the text stays legible. Landscape, at least 2000px wide. Leave unset to keep the plain background.",
         ),
-        chipList("chips", "Quick-filter chips", 8),
+        {
+          ...chipList("chips", "Quick-filter chips", 8, { withToggle: true }),
+          help: "The pills under the headline. Add or remove them here, and untick one to hide it without losing its label and link. To hide the whole row, untick every chip — deleting them all brings back the defaults.",
+        },
         statList(3),
       ],
       defaults: {
