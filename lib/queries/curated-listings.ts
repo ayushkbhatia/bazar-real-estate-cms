@@ -22,7 +22,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
-import { localiseRow } from "@/lib/i18n/localise";
+import { localiseJoins, localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
 import { seededShuffle } from "@/lib/shuffle";
 import { allRows } from "@/lib/salesforce/listings/paginate";
@@ -44,7 +44,7 @@ type RawMediaJoin = {
 };
 
 const LISTING_FIELDS =
-  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 function mapRows(
   data: (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
@@ -52,13 +52,15 @@ function mapRows(
 ): ListingRow[] {
   // Folded in two places, because the row and its media are two levels:
   // `localiseRow` walks one, and the alt text lives inside the join.
+  // The area join is folded by name too, or its English name rides along
+  // under an Arabic title on every /ar card.
   return data.map((r) => {
     const joins = r.property_media ?? [];
     const heroJoin = joins.find((j) => j.role === "hero" && j.media);
     const { property_media, ...rest } = r;
     void property_media;
     return {
-      ...localiseRow(rest, locale),
+      ...localiseJoins(localiseRow(rest, locale), ["areas"], locale),
       hero: heroJoin?.media
         ? localiseRow(
             heroJoin.media as unknown as Record<string, unknown>,

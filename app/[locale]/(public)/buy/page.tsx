@@ -172,6 +172,8 @@ export default async function BuyPage({
             eyebrow={str(map, "eyebrow") ?? undefined}
             heading={str(map, "heading") ?? undefined}
             body={str(map, "body")}
+            ctaLabel={str(map, "cta") ?? undefined}
+            ctaHref={str(map, "cta_href") ?? undefined}
           />
         ) : null
       }

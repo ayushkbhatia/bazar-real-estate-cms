@@ -22,7 +22,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
-import { localiseRow } from "@/lib/i18n/localise";
+import { localiseJoins, localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
 
 import type { ListingRow } from "@/lib/queries/properties";
@@ -33,7 +33,7 @@ import {
 
 /** Mirrors LISTING_FIELDS in lib/queries/properties.ts — keep them in step. */
 const LISTING_FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: string;
@@ -53,8 +53,10 @@ function attachHero(row: Record<string, unknown>, locale: Locale): ListingRow {
     null;
   // Folded in two places, because the row and its media are two levels:
   // `localiseRow` walks one, and the alt text lives inside the join.
+  // The area join is folded by name too, or its English name rides along
+  // under an Arabic title on every /ar card.
   return {
-    ...localiseRow(rest, locale),
+    ...localiseJoins(localiseRow(rest, locale), ["areas"], locale),
     hero: hero
       ? localiseRow(hero as unknown as Record<string, unknown>, locale)
       : null,

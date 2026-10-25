@@ -30,7 +30,8 @@ const warmed = new Set<string>();
 
 type NetworkInformation = { saveData?: boolean; effectiveType?: string };
 
-function constrained(): boolean {
+/** Data-saver or a 2G connection: nothing speculative should load. */
+export function constrained(): boolean {
   const connection = (navigator as { connection?: NetworkInformation })
     .connection;
   if (!connection) return false;

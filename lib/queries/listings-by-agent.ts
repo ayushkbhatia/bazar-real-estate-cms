@@ -9,7 +9,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
-import { localiseRow } from "@/lib/i18n/localise";
+import { localiseJoins, localiseRow } from "@/lib/i18n/localise";
 
 import type { ListingRow } from "@/lib/queries/properties";
 
@@ -19,7 +19,7 @@ import type { ListingRow } from "@/lib/queries/properties";
 // surface its media_assets reference as `hero` so callers can keep using
 // `row.hero?.storage_key`.
 const LISTING_FIELDS =
-  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: string;
@@ -58,7 +58,7 @@ export async function listListingsByAgent(
     const { property_media, ...rest } = r;
     void property_media;
     return {
-      ...localiseRow(rest, locale),
+      ...localiseJoins(localiseRow(rest, locale), ["areas"], locale),
       hero: heroJoin?.media
         ? localiseRow(
             heroJoin.media as unknown as Record<string, unknown>,

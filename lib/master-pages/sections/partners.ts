@@ -41,7 +41,7 @@
  * change, verbatim, so an un-edited page renders byte-identically to before.
  */
 import type { MasterPageDef } from "../types";
-import { text, eyebrow, heading, body } from "../fields";
+import { text, eyebrow, heading, body, image } from "../fields";
 
 export const PARTNERS_PAGE: MasterPageDef = {
   key: "partners",
@@ -143,12 +143,18 @@ export const PARTNERS_PAGE: MasterPageDef = {
         heading(),
         text("cta_label", "Primary button", { max: 60, optional: true }),
         text("cta2_label", "Secondary button", { max: 60, optional: true }),
+        image(
+          "image",
+          "Background image",
+          "Fills the dark band, under a dark scrim so the white heading and buttons stay legible. Leave unset to keep the plain dark band.",
+        ),
       ],
       defaults: {
         eyebrow: "Work with us",
         heading: "Backed by the right people at every step.",
         cta_label: "Talk to an advisor",
         cta2_label: "Our developers",
+        image: { media_id: null, alt: null, label: null },
       },
     },
   ],
