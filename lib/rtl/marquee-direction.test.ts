@@ -19,7 +19,14 @@ import { describe, expect, it } from "vitest";
  * literal inside a `<style>` tag, it contains no Tailwind utility, and a
  * jsdom test cannot measure it because jsdom has no layout. So this asserts
  * the shape of the fix rather than its effect — an RTL keyframe exists, it is
- * selected under `[dir="rtl"]`, and it moves the opposite way.
+ * selected under `[dir="rtl"]`, and it runs from +50% back to 0.
+ *
+ * That last part changed in Oct 2026. The first RTL keyframe ran 0 → +50%,
+ * which kept the loop intact but sent the logos left-to-right; the client
+ * wanted /ar to travel right-to-left like the English site. Starting at +50%
+ * (the second copy's first tile exactly where the first copy's sits) and
+ * running back to 0 keeps the track overhanging the container on both sides
+ * AND moves it leftward.
  *
  * Verified once by hand against the running page by stepping each animation's
  * `currentTime` through a full cycle: with the mirrored keyframe the track
@@ -64,10 +71,11 @@ describe.each(MARQUEES)("$file", ({ file, track, ltr, rtl }) => {
     );
   });
 
-  it("mirrors the sign rather than reusing the LTR distance", () => {
+  it("runs from +50% back to 0 — right to left, without leaving the start bare", () => {
     const block = css.slice(css.indexOf(`@keyframes ${rtl}`));
-    const body = block.slice(0, block.indexOf("}", block.indexOf("to")));
-    expect(body).toContain("translate3d(50%, 0, 0)");
+    const body = block.slice(0, block.indexOf("}", block.indexOf("to {")) + 1);
+    expect(body).toMatch(/from \{ transform: translate3d\(50%, 0, 0\); \}/);
+    expect(body).toMatch(/to \{ transform: translate3d\(0, 0, 0\); \}/);
     expect(body).not.toContain("translate3d(-50%");
   });
 

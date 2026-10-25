@@ -9,7 +9,7 @@ import {
 import { getPublicFooter } from "@/lib/queries/footer";
 import { getHeaderCta } from "@/lib/queries/header-cta";
 import { getShortlistCopy } from "@/lib/queries/content-sections";
-import { asLocale } from "@/lib/i18n/locales";
+import { asLocale, LOCALE_DIR } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { UnitLabelsProvider } from "@/lib/preferences";
 import { PreferencesPopover } from "./_components/preferences-popover";
@@ -140,10 +140,25 @@ export default async function PublicLayout({
         Stacking above the bar is only half the fix, because whatever the pill
         covers becomes unreachable in turn — and on mobile that is the Filters
         button, the only route into the filter sheet. The bars reserve
-        `--bz-locale-pill-gutter` at their inline end so nothing lands under
+        `--bz-locale-pill-gutter` on the right so nothing lands under
         it. Both halves are required; either alone just moves the dead control.
       */}
-        <div className="fixed top-[84px] end-4 z-[25] flex items-center gap-2">
+        {/*
+        Pinned to the physical right in both languages, in the same order.
+
+        This used to inherit `<html dir>`: on /ar the cluster jumped to the
+        left edge and the two pills swapped places, so the control a visitor
+        had just tapped was somewhere else on the next page. `dir="ltr"` on
+        the wrapper makes `end-4` the right edge and the flex order EN-pill
+        then preferences everywhere; the preferences pill gets the page's own
+        direction back below so its Arabic labels still read right to left.
+        The bars that reserve room for it do so on the right as well — see
+        `.bz-pill-gutter` in globals.css.
+      */}
+        <div
+          dir="ltr"
+          className="fixed top-[84px] end-4 z-[25] flex items-center gap-2"
+        >
           {/*
           Ungated, unlike the preferences pill beside it.
 
@@ -175,7 +190,7 @@ export default async function PublicLayout({
           {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
             carries the preferences entry via footerSlot, so an md gate here
             would render both controls at once between 768 and 1279. */}
-          <div className="hidden xl:flex">
+          <div dir={LOCALE_DIR[active]} className="hidden xl:flex">
             <PreferencesPopover />
           </div>
         </div>

@@ -10,8 +10,8 @@
  * it serialisable props with zero per-request work.
  *
  * Behaviour: zoomed out → area pins with listing counts; click a pin →
- * flyout (count · median AED/ft² · YoY) with "View community guide" +
- * "Zoom to N listings"; past z≈12.5 pins go quiet and individual listing
+ * flyout (the area's name over its guide's hero photo) with "View area
+ * guide" + "Zoom to N listings"; past z≈12.5 pins go quiet and individual listing
  * dots appear; click a dot → mini popup → property page.
  *
  * Dots render as a single circle layer (handoff-faithful). Native
@@ -28,6 +28,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import Image from "next/image";
 import Link from "@/components/i18n/link";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -43,13 +44,7 @@ import {
 import { dotMeta, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
 import { ensureRtlTextPlugin, pastelMapStyle } from "../map-style";
 import { useMapUiStrings } from "../use-map-ui-strings";
-import {
-  areaUnitLabel,
-  formatPrice,
-  formatPricePerAreaValue,
-  withCurrency,
-  usePreferences,
-} from "@/lib/preferences";
+import { formatPrice, usePreferences } from "@/lib/preferences";
 import { useTranslations } from "next-intl";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
 import { emirateMessageKey } from "@/lib/areas/emirates";
@@ -816,36 +811,28 @@ function Flyout({
   onZoomToListings: () => void;
 }) {
   const t = useTranslations("common");
-  const { prefs } = usePreferences();
   const emirateLabel = t(emirateMessageKey(area.emirate));
-  // Stored AED/ft²; shown in the visitor's currency per their area unit. The
-  // unit itself is the stat's LABEL below, so the figure carries the currency
-  // and nothing else.
-  //
-  // This used to format the full rate and strip the unit back off with
-  // `.replace(/\/(ft²|m²)$/, "")`. That regex was the last hard-coded pair of
-  // glyphs on the public site, and it would have failed twice over in Arabic:
-  // it does not match "قدم²", and Arabic writes the currency AFTER the figure,
-  // so the unit is not even at the end of the string to strip.
-  const median =
-    area.medianPerFt2 != null
-      ? withCurrency(formatPricePerAreaValue(area.medianPerFt2, prefs), prefs)
-      : "—";
-  const yoy =
-    area.yoyChange != null
-      ? `${area.yoyChange > 0 ? "+" : ""}${area.yoyChange}%`
-      : "—";
-  const stats: [string, string][] = [
-    // Em dash at 0, same as a missing median — the map may be scoped to a
-    // mode this area has no inventory in.
-    [area.count > 0 ? String(area.count) : "—", t(`map.count.${countKind}`)],
-    [median, t("map.median", { unit: areaUnitLabel(prefs) })],
-    [yoy, "YoY"],
-  ];
 
+  // The card is the area's name over its guide's own hero photograph, then the
+  // two ways in. The editorial tag and the count / median / YoY strip that sat
+  // between them were dropped from every map at the client's request.
   return (
     <div className="bzmap-flyout">
       <div className="bzmap-flyout__head">
+        {area.imageUrl ? (
+          <>
+            <Image
+              src={area.imageUrl}
+              alt=""
+              fill
+              // 316px card on desktop; under md the card is a full-width
+              // bottom sheet.
+              sizes="(max-width: 767px) 100vw, 316px"
+              className="object-cover"
+            />
+            <div className="bzmap-flyout__scrim" aria-hidden />
+          </>
+        ) : null}
         <button
           type="button"
           className="bzmap-flyout__close"
@@ -854,7 +841,7 @@ function Flyout({
         >
           <X size={16} />
         </button>
-        <div>
+        <div className="relative">
           <div className="eyebrow" style={{ color: "rgba(255,255,255,0.8)" }}>
             {emirateLabel}
           </div>
@@ -865,36 +852,6 @@ function Flyout({
             {area.name}
           </div>
         </div>
-      </div>
-
-      {area.tag && (
-        <div
-          style={{
-            padding: "10px 14px",
-            fontSize: 12,
-            color: "var(--bz-muted)",
-          }}
-        >
-          {area.tag}
-        </div>
-      )}
-
-      <div className="bzmap-flyout__stats">
-        {stats.map(([v, l]) => (
-          <div key={l}>
-            <div
-              className="serif"
-              style={{ fontSize: 17, letterSpacing: "-0.01em" }}
-            >
-              {v}
-            </div>
-            <div
-              style={{ fontSize: 10, color: "var(--bz-muted)", marginTop: 2 }}
-            >
-              {l}
-            </div>
-          </div>
-        ))}
       </div>
 
       <div
