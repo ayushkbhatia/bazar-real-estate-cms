@@ -79,13 +79,22 @@ describe("buildOffplanMap", () => {
     ]);
   });
 
-  it("emits one pin per area with count = project count and no price stats", () => {
+  it("emits one pin per area with count = project count", () => {
     const { pins } = buildOffplanMap(rows);
     const saadiyat = pins.find((p) => p.slug === "saadiyat-island");
     expect(saadiyat?.count).toBe(3);
-    expect(saadiyat?.medianPerFt2).toBeNull();
-    expect(saadiyat?.yoyChange).toBeNull();
+    expect(saadiyat?.imageUrl).toBeNull();
     expect(saadiyat?.emirate).toBe("abu-dhabi");
+  });
+
+  it("gives each area pin its guide's hero photo when one is set", () => {
+    const { pins } = buildOffplanMap(rows, {}, {}, {
+      "saadiyat-island": "https://cdn.example/saadiyat.jpg",
+    });
+    expect(pins.find((p) => p.slug === "saadiyat-island")?.imageUrl).toBe(
+      "https://cdn.example/saadiyat.jpg",
+    );
+    expect(pins.find((p) => p.slug === "yas-island")?.imageUrl).toBeNull();
   });
 
   it("emits one dot per project and fans co-located projects apart", () => {

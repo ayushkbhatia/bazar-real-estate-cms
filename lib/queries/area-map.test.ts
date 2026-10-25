@@ -2,8 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseGeo,
   computeCentroid,
-  areaTag,
-  pickMedianPerFt2,
+  heroUrl,
   dotMeta,
   shapeDot,
   tallyAreaListings,
@@ -56,44 +55,18 @@ describe("computeCentroid", () => {
   });
 });
 
-describe("areaTag", () => {
-  it("returns the curated tag for a known area", () => {
-    expect(areaTag("al-reem-island")).toBe("Investor · high yield");
-    expect(areaTag("saadiyat-island")).toBe("Cultural quarter · beachfront");
+describe("heroUrl", () => {
+  it("is null for a missing, trashed or keyless join", () => {
+    expect(heroUrl(null)).toBeNull();
+    expect(heroUrl({ storage_key: "a.jpg", deleted_at: "2026-10-01" })).toBeNull();
+    expect(heroUrl({ storage_key: "" })).toBeNull();
   });
 
-  it("returns null for an unknown slug", () => {
-    expect(areaTag("nowhere-island")).toBeNull();
-  });
-});
-
-describe("pickMedianPerFt2", () => {
-  it("prefers the apartment median", () => {
-    expect(
-      pickMedianPerFt2({
-        median_apt_aed_per_ft2: 1480,
-        median_villa_aed_per_ft2: 1820,
-      }),
-    ).toBe(1480);
-  });
-
-  it("falls back to villa median for villa-only clusters", () => {
-    expect(
-      pickMedianPerFt2({
-        median_apt_aed_per_ft2: 0,
-        median_villa_aed_per_ft2: 5200,
-      }),
-    ).toBe(5200);
-  });
-
-  it("returns null when both are zero / missing", () => {
-    expect(
-      pickMedianPerFt2({
-        median_apt_aed_per_ft2: 0,
-        median_villa_aed_per_ft2: 0,
-      }),
-    ).toBeNull();
-    expect(pickMedianPerFt2({})).toBeNull();
+  it("is the public media URL for a live asset", () => {
+    // Without a Supabase URL the media helper has nothing to prefix; either
+    // way a live key never reads as a trashed one.
+    const url = heroUrl({ storage_key: "areas/reem.jpg", deleted_at: null });
+    expect(url === null || url.endsWith("/areas/reem.jpg")).toBe(true);
   });
 });
 

@@ -65,7 +65,11 @@ import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
  * `listAreaPins` (which only pins areas with published listings) leaves it
  * off the map. Synthesise its pin so the guide's map band still draws.
  */
-function withOwnPin(pins: AreaPin[], profile: AreaProfile): AreaPin[] {
+function withOwnPin(
+  pins: AreaPin[],
+  profile: AreaProfile,
+  imageUrl: string | null,
+): AreaPin[] {
   if (!profile.geo) return pins;
   if (pins.some((p) => p.slug === profile.slug)) return pins;
   return [
@@ -75,12 +79,10 @@ function withOwnPin(pins: AreaPin[], profile: AreaProfile): AreaPin[] {
       slug: profile.slug,
       name: profile.name,
       emirate: "abu-dhabi",
-      tag: profile.vibe,
       lng: profile.geo.lng,
       lat: profile.geo.lat,
       count: 0,
-      medianPerFt2: profile.stats?.medianAptPerFt2 ?? null,
-      yoyChange: profile.stats?.yoyChangePct ?? null,
+      imageUrl,
     },
   ];
 }
@@ -182,7 +184,7 @@ export default async function CommunityProfilePage({
       getAreaInventory(slug, 6),
       listAreaDirectory(),
     ]);
-  const pins = withOwnPin(rawPins, profile);
+  const pins = withOwnPin(rawPins, profile, heroImage?.url ?? null);
   const focusPin = pins.find((p) => p.slug === profile.slug) ?? null;
   const saleRows = inventory.forSale;
   const rentRows = inventory.forRent;

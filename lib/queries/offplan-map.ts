@@ -18,7 +18,7 @@
  * project nobody has placed yet.
  */
 
-import { areaTag, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
+import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
 
 const EMIRATE = "abu-dhabi";
@@ -125,6 +125,12 @@ export function buildOffplanMap(
    * who corrects or adds an area's position moves its ring on this map too.
    */
   areaCentroids: Record<string, { lng: number; lat: number }> = {},
+  /**
+   * Each area guide's hero photo, keyed by area slug (`listAreaHeroImages`).
+   * The flyout an area pin opens leads with it; an area without one keeps the
+   * plain dark head.
+   */
+  areaImages: Record<string, string> = {},
 ): OffplanMapData {
   // Group projects by area slug, preserving input order (published_at desc).
   const byArea = new Map<
@@ -196,13 +202,10 @@ export function buildOffplanMap(
       slug,
       name,
       emirate: EMIRATE,
-      tag: areaTag(slug),
       lng: anchor.lng,
       lat: anchor.lat,
       count: projects.length,
-      // Price stats aren't meaningful for a project count — leave blank.
-      medianPerFt2: null,
-      yoyChange: null,
+      imageUrl: areaImages[slug] ?? null,
     });
     dots.push(...areaDots);
 

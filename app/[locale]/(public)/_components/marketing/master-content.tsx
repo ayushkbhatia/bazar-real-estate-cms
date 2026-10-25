@@ -64,7 +64,11 @@ export function buyRentContent(content: MasterPageContent): BuyRentContentProps 
   const why = content.section("why")?.values ?? {};
   const faq = content.section("faq")?.values ?? {};
 
-  const heroChips = list<{ label?: string; href?: string }>(hero, "chips");
+  // A chip ticked off in the editor is hidden, not deleted — see `chipList`.
+  const heroChips = list<{ label?: string; href?: string; enabled?: boolean }>(
+    hero,
+    "chips",
+  ).filter((c) => c.enabled !== false && (c.label ?? "").trim() !== "");
   const leadImage = img(lead, "image");
   const heroImage = img(hero, "image");
 

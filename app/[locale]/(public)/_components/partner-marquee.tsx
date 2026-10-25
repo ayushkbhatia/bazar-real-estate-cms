@@ -117,16 +117,18 @@ export function PartnerMarquee({
          * further left into empty space: the logos run off the start of the
          * page and never come back, which is exactly what /ar showed.
          *
-         * Mirroring the sign restores the loop — moving right pulls the copy
-         * that is off-screen left into view — and the doubled track makes the
-         * wrap seamless in both directions.
+         * So the RTL loop starts the track +50% (the second copy's first
+         * tile sits where the first copy's does, an identical frame) and
+         * runs back to 0. The strip still travels right to left, the way
+         * the client asked for /ar, without ever leaving the start edge
+         * empty; the doubled track makes the wrap seamless.
          */
         [dir="rtl"] .bz-marquee__track {
           animation-name: bz-marquee-scroll-rtl;
         }
         @keyframes bz-marquee-scroll-rtl {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(50%, 0, 0); }
+          from { transform: translate3d(50%, 0, 0); }
+          to { transform: translate3d(0, 0, 0); }
         }
         @media (prefers-reduced-motion: reduce) {
           .bz-marquee__track { animation: none; }

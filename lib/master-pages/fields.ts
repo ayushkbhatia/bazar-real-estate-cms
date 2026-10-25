@@ -111,13 +111,25 @@ export const tileList = (key: string, label: string, max = 8): ListFieldDef => (
   ],
 });
 
-export const chipList = (key: string, label: string, max = 24): ListFieldDef => ({
+export const chipList = (
+  key: string,
+  label: string,
+  max = 24,
+  /**
+   * Adds a per-chip visibility toggle, so an editor can take a chip off the
+   * page for a while without deleting its label and link. Readers drop items
+   * whose `enabled` is false; a chip stored before the toggle existed has no
+   * key and stays shown.
+   */
+  opts: { withToggle?: boolean } = {},
+): ListFieldDef => ({
   key,
   label,
   kind: "list",
   itemLabel: "chip",
   max,
   fields: [
+    ...(opts.withToggle ? [toggle("enabled", "Show this chip")] : []),
     text("label", "Label", { max: 60 }),
     link("href", "Link"),
   ],

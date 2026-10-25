@@ -255,17 +255,18 @@ export function TestimonialCarousel({ items }: { items: Testimonial[] }) {
           to { transform: translate3d(-50%, 0, 0); }
         }
         /*
-         * RTL runs the other way, and it is not cosmetic — see the long note in
-         * developer-marquee.tsx. Under dir=rtl the max-content track's overflow
-         * spills LEFT, so translating -50% drags it off the start of the page
-         * and it never comes back.
+         * RTL needs its own keyframe, and it is not cosmetic — see the long
+         * note in developer-marquee.tsx. Under dir=rtl the max-content track's
+         * overflow spills LEFT, so translating -50% drags it off the start of
+         * the page and it never comes back. Running +50% back to 0 keeps the
+         * same right-to-left travel with the loop intact.
          */
         [dir="rtl"] .bz-treviews__track {
           animation-name: bz-treviews-scroll-rtl;
         }
         @keyframes bz-treviews-scroll-rtl {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(50%, 0, 0); }
+          from { transform: translate3d(50%, 0, 0); }
+          to { transform: translate3d(0, 0, 0); }
         }
 
         /*

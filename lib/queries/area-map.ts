@@ -6,14 +6,15 @@
  * Component can hand them straight to the lazy client map with zero
  * per-request work (this is what keeps `/` static / ISR):
  *
- *   · listAreaPins(emirate)      → one pin per area (centroid + count + stats)
+ *   · listAreaPins(emirate)      → one pin per area (centroid + count + photo)
  *   · listAreaListingDots(opts)  → one lightweight dot per published listing
  *
- * Stats + tags come from the seed area guides (lib/seeds/areas.ts), so an
- * area created in the CMS pins with a count but no figures. `getAreaProfile`
- * (lib/queries/area-profile.ts) already merges the `area_guides` overlay for
- * the detail page — swap `seedStatsForSlug` for it once the client populates
- * that table at handover, and the two surfaces stay in lockstep.
+ * The flyout a pin opens is the area's name over its guide's hero photograph
+ * (`areas.hero_image_id`, the image /areas/<slug> leads with), plus the links
+ * into the guide and its listings. It used to carry an editorial tag and three
+ * seed-guide figures (count, median AED/ft², YoY); the client dropped them
+ * from every map in Oct 2026, and the figures were seed values for a handful
+ * of areas anyway.
  */
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
@@ -28,6 +29,7 @@ import { localiseRow } from "@/lib/i18n/localise";
 import { formatArea } from "@/lib/preferences/formatters";
 import type { AreaLabels } from "@/lib/preferences/unit-labels";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
+import { mediaPublicUrl } from "@/lib/media";
 
 export type LngLat = { lng: number; lat: number };
 
@@ -42,8 +44,6 @@ export type AreaPin = {
   name: string;
   /** Emirate slug the area belongs to, e.g. "abu-dhabi". */
   emirate: string;
-  /** Short editorial descriptor for the flyout, or null to hide it. */
-  tag: string | null;
   lng: number;
   lat: number;
   /**
@@ -53,10 +53,11 @@ export type AreaPin = {
    * than printing a zero.
    */
   count: number;
-  /** Headline median AED/ft², or null when we have no figure. */
-  medianPerFt2: number | null;
-  /** Year-on-year price change %, or null. */
-  yoyChange: number | null;
+  /**
+   * The area guide's hero photograph — the same asset /areas/<slug> opens
+   * with — or null when none is set, and the flyout draws its plain dark head.
+   */
+  imageUrl: string | null;
 };
 
 /**
@@ -89,24 +90,6 @@ export type AreaDot = {
 };
 
 const DEFAULT_EMIRATE = "abu-dhabi";
-
-// Short editorial descriptors for the flyout. Mirrors the handoff's
-// BZ_AREAS `tag` copy for the seven core areas; the rest are written in
-// the same voice. Missing slug → null (the flyout drops the line).
-const AREA_TAGS: Record<string, string> = {
-  "saadiyat-island": "Cultural quarter · beachfront",
-  "yas-island": "Family · waterfront",
-  "al-reem-island": "Investor · high yield",
-  "al-maryah": "ADGM · trophy assets",
-  adgm: "Financial free-zone · freehold",
-  "al-raha": "Townhouses · marina",
-  corniche: "Urban · historic",
-  "khalifa-city": "Villas · community",
-  "masdar-city": "Sustainable · walkable",
-  kizad: "Industrial · logistics",
-  mussafah: "Industrial · value",
-  "nurai-island": "Private island · ultra-prime",
-};
 
 // Hand-verified centroids for the offline / seed path (Supabase not
 // configured). Mirrors 0039_area_geo_centroids.sql — keep in lockstep.
@@ -189,24 +172,6 @@ export async function listAreaCentroids(): Promise<Record<string, LngLat>> {
   } catch {
     return {};
   }
-}
-
-/** Editorial tag for the flyout, or null. */
-export function areaTag(slug: string): string | null {
-  return AREA_TAGS[slug] ?? null;
-}
-
-/**
- * Headline median AED/ft² for the flyout: apartments lead the AD market,
- * villa median as fallback (some clusters are villa-only). 0 / missing → null.
- */
-export function pickMedianPerFt2(stats: {
-  median_apt_aed_per_ft2?: number;
-  median_villa_aed_per_ft2?: number;
-}): number | null {
-  const value =
-    stats.median_apt_aed_per_ft2 || 0 || stats.median_villa_aed_per_ft2 || 0;
-  return value > 0 ? value : null;
 }
 
 /**
@@ -301,17 +266,43 @@ export function tallyAreaListings(
   return tally;
 }
 
-/** median AED/ft² + YoY for an area, from the seed guides. */
-function seedStatsForSlug(slug: string): {
-  median: number | null;
-  yoy: number | null;
-} {
-  const seed = SEED_AREA_GUIDES.find((s) => s.slug === slug);
-  if (!seed) return { median: null, yoy: null };
-  return {
-    median: pickMedianPerFt2(seed.stats),
-    yoy: seed.stats.yoy_change_pct || null,
-  };
+/**
+ * The public URL of an area's `hero:hero_image_id(...)` join, or null. A
+ * trashed asset reads as none, the same rule `getAreaHeroImage` applies to
+ * the guide itself, so the card and the page never disagree.
+ */
+export function heroUrl(hero: unknown): string | null {
+  if (!hero || typeof hero !== "object") return null;
+  const h = hero as { storage_key?: unknown; deleted_at?: unknown };
+  if (typeof h.storage_key !== "string" || !h.storage_key || h.deleted_at) {
+    return null;
+  }
+  return mediaPublicUrl(h.storage_key) || null;
+}
+
+/**
+ * Every area's guide hero photo, keyed by slug, for maps that build their pins
+ * from something other than `listAreaPins` (the off-plan map groups projects).
+ * Empty when Supabase is absent or the read fails; the cards then draw their
+ * plain head.
+ */
+export async function listAreaHeroImages(): Promise<Record<string, string>> {
+  if (!isSupabaseConfigured) return {};
+  try {
+    const sb = createSupabasePublicClient();
+    const { data } = await sb
+      .from("areas")
+      .select("slug, hero:hero_image_id(storage_key, deleted_at)")
+      .not("hero_image_id", "is", null);
+    const out: Record<string, string> = {};
+    for (const r of data ?? []) {
+      const url = heroUrl((r as { hero?: unknown }).hero);
+      if (url) out[r.slug] = url;
+    }
+    return out;
+  } catch {
+    return {};
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -348,7 +339,9 @@ export async function listAreaPins(
 
     const { data: areas } = await sb
       .from("areas")
-      .select("id, slug, name, name_ar, geo")
+      .select(
+        "id, slug, name, name_ar, geo, hero:hero_image_id(storage_key, deleted_at)",
+      )
       .eq("kind", "area")
       .or(emirateParentFilter(em.id, emirate))
       .order("name", { ascending: true });
@@ -366,8 +359,8 @@ export async function listAreaPins(
       .in("area_id", ids);
 
     // Pin labels are display; `slug` stays as authored — it keys
-    // AREA_CENTROIDS, areaTag() and seedStatsForSlug(), and folding it would
-    // silently drop every pin's centroid and stats on /ar.
+    // AREA_CENTROIDS, and folding it would silently drop every pin's
+    // centroid on /ar.
     const pinLocale = await currentLocale();
     const tally = tallyAreaListings(props ?? [], mode, segment);
 
@@ -381,7 +374,6 @@ export async function listAreaPins(
         AREA_CENTROIDS[a.slug] ??
         computeCentroid(tally.points.get(a.id) ?? []);
       if (!centroid) continue; // nowhere to place it
-      const { median, yoy } = seedStatsForSlug(a.slug);
       pins.push({
         id: a.id,
         slug: a.slug,
@@ -391,12 +383,10 @@ export async function listAreaPins(
           }
         ).name,
         emirate,
-        tag: areaTag(a.slug),
         lng: centroid.lng,
         lat: centroid.lat,
         count,
-        medianPerFt2: median,
-        yoyChange: yoy,
+        imageUrl: heroUrl((a as { hero?: unknown }).hero),
       });
     }
     return pins;
@@ -481,21 +471,18 @@ function seedAreaPins(emirate: string, mode?: ListingMode): AreaPin[] {
   for (const [slug, centroid] of Object.entries(AREA_CENTROIDS)) {
     const seed = SEED_AREA_GUIDES.find((s) => s.slug === slug);
     if (!seed) continue;
-    const { median, yoy } = seedStatsForSlug(slug);
     pins.push({
       id: `seed:${slug}`,
       slug,
       name: seed.name,
       emirate,
-      tag: areaTag(slug),
       lng: centroid.lng,
       lat: centroid.lat,
       // Deterministic non-zero count so the offline map isn't blank. A
       // mode-scoped caller gets 0 instead: the seeds carry no mode, so any
       // number here would be the same misrepresentation we just removed.
       count: mode ? 0 : 4 + ((i * 7) % 17),
-      medianPerFt2: median,
-      yoyChange: yoy,
+      imageUrl: null,
     });
     i += 1;
   }
