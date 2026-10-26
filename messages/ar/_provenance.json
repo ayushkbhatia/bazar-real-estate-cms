@@ -8190,5 +8190,40 @@
     "sourceHash": "9f58e2b61ca4",
     "reviewed": false,
     "note": "Six-form plural; عقار (property) rather than منزل (home), matching the English change from homes to properties."
+  },
+  "pages.offPlan.rail.viewAllIn": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "5667264e74d8",
+    "reviewed": false,
+    "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
+  },
+  "pages.offPlan.rail.previous": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "90b469d3d0e1",
+    "reviewed": false,
+    "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
+  },
+  "pages.offPlan.rail.more": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "e44339e56a76",
+    "reviewed": false,
+    "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
+  },
+  "pages.offPlan.rail.track": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "1d256995b291",
+    "reviewed": false,
+    "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
+  },
+  "pages.offPlan.rail.showAll": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "3844a74c3adc",
+    "reviewed": false,
+    "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
   }
 }
