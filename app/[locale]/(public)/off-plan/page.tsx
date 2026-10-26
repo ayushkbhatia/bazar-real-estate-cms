@@ -247,7 +247,9 @@ export default async function NewProjectsPage({
             more: tp.raw("offPlan.rail.more") as string,
             track: tp.raw("offPlan.rail.track") as string,
           }}
-          showAllLabel={tp("offPlan.rail.showAll")}
+          showAllLabel={
+            str(mapCopy, "show_all_label") ?? tp("offPlan.rail.showAll")
+          }
           // The rail holds projects, so its "view every launch" opens every
           // project — not the property search, which lists units. An area's
           // own link below still narrows that search to the area.
@@ -261,7 +263,9 @@ export default async function NewProjectsPage({
             count: g.count,
             countLabel: tp("launches.projects", { count: g.count }),
             viewAllHref: `/off-plan/search?area=${encodeURIComponent(g.slug)}`,
-            viewAllLabel: groupCtaLabel,
+            // {name} becomes the area's name; blank falls back to the
+            // catalogue's "View all in {name}" inside the rail.
+            viewAllLabel: groupCtaLabel?.replaceAll("{name}", g.name) ?? null,
           }))}
           cards={railItems.map(({ development, areaSlug }) => ({
             key: development.id,
