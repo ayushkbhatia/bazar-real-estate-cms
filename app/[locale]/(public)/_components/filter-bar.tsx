@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, type ReactNode } from "react";
 import { useQueryStates } from "nuqs";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { BottomSheet } from "@/components/brand/mobile";
@@ -60,9 +60,22 @@ type Props = {
    */
   mode?: SearchSurface;
   areas: AreaOption[];
+  /**
+   * Drawn at the bar's inline start, before the search box: Sort and the
+   * grid / list / map toggle. Start, not left — so it sits on the left in
+   * English and on the right in Arabic (client, Oct 2026). Shown at every
+   * width.
+   */
+  leading?: ReactNode;
+  /**
+   * The rest of the filters (segment, completion, amenities), after the
+   * price on desktop — one band instead of three rows — and inside the
+   * filter sheet on a phone.
+   */
+  trailing?: ReactNode;
 };
 
-export function FilterBar({ areas }: Props) {
+export function FilterBar({ areas, leading, trailing }: Props) {
   const tr = useTranslations("search");
   const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
@@ -304,6 +317,9 @@ export function FilterBar({ areas }: Props) {
       )}
     >
       <div className="flex flex-wrap items-center gap-3 bz-pill-gutter">
+        {leading ? (
+          <div className="flex shrink-0 items-center gap-2">{leading}</div>
+        ) : null}
         {/* Free-text search — full width on mobile, fixed on desktop */}
         <label className="relative flex-1 md:flex-none min-w-0">
           <span className="sr-only">{tr("filters.search")}</span>
@@ -341,8 +357,12 @@ export function FilterBar({ areas }: Props) {
         </Button>
 
         {/* Desktop inline controls */}
-        <div className="hidden md:flex md:flex-1 md:flex-wrap md:items-center md:gap-3">
+        {/* `md:contents`: the controls join the row above as its own items,
+            so the whole bar — sort, view, search, every filter — flows as one
+            wrapping band rather than a column squeezed beside the search. */}
+        <div className="hidden md:contents">
           {controls(false)}
+          {trailing}
           <div className="ms-auto flex items-center gap-2">{saveClear}</div>
         </div>
       </div>
@@ -374,7 +394,12 @@ export function FilterBar({ areas }: Props) {
           </>
         }
       >
-        <div className="flex flex-col gap-5">{controls(true)}</div>
+        <div className="flex flex-col gap-5">
+          {controls(true)}
+          {trailing ? (
+            <div className="flex flex-wrap items-center gap-3">{trailing}</div>
+          ) : null}
+        </div>
       </BottomSheet>
     </div>
   );
