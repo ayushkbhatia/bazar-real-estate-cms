@@ -250,9 +250,24 @@ export function TestimonialCarousel({ items }: { items: Testimonial[] }) {
           .bz-treviews__item--dup { display: flex; }
         }
 
+        /*
+
+         * English travels left to right, the opposite of /ar (client, Oct 2026).
+
+         * The track starts -50% (the second copy's first tile where the first
+
+         * copy's sits, an identical frame) and runs back to 0, so it moves
+
+         * rightward and still overhangs the container on both sides.
+
+         */
+
         @keyframes bz-treviews-scroll {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(-50%, 0, 0); }
+
+          from { transform: translate3d(-50%, 0, 0); }
+
+          to { transform: translate3d(0, 0, 0); }
+
         }
         /*
          * RTL needs its own keyframe, and it is not cosmetic — see the long

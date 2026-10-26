@@ -28,6 +28,10 @@ import { describe, expect, it } from "vitest";
  * running back to 0 keeps the track overhanging the container on both sides
  * AND moves it leftward.
  *
+ * Then English was reversed (Oct 2026): the client wants the two languages to
+ * travel in opposite directions, /ar right to left and English left to right.
+ * The English keyframe mirrors the RTL one — -50% back to 0.
+ *
  * Verified once by hand against the running page by stepping each animation's
  * `currentTime` through a full cycle: with the mirrored keyframe the track
  * overhangs the container on both sides at every point, so the window is never
@@ -37,6 +41,15 @@ import { describe, expect, it } from "vitest";
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 
 const MARQUEES = [
+  {
+    file: "app/[locale]/(public)/_components/home/testimonial-carousel.tsx",
+    track: "bz-treviews__track",
+    ltr: "bz-treviews-scroll",
+    rtl: "bz-treviews-scroll-rtl",
+    // Repeats its reviews an even number of times rather than spreading two
+    // copies; testimonial-carousel.test.tsx covers that.
+    doubled: false,
+  },
   {
     file: "app/[locale]/(public)/_components/partner-marquee.tsx",
     track: "bz-marquee__track",
@@ -55,36 +68,50 @@ function source(file: string): string {
   return readFileSync(join(REPO_ROOT, file), "utf8");
 }
 
-describe.each(MARQUEES)("$file", ({ file, track, ltr, rtl }) => {
-  const css = source(file);
+describe.each(MARQUEES)(
+  "$file",
+  ({ file, track, ltr, rtl, doubled = true }) => {
+    const css = source(file);
 
-  it("still scrolls left in the default direction", () => {
-    expect(css).toContain(`@keyframes ${ltr}`);
-    expect(css).toMatch(
-      new RegExp(`@keyframes ${ltr} \\{[^}]*\\}[^@]*translate3d\\(-50%`),
+    it("runs from -50% back to 0 in English — left to right, opposite to /ar", () => {
+      const block = css.slice(css.indexOf(`@keyframes ${ltr} {`));
+      const body = block.slice(
+        0,
+        block.indexOf("}", block.indexOf("to {")) + 1,
+      );
+      expect(body).toMatch(/from \{ transform: translate3d\(-50%, 0, 0\); \}/);
+      expect(body).toMatch(/to \{ transform: translate3d\(0, 0, 0\); \}/);
+    });
+
+    it("selects a mirrored keyframe under dir=rtl", () => {
+      expect(css).toMatch(
+        new RegExp(
+          `\\[dir="rtl"\\][^{]*\\.${track.replace("__", "__")}\\s*\\{[^}]*animation-name:\\s*${rtl}`,
+        ),
+      );
+    });
+
+    it("runs from +50% back to 0 — right to left, without leaving the start bare", () => {
+      const block = css.slice(css.indexOf(`@keyframes ${rtl}`));
+      const body = block.slice(
+        0,
+        block.indexOf("}", block.indexOf("to {")) + 1,
+      );
+      expect(body).toMatch(/from \{ transform: translate3d\(50%, 0, 0\); \}/);
+      expect(body).toMatch(/to \{ transform: translate3d\(0, 0, 0\); \}/);
+      expect(body).not.toContain("translate3d(-50%");
+    });
+
+    it.runIf(doubled)(
+      "keeps the doubled track that makes either direction seamless",
+      () => {
+        // A single copy wraps with a visible jump whichever way it moves. The
+        // back-reference is the assertion: both halves must spread the SAME set,
+        // whatever it is called. It used to require a SCREAMING_CASE name, which
+        // held only while both marquees read a module constant — the partner strip
+        // now takes its logos from the CMS as a prop.
+        expect(css).toMatch(/\[\.\.\.(\w+), ?\.\.\.\1\]/);
+      },
     );
-  });
-
-  it("selects a mirrored keyframe under dir=rtl", () => {
-    expect(css).toMatch(
-      new RegExp(`\\[dir="rtl"\\][^{]*\\.${track.replace("__", "__")}\\s*\\{[^}]*animation-name:\\s*${rtl}`),
-    );
-  });
-
-  it("runs from +50% back to 0 — right to left, without leaving the start bare", () => {
-    const block = css.slice(css.indexOf(`@keyframes ${rtl}`));
-    const body = block.slice(0, block.indexOf("}", block.indexOf("to {")) + 1);
-    expect(body).toMatch(/from \{ transform: translate3d\(50%, 0, 0\); \}/);
-    expect(body).toMatch(/to \{ transform: translate3d\(0, 0, 0\); \}/);
-    expect(body).not.toContain("translate3d(-50%");
-  });
-
-  it("keeps the doubled track that makes either direction seamless", () => {
-    // A single copy wraps with a visible jump whichever way it moves. The
-    // back-reference is the assertion: both halves must spread the SAME set,
-    // whatever it is called. It used to require a SCREAMING_CASE name, which
-    // held only while both marquees read a module constant — the partner strip
-    // now takes its logos from the CMS as a prop.
-    expect(css).toMatch(/\[\.\.\.(\w+), ?\.\.\.\1\]/);
-  });
-});
+  },
+);

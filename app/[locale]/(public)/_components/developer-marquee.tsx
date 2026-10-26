@@ -239,9 +239,15 @@ export function DeveloperMarquee({
           .bz-devmarquee__logo--padded { width: 180px; height: 120px; }
           .bz-devmarquee__name { font-size: 22px; }
         }
+        /*
+         * English travels left to right, the opposite of /ar (client, Oct 2026).
+         * The track starts -50% (the second copy's first tile where the first
+         * copy's sits, an identical frame) and runs back to 0, so it moves
+         * rightward and still overhangs the container on both sides.
+         */
         @keyframes bz-devmarquee-scroll {
-          from { transform: translate3d(0, 0, 0); }
-          to { transform: translate3d(-50%, 0, 0); }
+          from { transform: translate3d(-50%, 0, 0); }
+          to { transform: translate3d(0, 0, 0); }
         }
         /*
          * RTL runs the other way, and this is not cosmetic.
@@ -255,8 +261,8 @@ export function DeveloperMarquee({
          *
          * So the RTL loop starts the track +50% (the second copy's first
          * tile sits where the first copy's does, an identical frame) and
-         * runs back to 0. The strip still travels right to left, the way
-         * the client asked for /ar, without ever leaving the start edge
+         * runs back to 0. The strip travels right to left on /ar, the
+         * opposite of English, as the client asked, without ever leaving the start edge
          * empty; the doubled track makes the wrap seamless.
          */
         [dir="rtl"] .bz-devmarquee__track {
