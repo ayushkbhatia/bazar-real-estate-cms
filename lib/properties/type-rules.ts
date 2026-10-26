@@ -25,6 +25,14 @@ export type PropertyTypeRules = {
    * compares them on, and a plot of land is nothing but its plot.
    */
   plotInKeyFacts: boolean;
+  /**
+   * Whether a listing of this type must name a developer before it can be
+   * saved or published. Land, hotel apartments and commercial stock often
+   * have none worth naming; for those the editor can choose "No developer",
+   * which stores no developer at all, so nothing appears on the developer
+   * pages or carousels (client, Oct 2026).
+   */
+  developer: "required" | "optional";
 };
 
 const DEFAULT_RULES: PropertyTypeRules = {
@@ -32,6 +40,7 @@ const DEFAULT_RULES: PropertyTypeRules = {
   plot: "optional",
   rooms: true,
   plotInKeyFacts: false,
+  developer: "required",
 };
 
 const RULES: Readonly<Record<string, PropertyTypeRules>> = {
@@ -43,11 +52,22 @@ const RULES: Readonly<Record<string, PropertyTypeRules>> = {
     plot: "required",
     rooms: false,
     plotInKeyFacts: true,
+    developer: "optional",
   },
+  hotel_apartment: { ...DEFAULT_RULES, developer: "optional" },
+  office: { ...DEFAULT_RULES, developer: "optional" },
+  building: { ...DEFAULT_RULES, developer: "optional" },
+  retail: { ...DEFAULT_RULES, developer: "optional" },
+  commercial_villa: { ...DEFAULT_RULES, developer: "optional" },
 };
 
 export function typeRules(type: string | null | undefined): PropertyTypeRules {
   return (type && RULES[type]) || DEFAULT_RULES;
+}
+
+/** Whether a listing of this type can be saved and published with no developer. */
+export function developerOptional(type: string | null | undefined): boolean {
+  return typeRules(type).developer === "optional";
 }
 
 /** The facts a listing card shows, with the ones its type has no use for blanked. */

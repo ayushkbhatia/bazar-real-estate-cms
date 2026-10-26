@@ -82,6 +82,10 @@ import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
 import type { AmenityOption } from "@/lib/amenities";
 import type { AddAmenityToTaxonomyResult } from "../../_fields/amenity-actions";
+import { developerOptional } from "@/lib/properties/type-rules";
+
+/** The Select token for "No developer"; stored as a blank developer. */
+const NO_DEVELOPER = "__none__";
 
 export type AreaOption = { id: string; name: string; kind: string };
 export type DeveloperOption = { id: string; name: string };
@@ -242,6 +246,8 @@ export function PropertyEditForm({
   const propertyForm = watch("property_form") ?? null;
   const showPropertyForm = isSaleMode(mode);
   const developerId = watch("developer_id") ?? "";
+  // Land, hotel apartments and the commercial types may have no developer.
+  const noDeveloperAllowed = developerOptional(type);
   const tenure = watch("tenure") ?? null;
   const furnishing = watch("furnishing") ?? null;
   const areaId = watch("area_id") ?? null;
@@ -573,11 +579,25 @@ export function PropertyEditForm({
                 />
               ) : null}
             </div>
-            <Select value={developerId} onValueChange={onDeveloperChange}>
+            <Select
+              // Radix reserves "" for "nothing chosen", so "No developer" has
+              // its own token and is stored as a blank developer.
+              value={
+                developerId === "" && noDeveloperAllowed
+                  ? NO_DEVELOPER
+                  : developerId
+              }
+              onValueChange={(v) =>
+                onDeveloperChange(v === NO_DEVELOPER ? "" : v)
+              }
+            >
               <SelectTrigger id="developer_id">
                 <SelectValue placeholder="Choose a developer" />
               </SelectTrigger>
               <SelectContent>
+                {noDeveloperAllowed ? (
+                  <SelectItem value={NO_DEVELOPER}>No developer</SelectItem>
+                ) : null}
                 {sortedDevelopers.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name}
@@ -588,7 +608,9 @@ export function PropertyEditForm({
             <span className="text-[11.5px] text-bz-muted">
               {savingDeveloper
                 ? "Saving…"
-                : "Required. The developer behind this listing — shown on the public property page and required before it can be published. Saved as soon as you pick one."}
+                : noDeveloperAllowed
+                  ? "Optional for this type. Pick the developer, or No developer to publish without one; a listing with no developer never appears on the developer pages. Saved as soon as you pick."
+                  : "Required. The developer behind this listing — shown on the public property page and required before it can be published. Saved as soon as you pick one."}
             </span>
             <FieldError
               message={

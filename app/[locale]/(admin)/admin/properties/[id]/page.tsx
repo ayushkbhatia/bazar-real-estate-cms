@@ -36,6 +36,7 @@ import { PublishCard, type PublishInput } from "./_publish-card";
 import { AssignedAgentCard } from "./_components/assigned-agent-card";
 import { SalesforceSourceCard } from "./_components/salesforce-source-card";
 import { getSalesforceListingForProperty } from "@/lib/queries/salesforce-listings";
+import { developerOptional } from "@/lib/properties/type-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -283,6 +284,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
   const publishInput: PublishInput = {
     status: property.status,
     has_developer: initial.developer_id !== "",
+    developer_optional: developerOptional(initial.type),
     mode: property.mode,
     property_form: property.property_form,
     listing_permit_no: property.listing_permit_no,
