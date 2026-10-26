@@ -124,7 +124,8 @@ export const STATUS_PILLS = [
   {
     id: "off_plan",
     text: "Off-plan",
-    text_ar: "على الخارطة",
+    // The client's word for off-plan (Oct 2026), as the hero stats already say it.
+    text_ar: "قيد الإنشاء",
     usedOn: "Home off-plan projects · project pages · article project cards",
   },
   {
