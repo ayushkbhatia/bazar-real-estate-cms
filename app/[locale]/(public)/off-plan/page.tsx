@@ -331,6 +331,9 @@ export default async function NewProjectsPage({
           imageUrl={interestImage?.url ?? null}
           imageAlt={interestImage?.alt ?? null}
           imageLabel={interestImage?.label ?? null}
+          eyebrow={str(interest, "eyebrow")}
+          heading={str(interest, "heading")}
+          body={str(interest, "body")}
         />
       ) : null,
 

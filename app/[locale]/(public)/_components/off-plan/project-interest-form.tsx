@@ -22,8 +22,15 @@ export async function ProjectInterestForm({
   imageUrl,
   imageAlt,
   imageLabel,
+  eyebrow,
+  heading,
+  body,
 }: {
   form: ResolvedForm;
+  /** The card's words, from the off-plan master page; blank keeps the catalogue's. */
+  eyebrow?: string | null;
+  heading?: string | null;
+  body?: string | null;
   projects: OffplanProjectOption[];
   /** Resolved URL of the asset picked in the master-page editor. */
   imageUrl?: string | null;
@@ -46,13 +53,13 @@ export async function ProjectInterestForm({
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
           >
-            {t("interestEyebrow")}
+            {eyebrow ?? t("interestEyebrow")}
           </div>
           <h2 className="serif mt-2 text-[32px] md:text-[40px] font-normal leading-[1.05] tracking-tight">
-            {t("interestHeading")}
+            {heading ?? t("interestHeading")}
           </h2>
           <p className="mt-3 max-w-[46ch] text-[14.5px] text-bz-ink-2 leading-relaxed">
-            {t("interestBody")}
+            {body ?? t("interestBody")}
           </p>
 
           <FormRenderer
