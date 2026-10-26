@@ -54,6 +54,7 @@ import type {
   SectionDef,
   SectionValues,
 } from "./types";
+import { searchFilterCopyFields } from "./search-filter-copy";
 
 /** Keys are storage. Renaming one orphans its document — add, never rename. */
 export type LibrarySectionKey =
@@ -518,8 +519,9 @@ const SEARCH_FILTERS_SECTION: SectionDef = {
   description: "The filter bar on every search results page.",
   locked: true,
   dataNote:
-    "Amenities come from Settings → Property fields, with their Arabic names. Leave the list empty to offer every active amenity.",
+    "Every word in the filter bar, in English and Arabic — leave a box blank to keep the words shown greyed in it. Amenities come from Settings → Property fields, with their Arabic names; leave that list empty to offer every active amenity.",
   fields: [
+    ...searchFilterCopyFields(),
     textField("amenities_label", "Amenities filter · button", { max: 40 }),
     {
       key: "amenities",
@@ -551,7 +553,7 @@ const SEARCH_FILTERS: LibrarySectionDef = {
   key: "search_filters",
   label: "Search filters",
   description:
-    "Which amenities the search results' Amenities filter offers, and the filter bar's words.",
+    "Every word in the search results' filter bar, and which amenities its Amenities filter offers.",
   itemLabel: "filter setting",
   shape: "fields",
   resetLabel: "Reset to the shipped filters",

@@ -189,6 +189,40 @@ export default async function AdminPagesPage() {
         <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
           <div>
             <h2 className="text-[14px] font-medium">
+              <Link
+                href="/admin/pages/sub/section/search_filters"
+                className="hover:text-bz-accent"
+              >
+                Search filters
+              </Link>
+            </h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              The filter bar on every search results page — every label,
+              option and button in English and Arabic, and which amenities the
+              Amenities filter offers.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <li>
+              <Link
+                href="/admin/pages/sub/section/search_filters"
+                className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+              >
+                <span className="text-[13.5px] font-medium">Search filters</span>
+                <span className="mono text-[11px] text-bz-muted">
+                  /buy/search · /rent/search · /off-plan/search
+                </span>
+                <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                  Labels, options, buttons and amenities
+                </span>
+              </Link>
+            </li>
+          </ul>
+        </section>
+
+        <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+          <div>
+            <h2 className="text-[14px] font-medium">
               <Link href="/admin/pages/pills" className="hover:text-bz-accent">
                 Pills
               </Link>

@@ -7,6 +7,7 @@ import { cache } from "react";
 import { getLibrarySectionContent } from "@/lib/queries/content-sections";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import type { Locale } from "@/lib/i18n/locales";
+import { searchFilterOverrides } from "@/lib/master-pages/search-filter-copy";
 
 /** One choice in the Amenities filter. `value` goes in the URL and the query. */
 export type AmenityChoice = { value: string; label: string };
@@ -15,6 +16,8 @@ export type SearchFilterSettings = {
   /** The Amenities button's words, in the page's language. */
   amenitiesLabel: string;
   amenities: AmenityChoice[];
+  /** Edited words, as a patch over the `search` catalogue (blank = shipped). */
+  overrides: Record<string, Record<string, string>>;
 };
 
 /**
@@ -52,6 +55,7 @@ export const getSearchFilterSettings = cache(
       amenitiesLabel:
         (typeof values.amenities_label === "string" && values.amenities_label.trim()) ||
         (locale === "ar" ? "المرافق" : "Amenities"),
+      overrides: searchFilterOverrides(values),
       amenities: offered
         .filter((a) => (seen.has(a.label) ? false : (seen.add(a.label), true)))
         .map((a) => ({ value: a.label, label: label(a) })),
