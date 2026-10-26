@@ -146,6 +146,7 @@ export default async function AreasPage({
         heading={str(spotlightsV, "heading")}
         sub={str(spotlightsV, "sub")}
         tileEyebrow={str(spotlightsV, "tile_eyebrow")}
+        tileCta={str(spotlightsV, "tile_cta")}
         items={list<Record<string, unknown>>(spotlightsV, "items").map((i) => {
           const image = imageProps(i.image);
           return {
