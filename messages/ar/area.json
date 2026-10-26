@@ -44,7 +44,8 @@
   },
   "cards": {
     "exploreHomes": "استكشف المنازل",
-    "homesForSale": "{count, plural, zero {# منزل للبيع} one {منزل واحد للبيع} two {منزلان للبيع} few {# منازل للبيع} many {# منزلاً للبيع} other {# منزل للبيع}}"
+    "homesForSale": "{count, plural, zero {# منزل للبيع} one {منزل واحد للبيع} two {منزلان للبيع} few {# منازل للبيع} many {# منزلاً للبيع} other {# منزل للبيع}}",
+    "propertiesForSale": "{count, plural, zero {# عقار للبيع} one {عقار واحد للبيع} two {عقاران للبيع} few {# عقارات للبيع} many {# عقاراً للبيع} other {# عقار للبيع}}"
   },
   "lifestyle": {
     "heading": "كيف تبدو الحياة في {area}.",

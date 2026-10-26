@@ -44,7 +44,8 @@
   },
   "cards": {
     "exploreHomes": "Explore homes",
-    "homesForSale": "{count, plural, one {# home for sale} other {# homes for sale}}"
+    "homesForSale": "{count, plural, one {# home for sale} other {# homes for sale}}",
+    "propertiesForSale": "{count, plural, one {# Property for Sale} other {# Properties for Sale}}"
   },
   "lifestyle": {
     "heading": "What it feels like to live in {area}.",

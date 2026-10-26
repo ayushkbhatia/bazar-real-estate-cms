@@ -57,19 +57,21 @@ export async function AreaCards({
   const entries = await listAreasWithCounts();
 
   if (cards && cards.length > 0) {
-    const countBySlug = new Map(entries.map((e) => [e.slug, e.listing_count]));
+    const countBySlug = new Map(
+      entries.map((e) => [e.slug.toLowerCase(), e.listing_count]),
+    );
     const configured = cards
       .filter((c) => c.enabled !== false)
       .map((c, i) => {
         const slug = c.slug ?? "";
-        const count = countBySlug.get(slug);
+        const count = cardCount(c, countBySlug);
         return {
           key: `${slug || "card"}-${i}`,
           href: c.href ?? (slug ? `/areas/${slug}` : "/areas"),
           name: c.name ?? slug,
           countLabel:
             count !== undefined
-              ? t("cards.homesForSale", { count })
+              ? t("cards.propertiesForSale", { count })
               : t("cards.exploreHomes"),
           imgLabel: c.imageLabel ?? slug,
           imgUrl: c.imageUrl,
@@ -98,11 +100,36 @@ export async function AreaCards({
         key: c.id,
         href: `/areas/${c.slug}`,
         name: c.name,
-        countLabel: t("cards.homesForSale", { count: c.listing_count }),
+        countLabel: t("cards.propertiesForSale", { count: c.listing_count }),
         imgLabel: c.slug,
       }))}
     />
   );
+}
+
+/**
+ * The live count for a configured card. The card's link decides which area it
+ * counts, because that is the page the visitor lands on: a card named "Zayed
+ * City" linking to /areas/zayed-city but still carrying an old `khalifa-city`
+ * slug must count Zayed City. The slug is the fallback for cards with no area
+ * link. Both are matched case-blind — slugs typed as "Saadiyat-Island" found
+ * nothing, and those cards fell back to "Explore homes" beside cards with a
+ * count.
+ */
+export function cardCount(
+  card: Pick<AreaCard, "href" | "slug">,
+  countBySlug: Map<string, number>,
+): number | undefined {
+  const fromHref = card.href?.match(
+    /^(?:\/ar)?\/areas\/([^/?#]+)\/?(?:[?#].*)?$/,
+  )?.[1];
+  for (const candidate of [fromHref, card.slug]) {
+    const count = candidate
+      ? countBySlug.get(candidate.trim().toLowerCase())
+      : undefined;
+    if (count !== undefined) return count;
+  }
+  return undefined;
 }
 
 type GridCard = {
