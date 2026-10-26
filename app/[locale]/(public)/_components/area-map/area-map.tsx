@@ -28,7 +28,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "@/components/i18n/link";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -48,6 +48,7 @@ import { formatPrice, usePreferences } from "@/lib/preferences";
 import { useTranslations } from "next-intl";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
 import { emirateMessageKey } from "@/lib/areas/emirates";
+import { constrained } from "../gallery-prefetch";
 
 /*
  * City overviews — where the camera sits per emirate (matches the handoff).
@@ -76,21 +77,19 @@ import { emirateMessageKey } from "@/lib/areas/emirates";
  * size on every screen.
  */
 type CityCamera = { center: [number, number]; zoom: number };
-const CITIES: Record<
-  string,
-  CityCamera & { narrowCentre: [number, number] }
-> = {
-  "abu-dhabi": {
-    center: [54.46, 24.48],
-    zoom: 10.6,
-    narrowCentre: [54.5, 24.48],
-  },
-  dubai: {
-    center: [55.22, 25.14],
-    zoom: 10.4,
-    narrowCentre: [55.22, 25.14],
-  },
-};
+const CITIES: Record<string, CityCamera & { narrowCentre: [number, number] }> =
+  {
+    "abu-dhabi": {
+      center: [54.46, 24.48],
+      zoom: 10.6,
+      narrowCentre: [54.5, 24.48],
+    },
+    dubai: {
+      center: [55.22, 25.14],
+      zoom: 10.4,
+      narrowCentre: [55.22, 25.14],
+    },
+  };
 
 /**
  * Degrees of longitude the emirate overview keeps in frame.
@@ -156,7 +155,11 @@ const MIN_ZOOM = 8.5;
  * stretched east-west — nowhere near enough to move a dot between two
  * centroids that are ~0.1° apart, and this never leaves the client.
  */
-function dotsNearest(area: AreaPin, areas: AreaPin[], dots: AreaDot[]): AreaDot[] {
+function dotsNearest(
+  area: AreaPin,
+  areas: AreaPin[],
+  dots: AreaDot[],
+): AreaDot[] {
   if (areas.length < 2) return dots;
   return dots.filter((d) => {
     let winner = "";
@@ -344,6 +347,7 @@ export function AreaMap({
   const mapRef = useRef<MapLibreMap | null>(null);
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [dot, setDot] = useState<AreaDot | null>(null);
+  useWarmFlyoutPhotos(areas, map !== null);
   const reduced = usePrefersReducedMotion();
   const phone = useIsPhone();
   // Skip the emirate/focus fly effects on first mount — the constructor
@@ -403,7 +407,10 @@ export function AreaMap({
       if (!m) return;
       const mine = dotsNearest(a, areas, dots);
       if (mine.length === 0) return flyToArea(a, true);
-      const bounds = new maplibregl.LngLatBounds([a.lng, a.lat], [a.lng, a.lat]);
+      const bounds = new maplibregl.LngLatBounds(
+        [a.lng, a.lat],
+        [a.lng, a.lat],
+      );
       for (const d of mine) bounds.extend([d.lng, d.lat]);
       const cam = m.cameraForBounds(bounds, { padding: 48 });
       if (!cam?.center || cam.zoom == null) return flyToArea(a, true);
@@ -427,8 +434,7 @@ export function AreaMap({
    * and the reset button a visitor can press at any width.
    */
   const cameraFor = useCallback(
-    (em: string) =>
-      overviewCamera(em, containerRef.current?.clientWidth ?? 0),
+    (em: string) => overviewCamera(em, containerRef.current?.clientWidth ?? 0),
     [],
   );
 
@@ -796,6 +802,58 @@ function Overlay({
   );
 }
 
+/** The flyout photo's `sizes`. Shared with the warm-up so both pick one URL. */
+const FLYOUT_IMAGE_SIZES = "(max-width: 767px) 100vw, 316px";
+
+const warmedFlyoutPhotos = new Set<string>();
+
+/**
+ * Fetches every area's flyout photo once the map is up, so switching between
+ * area pills shows the card's photo at once instead of loading it after the
+ * card opens (client, Oct 2026).
+ *
+ * A detached `<img>` given the flyout's own `srcset` and `sizes`, from the same
+ * `getImageProps` its `<Image>` uses, picks the same `w=` the card will at this
+ * viewport and density, so the card finds it in the browser cache. It waits for
+ * the map (itself mounted only as the section scrolls into view) and then for
+ * an idle moment, so none of this is in the page-load window. Each URL is
+ * requested once per page load, at low priority; data-saver and 2G
+ * connections are skipped, as the gallery and nav warm-ups do.
+ */
+function useWarmFlyoutPhotos(areas: AreaPin[], ready: boolean) {
+  const key = areas.map((a) => a.imageUrl ?? "").join("|");
+  useEffect(() => {
+    if (!ready || typeof window === "undefined" || constrained()) return;
+    const urls = key.split("|").filter((u) => u && !warmedFlyoutPhotos.has(u));
+    if (urls.length === 0) return;
+    const run = () => {
+      for (const src of urls) {
+        if (warmedFlyoutPhotos.has(src)) continue;
+        warmedFlyoutPhotos.add(src);
+        const { props } = getImageProps({
+          src,
+          alt: "",
+          fill: true,
+          sizes: FLYOUT_IMAGE_SIZES,
+        });
+        const img = new window.Image();
+        img.decoding = "async";
+        img.fetchPriority = "low";
+        // `sizes` before `srcset`: the candidate is chosen when srcset lands.
+        if (props.sizes) img.sizes = props.sizes;
+        if (props.srcSet) img.srcset = props.srcSet;
+        img.src = props.src;
+      }
+    };
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(run, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const t = setTimeout(run, 300);
+    return () => clearTimeout(t);
+  }, [key, ready]);
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // Flyout — area summary card
 // ─────────────────────────────────────────────────────────────────────
@@ -826,8 +884,8 @@ function Flyout({
               alt=""
               fill
               // 316px card on desktop; under md the card is a full-width
-              // bottom sheet.
-              sizes="(max-width: 767px) 100vw, 316px"
+              // bottom sheet. Warmed ahead by useWarmFlyoutPhotos.
+              sizes={FLYOUT_IMAGE_SIZES}
               className="object-cover"
             />
             <div className="bzmap-flyout__scrim" aria-hidden />
