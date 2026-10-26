@@ -33,6 +33,7 @@ const RECORD_NOUNS: Partial<Record<SeedKey, string>> = {
   agents: "advisor",
   areas: "area",
   forms: "form",
+  amenities: "amenity",
 };
 
 /**

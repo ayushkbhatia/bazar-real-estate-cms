@@ -107,7 +107,7 @@ const UNREFERENCED: Readonly<Record<string, string>> = {
   "app/[locale]/(public)/developments/[slug]/_components/advisor-section.tsx":
     "BF-2 backfill",
   "app/[locale]/(public)/_components/amenities-multi-select.tsx":
-    "BF-2 backfill; MoreFiltersDrawer has its own amenities control",
+    "BF-2 backfill; the search results have their own AmenitiesFilter",
   "app/[locale]/(public)/_components/card-pin-sync.tsx":
     "BF-2 backfill; a context provider nothing provides",
 

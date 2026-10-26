@@ -15,7 +15,8 @@ import {
   type SectionActions,
 } from "../../../master/[key]/_editor";
 import { saveLibrarySection, resetLibrarySection } from "../_actions";
-import type { MediaOption } from "../../../../_fields/types";
+import type { MediaOption, Seeds } from "../../../../_fields/types";
+import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,22 @@ async function fetchMedia(): Promise<MediaOption[]> {
   }));
 }
 
+/**
+ * Picker options for the sections that pick from live records. The search
+ * filters pick amenities from the taxonomy; the value stored is the English
+ * label, which is what a listing's `amenities` holds and the filter matches.
+ */
+async function seedsFor(key: string): Promise<Seeds> {
+  if (key !== "search_filters") return {};
+  const amenities = await listAmenitiesTaxonomy();
+  const options = amenities.map((a) => ({
+    name: a.label_ar ? `${a.label} · ${a.label_ar}` : a.label,
+    slug: a.label,
+    href: "",
+  }));
+  return { amenities: { options, current: [] } };
+}
+
 export default async function LibrarySectionEditorPage({ params }: PageProps) {
   const { key } = await params;
   if (!isLibrarySectionKey(key)) notFound();
@@ -64,9 +81,10 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
   // "bilingual" keeps the `_ar` twins in `values`. Without it the fold strips
   // them, the Arabic inputs render blank over stored content, and the next
   // save writes that blank back.
-  const [content, media] = await Promise.all([
+  const [content, media, seeds] = await Promise.all([
     getLibrarySectionContent(entry.key, "bilingual"),
     fetchMedia(),
+    seedsFor(entry.key),
   ]);
 
   return (
@@ -135,7 +153,7 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
           path={entry.usedOn[0]?.href ?? "/"}
           usingDefaults={content.usingDefaults}
           media={media}
-          seeds={{}}
+          seeds={seeds}
           actions={ACTIONS}
           // One section, so there is nothing to reorder.
           allowReorder={false}

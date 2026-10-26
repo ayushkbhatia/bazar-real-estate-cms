@@ -29,7 +29,8 @@ import { LgOnly } from "./lg-only";
 import { SortDropdown } from "./sort-dropdown";
 import { ViewToggle } from "./view-toggle";
 import { resolveSearchView } from "./search-view";
-import { MoreFiltersDrawer } from "./more-filters-drawer";
+import { AmenitiesFilter } from "./amenities-filter";
+import { getSearchFilterSettings } from "@/lib/queries/search-filters";
 import { Pagination } from "./pagination";
 import { SearchToggles } from "./search-toggles";
 import { DrawAreaTool } from "./draw-area-tool";
@@ -206,7 +207,7 @@ export async function SearchList({
    * `mode: "buy"` and, without the segment, wore the Buy facet's headline —
    * which is why /commercial/search read "Properties for Sale".
    */
-  const [{ rows, total }, areas, copy] = await Promise.all([
+  const [{ rows, total }, areas, copy, filterSettings] = await Promise.all([
     listPublishedProperties({
       mode: mode === "rent" ? "rent" : "buy",
       form: effectiveForm,
@@ -221,6 +222,7 @@ export async function SearchList({
       undefined,
       filters.segment,
     ),
+    currentLocale().then(getSearchFilterSettings),
   ]);
   // The gallery photos each card warms for its listing page (gallery-prefetch).
   const [t, cardLabels, galleryPreviews, unitLabels, prefs] = await Promise.all(
@@ -319,7 +321,13 @@ export async function SearchList({
             ) : null}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <MoreFiltersDrawer />
+            {/* The "More filters" drawer gave way to this one control at the
+                client's request (Oct 2026); its amenities are picked under
+                Pages & blocks → Sections → Search filters. */}
+            <AmenitiesFilter
+              label={filterSettings.amenitiesLabel}
+              choices={filterSettings.amenities}
+            />
             <SortDropdown />
             <ViewToggle defaultView={defaultView} />
           </div>
