@@ -85,7 +85,7 @@ const LAYOUT: Record<PhoneColumns, Layout> = {
     area: "text-[13px] text-bz-muted mt-1",
     facts: "mt-5 pt-4 border-t border-bz-border grid grid-cols-3 gap-3",
     factLabel: "text-[10.5px] uppercase tracking-wide text-bz-muted",
-    factValue: "mono text-[13px] mt-1",
+    factValue: "mono-en text-[13px] mt-1",
   },
   2: {
     // A flex column filling its grid cell, so `mt-auto` below can pin the
@@ -115,7 +115,7 @@ const LAYOUT: Record<PhoneColumns, Layout> = {
     // quarter name drops under its label instead of being cut off.
     fact: "flex flex-wrap items-baseline justify-between gap-x-2 sm:block",
     factLabel: "text-[10px] uppercase tracking-wide text-bz-muted sm:text-[10.5px]",
-    factValue: "mono text-[12px] sm:mt-1 sm:text-[13px]",
+    factValue: "mono-en text-[12px] sm:mt-1 sm:text-[13px]",
   },
 };
 
@@ -182,10 +182,12 @@ export async function DevelopmentCard({
           {/*
             The value follows the page's direction, and isolates its own.
 
-            `.mono` is here for the face — it is what picks up the Arabic
-            numerals role from /admin/settings/typography — but under
-            `:lang(ar)` it also forces `direction: ltr`, which is right for a
-            bare reference code and wrong for these. Measured on /ar/off-plan:
+            `.mono-en`: the mono face in English and the site's Arabic face on
+            /ar. It was `.mono`, whose Arabic face defaults to JetBrains Mono —
+            no Arabic glyphs, so "2.2 مليون درهم" showed the device's fallback
+            (client, Oct 2026). `.mono` under `:lang(ar)` also forces
+            `direction: ltr`, which is right for a bare reference code and
+            wrong for these. Measured on /ar/off-plan:
             every value sat at the opposite edge of its cell from its label,
             and "2.2 مليون درهم" read in the wrong order, the figure last.
             That rule is unlayered, so no utility can undo it; the inline

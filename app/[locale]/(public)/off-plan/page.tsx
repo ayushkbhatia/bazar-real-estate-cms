@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "@/components/i18n/link";
@@ -72,6 +72,9 @@ export default async function NewProjectsPage({
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
+  // The map rail is a client component and `pages` a server-only catalogue,
+  // so its words are translated here and handed down.
+  const tp = await getTranslations({ locale, namespace: "pages" });
 
   const [content, developments, areaCounts, interestForm] = await Promise.all([
     getMasterPageContent("off-plan"),
@@ -235,6 +238,16 @@ export default async function NewProjectsPage({
           body={str(mapCopy, "body")}
           allLabel={str(mapCopy, "all_label") ?? ""}
           allCount={groups.reduce((n, g) => n + g.count, 0)}
+          allCountLabel={tp("launches.projects", {
+            count: groups.reduce((n, g) => n + g.count, 0),
+          })}
+          railCopy={{
+            viewAllIn: tp.raw("offPlan.rail.viewAllIn") as string,
+            previous: tp.raw("offPlan.rail.previous") as string,
+            more: tp.raw("offPlan.rail.more") as string,
+            track: tp.raw("offPlan.rail.track") as string,
+          }}
+          showAllLabel={tp("offPlan.rail.showAll")}
           // The rail holds projects, so its "view every launch" opens every
           // project — not the property search, which lists units. An area's
           // own link below still narrows that search to the area.
@@ -246,6 +259,7 @@ export default async function NewProjectsPage({
             // The true published total, not the number of cards on the rail —
             // it is what makes the "view all" link mean something.
             count: g.count,
+            countLabel: tp("launches.projects", { count: g.count }),
             viewAllHref: `/off-plan/search?area=${encodeURIComponent(g.slug)}`,
             viewAllLabel: groupCtaLabel,
           }))}

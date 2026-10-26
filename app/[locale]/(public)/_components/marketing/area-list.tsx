@@ -67,7 +67,7 @@ export async function AreaList({ areas, ctaLabel }: Props) {
               {a.tagline}
             </p>
             {typeof a.count === "number" ? (
-              <p className="mono text-[12px] text-bz-muted mt-1.5 md:mt-2">
+              <p className="mono-en text-[12px] text-bz-muted mt-1.5 md:mt-2">
                 {t("listings", { count: a.count })}
               </p>
             ) : null}

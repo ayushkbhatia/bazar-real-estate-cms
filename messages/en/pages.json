@@ -89,7 +89,14 @@
     "listings": "{count, plural, one {# listing} other {# listings}}",
     "interestEyebrow": "Register your interest",
     "interestHeading": "Interested in a new project?",
-    "interestBody": "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans."
+    "interestBody": "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans.",
+    "rail": {
+      "viewAllIn": "View all in {name}",
+      "previous": "Previous projects in {name}",
+      "more": "More projects in {name}",
+      "track": "Projects in {name}",
+      "showAll": "Show all areas"
+    }
   },
   "launches": {
     "projects": "{count, plural, one {# project} other {# projects}}",

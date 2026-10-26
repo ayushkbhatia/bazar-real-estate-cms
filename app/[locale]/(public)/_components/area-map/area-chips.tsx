@@ -47,7 +47,7 @@ export function AreaChips({
                 that is the honest state, and "Yas Island 0" reads as broken. */}
             {a.count > 0 ? (
               <span
-                className={`mono text-[10.5px] ${active ? "" : "text-bz-muted"}`}
+                className={`mono-en text-[10.5px] ${active ? "" : "text-bz-muted"}`}
               >
                 {a.count}
               </span>

@@ -43,6 +43,8 @@ export type OffplanGroupView = {
   name: string;
   /** Published projects in the area — may exceed the number of cards shown. */
   count: number;
+  /** The count in words, in the page's language (server-translated). */
+  countLabel?: string;
   /** "View all" target for the area, when one resolves. */
   viewAllHref?: string | null;
   viewAllLabel?: string | null;
@@ -93,6 +95,9 @@ export function OffplanMapExplorer({
   cards,
   allLabel,
   allCount,
+  allCountLabel,
+  railCopy,
+  showAllLabel = "Show all areas",
   allViewAllHref = null,
   allViewAllLabel = null,
   eyebrow = "On the map",
@@ -109,6 +114,12 @@ export function OffplanMapExplorer({
   allLabel: string;
   /** Published projects across every area on the map. */
   allCount: number;
+  /** `allCount` in words, in the page's language. */
+  allCountLabel?: string;
+  /** The rail's own words, server-translated (see ProjectCarousel `copy`). */
+  railCopy?: Partial<Record<"viewAllIn" | "previous" | "more" | "track", string>>;
+  /** The "undo the area filter" button. */
+  showAllLabel?: string;
   /** Where the unfiltered rail's "view all" points. */
   allViewAllHref?: string | null;
   allViewAllLabel?: string | null;
@@ -199,7 +210,7 @@ export function OffplanMapExplorer({
             // auto` already resolves to 0 on the cross axis.
             className="inline-flex min-h-11 items-center text-[13px] text-bz-ink-2 underline underline-offset-4 hover:text-bz-ink md:min-h-0"
           >
-            Show all areas
+            {showAllLabel}
           </button>
         ) : null}
       </div>
@@ -210,6 +221,8 @@ export function OffplanMapExplorer({
           <ProjectCarousel
             name={selected?.name ?? allLabel}
             count={selected?.count ?? allCount}
+            countLabel={selected ? selected.countLabel : allCountLabel}
+            copy={railCopy}
             items={items}
             viewAllHref={selected ? selected.viewAllHref : allViewAllHref}
             viewAllLabel={selected ? selected.viewAllLabel : allViewAllLabel}
