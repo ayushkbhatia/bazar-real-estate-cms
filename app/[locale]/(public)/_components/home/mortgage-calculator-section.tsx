@@ -7,6 +7,30 @@ import { Check } from "lucide-react";
 import { totals } from "@/lib/mortgage";
 import { formatMoneyValue, usePreferences } from "@/lib/preferences";
 import type { SectionCopy } from "./section-copy";
+import {
+  MORTGAGE_TEASER_DEFAULTS,
+  type MortgageTeaserControls,
+} from "@/lib/master-pages/mortgage-teaser";
+
+/**
+ * The band's words as edited in Pages & blocks → Home → Mortgage calculator.
+ * Each is blank (null) unless an editor wrote one; blank reads the catalogue.
+ */
+export type MortgageTeaserCopy = Partial<
+  Record<
+    | "label_price"
+    | "label_down"
+    | "label_rate"
+    | "label_term"
+    | "label_monthly"
+    | "label_loan"
+    | "label_interest"
+    | "cta_label"
+    | "term_value"
+    | "cta_href",
+    string | null
+  >
+>;
 
 /**
  * Home "Mortgage calculator" (handoff §5). Always-dark section with four
@@ -39,7 +63,13 @@ export function MortgageCalculatorSection({
   eyebrow = "Mortgage calculator",
   heading = "Estimate your monthly payments before making your move",
   preApprovalHref,
+  copy = {},
+  controls = MORTGAGE_TEASER_DEFAULTS,
 }: SectionCopy & {
+  /** Labels and button, from the home master page. */
+  copy?: MortgageTeaserCopy;
+  /** Each slider's starting value and range, from the home master page. */
+  controls?: MortgageTeaserControls;
   /**
    * The mortgage application flow's entry link, when the flow is open to the
    * public (docs/mortgage, SPEC §4.1: "Home · Get pre-approval today").
@@ -54,10 +84,19 @@ export function MortgageCalculatorSection({
   const t = useTranslations("common.mortgageTeaser");
   const { prefs } = usePreferences();
   const money = (n: number) => formatMoneyValue(n, prefs);
-  const [price, setPrice] = useState(2_500_000);
-  const [downPct, setDownPct] = useState(20);
-  const [rate, setRate] = useState(4.25);
-  const [years, setYears] = useState(25);
+  // An editor's words where written, else the catalogue's.
+  const label = (
+    key: Exclude<keyof MortgageTeaserCopy, "term_value" | "cta_href">,
+    fallback: string,
+  ) => copy[key]?.trim() || fallback;
+  const termValue = (count: number) =>
+    copy.term_value?.includes("{years}")
+      ? copy.term_value.replaceAll("{years}", String(count))
+      : t("loanTermYears", { count });
+  const [price, setPrice] = useState(controls.price.value);
+  const [downPct, setDownPct] = useState(controls.down.value);
+  const [rate, setRate] = useState(controls.rate.value);
+  const [years, setYears] = useState(controls.term.value);
 
   const summary = useMemo(
     () =>
@@ -87,40 +126,32 @@ export function MortgageCalculatorSection({
         {/* Inputs */}
         <div className="flex flex-col gap-5 rounded-2xl bg-[oklch(0.22_0.005_80)] p-5 md:gap-6 md:rounded-none md:p-11">
           <Slider
-            label={t("propertyPrice")}
+            label={label("label_price", t("propertyPrice"))}
             display={money(price)}
             value={price}
-            min={500_000}
-            max={20_000_000}
-            step={50_000}
+            {...range(controls.price)}
             onChange={setPrice}
           />
           <Slider
-            label={t("downPayment")}
+            label={label("label_down", t("downPayment"))}
             display={`${downPct}%  ·  ${money(down)}`}
             value={downPct}
-            min={5}
-            max={80}
-            step={1}
+            {...range(controls.down)}
             onChange={setDownPct}
           />
           <div className="grid grid-cols-2 gap-5 sm:gap-6">
             <Slider
-              label={t("interestRate")}
+              label={label("label_rate", t("interestRate"))}
               display={`${rate.toFixed(2)}%`}
               value={rate}
-              min={1.5}
-              max={9}
-              step={0.05}
+              {...range(controls.rate)}
               onChange={setRate}
             />
             <Slider
-              label={t("loanTerm")}
-              display={t("loanTermYears", { count: years })}
+              label={label("label_term", t("loanTerm"))}
+              display={termValue(years)}
               value={years}
-              min={5}
-              max={30}
-              step={1}
+              {...range(controls.term)}
               onChange={setYears}
             />
           </div>
@@ -132,32 +163,35 @@ export function MortgageCalculatorSection({
             className="text-[11px] font-medium uppercase text-white/75"
             style={{ letterSpacing: "0.12em" }}
           >
-            {t("estimatedMonthly")}
+            {label("label_monthly", t("estimatedMonthly"))}
           </div>
           <div className="serif mt-3 text-[40px] md:text-[52px] leading-none tracking-tight">
             {money(summary.monthlyPaymentAed)}
           </div>
           <div className="mt-6 flex flex-col gap-3 md:mt-7 md:gap-3.5">
             {[
-              [t("loanAmount"), money(summary.principalAed)],
-              [t("downPayment"), money(down)],
-              [t("totalInterest"), money(summary.totalInterestAed)],
+              [label("label_loan", t("loanAmount")), money(summary.principalAed)],
+              [label("label_down", t("downPayment")), money(down)],
+              [
+                label("label_interest", t("totalInterest")),
+                money(summary.totalInterestAed),
+              ],
             ].map(([l, v]) => (
               <div
                 key={l}
                 className="flex justify-between border-b border-white/20 pb-2.5 text-[13px] md:pb-3"
               >
                 <span className="text-white/80">{l}</span>
-                <span className="mono">{v}</span>
+                <span className="mono-en">{v}</span>
               </div>
             ))}
           </div>
           <div className="mt-auto flex flex-col gap-2.5 pt-6 md:pt-7">
             <Link
-              href={preApprovalHref ?? "/tools/mortgage"}
+              href={preApprovalHref ?? (copy.cta_href?.trim() || "/tools/mortgage")}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white px-4 text-[13.5px] font-medium text-bz-ink transition-colors hover:bg-white/90"
             >
-              <Check size={16} /> {t("getPreApproval")}
+              <Check size={16} /> {label("cta_label", t("getPreApproval"))}
             </Link>
           </div>
         </div>
@@ -165,6 +199,13 @@ export function MortgageCalculatorSection({
     </section>
   );
 }
+
+/** A slider's range props from its settings. */
+const range = ({ min, max, step }: { min: number; max: number; step: number }) => ({
+  min,
+  max,
+  step,
+});
 
 /**
  * A label/value row over a native range input.
@@ -208,7 +249,11 @@ function Slider({
         <label className="text-[12.5px] font-medium text-[oklch(0.86_0.006_80)]">
           {label}
         </label>
-        <div className="mono text-[14px] text-white">{display}</div>
+        {/* `mono-en`: the mono face in English; on /ar the site's Arabic
+            face in the page's direction, as the map card's prices are —
+            `.mono` drew "2.5 مليون درهم" in a face with no Arabic and forced
+            it left to right (client, Oct 2026). */}
+        <div className="mono-en text-[14px] text-white">{display}</div>
       </div>
       <input
         type="range"
