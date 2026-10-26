@@ -23,7 +23,7 @@ describe("getSearchFilterSettings", () => {
     expect((await getSearchFilterSettings("en")).amenities).toEqual([]);
   });
 
-  it("offers only the switched-on picks, in order, in the page's language", async () => {
+  it("offers only the switched-on picks, alphabetically, in the page's language", async () => {
     values.amenities = [
       { enabled: true, amenity: "Spa" },
       { enabled: false, amenity: "Gym" },
@@ -34,5 +34,9 @@ describe("getSearchFilterSettings", () => {
       { value: "Spa", label: "سبا" },
       { value: "Private Swimming Pool", label: "مسبح خاص" },
     ]);
+    // English: A–Z by the English name, whatever the editor's order.
+    expect(
+      (await getSearchFilterSettings("en")).amenities.map((a) => a.label),
+    ).toEqual(["Private Swimming Pool", "Spa"]);
   });
 });
