@@ -21,6 +21,7 @@ import {
   PROPERTY_SEGMENT_HINTS,
   PROPERTY_SEGMENT_LABELS,
   PROPERTY_SEGMENTS,
+  PICKABLE_PROPERTY_TYPES,
   PROPERTY_TYPES,
   TENURES,
   FURNISHINGS,
@@ -454,7 +455,11 @@ export function PropertyEditForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_TYPES.map((t) => (
+                  {/* A legacy "commercial" listing still shows its own type. */}
+                  {(type === "commercial"
+                    ? PROPERTY_TYPES
+                    : PICKABLE_PROPERTY_TYPES
+                  ).map((t) => (
                     <SelectItem key={t} value={t}>
                       {TYPE_LABELS[t]}
                     </SelectItem>

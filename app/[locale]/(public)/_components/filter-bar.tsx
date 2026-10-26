@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PROPERTY_TYPES } from "@/lib/schemas/property";
+import { PICKABLE_PROPERTY_TYPES } from "@/lib/schemas/property";
 import { filterParsers } from "@/lib/filters/property";
 import {
   currencySymbol,
@@ -195,7 +195,7 @@ export function FilterBar({ areas }: Props) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={UNSET}>{tr("filters.anyType")}</SelectItem>
-          {PROPERTY_TYPES.map((t) => (
+          {PICKABLE_PROPERTY_TYPES.map((t) => (
             <SelectItem key={t} value={t}>
               {tr(`type.${t}`)}
             </SelectItem>
