@@ -180,7 +180,11 @@ export type SeedKey =
   | "properties"
   | "forms"
   /** Publishable advisors — the Page Builder's advisor card picks one. */
-  | "agents";
+  | "agents"
+  /** The amenity taxonomy (Settings → Property fields) — the search filter's
+   *  amenities are picked from it. The value is the English label, which is
+   *  what listings store. */
+  | "amenities";
 
 export type FieldDef =
   | SimpleFieldDef

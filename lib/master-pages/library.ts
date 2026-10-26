@@ -60,7 +60,8 @@ export type LibrarySectionKey =
   | "testimonials"
   | "shortlist"
   | "compare"
-  | "partners";
+  | "partners"
+  | "search_filters";
 
 export type LibrarySectionDef = {
   key: LibrarySectionKey;
@@ -501,11 +502,73 @@ const COMPARE: LibrarySectionDef = {
   section: COMPARE_SECTION,
 };
 
+/**
+ * The search results filters (client, Oct 2026): which amenities the
+ * Amenities filter offers, and the filter bar's words.
+ *
+ * Amenities are picked from the live taxonomy (Settings → Property fields),
+ * so a new amenity, or a new Arabic name for one, reaches the filter with no
+ * deploy. An empty list offers every active amenity.
+ */
+export const SEARCH_FILTERS_AMENITIES_MAX = 40;
+
+const SEARCH_FILTERS_SECTION: SectionDef = {
+  key: "search_filters",
+  label: "Search filters",
+  description: "The filter bar on every search results page.",
+  locked: true,
+  dataNote:
+    "Amenities come from Settings → Property fields, with their Arabic names. Leave the list empty to offer every active amenity.",
+  fields: [
+    textField("amenities_label", "Amenities filter · button", { max: 40 }),
+    {
+      key: "amenities",
+      label: "Amenities offered in the filter",
+      kind: "list",
+      itemLabel: "amenity",
+      max: SEARCH_FILTERS_AMENITIES_MAX,
+      help: "In the order they should appear. Switch one off to hide it without removing it.",
+      fields: [
+        toggle("enabled", "Show this amenity"),
+        {
+          key: "amenity",
+          label: "Amenity",
+          kind: "select",
+          optionsKey: "amenities",
+          placeholder: "Choose an amenity",
+        },
+      ],
+    },
+  ],
+  defaults: {
+    amenities_label: "Amenities",
+    amenities_label_ar: "المرافق",
+    amenities: [],
+  },
+};
+
+const SEARCH_FILTERS: LibrarySectionDef = {
+  key: "search_filters",
+  label: "Search filters",
+  description:
+    "Which amenities the search results' Amenities filter offers, and the filter bar's words.",
+  itemLabel: "filter setting",
+  shape: "fields",
+  resetLabel: "Reset to the shipped filters",
+  usedOn: [
+    { label: "Buy search", href: "/buy/search" },
+    { label: "Rent search", href: "/rent/search" },
+    { label: "Off-plan search", href: "/off-plan/search" },
+  ],
+  section: SEARCH_FILTERS_SECTION,
+};
+
 export const LIBRARY_SECTIONS: LibrarySectionDef[] = [
   TESTIMONIALS,
   PARTNERS,
   SHORTLIST,
   COMPARE,
+  SEARCH_FILTERS,
 ];
 
 export function getLibrarySection(key: string): LibrarySectionDef | null {
