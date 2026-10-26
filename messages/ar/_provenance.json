@@ -6367,12 +6367,6 @@
     "sourceHash": "557fe004f344",
     "reviewed": false
   },
-  "search.filters.completionHelp": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "6af5cf3d4854",
-    "reviewed": false
-  },
   "forms.sell.summaryIntent.sell": {
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
