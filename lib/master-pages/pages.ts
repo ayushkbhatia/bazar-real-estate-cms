@@ -1586,6 +1586,13 @@ const AREAS: MasterPageDef = {
           max: 40,
           optional: true,
         }),
+        // Was an English literal in the component, so /ar/areas read
+        // "Explore Hudayriyat Island" under Arabic cards (client, Oct 2026).
+        text("tile_cta", "Button on each tile", {
+          max: 40,
+          optional: true,
+          help: "{name} is the area's name.",
+        }),
         {
           key: "items",
           label: "Spotlights",
@@ -1607,6 +1614,8 @@ const AREAS: MasterPageDef = {
         heading: "Two islands worth a closer look.",
         sub: "Where demand, new supply, and lifestyle are converging right now.",
         tile_eyebrow: "Area Spotlight",
+        tile_cta: "Explore {name}",
+        tile_cta_ar: "استكشف {name}",
         items: [
           {
             enabled: true,
