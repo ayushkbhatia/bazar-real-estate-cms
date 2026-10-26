@@ -45,6 +45,45 @@ import { PROPERTY_CONSULTATION_PAGE } from "./sections/property-consultation";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 import { MORTGAGE_PAGE } from "./sections/mortgage";
+import { MORTGAGE_TEASER_DEFAULTS } from "./mortgage-teaser";
+
+/**
+ * Home → Mortgage calculator: the band's words, each blank falling back to
+ * the catalogue (`common.mortgageTeaser`), shown as the placeholder.
+ * [key, editor label, English fallback, Arabic fallback].
+ */
+const MORTGAGE_TEASER_TEXT: [string, string, string, string][] = [
+  ["label_price", "Label · property price", "Property price", "سعر العقار"],
+  ["label_down", "Label · down payment", "Down payment", "الدفعة الأولى"],
+  ["label_rate", "Label · interest rate", "Interest rate", "معدل الفائدة"],
+  ["label_term", "Label · loan term", "Loan term", "مدة القرض"],
+  ["label_monthly", "Label · monthly payment", "Estimated monthly payment", "القسط الشهري التقديري"],
+  ["label_loan", "Label · loan amount", "Loan amount", "مبلغ القرض"],
+  ["label_interest", "Label · total interest", "Total interest", "إجمالي الفائدة"],
+  ["cta_label", "Button · label", "Get pre-approval today", "احصل على موافقة مبدئية اليوم"],
+];
+
+/**
+ * The sliders' starting values and ranges. [key, editor label, fallback].
+ * The fallbacks are MORTGAGE_TEASER_DEFAULTS, which the band also reads.
+ */
+const MORTGAGE_TEASER_CONTROLS: [string, string, number][] = [
+  ["price_default", "Property price · starting value (AED)", MORTGAGE_TEASER_DEFAULTS.price.value],
+  ["price_min", "Property price · minimum (AED)", MORTGAGE_TEASER_DEFAULTS.price.min],
+  ["price_max", "Property price · maximum (AED)", MORTGAGE_TEASER_DEFAULTS.price.max],
+  ["price_step", "Property price · step (AED)", MORTGAGE_TEASER_DEFAULTS.price.step],
+  ["down_default", "Down payment · starting value (%)", MORTGAGE_TEASER_DEFAULTS.down.value],
+  ["down_min", "Down payment · minimum (%)", MORTGAGE_TEASER_DEFAULTS.down.min],
+  ["down_max", "Down payment · maximum (%)", MORTGAGE_TEASER_DEFAULTS.down.max],
+  ["rate_default", "Interest rate · starting value (%)", MORTGAGE_TEASER_DEFAULTS.rate.value],
+  ["rate_min", "Interest rate · minimum (%)", MORTGAGE_TEASER_DEFAULTS.rate.min],
+  ["rate_max", "Interest rate · maximum (%)", MORTGAGE_TEASER_DEFAULTS.rate.max],
+  ["rate_step", "Interest rate · step (%)", MORTGAGE_TEASER_DEFAULTS.rate.step],
+  ["term_default", "Loan term · starting value (years)", MORTGAGE_TEASER_DEFAULTS.term.value],
+  ["term_min", "Loan term · minimum (years)", MORTGAGE_TEASER_DEFAULTS.term.min],
+  ["term_max", "Loan term · maximum (years)", MORTGAGE_TEASER_DEFAULTS.term.max],
+];
+
 
 // ── shared default content ──────────────────────────────────────────────
 // Mirrors AD_COMMUNITIES / SALE_PROP_TYPES in
@@ -342,7 +381,42 @@ const HOME: MasterPageDef = {
       key: "mortgage_calculator",
       label: "Mortgage calculator",
       description: "Dark band with the inline repayment calculator.",
-      fields: [eyebrow(), heading()],
+      dataNote:
+        "Every label and the button, in English and Arabic, plus each slider's starting value and range. Blank keeps the words and numbers shown greyed in each box. The monthly figure is always computed live from the sliders.",
+      fields: [
+        eyebrow(),
+        heading(),
+        // ── Content ──
+        ...MORTGAGE_TEASER_TEXT.map(([key, label, en, ar]) =>
+          text(key, label, {
+            max: 60,
+            optional: true,
+            placeholder: en,
+            placeholderAr: ar,
+          }),
+        ),
+        text("term_value", "Loan term · value", {
+          max: 40,
+          optional: true,
+          placeholder: "{years} years",
+          placeholderAr: "{years} سنة",
+          help: "{years} is replaced with the slider's value.",
+        }),
+        link("cta_href", "Button · link", {
+          placeholder: "/tools/mortgage",
+          help: "Used while the mortgage application is closed; when it is open the button starts the application.",
+        }),
+        // ── Controls ──
+        ...MORTGAGE_TEASER_CONTROLS.map(([key, label, fallback]) =>
+          text(key, label, {
+            max: 12,
+            optional: true,
+            // A number, not prose.
+            i18n: false,
+            placeholder: String(fallback),
+          }),
+        ),
+      ],
       defaults: {
         eyebrow: "Mortgage calculator",
         heading: "Estimate your monthly payments before making your move",

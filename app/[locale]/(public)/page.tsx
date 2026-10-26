@@ -37,6 +37,7 @@ import { testimonialLimitOf } from "@/lib/master-pages/library";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import { cardFactProps } from "@/lib/properties/type-rules";
+import { mortgageTeaserControls } from "@/lib/master-pages/mortgage-teaser";
 
 export const revalidate = 60;
 
@@ -330,6 +331,19 @@ export default async function HomePage({
         key="mortgage_calculator"
         eyebrow={str(mortgageV, "eyebrow")}
         heading={str(mortgageV, "heading")}
+        copy={{
+          label_price: str(mortgageV, "label_price"),
+          label_down: str(mortgageV, "label_down"),
+          label_rate: str(mortgageV, "label_rate"),
+          label_term: str(mortgageV, "label_term"),
+          label_monthly: str(mortgageV, "label_monthly"),
+          label_loan: str(mortgageV, "label_loan"),
+          label_interest: str(mortgageV, "label_interest"),
+          cta_label: str(mortgageV, "cta_label"),
+          term_value: str(mortgageV, "term_value"),
+          cta_href: str(mortgageV, "cta_href"),
+        }}
+        controls={mortgageTeaserControls(mortgageV)}
         preApprovalHref={
           mortgageFlowOpen ? MORTGAGE_ENTRY_LINKS.home : undefined
         }
