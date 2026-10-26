@@ -23,7 +23,7 @@ export type SearchFilterSettings = {
 /**
  * The amenities the filter offers, in the page's language.
  *
- * Picked in the CMS from the live taxonomy, in the editor's order; only the
+ * Picked in the CMS from the live taxonomy and listed alphabetically; only the
  * switched-on picks are offered, none means no filter. A pick whose amenity was since retired or
  * renamed drops out rather than offering a filter that matches nothing. The
  * label is the taxonomy's own Arabic on /ar (English where none is written),
@@ -36,6 +36,7 @@ export const getSearchFilterSettings = cache(
       listAmenitiesTaxonomy(),
     ]);
     const values = content.section.values;
+    const collator = new Intl.Collator(locale, { sensitivity: "base" });
     const byLabel = new Map(taxonomy.map((a) => [a.label, a]));
     const label = (a: { label: string; label_ar?: string | null }) =>
       locale === "ar" ? a.label_ar?.trim() || a.label : a.label;
@@ -58,9 +59,13 @@ export const getSearchFilterSettings = cache(
         (typeof values.amenities_label === "string" && values.amenities_label.trim()) ||
         (locale === "ar" ? "المرافق" : "Amenities"),
       overrides: searchFilterOverrides(values),
+      // Alphabetical by the name the visitor reads — English A–Z on the
+      // English site, Arabic collation on /ar (client, Oct 2026). The editor
+      // decides which amenities are offered, not their order.
       amenities: offered
         .filter((a) => (seen.has(a.label) ? false : (seen.add(a.label), true)))
-        .map((a) => ({ value: a.label, label: label(a) })),
+        .map((a) => ({ value: a.label, label: label(a) }))
+        .sort((a, b) => collator.compare(a.label, b.label)),
     };
   },
 );

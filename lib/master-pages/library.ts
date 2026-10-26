@@ -531,7 +531,7 @@ const SEARCH_FILTERS_SECTION: SectionDef = {
       kind: "list",
       itemLabel: "amenity",
       max: SEARCH_FILTERS_AMENITIES_MAX,
-      help: "Every amenity from Settings → Property fields is listed here. Switch on the ones the filter should offer, in the order they should appear; only those show on the search results.",
+      help: "Every amenity from Settings → Property fields is listed here. Switch on the ones the filter should offer; only those show on the search results, listed alphabetically in each language.",
       fields: [
         toggle("enabled", "Show this amenity"),
         {

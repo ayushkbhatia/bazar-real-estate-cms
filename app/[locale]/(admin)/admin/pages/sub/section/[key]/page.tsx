@@ -91,6 +91,8 @@ function withEveryAmenity(values: SectionValues, seeds: Seeds): SectionValues {
   );
   const rest = (seeds.amenities?.options ?? [])
     .filter((o) => !have.has(o.slug))
+    // A–Z, so the one being looked for is easy to find.
+    .sort((a, b) => a.slug.localeCompare(b.slug, "en", { sensitivity: "base" }))
     .map((o) => ({ enabled: false, amenity: o.slug }));
   return { ...values, amenities: [...saved, ...rest] };
 }
