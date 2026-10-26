@@ -46,6 +46,7 @@ import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 import { MORTGAGE_PAGE } from "./sections/mortgage";
 import { MORTGAGE_TEASER_DEFAULTS } from "./mortgage-teaser";
+import { OFFPLAN_COMMUNITY_ROWS } from "./sections/offplan-communities";
 
 /**
  * Home → Mortgage calculator: the band's words, each blank falling back to
@@ -1359,14 +1360,54 @@ const OFF_PLAN: MasterPageDef = {
     },
     {
       key: "locations",
-      label: "Locations",
-      description: "List of communities with project counts.",
-      dataNote: "Counts come from published areas.",
-      fields: [eyebrow(), heading(), body()],
+      label: "Locations · “Explore Abu Dhabi's leading communities”",
+      description:
+        "The numbered list of communities, each with its tagline, description and link.",
+      dataNote:
+        "Each row links to the off-plan search for its area. Rows are numbered in the order below; switch one off to hide it.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        text("cta_label", "Row link label", {
+          max: 40,
+          optional: true,
+          placeholder: "View Properties",
+          placeholderAr: "تصفح العقارات",
+        }),
+        {
+          key: "items",
+          label: "Communities",
+          kind: "list",
+          itemLabel: "community",
+          max: 12,
+          fields: [
+            toggle("enabled", "Show this community"),
+            text("name", "Name", { max: 60 }),
+            text("tagline", "Tagline", { max: 200 }),
+            area("about", "Description", { max: 400 }),
+            text("slug", "Area slug", {
+              max: 140,
+              optional: true,
+              // A lookup key, not a label — see the same field on the home
+              // page's community cards.
+              i18n: false,
+              help: "Links the row to the off-plan search for this area when Link is empty.",
+            }),
+            link("href", "Link"),
+          ],
+        },
+      ],
       defaults: {
         eyebrow: "Abu Dhabi locations",
         heading: "Explore Abu Dhabi's leading communities.",
         body: "From waterfront destinations to family-friendly neighbourhoods — the areas shaping the emirate's off-plan market.",
+        cta_label: null,
+        items: OFFPLAN_COMMUNITY_ROWS.map((row) => ({
+          enabled: true,
+          ...row,
+          href: null,
+        })),
       },
     },
     {
