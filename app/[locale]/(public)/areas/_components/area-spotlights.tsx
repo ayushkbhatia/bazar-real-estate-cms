@@ -42,12 +42,15 @@ export function AreaSpotlights({
   heading = "Two islands worth a closer look.",
   sub = "Where demand, new supply, and lifestyle are converging right now.",
   tileEyebrow = "Area Spotlight",
+  tileCta,
   items,
 }: {
   eyebrow?: string | null;
   heading?: string | null;
   sub?: string | null;
   tileEyebrow?: string | null;
+  /** The tile's button, `{name}` standing for the area. Blank: "Explore {name}". */
+  tileCta?: string | null;
   items?: Spotlight[];
 } = {}) {
   const spotlights = (items && items.length > 0 ? items : FALLBACK).filter(
@@ -119,7 +122,10 @@ export function AreaSpotlights({
                   </p>
                 ) : null}
                 <div className="mt-5 flex items-center gap-2 text-[13px] font-medium">
-                  Explore {name}
+                  {(tileCta?.trim() || "Explore {name}").replaceAll(
+                    "{name}",
+                    name,
+                  )}
                   <ArrowRight
                     size={15}
                     strokeWidth={1.8}

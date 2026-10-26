@@ -224,14 +224,14 @@ describe("cardLabelId", () => {
 describe("statusPillText", () => {
   it("ships Off-plan / For Sale / For Rent in both languages", () => {
     expect(statusPillText(null, "off_plan", "en")).toBe("Off-plan");
-    expect(statusPillText(null, "off_plan", "ar")).toBe("على الخارطة");
+    expect(statusPillText(null, "off_plan", "ar")).toBe("قيد الإنشاء");
     expect(statusPillText(undefined, "for_rent", "en")).toBe("For Rent");
   });
 
   it("uses the editor's words, falling back per language when one is blank", () => {
     const o = { off_plan: { text: "Off Plan", text_ar: "" } };
     expect(statusPillText(o, "off_plan", "en")).toBe("Off Plan");
-    expect(statusPillText(o, "off_plan", "ar")).toBe("على الخارطة");
+    expect(statusPillText(o, "off_plan", "ar")).toBe("قيد الإنشاء");
   });
 
   it("survives parsing alongside the labels", () => {

@@ -1412,11 +1412,18 @@ const OFF_PLAN: MasterPageDef = {
     },
     {
       key: "interest_form",
-      label: "Project interest form",
+      label: "Register your interest form",
       description: "Lead capture for a specific project brief.",
       dataNote:
-        "The form's fields and project picker come from the interest-form component; the project list is every published development.",
+        "The card's eyebrow, heading, body and photo are edited here. The form inside it — its fields, labels, button and thank-you message — is the “Interested in a new project?” form in Forms Manager; its project list is every published development.",
+      dataLink: {
+        label: "Edit the form in Forms Manager",
+        href: "/admin/forms/offplan_project_interest",
+      },
       fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
         image(
           "image",
           "Photo",
@@ -1430,6 +1437,15 @@ const OFF_PLAN: MasterPageDef = {
         ),
       ],
       defaults: {
+        // The words the card shipped with (pages.offPlan.interest*), English
+        // and Arabic, now editable here as the forms registry already said.
+        eyebrow: "Register your interest",
+        eyebrow_ar: "سجّل اهتمامك",
+        heading: "Interested in a new project?",
+        heading_ar: "هل يثير اهتمامك مشروع جديد؟",
+        body: "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans.",
+        body_ar:
+          "أخبرنا بالمشروع الذي لفت انتباهك — وسيوافيك أحد المستشارين بالوحدات المتاحة والمخططات وخطط السداد.",
         image: emptyImage("off-plan development · architectural render"),
       },
     },
@@ -1586,6 +1602,13 @@ const AREAS: MasterPageDef = {
           max: 40,
           optional: true,
         }),
+        // Was an English literal in the component, so /ar/areas read
+        // "Explore Hudayriyat Island" under Arabic cards (client, Oct 2026).
+        text("tile_cta", "Button on each tile", {
+          max: 40,
+          optional: true,
+          help: "{name} is the area's name.",
+        }),
         {
           key: "items",
           label: "Spotlights",
@@ -1607,6 +1630,8 @@ const AREAS: MasterPageDef = {
         heading: "Two islands worth a closer look.",
         sub: "Where demand, new supply, and lifestyle are converging right now.",
         tile_eyebrow: "Area Spotlight",
+        tile_cta: "Explore {name}",
+        tile_cta_ar: "استكشف {name}",
         items: [
           {
             enabled: true,
