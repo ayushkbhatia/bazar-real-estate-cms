@@ -9,6 +9,7 @@ import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import { ListingCardPriced } from "../../../_components/listing-card-priced";
 import { CARD_TRACK } from "./area-bands";
 import { fluid } from "../../../_components/marketing/fluid";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 /**
  * One inventory rail — the sale band and the rental band are the same
@@ -104,9 +105,7 @@ export async function AreaListingsBand({
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? ""}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
+                      {...cardFactProps(row)}
                       badges={badges}
                       imgLabel={row.reference}
                       heroSrc={

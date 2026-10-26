@@ -1,6 +1,12 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { BedDouble, Bath, Maximize2, ShieldCheck } from "lucide-react";
+import {
+  BedDouble,
+  Bath,
+  LandPlot,
+  Maximize2,
+  ShieldCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaceholderImage } from "./placeholder-image";
 import { CompareButton } from "./compare-button";
@@ -18,9 +24,16 @@ export type ListingCardProps = {
   price: string;
   title: string;
   location: string;
-  beds: number | string;
-  baths: number | string;
-  area: number | string;
+  /**
+   * `null` leaves the fact out. A plot of land has no bedrooms or bathrooms,
+   * and "0 · 0" on its card read as an empty flat; `listingFacts()` in
+   * lib/properties/type-rules.ts decides, per type.
+   */
+  beds: number | string | null;
+  baths: number | string | null;
+  area: number | string | null;
+  /** What `area` measures. "plot" draws the plot glyph instead of built-up's. */
+  areaKind?: "built_up" | "plot";
   /**
    * Unit glyph rendered after `area`. Defaults to "ft²" — the schema unit —
    * so every existing call site is unchanged. Client wrappers
@@ -291,6 +304,7 @@ export function ListingCard({
   beds,
   baths,
   area,
+  areaKind = "built_up",
   areaUnit = "ft²",
   badges,
   badge,
@@ -347,15 +361,21 @@ export function ListingCard({
               {price}
             </div>
             <div className="flex gap-3 text-[12px] text-bz-muted">
-              <span>
-                {beds} {t("bedsShort")}
-              </span>
-              <span>
-                {baths} {t("bathsShort")}
-              </span>
-              <span>
-                {area} {areaUnit}
-              </span>
+              {beds !== null ? (
+                <span>
+                  {beds} {t("bedsShort")}
+                </span>
+              ) : null}
+              {baths !== null ? (
+                <span>
+                  {baths} {t("bathsShort")}
+                </span>
+              ) : null}
+              {area !== null ? (
+                <span>
+                  {area} {areaUnit}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -417,11 +437,17 @@ export function ListingCard({
           <div className="text-[14px] text-bz-ink-2">{title}</div>
           <div className="text-[12px] text-bz-muted">{location}</div>
           <div className="flex gap-3 mt-2 text-[12px] text-bz-muted">
-            <span>{t("bedrooms", { count: beds })}</span>
-            <span>{t("bathrooms", { count: baths })}</span>
-            <span>
-              {area} {areaUnit}
-            </span>
+            {beds !== null ? (
+              <span>{t("bedrooms", { count: beds })}</span>
+            ) : null}
+            {baths !== null ? (
+              <span>{t("bathrooms", { count: baths })}</span>
+            ) : null}
+            {area !== null ? (
+              <span>
+                {area} {areaUnit}
+              </span>
+            ) : null}
           </div>
         </div>
       </article>
@@ -468,15 +494,26 @@ export function ListingCard({
         <div className="text-[14px] text-bz-ink-2">{title}</div>
         <div className="text-[12px] text-bz-muted">{location}</div>
         <div className="flex gap-4 mt-auto pt-3 border-t border-bz-border text-bz-muted text-[12px]">
-          <span className="flex items-center gap-1">
-            <BedDouble size={14} strokeWidth={1.6} /> {beds}
-          </span>
-          <span className="flex items-center gap-1">
-            <Bath size={14} strokeWidth={1.6} /> {baths}
-          </span>
-          <span className="flex items-center gap-1">
-            <Maximize2 size={14} strokeWidth={1.6} /> {area} {areaUnit}
-          </span>
+          {beds !== null ? (
+            <span className="flex items-center gap-1">
+              <BedDouble size={14} strokeWidth={1.6} /> {beds}
+            </span>
+          ) : null}
+          {baths !== null ? (
+            <span className="flex items-center gap-1">
+              <Bath size={14} strokeWidth={1.6} /> {baths}
+            </span>
+          ) : null}
+          {area !== null ? (
+            <span className="flex items-center gap-1">
+              {areaKind === "plot" ? (
+                <LandPlot size={14} strokeWidth={1.6} />
+              ) : (
+                <Maximize2 size={14} strokeWidth={1.6} />
+              )}{" "}
+              {area} {areaUnit}
+            </span>
+          ) : null}
         </div>
       </div>
     </article>
