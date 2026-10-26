@@ -59,7 +59,17 @@ export function MegamenuTile({ tile, className }: Props) {
         // aspect-square keeps the tile a true square regardless of column
         // width — matches the design mockups where featured tiles read as
         // image cards rather than wide banners.
-        "group relative flex flex-col justify-between aspect-square w-full rounded-xl overflow-hidden p-5 transition-transform hover:scale-[1.005]",
+        //
+        // overflow-clip, not overflow-hidden: a hidden box is a scroll
+        // container, which turns off aspect-ratio's content-based minimum, so
+        // a headline too long for the square pushed the CTA row out of the
+        // bottom and it was clipped. A clipped box still rounds the photo's
+        // corners but grows past square when its content needs it. It is the
+        // Arabic "ذا كانوبيز في ياس بوينت" on a 14" laptop (195px tiles at
+        // 1280px) that needed it.
+        //
+        // @container lets the headline size from the tile's own width below.
+        "@container group relative flex flex-col justify-between aspect-square w-full rounded-xl overflow-clip p-5 transition-transform hover:scale-[1.005]",
         variantClasses[tile.variant],
         className,
       )}
@@ -122,8 +132,13 @@ export function MegamenuTile({ tile, className }: Props) {
       </div>
 
       <div className="relative">
+        {/* 26px on a full-size tile, scaling down with the tile so a
+            two-line headline stays two lines on a narrow laptop panel.
+            cqi is the tile's content width (tile minus p-5): 14cqi reaches
+            26px at a ~226px tile and is ~21px at the 185px tiles of a 1280px
+            screen. */}
         <h3
-          className="serif italic text-[26px] leading-tight max-w-[260px]"
+          className="serif italic text-[clamp(18px,14cqi,26px)] leading-tight max-w-[260px]"
           style={{ letterSpacing: "-0.015em" }}
         >
           {tile.headline}
