@@ -309,7 +309,7 @@ export default async function CommunityProfilePage({
             </p>
           ) : null}
           {heroPosition ? (
-            <p className="mt-4 mono text-[12.5px] text-bz-muted">
+            <p className="mt-4 mono-en text-[12.5px] text-bz-muted">
               {heroPosition}
             </p>
           ) : null}

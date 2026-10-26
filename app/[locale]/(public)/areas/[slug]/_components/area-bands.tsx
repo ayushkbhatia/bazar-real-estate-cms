@@ -410,7 +410,7 @@ export function AreaNearby({
                 {item.name}
               </span>
               {item.time ? (
-                <span className="mono text-[12.5px] text-bz-ink-2 shrink-0">
+                <span className="mono-en text-[12.5px] text-bz-ink-2 shrink-0">
                   {item.time}
                 </span>
               ) : null}

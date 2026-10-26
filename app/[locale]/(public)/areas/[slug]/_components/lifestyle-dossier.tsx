@@ -65,7 +65,7 @@ export async function LifestyleDossier({
                 <CommuteIcon mode={c.mode} />
                 <span className="text-bz-ink">{c.label}</span>
                 <span className="text-bz-ink-2">·</span>
-                <span className="mono text-bz-ink-2">
+                <span className="mono-en text-bz-ink-2">
                   {t("lifestyle.minutes", { count: c.minutes })}
                 </span>
               </li>
