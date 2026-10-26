@@ -23,8 +23,8 @@ export type SearchFilterSettings = {
 /**
  * The amenities the filter offers, in the page's language.
  *
- * Picked in the CMS from the live taxonomy, in the editor's order; an empty
- * list offers every active amenity. A pick whose amenity was since retired or
+ * Picked in the CMS from the live taxonomy, in the editor's order; only the
+ * switched-on picks are offered, none means no filter. A pick whose amenity was since retired or
  * renamed drops out rather than offering a filter that matches nothing. The
  * label is the taxonomy's own Arabic on /ar (English where none is written),
  * so the filter speaks the same words as the listing page.
@@ -48,7 +48,9 @@ export const getSearchFilterSettings = cache(
       )
       .map((i) => (typeof i.amenity === "string" ? byLabel.get(i.amenity) : undefined))
       .filter((a): a is NonNullable<typeof a> => !!a);
-    const offered = picked.length > 0 ? picked : taxonomy;
+    // Only what the admin switched on and saved (client, Oct 2026). None yet,
+    // and the filter is not drawn — it no longer falls back to every amenity.
+    const offered = picked;
     const seen = new Set<string>();
 
     return {

@@ -17,6 +17,7 @@ import {
 import { saveLibrarySection, resetLibrarySection } from "../_actions";
 import type { MediaOption, Seeds } from "../../../../_fields/types";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import type { ItemValue, SectionValues } from "@/lib/master-pages/types";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,28 @@ async function seedsFor(key: string): Promise<Seeds> {
     href: "",
   }));
   return { amenities: { options, current: [] } };
+}
+
+/**
+ * The search filters' amenity list, with every amenity in the taxonomy on it.
+ *
+ * The editor opens on the whole of Settings → Property fields, so there is
+ * something to choose from rather than an empty list to build: what was saved
+ * keeps its order and switches, and every other amenity — including one added
+ * since — follows it, switched off. Only the switched-on ones reach the
+ * public filter (client, Oct 2026).
+ */
+function withEveryAmenity(values: SectionValues, seeds: Seeds): SectionValues {
+  const saved = (Array.isArray(values.amenities) ? values.amenities : []).filter(
+    (i): i is Record<string, ItemValue> => !!i && typeof i === "object",
+  );
+  const have = new Set(
+    saved.map((i) => (typeof i.amenity === "string" ? i.amenity : "")),
+  );
+  const rest = (seeds.amenities?.options ?? [])
+    .filter((o) => !have.has(o.slug))
+    .map((o) => ({ enabled: false, amenity: o.slug }));
+  return { ...values, amenities: [...saved, ...rest] };
 }
 
 export default async function LibrarySectionEditorPage({ params }: PageProps) {
@@ -163,7 +186,10 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
               key: content.section.key,
               def: content.section.def,
               enabled: content.section.enabled,
-              values: content.section.values,
+              values:
+                entry.key === "search_filters"
+                  ? withEveryAmenity(content.section.values, seeds)
+                  : content.section.values,
             },
           ]}
         />
