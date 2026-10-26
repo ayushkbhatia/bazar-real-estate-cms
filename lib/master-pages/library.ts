@@ -511,7 +511,9 @@ const COMPARE: LibrarySectionDef = {
  * so a new amenity, or a new Arabic name for one, reaches the filter with no
  * deploy. An empty list offers every active amenity.
  */
-export const SEARCH_FILTERS_AMENITIES_MAX = 40;
+// Room for the whole taxonomy (87 today): the editor lists every amenity,
+// switched off, and the admin switches on the ones to offer.
+export const SEARCH_FILTERS_AMENITIES_MAX = 200;
 
 const SEARCH_FILTERS_SECTION: SectionDef = {
   key: "search_filters",
@@ -519,7 +521,7 @@ const SEARCH_FILTERS_SECTION: SectionDef = {
   description: "The filter bar on every search results page.",
   locked: true,
   dataNote:
-    "Every word in the filter bar, in English and Arabic — leave a box blank to keep the words shown greyed in it. Amenities come from Settings → Property fields, with their Arabic names; leave that list empty to offer every active amenity.",
+    "Every word in the filter bar, in English and Arabic — leave a box blank to keep the words shown greyed in it. The amenities list holds every amenity from Settings → Property fields, with its Arabic name; the filter offers only the ones switched on, and is hidden until at least one is.",
   fields: [
     ...searchFilterCopyFields(),
     textField("amenities_label", "Amenities filter · button", { max: 40 }),
@@ -529,7 +531,7 @@ const SEARCH_FILTERS_SECTION: SectionDef = {
       kind: "list",
       itemLabel: "amenity",
       max: SEARCH_FILTERS_AMENITIES_MAX,
-      help: "In the order they should appear. Switch one off to hide it without removing it.",
+      help: "Every amenity from Settings → Property fields is listed here. Switch on the ones the filter should offer, in the order they should appear; only those show on the search results.",
       fields: [
         toggle("enabled", "Show this amenity"),
         {
