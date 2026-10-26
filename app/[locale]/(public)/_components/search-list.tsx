@@ -32,8 +32,6 @@ import { resolveSearchView } from "./search-view";
 import { MoreFiltersDrawer } from "./more-filters-drawer";
 import { Pagination } from "./pagination";
 import { SearchToggles } from "./search-toggles";
-import { DrawAreaTool } from "./draw-area-tool";
-import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
 import { GalleryPrefetch } from "./gallery-prefetch";
 import { fetchGalleryPreviews } from "@/lib/queries/property-gallery-preview";
@@ -296,9 +294,6 @@ export async function SearchList({
             see the note on SearchToggles. `!form` excludes /buy/ready and
             /buy/resale, which have already fixed it from the route. */}
         <SearchToggles showForm={mode === "buy" && !form} />
-        <span className="text-bz-muted text-[11px] hidden md:inline">·</span>
-        <DrawAreaTool />
-        <CommuteTimeTool />
       </section>
 
       <section className="px-4 md:px-12 py-8 md:py-10">

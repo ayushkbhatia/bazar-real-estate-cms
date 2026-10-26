@@ -39,31 +39,16 @@ export function SearchToggles({ showForm }: { showForm: boolean }) {
         optionLabel={(value) => t(`segment.${value}`)}
       />
       {showForm ? (
-        <>
-          <FilterToggleGroup
-            // `filters.completion` rather than a new key: the drawer's own
-            // label for this facet, already written and already translated.
-            label={t("filters.completion")}
-            param="form"
-            options={PROPERTY_FORMS}
-            optionLabel={(value) => t(`formOption.${value}`)}
-          />
-          {/* The distinction the strip's three words cannot carry: "Ready
-              (new)" is about never having been owned, not about the building
-              being recently finished. It came with the drawer's version of
-              this facet and would otherwise have been lost with it. */}
-          {/* `shrink-0` as well as `basis-full`: flex-basis is a starting
-              size, so on its own the line still shrank to sit beside the
-              strips and shoved the map tools onto a row of their own. */}
-          {/* `bz-muted`, not `bz-muted-2`. At 11.5px the AA threshold is
-              4.5:1 and muted-2 is 2.71:1 on this background — it passed
-              unnoticed inside the drawer only because axe never scanned a
-              panel that opens on a click. Out here it is always on screen.
-              muted is 4.58:1. */}
-          <p className="basis-full shrink-0 text-[11.5px] text-bz-muted leading-[1.5]">
-            {t("filters.completionHelp")}
-          </p>
-        </>
+        <FilterToggleGroup
+          // `filters.completion` rather than a new key: the drawer's own
+          // label for this facet, already written and already translated.
+          // The explainer line that sat under it ("Off-plan is still under
+          // construction…") was removed at the client's request (Oct 2026).
+          label={t("filters.completion")}
+          param="form"
+          options={PROPERTY_FORMS}
+          optionLabel={(value) => t(`formOption.${value}`)}
+        />
       ) : null}
     </>
   );
