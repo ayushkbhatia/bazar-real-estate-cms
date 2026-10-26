@@ -1,9 +1,11 @@
 import { env } from "@/lib/env";
+import { typeRules } from "@/lib/properties/type-rules";
 
 function siteUrl(): string {
-  return (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
-  ).replace(/\/+$/, "");
+  return (env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae").replace(
+    /\/+$/,
+    "",
+  );
 }
 
 type PropertyForJsonLd = {
@@ -39,11 +41,18 @@ export function propertyJsonLd(
   const accommodation: Record<string, unknown> = {
     "@type": "Accommodation",
     name: p.title,
-    numberOfBedrooms: p.beds,
-    numberOfBathroomsTotal: p.baths,
-    floorSize: p.built_up_ft2
-      ? { "@type": "QuantitativeValue", value: p.built_up_ft2, unitCode: "FTK" }
-      : undefined,
+    // A plot of land has no rooms; zeroes would tell a search engine it has
+    // "0 bedrooms" rather than that the question does not apply.
+    numberOfBedrooms: typeRules(p.type).rooms ? p.beds : undefined,
+    numberOfBathroomsTotal: typeRules(p.type).rooms ? p.baths : undefined,
+    floorSize:
+      typeRules(p.type).builtUp !== "none" && p.built_up_ft2
+        ? {
+            "@type": "QuantitativeValue",
+            value: p.built_up_ft2,
+            unitCode: "FTK",
+          }
+        : undefined,
     accommodationCategory: p.type,
     address: p.areas
       ? {

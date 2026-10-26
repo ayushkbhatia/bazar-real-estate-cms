@@ -24,7 +24,7 @@ type PropertyType = Database["public"]["Enums"]["property_type"];
  * `pickHero`.
  */
 const LISTING_FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, plot_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 const DETAIL_FIELDS =
   "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, name_ar, slug), developments:development_id(name, name_ar, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
@@ -75,6 +75,8 @@ export type ListingRow = {
   beds: number;
   baths: number;
   built_up_ft2: number | null;
+  /** Listing cards show it in built-up's place for land (lib/properties/type-rules.ts). */
+  plot_ft2: number | null;
   flags: {
     exclusive?: boolean;
     vacant_on_transfer?: boolean;
@@ -89,7 +91,6 @@ export type ListingRow = {
 
 export type PropertyDetail = ListingRow & {
   description: string | null;
-  plot_ft2: number | null;
   year_built: number | null;
   tenure: Database["public"]["Enums"]["property_tenure"] | null;
   furnishing: Database["public"]["Enums"]["property_furnishing"] | null;

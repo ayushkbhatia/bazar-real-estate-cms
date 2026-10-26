@@ -36,6 +36,7 @@ import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
 import { testimonialLimitOf } from "@/lib/master-pages/library";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 export const revalidate = 60;
 
@@ -288,9 +289,7 @@ export default async function HomePage({
                     priceAed={row.price_aed}
                     title={row.title}
                     location={row.areas?.name ?? "United Arab Emirates"}
-                    beds={row.beds}
-                    baths={row.baths}
-                    area={row.built_up_ft2 ?? 0}
+                    {...cardFactProps(row)}
                     badges={badges}
                     imgLabel={row.reference}
                     heroSrc={

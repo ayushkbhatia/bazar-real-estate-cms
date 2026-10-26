@@ -21,6 +21,7 @@ import { env } from "@/lib/env";
 import { getAgentPageContent } from "@/lib/queries/subpages";
 import { agentTokens, getAgentPageCopy } from "@/lib/queries/agent-page";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 export async function generateStaticParams() {
   // Pre-render every agent the DB exposes today; runtime requests for
@@ -302,9 +303,7 @@ export default async function AgentProfilePage({
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
+                      {...cardFactProps(row)}
                       badges={badges}
                       imgLabel={row.reference}
                       heroSrc={
@@ -443,7 +442,9 @@ export default async function AgentProfilePage({
         </div>
       </section>
 
-      {page.order.filter((key) => key !== "hero").map((key) => bands[key] ?? null)}
+      {page.order
+        .filter((key) => key !== "hero")
+        .map((key) => bands[key] ?? null)}
     </div>
   );
 }

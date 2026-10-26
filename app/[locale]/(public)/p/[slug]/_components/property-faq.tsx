@@ -16,8 +16,10 @@ type Props = {
    * languages, so an Arabic answer read "تضم villa المكوّنة من 4 غرف نوم".
    */
   propertyType: string;
-  beds: number;
-  baths: number;
+  /** `null` for a type without rooms (land): the "what does a 2-bed … include"
+   *  entry is left out rather than describing a "studio land with 0 bathrooms". */
+  beds: number | null;
+  baths: number | null;
   tenure: string | null;
   listingPermitNo: string | null;
   /** Band wording, from the listing-page copy document. */
@@ -72,7 +74,6 @@ export async function PropertyFaq({
   const place = iso(areaName ?? t("fallbackCity"));
   const ref = iso(reference);
   const type = iso(propertyType);
-  const bedrooms = t("faq.bedroomCount", { count: beds });
 
   const tenureNote =
     tenure === "freehold"
@@ -81,17 +82,24 @@ export async function PropertyFaq({
         ? t("faq.tenureLeasehold")
         : t("faq.tenureUnknown");
 
+  const bedrooms =
+    beds !== null ? t("faq.bedroomCount", { count: beds }) : null;
+
   const entries: PropertyFaqItem[] = [
-    {
-      q: t("faq.includesQ", { bedrooms, type, place }),
-      a: t("faq.includesA", {
-        bedrooms,
-        type,
-        place,
-        baths: t("faq.bathroomCount", { count: baths }),
-        reference: ref,
-      }),
-    },
+    ...(bedrooms !== null && baths !== null
+      ? [
+          {
+            q: t("faq.includesQ", { bedrooms, type, place }),
+            a: t("faq.includesA", {
+              bedrooms,
+              type,
+              place,
+              baths: t("faq.bathroomCount", { count: baths }),
+              reference: ref,
+            }),
+          },
+        ]
+      : []),
     {
       q: t("faq.locationQ", { reference: ref }),
       a: t("faq.locationA", { title: iso(title), place }),
@@ -140,9 +148,7 @@ export async function PropertyFaq({
             className="group rounded-lg border border-bz-border bg-bz-surface p-5 open:bg-bz-bg transition-colors"
           >
             <summary className="flex justify-between items-center cursor-pointer list-none gap-6">
-              <span className="text-[15.5px] text-bz-ink">
-                {e.q}
-              </span>
+              <span className="text-[15.5px] text-bz-ink">{e.q}</span>
               <ChevronDown
                 size={16}
                 strokeWidth={1.7}

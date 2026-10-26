@@ -20,6 +20,7 @@ import { getDeveloperPageCopy } from "@/lib/queries/developer-page";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 import { entryLogo, findDirectoryEntry, listDirectory } from "../_directory";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 /**
  * Both sources, not just the code-owned one: a developer created in the CMS is
@@ -269,9 +270,7 @@ export default async function DeveloperProfilePage({
                   priceAed={row.price_aed}
                   title={row.title}
                   location={row.area?.name ?? t("fallbackArea")}
-                  beds={row.beds}
-                  baths={row.baths}
-                  area={row.built_up_ft2 ?? 0}
+                  {...cardFactProps(row)}
                   badges={cardLabels(row.flags)}
                   imgLabel={row.reference}
                   heroSrc={
