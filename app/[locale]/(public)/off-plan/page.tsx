@@ -1,11 +1,10 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
-import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import {
   applyOffplanAreaOrder,
   buildOffplanMap,
@@ -22,7 +21,6 @@ import { CardRail } from "../_components/marketing/card-rail";
 import { DevelopmentCard } from "../_components/marketing/development-card";
 import { WhyBand } from "../_components/marketing/why-band";
 import { Faq } from "../_components/marketing/faq";
-import { AD_AREAS } from "../_components/marketing/ad-data";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { getForm } from "@/lib/queries/forms";
 import { OFFPLAN_LAUNCH_COUNT } from "../_components/marketing/counts";
@@ -38,7 +36,6 @@ import { OffplanMapExplorer } from "../_components/off-plan/offplan-map-explorer
 import { ProjectInterestForm } from "../_components/off-plan/project-interest-form";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
-import { localiseRow } from "@/lib/i18n/localise";
 
 export async function generateMetadata({
   params,
@@ -72,11 +69,13 @@ export default async function NewProjectsPage({
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
+  // The map rail is a client component and `pages` a server-only catalogue,
+  // so its words are translated here and handed down.
+  const tp = await getTranslations({ locale, namespace: "pages" });
 
-  const [content, developments, areaCounts, interestForm] = await Promise.all([
+  const [content, developments, interestForm] = await Promise.all([
     getMasterPageContent("off-plan"),
     listPublishedDevelopments(),
-    listAreasWithCounts(),
     getForm("offplan_project_interest"),
   ]);
   // Curated in the New Projects master page; a pick that no longer resolves
@@ -111,39 +110,30 @@ export default async function NewProjectsPage({
     areaImages,
   );
   /*
-   * Matched on `slug`, not on `name` — see the note over `AD_AREAS`.
-   *
-   * `listAreasWithCounts` returns the name already folded to the request's
-   * locale, so under `/ar` every one of the eight English names missed and the
-   * whole section lost its counts and its per-area links. "Al Raha Beach" also
-   * missed in English, because that community is `al-raha` in the catalogue and
-   * is named "Al Raha" there.
+   * The communities list, as edited in Pages & blocks → New Projects →
+   * Locations (its defaults are the shipped rows, Arabic folded from the
+   * shared store). No listing count any more, at the client's request (Oct
+   * 2026): a row links into the off-plan search for its area instead.
    */
-  const countBySlug = new Map(
-    areaCounts.map((a) => [a.slug, a.listing_count]),
-  );
-  /*
-   * The rows' own copy is a code constant, so it folds through ARABIC_STORE
-   * rather than through a column. `localiseRow` is the same fold every
-   * bilingual table gets; the twins are declared null on `AD_AREAS` precisely
-   * so it will run. Under `en` it is a no-op that strips the twin keys.
-   */
-  const areas: AreaRow[] = AD_AREAS.map((a) => localiseRow(a, locale)).map(
-    (a) => {
-      const count = countBySlug.get(a.slug);
-      return {
-        num: a.num,
-        name: a.name,
-        tagline: a.tagline,
-        about: a.about,
-        count,
-        href:
-          count === undefined
-            ? "/off-plan/search"
-            : `/off-plan/search?area=${encodeURIComponent(a.slug)}`,
-      };
-    },
-  );
+  const locationItems = list<Record<string, unknown>>(
+    content.section("locations")?.values ?? {},
+    "items",
+  ).filter((i) => i.enabled !== false);
+  const areas: AreaRow[] = locationItems.map((i, n) => {
+    const slug = typeof i.slug === "string" ? i.slug.trim() : "";
+    const href = typeof i.href === "string" ? i.href.trim() : "";
+    return {
+      num: n + 1,
+      name: typeof i.name === "string" ? i.name : "",
+      tagline: typeof i.tagline === "string" ? i.tagline : "",
+      about: typeof i.about === "string" ? i.about : "",
+      href:
+        href ||
+        (slug
+          ? `/off-plan/search?area=${encodeURIComponent(slug)}`
+          : "/off-plan/search"),
+    };
+  });
 
   // Copy, links, images and section order come from
   // /admin/pages/master/off-plan; untouched fields fall back to the defaults
@@ -235,6 +225,18 @@ export default async function NewProjectsPage({
           body={str(mapCopy, "body")}
           allLabel={str(mapCopy, "all_label") ?? ""}
           allCount={groups.reduce((n, g) => n + g.count, 0)}
+          allCountLabel={tp("launches.projects", {
+            count: groups.reduce((n, g) => n + g.count, 0),
+          })}
+          railCopy={{
+            viewAllIn: tp.raw("offPlan.rail.viewAllIn") as string,
+            previous: tp.raw("offPlan.rail.previous") as string,
+            more: tp.raw("offPlan.rail.more") as string,
+            track: tp.raw("offPlan.rail.track") as string,
+          }}
+          showAllLabel={
+            str(mapCopy, "show_all_label") ?? tp("offPlan.rail.showAll")
+          }
           // The rail holds projects, so its "view every launch" opens every
           // project — not the property search, which lists units. An area's
           // own link below still narrows that search to the area.
@@ -246,8 +248,11 @@ export default async function NewProjectsPage({
             // The true published total, not the number of cards on the rail —
             // it is what makes the "view all" link mean something.
             count: g.count,
+            countLabel: tp("launches.projects", { count: g.count }),
             viewAllHref: `/off-plan/search?area=${encodeURIComponent(g.slug)}`,
-            viewAllLabel: groupCtaLabel,
+            // {name} becomes the area's name; blank falls back to the
+            // catalogue's "View all in {name}" inside the rail.
+            viewAllLabel: groupCtaLabel?.replaceAll("{name}", g.name) ?? null,
           }))}
           cards={railItems.map(({ development, areaSlug }) => ({
             key: development.id,
@@ -300,7 +305,10 @@ export default async function NewProjectsPage({
           size={40}
           className="mb-9"
         />
-        <AreaList areas={areas} />
+        <AreaList
+          areas={areas}
+          ctaLabel={str(locations, "cta_label") ?? undefined}
+        />
       </section>
     ),
 

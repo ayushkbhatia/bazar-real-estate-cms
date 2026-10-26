@@ -29,16 +29,18 @@ import { LgOnly } from "./lg-only";
 import { SortDropdown } from "./sort-dropdown";
 import { ViewToggle } from "./view-toggle";
 import { resolveSearchView } from "./search-view";
-import { MoreFiltersDrawer } from "./more-filters-drawer";
+import { AmenitiesFilter } from "./amenities-filter";
+import { getSearchFilterSettings } from "@/lib/queries/search-filters";
 import { Pagination } from "./pagination";
 import { SearchToggles } from "./search-toggles";
-import { DrawAreaTool } from "./draw-area-tool";
-import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
 import { GalleryPrefetch } from "./gallery-prefetch";
 import { fetchGalleryPreviews } from "@/lib/queries/property-gallery-preview";
 import { GALLERY_VISIBLE_TILES } from "../p/[slug]/_components/gallery-sizes";
 import { cardFactProps } from "@/lib/properties/type-rules";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { pickClientMessages } from "@/lib/i18n/namespaces";
 
 type Form = Database["public"]["Enums"]["property_form"];
 
@@ -147,6 +149,22 @@ const ROW_CARD_RESPONSIVE = [
   "[&>div:last-child>div:last-child]:gap-y-1",
 ].join(" ");
 
+/** The client messages with the editor's search-bar words laid over `search`. */
+function withSearchOverrides(
+  messages: Record<string, unknown>,
+  overrides: Record<string, Record<string, string>>,
+): Record<string, unknown> {
+  if (Object.keys(overrides).length === 0) return messages;
+  const search = { ...((messages.search as Record<string, unknown>) ?? {}) };
+  for (const [group, leaves] of Object.entries(overrides)) {
+    search[group] = {
+      ...((search[group] as Record<string, unknown>) ?? {}),
+      ...leaves,
+    };
+  }
+  return { ...messages, search };
+}
+
 export async function SearchList({
   mode,
   form,
@@ -206,7 +224,7 @@ export async function SearchList({
    * `mode: "buy"` and, without the segment, wore the Buy facet's headline —
    * which is why /commercial/search read "Properties for Sale".
    */
-  const [{ rows, total }, areas, copy] = await Promise.all([
+  const [{ rows, total }, areas, copy, filterSettings] = await Promise.all([
     listPublishedProperties({
       mode: mode === "rent" ? "rent" : "buy",
       form: effectiveForm,
@@ -221,6 +239,7 @@ export async function SearchList({
       undefined,
       filters.segment,
     ),
+    currentLocale().then(getSearchFilterSettings),
   ]);
   // The gallery photos each card warms for its listing page (gallery-prefetch).
   const [t, cardLabels, galleryPreviews, unitLabels, prefs] = await Promise.all(
@@ -272,6 +291,34 @@ export async function SearchList({
   const firstShown = total === 0 ? 0 : offset + 1;
   const lastShown = Math.min(offset + rows.length, total);
 
+  const filterBar = (
+    <FilterBar
+      mode={mode}
+      areas={areas}
+      leading={
+        <>
+          <SortDropdown />
+          <ViewToggle defaultView={defaultView} />
+        </>
+      }
+      trailing={
+        <>
+          {/* The completion form is offered only where it is free to
+              vary — see the note on SearchToggles. `!form` excludes
+              /buy/ready and /buy/resale, which fixed it from the route. */}
+          <SearchToggles showForm={mode === "buy" && !form} />
+          {/* The "More filters" drawer gave way to this one control
+              (Oct 2026); its amenities are picked under Pages & blocks →
+              Sections → Search filters. */}
+          <AmenitiesFilter
+            label={filterSettings.amenitiesLabel}
+            choices={filterSettings.amenities}
+          />
+        </>
+      }
+    />
+  );
+
   return (
     <>
       <section className="px-4 md:px-12 pt-10 md:pt-16 pb-6 md:pb-10 border-b border-bz-border">
@@ -289,17 +336,29 @@ export async function SearchList({
         ) : null}
       </section>
 
-      <FilterBar mode={mode} areas={areas} />
+      {/*
+        One band for every filter (client, Oct 2026), where there were three
+        rows: the bar, the segment / completion strip under it, and amenities,
+        sort and view in the results header. Sort and view lead the bar from
+        its inline start — left in English, right in Arabic.
 
-      <section className="px-4 md:px-12 pt-4 md:pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
-        {/* The completion form is offered only where it is free to vary —
-            see the note on SearchToggles. `!form` excludes /buy/ready and
-            /buy/resale, which have already fixed it from the route. */}
-        <SearchToggles showForm={mode === "buy" && !form} />
-        <span className="text-bz-muted text-[11px] hidden md:inline">·</span>
-        <DrawAreaTool />
-        <CommuteTimeTool />
-      </section>
+        When an editor has changed any of the bar's words (Pages & blocks →
+        Sections → Search filters), a provider lays them over the `search`
+        catalogue for this subtree only, so the bar's components read them
+        through `useTranslations` as before. Untouched, nothing extra ships.
+      */}
+      {Object.keys(filterSettings.overrides).length > 0 ? (
+        <NextIntlClientProvider
+          messages={withSearchOverrides(
+            pickClientMessages(await getMessages()),
+            filterSettings.overrides,
+          )}
+        >
+          {filterBar}
+        </NextIntlClientProvider>
+      ) : (
+        filterBar
+      )}
 
       <section className="px-4 md:px-12 py-8 md:py-10">
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
@@ -317,11 +376,6 @@ export async function SearchList({
                 <span className="text-bz-ink-2">{filterSummary}</span>
               </>
             ) : null}
-          </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <MoreFiltersDrawer />
-            <SortDropdown />
-            <ViewToggle defaultView={defaultView} />
           </div>
         </div>
 

@@ -1,16 +1,4 @@
 {
-  "commute": {
-    "destination": "Destination",
-    "label": "Commute time",
-    "minutes": "{count, plural, one {# min} other {# min}}",
-    "note": "Geo-filtering by isochrone activates with Mapbox in Sprint 12. Your selection ({target}, {minutes} min) persists in URL state today.",
-    "within": "Within"
-  },
-  "draw": {
-    "cancel": "Cancel draw",
-    "hint": "Polygon drawing lands with Mapbox in Sprint 12. The tool fires a draw event for downstream listeners today.",
-    "start": "Draw area"
-  },
   "empty": {
     "allForSale": "All properties for sale",
     "browseOffPlan": "Browse off-plan",
@@ -53,7 +41,6 @@
     "bedsFilter": "{count, plural, =0 {Studio} one {# bed} other {# beds}}",
     "clearCount": "Clear {count}",
     "completion": "Completion",
-    "completionHelp": "Off-plan is still under construction. Ready (new) is the developer's first sale; resale has had an owner before.",
     "filters": "Filters",
     "filtersWithCount": "Filters · {count}",
     "from": "From",

@@ -54,6 +54,17 @@ export type ProjectCarouselProps = {
   name: string;
   /** Published projects behind the heading — not the number of cards shown. */
   count: number;
+  /**
+   * The count as words in the page's language ("35 projects" / "35 مشروعاً"),
+   * written by the server page: `pages` is a server-only catalogue, and this
+   * is a client component. Without it the rail printed English on /ar.
+   */
+  countLabel?: string;
+  /**
+   * The rail's other words, server-translated, with `{name}` standing for
+   * the heading. English fallbacks below keep older callers working.
+   */
+  copy?: Partial<Record<"viewAllIn" | "previous" | "more" | "track", string>>;
   items: ProjectCarouselItem[];
   /** Where "view all" points; omitted when there is no search route for it. */
   viewAllHref?: string | null;
@@ -69,11 +80,17 @@ export type ProjectCarouselProps = {
 export function ProjectCarousel({
   name,
   count,
+  countLabel,
+  copy = {},
   items,
   viewAllHref,
   viewAllLabel,
   resetKey = null,
 }: ProjectCarouselProps) {
+  const words = (
+    key: "viewAllIn" | "previous" | "more" | "track",
+    fallback: string,
+  ) => (copy[key] ?? fallback).replaceAll("{name}", name);
   const trackRef = React.useRef<HTMLDivElement | null>(null);
   // All three start false and are corrected on mount: before layout we don't
   // know whether the rail overflows, and rendering arrows that then vanish is
@@ -190,8 +207,9 @@ export function ProjectCarousel({
         >
           {name}
         </h3>
-        <span className="mono text-[12px] text-bz-muted">
-          {count} {count === 1 ? "project" : "projects"}
+        {/* `mono-en`: the mono face in English, the Arabic face on /ar. */}
+        <span className="mono-en text-[12px] text-bz-muted">
+          {countLabel ?? `${count} ${count === 1 ? "project" : "projects"}`}
         </span>
 
         <div className="ms-auto flex items-center gap-2">
@@ -200,7 +218,7 @@ export function ProjectCarousel({
               href={viewAllHref}
               className="inline-flex items-center gap-1.5 text-[13px] text-bz-ink-2 transition-colors hover:text-bz-accent"
             >
-              {viewAllLabel || `View all in ${name}`}
+              {viewAllLabel || words("viewAllIn", "View all in {name}")}
               <ArrowRight size={14} strokeWidth={1.7} />
             </Link>
           ) : null}
@@ -214,7 +232,7 @@ export function ProjectCarousel({
           {overflows ? (
             <div className="flex items-center gap-2">
               <NavButton
-                label={`Previous projects in ${name}`}
+                label={words("previous", "Previous projects in {name}")}
                 disabled={!canPrev}
                 onClick={() => page(-1)}
                 testId={`carousel-prev-${name}`}
@@ -222,7 +240,7 @@ export function ProjectCarousel({
                 <ChevronLeft size={16} strokeWidth={1.8} />
               </NavButton>
               <NavButton
-                label={`More projects in ${name}`}
+                label={words("more", "More projects in {name}")}
                 disabled={!canNext}
                 onClick={() => page(1)}
                 testId={`carousel-next-${name}`}
@@ -237,7 +255,7 @@ export function ProjectCarousel({
       <div
         ref={trackRef}
         role="group"
-        aria-label={`Projects in ${name}`}
+        aria-label={words("track", "Projects in {name}")}
         data-testid={`carousel-track-${name}`}
         className={[
           // No `scroll-smooth` here: CSS `scroll-behavior` wins over the

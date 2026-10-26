@@ -52,8 +52,8 @@ const SETTLE_MS = 3000;
  * `cartocdn` is the half that actually fires: `map-style.ts:21` fetches
  * `basemaps.cartocdn.com/gl/positron-gl-style/style.json` from `MapView`'s
  * mount effect, then tiles/glyphs/sprites from the same host. Nothing else on
- * a search route touches it — `DrawAreaTool` and `CommuteTimeTool` are UI
- * stubs with no map (Sprint 12 was never wired).
+ * a search route touches it (the Draw area and Commute time stubs, which
+ * never had a map, were removed in Oct 2026).
  *
  * Note this is a request-level check, so it fires on request INITIATION and
  * is unaffected by whether CARTO actually answers.
