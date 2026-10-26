@@ -8,6 +8,7 @@ import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import type { InternalLinkVariant } from "@/lib/internal-links/model";
 import type { ResolvedInternalLink } from "@/lib/internal-links/types";
 import { AreaText, PriceText } from "../../../_components/area-text";
+import type { StatusPillId } from "@/lib/card-labels";
 
 type Parts = {
   /** Segments of the eyebrow, joined with a separator. */
@@ -27,7 +28,10 @@ type Parts = {
  * reader gets an Arabic card on an article whose Arabic body is a copy of the
  * English one.
  */
-function useCardParts(link: ResolvedInternalLink): Parts {
+function useCardParts(
+  link: ResolvedInternalLink,
+  pills?: Partial<Record<StatusPillId, string>>,
+): Parts {
   const t = useTranslations("editorial.internalLink");
   const tListing = useTranslations("listing");
   const tDev = useTranslations("development.card");
@@ -67,10 +71,10 @@ function useCardParts(link: ResolvedInternalLink): Parts {
     case "property": {
       const mode =
         link.mode === "rent"
-          ? tListing("forRent")
+          ? (pills?.for_rent ?? tListing("forRent"))
           : link.form === "off_plan"
-            ? tListing("offPlan")
-            : tListing("forSale");
+            ? (pills?.off_plan ?? tListing("offPlan"))
+            : (pills?.for_sale ?? tListing("forSale"));
       const type = tType.has(link.type) ? tType(link.type) : null;
       const facts: ReactNode[] = [];
       if (link.beds != null) facts.push(tListing("bedrooms", { count: link.beds }));
@@ -137,11 +141,14 @@ function Joined({ items }: { items: ReactNode[] }) {
 export function InternalLinkCard({
   link,
   variant,
+  pills,
 }: {
   link: ResolvedInternalLink;
   variant: InternalLinkVariant;
+  /** Status pill words as edited under Pages & blocks → Pills. */
+  pills?: Partial<Record<StatusPillId, string>>;
 }) {
-  const parts = useCardParts(link);
+  const parts = useCardParts(link, pills);
   const placeholder =
     link.kind === "property" ? link.reference : link.slug.replace(/-/g, " ");
 

@@ -6,6 +6,7 @@ import {
   labelText,
   labelsFor,
   resolveCardLabels,
+  statusPillText,
   type CardLabel,
 } from "./card-labels";
 import { parseCardLabels } from "@/lib/schemas/card-labels";
@@ -217,5 +218,24 @@ describe("cardLabelId", () => {
   it("always produces something the schema accepts", () => {
     for (const text of ["New launch", "  ??? ", "إطلاق", "A–B", "50% off"])
       expect(cardLabelId(text, [])).toMatch(/^[a-z0-9_]+$/);
+  });
+});
+
+describe("statusPillText", () => {
+  it("ships Off-plan / For Sale / For Rent in both languages", () => {
+    expect(statusPillText(null, "off_plan", "en")).toBe("Off-plan");
+    expect(statusPillText(null, "off_plan", "ar")).toBe("على الخارطة");
+    expect(statusPillText(undefined, "for_rent", "en")).toBe("For Rent");
+  });
+
+  it("uses the editor's words, falling back per language when one is blank", () => {
+    const o = { off_plan: { text: "Off Plan", text_ar: "" } };
+    expect(statusPillText(o, "off_plan", "en")).toBe("Off Plan");
+    expect(statusPillText(o, "off_plan", "ar")).toBe("على الخارطة");
+  });
+
+  it("survives parsing alongside the labels", () => {
+    const bag = parseCardLabels({ labels: [], status: { for_sale: { text: "Sale" } } });
+    expect(bag.status?.for_sale?.text).toBe("Sale");
   });
 });

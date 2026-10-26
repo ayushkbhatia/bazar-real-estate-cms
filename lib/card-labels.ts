@@ -111,7 +111,58 @@ export const CARD_LABEL_DEFAULTS: CardLabel[] = [
 ];
 
 /** The stored bag. `{}` — the default — renders the shipped vocabulary. */
-export type CardLabelSettings = { labels?: CardLabel[] };
+/**
+ * Status pills: the chips a card wears because of WHAT a listing is, not
+ * because an editor ticked a label. "Off-plan" over every home and project
+ * card, "For Sale" / "For Rent" on an article's listing cards. They used to be
+ * catalogue strings, so their words could only change in a deploy; now they
+ * are edited, English and Arabic, beside the card labels under Pages & blocks
+ * → Pills, and stored in the same `site_settings.card_labels` bag (no
+ * migration). A blank field keeps the shipped words below.
+ */
+export const STATUS_PILLS = [
+  {
+    id: "off_plan",
+    text: "Off-plan",
+    text_ar: "على الخارطة",
+    usedOn: "Home off-plan projects · project pages · article project cards",
+  },
+  {
+    id: "for_sale",
+    text: "For Sale",
+    text_ar: "للبيع",
+    usedOn: "Article listing cards",
+  },
+  {
+    id: "for_rent",
+    text: "For Rent",
+    text_ar: "للإيجار",
+    usedOn: "Article listing cards",
+  },
+] as const;
+
+export type StatusPillId = (typeof STATUS_PILLS)[number]["id"];
+
+export type StatusPillOverrides = Partial<
+  Record<StatusPillId, { text?: string; text_ar?: string }>
+>;
+
+/** A status pill's words in a locale: the editor's, else the shipped ones. */
+export function statusPillText(
+  overrides: StatusPillOverrides | null | undefined,
+  id: StatusPillId,
+  locale: Locale,
+): string {
+  const shipped = STATUS_PILLS.find((p) => p.id === id)!;
+  const o = overrides?.[id];
+  if (locale === "ar") return o?.text_ar?.trim() || shipped.text_ar;
+  return o?.text?.trim() || shipped.text;
+}
+
+export type CardLabelSettings = {
+  labels?: CardLabel[];
+  status?: StatusPillOverrides;
+};
 
 export const CARD_LABEL_SETTINGS_DEFAULTS: CardLabelSettings = {};
 

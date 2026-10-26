@@ -189,6 +189,37 @@ export default async function AdminPagesPage() {
         <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
           <div>
             <h2 className="text-[14px] font-medium">
+              <Link href="/admin/pages/pills" className="hover:text-bz-accent">
+                Pills
+              </Link>
+            </h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              Every chip a card wears over its photograph — Off-plan, For Sale,
+              For Rent, Exclusive, Vacant on Transfer and any you add — in
+              English and Arabic.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <li>
+              <Link
+                href="/admin/pages/pills"
+                className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+              >
+                <span className="text-[13.5px] font-medium">Pills</span>
+                <span className="mono text-[11px] text-bz-muted">
+                  Home · project pages · cards everywhere
+                </span>
+                <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                  Status pills and card labels
+                </span>
+              </Link>
+            </li>
+          </ul>
+        </section>
+
+        <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+          <div>
+            <h2 className="text-[14px] font-medium">
               <Link href="/admin/pages/wizards" className="hover:text-bz-accent">
                 Wizards
               </Link>

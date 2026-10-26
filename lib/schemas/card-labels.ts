@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   CARD_LABEL_KINDS,
   CARD_LABEL_SETTINGS_DEFAULTS,
+  STATUS_PILLS,
   type CardLabelSettings,
 } from "@/lib/card-labels";
 
@@ -34,7 +35,22 @@ export const cardLabelSchema = z.object({
   builtIn: z.boolean().optional(),
 });
 
+const statusPillSchema = z.object({
+  text: z.string().trim().max(28).optional(),
+  text_ar: z.string().trim().max(28).optional(),
+});
+
+/** Status pill overrides, by id. Unknown ids are dropped, not refused. */
+export const statusPillsSchema = z
+  .object(
+    Object.fromEntries(
+      STATUS_PILLS.map((p) => [p.id, statusPillSchema.optional()]),
+    ) as Record<(typeof STATUS_PILLS)[number]["id"], z.ZodOptional<typeof statusPillSchema>>,
+  )
+  .optional();
+
 export const cardLabelSettingsSchema = z.object({
+  status: statusPillsSchema,
   labels: z
     .array(cardLabelSchema)
     // A cap, not a design opinion: the screen is a list and the vocabulary is

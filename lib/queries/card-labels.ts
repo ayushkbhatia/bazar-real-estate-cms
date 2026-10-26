@@ -16,7 +16,11 @@ import { parseCardLabels } from "@/lib/schemas/card-labels";
 import {
   labelsFor,
   resolveCardLabels,
+  statusPillText,
   type CardLabel,
+  type CardLabelSettings,
+  type StatusPillId,
+  type StatusPillOverrides,
   type CardLabelSource,
   type ResolvedCardLabel,
 } from "@/lib/card-labels";
@@ -35,8 +39,9 @@ import {
  * unapplied 0123 is that cards wear the two labels the site shipped with —
  * which is what they wore yesterday.
  */
-export const getPublicCardLabels = cache(async (): Promise<CardLabel[]> => {
-  if (!isSupabaseConfigured) return resolveCardLabels(null);
+/** The stored bag, parsed. One round trip per request, shared by both reads below. */
+const getPublicCardLabelBag = cache(async (): Promise<CardLabelSettings | null> => {
+  if (!isSupabaseConfigured) return null;
   try {
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
@@ -44,12 +49,26 @@ export const getPublicCardLabels = cache(async (): Promise<CardLabel[]> => {
       .select("card_labels")
       .eq("id", 1)
       .maybeSingle();
-    return resolveCardLabels(
-      parseCardLabels((data as { card_labels?: unknown } | null)?.card_labels),
-    );
+    return parseCardLabels((data as { card_labels?: unknown } | null)?.card_labels);
   } catch {
-    return resolveCardLabels(null);
+    return null;
   }
+});
+
+export const getPublicCardLabels = cache(async (): Promise<CardLabel[]> =>
+  resolveCardLabels(await getPublicCardLabelBag()),
+);
+
+/**
+ * A status pill's words ("Off-plan", "For Sale", "For Rent") in the page's
+ * language, as edited under Pages & blocks → Pills, else the shipped words.
+ */
+export const getStatusPills = cache(async (locale?: Locale) => {
+  const [bag, active] = await Promise.all([
+    getPublicCardLabelBag(),
+    locale ? Promise.resolve(locale) : currentLocale(),
+  ]);
+  return (id: StatusPillId) => statusPillText(bag?.status, id, active);
 });
 
 /**
@@ -75,6 +94,25 @@ export const getCardLabelResolver = cache(async (locale?: Locale) => {
 });
 
 /** The same vocabulary for /admin, through the caller's session. */
+/** The status pill overrides for /admin, through the caller's session. */
+export async function getStatusPillSettings(): Promise<StatusPillOverrides> {
+  if (!isSupabaseConfigured) return {};
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("card_labels")
+      .eq("id", 1)
+      .maybeSingle();
+    return (
+      parseCardLabels((data as { card_labels?: unknown } | null)?.card_labels)
+        .status ?? {}
+    );
+  } catch {
+    return {};
+  }
+}
+
 export async function getCardLabelSettings(): Promise<CardLabel[]> {
   if (!isSupabaseConfigured) return resolveCardLabels(null);
   try {
