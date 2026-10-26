@@ -334,7 +334,7 @@ export async function SearchList({
             </div>
           )
         ) : view === "map" ? (
-          <div className="rounded-lg overflow-hidden border border-bz-border h-[70vh] md:h-[640px]">
+          <div className="rounded-lg overflow-hidden border border-bz-border h-[calc(70vh/var(--bz-zoom,1))] md:h-[640px]">
             <MapViewClient
               pins={rows
                 .filter(
@@ -448,7 +448,7 @@ export async function SearchList({
               literal here is what the comment above says not to do. Moving to
               72px makes the overlap 8px smaller than it was, not larger.
             */}
-            <aside className="hidden lg:block sticky top-[var(--bz-header-h)] self-start h-[calc(100vh_-_var(--bz-header-h)_-_48px)] rounded-lg overflow-hidden border border-bz-border">
+            <aside className="hidden lg:block sticky top-[var(--bz-header-h)] self-start h-[calc(100vh/var(--bz-zoom,1)_-_var(--bz-header-h)_-_48px)] rounded-lg overflow-hidden border border-bz-border">
               {/*
                 A REAL mount gate, not a CSS one.
 

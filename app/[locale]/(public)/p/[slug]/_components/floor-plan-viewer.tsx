@@ -263,7 +263,7 @@ function FloorPlanOverlay({
               type="button"
               onClick={onClose}
               aria-label={t("floorPlan.close")}
-              className="relative w-[min(96vw,1600px)] h-[min(88vh,1000px)] cursor-zoom-out"
+              className="relative w-[min(96vw,1600px)] h-[min(calc(88vh/var(--bz-zoom,1)),1000px)] cursor-zoom-out"
             >
               <Image
                 src={src}

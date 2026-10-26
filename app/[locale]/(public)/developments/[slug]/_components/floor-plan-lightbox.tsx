@@ -262,7 +262,7 @@ export function FloorPlanLightbox({
               type="button"
               onClick={() => setZoomed(true)}
               aria-label={`${current.label} — view at full size`}
-              className="relative w-[min(96vw,1600px)] h-[min(88vh,1000px)] cursor-zoom-in"
+              className="relative w-[min(96vw,1600px)] h-[min(calc(88vh/var(--bz-zoom,1)),1000px)] cursor-zoom-in"
             >
               {/* The card's own variant: already decoded, so it paints on the
                   same frame as the click rather than after a round trip. */}

@@ -4,6 +4,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Desktop chrome (the megamenu bar, its CTA, the preferences pill): from xl,
+   or from 1024px on a mouse-and-hover device. A 13.3" Windows laptop at
+   125-175% display scaling reports a ~1,100px viewport, below xl, and was
+   served the tablet bar (client, Oct 2026). Touch tablets of the same width
+   keep the tablet bar. The laptop zoom below gives these widths the room. */
+@custom-variant desk {
+  /* `or`, not a comma: Tailwind splits a comma-separated list apart. */
+  @media (width >= 80rem) or ((width >= 64rem) and (pointer: fine) and (hover: hover)) {
+    @slot;
+  }
+}
+
 /* ─── Bazar Real Estate — design tokens ─────────────────────────────
    OKLCH palette. Source: design-references/styles.css in the handoff.
    Variables prefixed --bz-* are the canonical Bazar tokens.
@@ -1447,5 +1459,32 @@ html .maplibregl-map {
 @media (min-width: 1280px) {
   :root {
     --bz-locale-pill-gutter: 12rem;
+  }
+}
+
+/* ─── Laptop scale ────────────────────────────────────────────────────
+   On a mouse-driven screen 1024-1279px wide — a 13.3" laptop at 125-175%
+   display scaling — the public site is drawn smaller, so it lays out as it
+   does on a ~1,500px screen (a 14.2" MacBook) instead of squeezing a desktop
+   design into 1,100px. The client measured 67% browser zoom as right; these
+   steps land at ~1,460-1,640 layout px. Touch tablets are excluded by the
+   pointer/hover query, and the CMS by the `data-bz-public` scope.
+
+   CSS zoom leaves media queries alone (they still see the real width, hence
+   the `desk` variant above) but scales viewport units with everything else:
+   a 100dvh box drew 504px of a 700px window at 0.72. `--bz-zoom` is what the
+   public site's viewport-height boxes divide by to stay full height —
+   e.g. `h-[calc(70vh/var(--bz-zoom,1))]`. MapLibre reads the scale off
+   getBoundingClientRect / offsetWidth, so map clicks stay exact. */
+@media (min-width: 1024px) and (max-width: 1151.98px) and (pointer: fine) and (hover: hover) {
+  html:has(main[data-bz-public]) {
+    --bz-zoom: 0.7;
+    zoom: 0.7;
+  }
+}
+@media (min-width: 1152px) and (max-width: 1279.98px) and (pointer: fine) and (hover: hover) {
+  html:has(main[data-bz-public]) {
+    --bz-zoom: 0.78;
+    zoom: 0.78;
   }
 }
