@@ -61,7 +61,8 @@ export default async function DevelopersPage({
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
   // Section copy and order come from /admin/pages/master/developers. Anything
   // untouched falls back to the literals this page shipped with. The card grid
@@ -86,7 +87,12 @@ export default async function DevelopersPage({
         <h1
           className="serif mt-3.5 max-w-[1000px]"
           style={{
-            fontSize: fluid(84),
+            // Arabic is drawn smaller. The client's headline runs to ~55
+            // characters in the Arabic face, which at 84px wrapped to four
+            // lines and pushed the hero to twice its height; 52px keeps it to
+            // two in the 1000px measure at every desktop width (client, Oct
+            // 2026). English keeps the display size it was set at.
+            fontSize: locale === "ar" ? fluid(52) : fluid(84),
             letterSpacing: "-0.03em",
             lineHeight: 0.98,
           }}
