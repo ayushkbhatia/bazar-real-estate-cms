@@ -14,6 +14,7 @@ import {
   HOME_OFFPLAN_CARD_COUNT,
   type SectionCopy,
 } from "./section-copy";
+import { getStatusPills } from "@/lib/queries/card-labels";
 
 /**
  * Home "Off-plan projects" (handoff §2). Three live developments from
@@ -42,6 +43,8 @@ export async function OffPlanProjects({
   developments?: Awaited<ReturnType<typeof listPublishedDevelopments>>;
 } = {}) {
   const th = await getTranslations("pages.home");
+  // "Off-plan", as edited under Pages & blocks → Pills.
+  const offPlanPill = (await getStatusPills())("off_plan");
   const tc = await getTranslations("development.card");
   const developments = prefetched ?? (await listPublishedDevelopments());
 
@@ -99,7 +102,7 @@ export async function OffPlanProjects({
                 )}
                 <span className="absolute start-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-navy px-2.5 py-1 text-[11px] font-medium text-bz-bg">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
-                  {th("offPlan")}
+                  {offPlanPill}
                 </span>
               </div>
               <div className="p-5">
