@@ -83,8 +83,12 @@ export function FloatingCtaRail({
   fallbackPhone: string | null;
 }) {
   const target = useFloatingCtaTarget();
-  const visible = useRevealOnScroll();
   const page = usePageIdentity();
+  // Hidden again the moment the site footer comes into view, on every page:
+  // the footer carries the same call / WhatsApp / email routes, and the pills
+  // sat over its links (client, Oct 2026).
+  const footerInView = useFooterInView(page.path);
+  const visible = useRevealOnScroll() && !footerInView;
 
   const resolved = useMemo(
     () =>
@@ -402,6 +406,40 @@ function useRevealOnScroll(): boolean {
   }, []);
 
   return visible;
+}
+
+/**
+ * Whether the site footer is on screen.
+ *
+ * The footer is the last `<footer>` in the document (PublicFooter, rendered by
+ * the public layout); an article or card that uses a `<footer>` of its own sits
+ * above it. Re-observed on every navigation, because a client navigation can
+ * replace the layout's subtree. Any part of it entering the viewport counts —
+ * the pills disappear as its top edge scrolls up, not once it is fully in.
+ * Read on scroll, like the reveal above, rather than through an
+ * IntersectionObserver, whose callbacks a background tab may defer.
+ */
+function useFooterInView(path: string): boolean {
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    function evaluate() {
+      const footers = document.querySelectorAll("footer");
+      const footer = footers[footers.length - 1];
+      setInView(
+        footer ? footer.getBoundingClientRect().top < window.innerHeight : false,
+      );
+    }
+    evaluate();
+    window.addEventListener("scroll", evaluate, { passive: true });
+    window.addEventListener("resize", evaluate);
+    return () => {
+      window.removeEventListener("scroll", evaluate);
+      window.removeEventListener("resize", evaluate);
+    };
+  }, [path]);
+
+  return inView;
 }
 
 /**
