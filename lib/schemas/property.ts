@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
+import { developerOptional } from "@/lib/properties/type-rules";
 import { MAX_AMENITIES, normaliseAmenityList } from "@/lib/amenities";
 
 /** The transaction: for sale or to let, and nothing else (0168).
@@ -205,10 +206,14 @@ const propertyOverviewFields = z.object({
    *  'residential' (0121), so a payload that omits it is a row Postgres fills
    *  in, not a row it rejects. */
   segment: z.enum(PROPERTY_SEGMENTS).optional(),
-  // Developer is a required section of the listing wizard. The column is
-  // nullable at the DB layer (a fresh "create draft" has none), so we enforce
-  // requiredness here — mirroring developmentEditSchema's developer_id.
-  developer_id: z.string().regex(UUID_SHAPE_RE, "Pick a developer"),
+  // Developer is a required section of the listing wizard for most types. The
+  // column is nullable at the DB layer (a fresh "create draft" has none), so
+  // requiredness is enforced here: blank ("No developer") is accepted only for
+  // a type whose rules make the developer optional — see
+  // refineDeveloperForType and lib/properties/type-rules.ts.
+  developer_id: z
+    .string()
+    .refine((v) => v === "" || UUID_SHAPE_RE.test(v), "Pick a developer"),
   bazar_verified: z.boolean().optional(),
   advisor_note: z
     .string()
@@ -220,6 +225,21 @@ const propertyOverviewFields = z.object({
    *  lister hasn't classified yet. */
   property_form: propertyFormField,
 });
+
+/** A blank developer ("No developer") only for a type that does not need one.
+ *  Mirrors the publish gate in lib/publishability.ts. */
+function refineDeveloperForType(
+  val: { type?: string | null; developer_id?: string | null },
+  ctx: z.RefinementCtx,
+) {
+  if (!val.developer_id && !developerOptional(val.type)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["developer_id"],
+      message: "Pick a developer",
+    });
+  }
+}
 
 /** Shared rule, applied to every schema that carries both `mode` and
  *  `property_form`: rent listings must not carry a form. Mirrors the DB CHECK
@@ -361,7 +381,10 @@ export const propertyEditSchema = propertyOverviewFields
   .merge(propertyLocationSchema)
   .merge(propertyAmenitiesSchema)
   .merge(propertySeoSchema)
-  .superRefine(refineRentHasNoForm);
+  .superRefine((val, ctx) => {
+    refineRentHasNoForm(val, ctx);
+    refineDeveloperForType(val, ctx);
+  });
 
 export type PropertyEditInput = z.infer<typeof propertyEditSchema>;
 

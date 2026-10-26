@@ -252,6 +252,37 @@ describe("propertyEditSchema (merged)", () => {
   });
 });
 
+describe("propertyEditSchema — developer by type", () => {
+  const payload = (type: string, developer_id: string) => ({
+    title: "A valid title",
+    type,
+    mode: "buy",
+    developer_id,
+    price_aed: 1_000_000,
+    beds: 0,
+    baths: 0,
+    amenities: [],
+    slug: "valid-slug",
+  });
+
+  it("accepts No developer for land, hotel apartments and the commercial types", () => {
+    for (const type of ["land", "hotel_apartment", "office", "building", "retail", "commercial_villa"])
+      expect(propertyEditSchema.safeParse(payload(type, "")).success, type).toBe(true);
+  });
+
+  it("still requires a developer for residential types", () => {
+    for (const type of ["apartment", "villa", "townhouse", "penthouse"]) {
+      const res = propertyEditSchema.safeParse(payload(type, ""));
+      expect(res.success, type).toBe(false);
+      if (!res.success) expect(res.error.issues[0]?.path[0]).toBe("developer_id");
+    }
+  });
+
+  it("rejects a malformed developer whatever the type", () => {
+    expect(propertyEditSchema.safeParse(payload("land", "not-a-uuid")).success).toBe(false);
+  });
+});
+
 describe("propertyCreateSchema", () => {
   it("requires the minimal create fields", () => {
     const res = propertyCreateSchema.safeParse({

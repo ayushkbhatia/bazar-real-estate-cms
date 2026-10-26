@@ -1,5 +1,6 @@
 import type { Database } from "@/db/types";
 import { plainTextToHtml } from "@/lib/plain-text-html";
+import { developerOptional } from "@/lib/properties/type-rules";
 import type { ImageRef, ListingSnapshot } from "./snapshot";
 
 /**
@@ -862,10 +863,13 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
     }
   }
 
-  // Who built it. The publish gate requires a developer on every listing.
+  // Who built it. The publish gate requires a developer except for the types
+  // that may have none (land, hotel apartments, the commercial types —
+  // lib/properties/type-rules.ts); those come in with no developer.
   let developerId: string | null = null;
   if (!s.developer) {
-    holds.push({ code: "no_developer", fix: "salesforce", message: "Developer__c on the Property is blank." });
+    if (!developerOptional(type))
+      holds.push({ code: "no_developer", fix: "salesforce", message: "Developer__c on the Property is blank." });
   } else {
     developerId = resolveDeveloper(s.developer, lookups);
     if (!developerId) {
