@@ -43,8 +43,8 @@
     "successToast": "Request sent — an advisor will be in touch."
   },
   "cards": {
-    "exploreHomes": "Explore homes",
-    "homesForSale": "{count, plural, one {# home for sale} other {# homes for sale}}",
+    "exploreHomes": "Explore Homes",
+    "homesForSale": "{count, plural, one {# Home for Sale} other {# Homes for Sale}}",
     "propertiesForSale": "{count, plural, one {# Property for Sale} other {# Properties for Sale}}"
   },
   "lifestyle": {

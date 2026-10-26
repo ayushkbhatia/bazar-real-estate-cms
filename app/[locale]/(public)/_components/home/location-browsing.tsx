@@ -5,10 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import {
-  HOME_AREA_TILE_COUNT,
-  type SectionCopy,
-} from "./section-copy";
+import { HOME_AREA_TILE_COUNT, type SectionCopy } from "./section-copy";
 
 /**
  * Home "Location-based browsing" (handoff §1). A large Abu Dhabi overview
@@ -50,7 +47,6 @@ export async function LocationBrowsing({
 } = {}) {
   const t = await getTranslations("area");
   const entries = await listAreasWithCounts();
-  const total = entries.reduce((n, e) => n + e.listing_count, 0);
 
   /*
    * A hand-picked card says "Explore homes", whatever its area holds. It used
@@ -124,7 +120,10 @@ export async function LocationBrowsing({
         <Tile
           href={overviewHref ?? "/buy/search"}
           name={overviewName ?? "Abu Dhabi"}
-          countLabel={t("cards.homesForSale", { count: total })}
+          // "Explore Homes" like the hand-picked cards beside it. A live total
+          // here read "118 homes for sale" next to eight tiles that say
+          // explore (client, Oct 2026).
+          countLabel={t("cards.exploreHomes")}
           imgLabel={overviewImageLabel ?? "abu dhabi"}
           imgUrl={overviewImageUrl}
           imgAlt={overviewImageAlt}

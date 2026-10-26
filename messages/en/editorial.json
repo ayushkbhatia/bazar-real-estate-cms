@@ -26,12 +26,12 @@
     "noTransactions": "No closed {type} transactions surfaced for {area} in this quarter yet."
   },
   "internalLink": {
-    "areaEyebrow": "Community guide",
-    "areaHomes": "{count, plural, one {# home for sale} other {# homes for sale}}",
-    "areaCta": "Read the guide",
+    "areaEyebrow": "Community Guide",
+    "areaHomes": "{count, plural, one {# Home for Sale} other {# Homes for Sale}}",
+    "areaCta": "Read the Guide",
     "projectEyebrow": "Project",
-    "projectCta": "View the project",
-    "listingCta": "View the listing"
+    "projectCta": "View the Project",
+    "listingCta": "View the Listing"
   },
   "fallbackArea": "United Arab Emirates"
 }

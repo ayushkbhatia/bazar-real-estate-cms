@@ -61,7 +61,7 @@
   },
   "home": {
     "offPlan": "Off-plan",
-    "startingFrom": "Starting from",
+    "startingFrom": "Starting From",
     "view": "View"
   },
   "newsletter": {
@@ -85,7 +85,7 @@
     "notFoundBody": "It may already have been used. Try subscribing again from the Insights page."
   },
   "offPlan": {
-    "viewProperties": "View properties",
+    "viewProperties": "View Properties",
     "listings": "{count, plural, one {# listing} other {# listings}}",
     "interestEyebrow": "Register your interest",
     "interestHeading": "Interested in a new project?",

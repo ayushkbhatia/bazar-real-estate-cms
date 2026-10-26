@@ -86,7 +86,7 @@ export const BUILT_IN_FLAG: Record<string, string> = {
 /**
  * The shipped vocabulary.
  *
- * The words and the colours are byte-identical to what `listingBadge` returned
+ * The colours are what `listingBadge` returned (the words now title case, Oct 2026)
  * — `listing.badge.exclusive` in ink, `listing.badge.vacantOnTransfer` in
  * accent — so a site whose client never opens the new screen renders exactly
  * what it rendered before.
@@ -102,7 +102,7 @@ export const CARD_LABEL_DEFAULTS: CardLabel[] = [
   },
   {
     id: "vacant_on_transfer",
-    text: "Vacant on transfer",
+    text: "Vacant on Transfer",
     text_ar: "شاغر عند نقل الملكية",
     kind: "accent",
     enabled: true,
