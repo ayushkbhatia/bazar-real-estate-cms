@@ -6,7 +6,7 @@
  * so both stay in sync. Reads/writes via `usePreferences`.
  */
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Check, Coins, Ruler } from "lucide-react";
 import {
   CURRENCIES,
@@ -25,6 +25,7 @@ export function PreferencesControls() {
   // override. A toggle that offered "درهم" and then priced the page in "AED"
   // would be the one place the whole feature is visibly self-contradictory.
   const t = useTranslations("common");
+  const locale = useLocale();
   const labels = prefs.labels;
 
   return (
@@ -47,13 +48,17 @@ export function PreferencesControls() {
                 )}
               >
                 <span className="flex items-center gap-2">
-                  {/* `min-w-9`, not `w-9`. The column was sized for "AED" and
-                      "$"; "درهم" is wider than either and a fixed width clipped
-                      it. A minimum keeps the two rows' names aligned in English
-                      without capping what Arabic can put here. */}
-                  <span className="mono text-[12px] min-w-9 inline-block text-start text-bz-ink-2">
-                    {labels.currency[c]}
-                  </span>
+                  {/* No short label in Arabic: the name already starts with it,
+                      and "درهم  درهم إماراتي" printed the word twice, the first
+                      copy in the mono face, which has no Arabic (client, Oct
+                      2026). English keeps "AED" / "$" as a column.
+
+                      `min-w-9`, not `w-9`, so a wider label is not clipped. */}
+                  {locale === "ar" ? null : (
+                    <span className="mono text-[12px] min-w-9 inline-block text-start text-bz-ink-2">
+                      {labels.currency[c]}
+                    </span>
+                  )}
                   <span>{labels.currencyLong[c]}</span>
                 </span>
                 {prefs.currency === c && (
