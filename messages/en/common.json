@@ -39,13 +39,13 @@
   "languageEnglish": "English",
   "loading": "Loading",
   "map": {
-    "areaGuide": "View community guide",
+    "areaGuide": "View Community Guide",
     "backToCity": "Back to city view",
     "comingSoon": "{emirate} is coming soon",
     "curating": "We’re curating listings here now.",
     "dotCta": {
-      "listing": "View property",
-      "project": "View project"
+      "listing": "View Property",
+      "project": "View Project"
     },
     "pinHint": {
       "listing": "Click an area pin — zoom in to see individual listings",
@@ -54,8 +54,8 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "zoomTo": {
-      "listing": "{count, plural, one {Zoom to # listing} other {Zoom to # listings}}",
-      "project": "{count, plural, one {Zoom to # project} other {Zoom to # projects}}"
+      "listing": "{count, plural, one {Zoom to # Listing} other {Zoom to # Listings}}",
+      "project": "{count, plural, one {Zoom to # Project} other {Zoom to # Projects}}"
     }
   },
   "marquee": {
