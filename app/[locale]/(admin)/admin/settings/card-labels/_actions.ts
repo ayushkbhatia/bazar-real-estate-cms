@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { cardLabelSettingsSchema } from "@/lib/schemas/card-labels";
+import { cardLabelSettingsSchema, parseCardLabels } from "@/lib/schemas/card-labels";
 import { CARD_LABEL_DEFAULTS } from "@/lib/card-labels";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
@@ -53,9 +53,22 @@ export async function updateCardLabels(
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  // The status pills (Pages & blocks → Pills) live in the same bag and are
+  // saved from their own screen, so keep whatever is stored for them.
+  const { data: current } = await supabase
+    .from("site_settings")
+    .select("card_labels")
+    .eq("id", 1)
+    .maybeSingle();
+  const status = parseCardLabels(
+    (current as { card_labels?: unknown } | null)?.card_labels,
+  ).status;
   const { error } = await supabase
     .from("site_settings")
-    .update({ card_labels: parsed.data, updated_by: user?.id ?? null })
+    .update({
+      card_labels: { ...parsed.data, ...(status ? { status } : {}) },
+      updated_by: user?.id ?? null,
+    })
     .eq("id", 1);
   if (error) return { status: "error", message: error.message };
 
@@ -68,6 +81,7 @@ export async function updateCardLabels(
   });
 
   revalidatePath("/admin/settings/card-labels");
+  revalidatePath("/admin/pages/pills");
   // "layout", for the reason the typography and unit-label actions give: cards
   // are drawn on the home page, all six search routes, every area, agent and
   // developer profile. Revalidating "/" alone would relabel the home page and

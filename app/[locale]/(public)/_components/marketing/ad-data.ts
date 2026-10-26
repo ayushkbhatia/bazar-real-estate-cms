@@ -48,27 +48,27 @@ export const OFFPLAN_TYPES: [string, string, string][] = [
   [
     "Apartments",
     "Discover modern off-plan apartments in Abu Dhabi's most connected communities.",
-    "View off-plan apartments",
+    "View Off-Plan Apartments",
   ],
   [
     "Villas",
     "Explore spacious villas designed for privacy, comfort, and long-term family living.",
-    "View off-plan villas",
+    "View Off-Plan Villas",
   ],
   [
     "Townhouses",
     "Find contemporary townhouses built around community living and everyday convenience.",
-    "View off-plan townhouses",
+    "View Off-Plan Townhouses",
   ],
   [
     "Penthouses",
     "Discover exclusive penthouses with premium views, spacious layouts, and elevated living.",
-    "View off-plan penthouses",
+    "View Off-Plan Penthouses",
   ],
   [
     "Branded Residences",
     "Premium residences created with globally recognised lifestyle and hospitality brands.",
-    "View branded residences",
+    "View Branded Residences",
   ],
 ];
 

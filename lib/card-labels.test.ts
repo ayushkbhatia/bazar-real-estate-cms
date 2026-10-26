@@ -6,6 +6,7 @@ import {
   labelText,
   labelsFor,
   resolveCardLabels,
+  statusPillText,
   type CardLabel,
 } from "./card-labels";
 import { parseCardLabels } from "@/lib/schemas/card-labels";
@@ -22,12 +23,10 @@ const label = (
 
 describe("the shipped vocabulary", () => {
   /**
-   * The migration changes nothing on apply, and this is the assertion behind
-   * that claim: the two built-ins carry the exact words and colours
-   * `listingBadge` returned, so a site whose client never opens the new screen
-   * renders what it rendered before.
+   * The two built-ins carry the colours `listingBadge` returned. The English
+   * words are title case, like every card label since Oct 2026.
    */
-  it("reproduces what listingBadge used to return", () => {
+  it("ships the two built-ins", () => {
     const [exclusive, vacant] = CARD_LABEL_DEFAULTS;
     expect(exclusive).toMatchObject({
       id: "exclusive",
@@ -37,7 +36,7 @@ describe("the shipped vocabulary", () => {
     });
     expect(vacant).toMatchObject({
       id: "vacant_on_transfer",
-      text: "Vacant on transfer",
+      text: "Vacant on Transfer",
       text_ar: "شاغر عند نقل الملكية",
       kind: "accent",
     });
@@ -219,5 +218,24 @@ describe("cardLabelId", () => {
   it("always produces something the schema accepts", () => {
     for (const text of ["New launch", "  ??? ", "إطلاق", "A–B", "50% off"])
       expect(cardLabelId(text, [])).toMatch(/^[a-z0-9_]+$/);
+  });
+});
+
+describe("statusPillText", () => {
+  it("ships Off-plan / For Sale / For Rent in both languages", () => {
+    expect(statusPillText(null, "off_plan", "en")).toBe("Off-plan");
+    expect(statusPillText(null, "off_plan", "ar")).toBe("على الخارطة");
+    expect(statusPillText(undefined, "for_rent", "en")).toBe("For Rent");
+  });
+
+  it("uses the editor's words, falling back per language when one is blank", () => {
+    const o = { off_plan: { text: "Off Plan", text_ar: "" } };
+    expect(statusPillText(o, "off_plan", "en")).toBe("Off Plan");
+    expect(statusPillText(o, "off_plan", "ar")).toBe("على الخارطة");
+  });
+
+  it("survives parsing alongside the labels", () => {
+    const bag = parseCardLabels({ labels: [], status: { for_sale: { text: "Sale" } } });
+    expect(bag.status?.for_sale?.text).toBe("Sale");
   });
 });

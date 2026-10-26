@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
+import { developerOptional, missingAreas, typeRules } from "@/lib/properties/type-rules";
 import { MAX_AMENITIES, normaliseAmenityList } from "@/lib/amenities";
 
 /** The transaction: for sale or to let, and nothing else (0168).
@@ -85,6 +86,17 @@ export const PROPERTY_TYPES = [
   "retail",
   "commercial_villa",
 ] as const;
+
+/**
+ * The types an editor or a visitor picks from. `commercial` stays in the enum
+ * (older and Salesforce-imported listings carry it, and the database type
+ * lists it) but is not offered: "Commercial" is the segment, and a Type
+ * picker offering it as well put the same word in two fields (client, Oct
+ * 2026). A listing that already has it keeps it until its type is changed.
+ */
+export const PICKABLE_PROPERTY_TYPES = PROPERTY_TYPES.filter(
+  (t) => t !== "commercial",
+);
 /**
  * Residential or commercial — the BUILDING axis, and the second one a listing
  * has.
@@ -205,10 +217,14 @@ const propertyOverviewFields = z.object({
    *  'residential' (0121), so a payload that omits it is a row Postgres fills
    *  in, not a row it rejects. */
   segment: z.enum(PROPERTY_SEGMENTS).optional(),
-  // Developer is a required section of the listing wizard. The column is
-  // nullable at the DB layer (a fresh "create draft" has none), so we enforce
-  // requiredness here — mirroring developmentEditSchema's developer_id.
-  developer_id: z.string().regex(UUID_SHAPE_RE, "Pick a developer"),
+  // Developer is a required section of the listing wizard for most types. The
+  // column is nullable at the DB layer (a fresh "create draft" has none), so
+  // requiredness is enforced here: blank ("No developer") is accepted only for
+  // a type whose rules make the developer optional — see
+  // refineDeveloperForType and lib/properties/type-rules.ts.
+  developer_id: z
+    .string()
+    .refine((v) => v === "" || UUID_SHAPE_RE.test(v), "Pick a developer"),
   bazar_verified: z.boolean().optional(),
   advisor_note: z
     .string()
@@ -220,6 +236,40 @@ const propertyOverviewFields = z.object({
    *  lister hasn't classified yet. */
   property_form: propertyFormField,
 });
+
+/** A blank developer ("No developer") only for a type that does not need one.
+ *  Mirrors the publish gate in lib/publishability.ts. */
+function refineDeveloperForType(
+  val: { type?: string | null; developer_id?: string | null },
+  ctx: z.RefinementCtx,
+) {
+  if (!val.developer_id && !developerOptional(val.type)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["developer_id"],
+      message: "Pick a developer",
+    });
+  }
+}
+
+/** The areas this type requires (lib/properties/type-rules.ts) — a building
+ *  needs both, land its plot, a hotel apartment its built-up area. */
+function refineAreasForType(
+  val: { type?: string | null; built_up_ft2?: number | null; plot_ft2?: number | null },
+  ctx: z.RefinementCtx,
+) {
+  const label = (val.type ?? "").replace(/_/g, " ");
+  for (const key of missingAreas({ ...val, type: val.type ?? null })) {
+    ctx.addIssue({
+      code: "custom",
+      path: [key],
+      message:
+        key === "plot_ft2"
+          ? `A ${label} listing needs its plot size`
+          : `A ${label} listing needs its built-up area`,
+    });
+  }
+}
 
 /** Shared rule, applied to every schema that carries both `mode` and
  *  `property_form`: rent listings must not carry a form. Mirrors the DB CHECK
@@ -361,7 +411,24 @@ export const propertyEditSchema = propertyOverviewFields
   .merge(propertyLocationSchema)
   .merge(propertyAmenitiesSchema)
   .merge(propertySeoSchema)
-  .superRefine(refineRentHasNoForm);
+  .superRefine((val, ctx) => {
+    refineRentHasNoForm(val, ctx);
+    refineDeveloperForType(val, ctx);
+    refineAreasForType(val, ctx);
+  });
+
+/** The area columns a type has no use for, emptied on save (a hotel
+ *  apartment's stray plot, a plot of land's built-up figure). */
+export function clearUnusedAreas<
+  T extends { type: string; built_up_ft2?: number | null; plot_ft2?: number | null },
+>(val: T): T {
+  const rules = typeRules(val.type);
+  return {
+    ...val,
+    ...(rules.builtUp === "none" ? { built_up_ft2: null } : {}),
+    ...(rules.plot === "none" ? { plot_ft2: null } : {}),
+  };
+}
 
 export type PropertyEditInput = z.infer<typeof propertyEditSchema>;
 

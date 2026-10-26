@@ -5,10 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import {
-  HOME_AREA_TILE_COUNT,
-  type SectionCopy,
-} from "./section-copy";
+import { HOME_AREA_TILE_COUNT, type SectionCopy } from "./section-copy";
 
 /**
  * Home "Location-based browsing" (handoff §1). A large Abu Dhabi overview
@@ -20,6 +17,8 @@ import {
 export type LocationCard = {
   enabled?: boolean;
   name?: string | null;
+  /** The line under the name. Blank ⇒ "Explore Homes". */
+  subtitle?: string | null;
   href?: string | null;
   slug?: string | null;
   imageUrl?: string | null;
@@ -34,6 +33,7 @@ export async function LocationBrowsing({
   ctaLabel = "All locations",
   ctaHref = "/areas",
   overviewName = "Abu Dhabi",
+  overviewSubtitle,
   overviewHref = "/buy/search",
   overviewImageUrl,
   overviewImageAlt,
@@ -41,6 +41,8 @@ export async function LocationBrowsing({
   cards,
 }: SectionCopy & {
   overviewName?: string | null;
+  /** Blank ⇒ "Explore Homes". */
+  overviewSubtitle?: string | null;
   overviewHref?: string | null;
   overviewImageUrl?: string | null;
   overviewImageAlt?: string | null;
@@ -50,10 +52,10 @@ export async function LocationBrowsing({
 } = {}) {
   const t = await getTranslations("area");
   const entries = await listAreasWithCounts();
-  const total = entries.reduce((n, e) => n + e.listing_count, 0);
 
   /*
-   * A hand-picked card says "Explore homes", whatever its area holds. It used
+   * A hand-picked card says "Explore Homes" (or the subtitle the editor wrote
+   * for it in the home master page), whatever its area holds. It used
    * to show the live count when its slug matched an area, and only Al Raha's
    * did — so one tile in eight read "3 homes for sale" beside seven "Explore
    * homes" (client, Oct 2026). The fallback grid below keeps its counts: every
@@ -78,7 +80,7 @@ export async function LocationBrowsing({
               key: `${slug || "card"}-${i}`,
               href: c.href ?? (slug ? `/areas/${slug}` : "/areas"),
               name: c.name ?? slug,
-              countLabel: t("cards.exploreHomes"),
+              countLabel: c.subtitle?.trim() || t("cards.exploreHomes"),
               imgLabel: c.imageLabel ?? slug,
               imgUrl: c.imageUrl,
               imgAlt: c.imageAlt,
@@ -124,7 +126,10 @@ export async function LocationBrowsing({
         <Tile
           href={overviewHref ?? "/buy/search"}
           name={overviewName ?? "Abu Dhabi"}
-          countLabel={t("cards.homesForSale", { count: total })}
+          // "Explore Homes" like the hand-picked cards beside it. A live total
+          // here read "118 homes for sale" next to eight tiles that say
+          // explore (client, Oct 2026).
+          countLabel={overviewSubtitle?.trim() || t("cards.exploreHomes")}
           imgLabel={overviewImageLabel ?? "abu dhabi"}
           imgUrl={overviewImageUrl}
           imgAlt={overviewImageAlt}

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { LayoutGrid, Maximize2, BedDouble } from "lucide-react";
+import { LayoutGrid, Maximize2, BedDouble, LandPlot } from "lucide-react";
 
 import type { Locale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -19,6 +19,7 @@ export async function FloorPlanSection({
   beds,
   baths,
   builtUpFt2,
+  plotFt2,
   reference,
   locale,
 }: {
@@ -26,9 +27,13 @@ export async function FloorPlanSection({
   eyebrow: string;
   heading: string;
   imageUrl: string | null;
-  beds: number;
-  baths: number;
-  builtUpFt2: number | null;
+  /** `null` for a type without rooms (land): the pill is left out. */
+  beds: number | null;
+  baths: number | null;
+  /** `undefined` for a type without a built-up area: the pill is left out. */
+  builtUpFt2?: number | null;
+  /** Shown in built-up's place for a type measured by its plot. */
+  plotFt2?: number | null;
   reference: string;
   /*
    * Threaded rather than read ambiently. `getTranslations("property")` alone
@@ -82,23 +87,36 @@ export async function FloorPlanSection({
         )}
       </div>
 
-      {/* Key facts strip under the plan */}
+      {/* Key facts strip under the plan — only the facts this type has. */}
       <div className="mt-4 grid grid-cols-3 gap-3 max-w-[480px]">
-        <FactPill
-          icon={<BedDouble size={13} strokeWidth={1.6} />}
-          label={t("stat.bedrooms")}
-          value={String(beds)}
-        />
-        <FactPill
-          icon={<LayoutGrid size={13} strokeWidth={1.6} />}
-          label={t("stat.bathrooms")}
-          value={String(baths)}
-        />
-        <FactPill
-          icon={<Maximize2 size={13} strokeWidth={1.6} />}
-          label={t("stat.builtUp")}
-          value={<AreaText ft2={builtUpFt2} />}
-        />
+        {beds !== null ? (
+          <FactPill
+            icon={<BedDouble size={13} strokeWidth={1.6} />}
+            label={t("stat.bedrooms")}
+            value={String(beds)}
+          />
+        ) : null}
+        {baths !== null ? (
+          <FactPill
+            icon={<LayoutGrid size={13} strokeWidth={1.6} />}
+            label={t("stat.bathrooms")}
+            value={String(baths)}
+          />
+        ) : null}
+        {builtUpFt2 !== undefined ? (
+          <FactPill
+            icon={<Maximize2 size={13} strokeWidth={1.6} />}
+            label={t("stat.builtUp")}
+            value={<AreaText ft2={builtUpFt2} />}
+          />
+        ) : null}
+        {plotFt2 !== undefined ? (
+          <FactPill
+            icon={<LandPlot size={13} strokeWidth={1.6} />}
+            label={t("stat.plotSize")}
+            value={<AreaText ft2={plotFt2} />}
+          />
+        ) : null}
       </div>
     </section>
   );

@@ -25,6 +25,36 @@ function base(): PublishabilityInput {
 }
 
 describe("evaluatePublishability", () => {
+  it("blocks a listing missing an area its type requires", () => {
+    const res = evaluatePublishability({
+      ...base(),
+      missing_areas: ["plot_ft2"],
+    });
+    expect(res.ok).toBe(false);
+    expect(res.blockers).toContain("Plot size is missing");
+  });
+
+  it("passes No developer when the type does not need one", () => {
+    const res = evaluatePublishability({
+      ...base(),
+      has_developer: false,
+      developer_optional: true,
+    });
+    expect(res.ok).toBe(true);
+    expect(res.checks.map((c) => c.label)).toContain(
+      "No developer (not needed for this type)",
+    );
+  });
+
+  it("still blocks a missing developer when the type needs one", () => {
+    const res = evaluatePublishability({
+      ...base(),
+      has_developer: false,
+      developer_optional: false,
+    });
+    expect(res.blockers).toContain("Developer is missing");
+  });
+
   it("returns ok when every check passes", () => {
     const res = evaluatePublishability(base());
     expect(res.ok).toBe(true);

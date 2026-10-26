@@ -21,6 +21,7 @@ import {
   PROPERTY_SEGMENT_HINTS,
   PROPERTY_SEGMENT_LABELS,
   PROPERTY_SEGMENTS,
+  PICKABLE_PROPERTY_TYPES,
   PROPERTY_TYPES,
   TENURES,
   FURNISHINGS,
@@ -82,6 +83,10 @@ import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
 import type { AmenityOption } from "@/lib/amenities";
 import type { AddAmenityToTaxonomyResult } from "../../_fields/amenity-actions";
+import { developerOptional, typeRules } from "@/lib/properties/type-rules";
+
+/** The Select token for "No developer"; stored as a blank developer. */
+const NO_DEVELOPER = "__none__";
 
 export type AreaOption = { id: string; name: string; kind: string };
 export type DeveloperOption = { id: string; name: string };
@@ -242,6 +247,11 @@ export function PropertyEditForm({
   const propertyForm = watch("property_form") ?? null;
   const showPropertyForm = isSaleMode(mode);
   const developerId = watch("developer_id") ?? "";
+  // Land, hotel apartments and the commercial types may have no developer.
+  const noDeveloperAllowed = developerOptional(type);
+  // Which areas and facts this type is measured by (land: plot only; hotel
+  // apartment: built-up only; building: both; …).
+  const rules = typeRules(type);
   const tenure = watch("tenure") ?? null;
   const furnishing = watch("furnishing") ?? null;
   const areaId = watch("area_id") ?? null;
@@ -448,7 +458,11 @@ export function PropertyEditForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_TYPES.map((t) => (
+                  {/* A legacy "commercial" listing still shows its own type. */}
+                  {(type === "commercial"
+                    ? PROPERTY_TYPES
+                    : PICKABLE_PROPERTY_TYPES
+                  ).map((t) => (
                     <SelectItem key={t} value={t}>
                       {TYPE_LABELS[t]}
                     </SelectItem>
@@ -573,11 +587,25 @@ export function PropertyEditForm({
                 />
               ) : null}
             </div>
-            <Select value={developerId} onValueChange={onDeveloperChange}>
+            <Select
+              // Radix reserves "" for "nothing chosen", so "No developer" has
+              // its own token and is stored as a blank developer.
+              value={
+                developerId === "" && noDeveloperAllowed
+                  ? NO_DEVELOPER
+                  : developerId
+              }
+              onValueChange={(v) =>
+                onDeveloperChange(v === NO_DEVELOPER ? "" : v)
+              }
+            >
               <SelectTrigger id="developer_id">
                 <SelectValue placeholder="Choose a developer" />
               </SelectTrigger>
               <SelectContent>
+                {noDeveloperAllowed ? (
+                  <SelectItem value={NO_DEVELOPER}>No developer</SelectItem>
+                ) : null}
                 {sortedDevelopers.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name}
@@ -588,7 +616,9 @@ export function PropertyEditForm({
             <span className="text-[11.5px] text-bz-muted">
               {savingDeveloper
                 ? "Saving…"
-                : "Required. The developer behind this listing — shown on the public property page and required before it can be published. Saved as soon as you pick one."}
+                : noDeveloperAllowed
+                  ? "Optional for this type. Pick the developer, or No developer to publish without one; a listing with no developer never appears on the developer pages. Saved as soon as you pick."
+                  : "Required. The developer behind this listing — shown on the public property page and required before it can be published. Saved as soon as you pick one."}
             </span>
             <FieldError
               message={
@@ -660,64 +690,83 @@ export function PropertyEditForm({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="beds">Beds</Label>
-              <Input
-                id="beds"
-                type="number"
-                step="1"
-                {...register("beds", { valueAsNumber: true })}
-              />
-              <FieldError
-                message={errors.beds?.message ?? serverFieldErrors.beds}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="baths">Baths</Label>
-              <Input
-                id="baths"
-                type="number"
-                step="1"
-                {...register("baths", { valueAsNumber: true })}
-              />
-              <FieldError
-                message={errors.baths?.message ?? serverFieldErrors.baths}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="built_up_ft2">Built-up (ft²)</Label>
-              <Input
-                id="built_up_ft2"
-                type="number"
-                step="1"
-                {...register("built_up_ft2", {
-                  setValueAs: (v) =>
-                    v === "" || v === null ? null : Number(v),
-                })}
-              />
-              <FieldError
-                message={
-                  errors.built_up_ft2?.message ?? serverFieldErrors.built_up_ft2
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="plot_ft2">Plot (ft²)</Label>
-              <Input
-                id="plot_ft2"
-                type="number"
-                step="1"
-                {...register("plot_ft2", {
-                  setValueAs: (v) =>
-                    v === "" || v === null ? null : Number(v),
-                })}
-              />
-              <FieldError
-                message={
-                  errors.plot_ft2?.message ?? serverFieldErrors.plot_ft2
-                }
-              />
-            </div>
+            {/* A plot of land has no rooms; the stored values are left alone. */}
+            {rules.rooms ? (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="beds">Beds</Label>
+                  <Input
+                    id="beds"
+                    type="number"
+                    step="1"
+                    {...register("beds", { valueAsNumber: true })}
+                  />
+                  <FieldError
+                    message={errors.beds?.message ?? serverFieldErrors.beds}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="baths">Baths</Label>
+                  <Input
+                    id="baths"
+                    type="number"
+                    step="1"
+                    {...register("baths", { valueAsNumber: true })}
+                  />
+                  <FieldError
+                    message={errors.baths?.message ?? serverFieldErrors.baths}
+                  />
+                </div>
+              </>
+            ) : null}
+            {rules.builtUp !== "none" ? (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="built_up_ft2">
+                  Built-up (ft²){rules.builtUp === "required" ? " *" : ""}
+                </Label>
+                <Input
+                  id="built_up_ft2"
+                  type="number"
+                  step="1"
+                  {...register("built_up_ft2", {
+                    setValueAs: (v) =>
+                      v === "" || v === null ? null : Number(v),
+                  })}
+                />
+                <FieldError
+                  message={
+                    errors.built_up_ft2?.message ?? serverFieldErrors.built_up_ft2
+                  }
+                />
+              </div>
+            ) : null}
+            {rules.plot !== "none" ? (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="plot_ft2">
+                  Plot (ft²){rules.plot === "required" ? " *" : ""}
+                </Label>
+                <Input
+                  id="plot_ft2"
+                  type="number"
+                  step="1"
+                  {...register("plot_ft2", {
+                    setValueAs: (v) =>
+                      v === "" || v === null ? null : Number(v),
+                  })}
+                />
+                <FieldError
+                  message={
+                    errors.plot_ft2?.message ?? serverFieldErrors.plot_ft2
+                  }
+                />
+                {rules.plot === "optional" && rules.plotInKeyFacts ? (
+                  <span className="text-[11.5px] text-bz-muted">
+                    Optional. When filled, it is shown in the listing&apos;s key
+                    facts.
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </TabsContent>
 

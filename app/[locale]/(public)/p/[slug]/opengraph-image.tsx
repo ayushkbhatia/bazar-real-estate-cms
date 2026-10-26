@@ -9,6 +9,7 @@ import {
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { listingFacts } from "@/lib/properties/type-rules";
 import { withLocales } from "@/lib/i18n/static-params";
 
 // English in both locales. Satori shapes Arabic but does not reorder it, and a
@@ -77,9 +78,11 @@ export default async function PropertyOpenGraph({
   const price = property
     ? formatPriceAED(property.price_aed)
     : "Properly understood";
-  const beds = property?.beds ?? null;
-  const baths = property?.baths ?? null;
-  const ft2 = property?.built_up_ft2 ?? null;
+  // Only the facts this type has: a plot of land shows its plot size.
+  const facts = property ? listingFacts(property) : null;
+  const beds = facts?.beds ?? null;
+  const baths = facts?.baths ?? null;
+  const ft2 = facts?.areaFt2 ?? null;
   const heroSrc = property?.hero
     ? mediaPublicUrl(property.hero.storage_key)
     : null;

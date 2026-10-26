@@ -53,7 +53,8 @@ export const SELL_PAGE: MasterPageDef = {
     {
       key: "hero",
       label: "Hero",
-      description: "The pitch, the trust points and the stat rail beside the form.",
+      description:
+        "The pitch, the trust points and the stat rail beside the form.",
       locked: true,
       dataNote:
         "Leave the stat list empty to keep the live rail, which counts published listings, areas covered and active advisors. Filling it in replaces those with your own figures.",
@@ -121,7 +122,8 @@ export const SELL_PAGE: MasterPageDef = {
     {
       key: "form",
       label: "Enquiry form",
-      description: "The two-step form card: step labels, buttons and reassurance copy.",
+      description:
+        "The two-step form card: step labels, buttons and reassurance copy.",
       locked: true,
       dataNote:
         "The form's own questions, their options and the advisor routing aren't editable here — only the copy around them.",
@@ -132,9 +134,14 @@ export const SELL_PAGE: MasterPageDef = {
         area("reassurance", "Step 1 · small print", { max: 240 }),
         text("details_title", "Step 2 · heading", { max: 120 }),
         area("details_sub", "Step 2 · sub-copy", { max: 300 }),
-        area("consent_label", "Consent checkbox", { max: 300, optional: false }),
+        area("consent_label", "Consent checkbox", {
+          max: 300,
+          optional: false,
+        }),
         text("submit_label", "Step 2 · submit button", { max: 60 }),
-        text("submit_pending_label", "Step 2 · button while sending", { max: 60 }),
+        text("submit_pending_label", "Step 2 · button while sending", {
+          max: 60,
+        }),
         text("back_label", "Step 2 · back button", { max: 60 }),
         text("edit_label", "Step 2 · edit-summary button", { max: 60 }),
       ],
@@ -239,7 +246,8 @@ export const SELL_PAGE: MasterPageDef = {
     {
       key: "pricing",
       label: "Before you price it",
-      description: "The three-card band that keeps an owner from price-checking elsewhere.",
+      description:
+        "The three-card band that keeps an owner from price-checking elsewhere.",
       dataNote:
         "The transactions card draws a real 24-month sparkline once the DLD import has run; until then it shows the placeholder copy below rather than an invented trend.",
       fields: [
@@ -278,7 +286,10 @@ export const SELL_PAGE: MasterPageDef = {
           ],
         },
         text("range_title", "Range motif · title", { max: 80, optional: true }),
-        text("range_low", "Range motif · left label", { max: 30, optional: true }),
+        text("range_low", "Range motif · left label", {
+          max: 30,
+          optional: true,
+        }),
         text("range_mid", "Range motif · centre label", {
           max: 30,
           optional: true,
@@ -321,7 +332,7 @@ export const SELL_PAGE: MasterPageDef = {
             eyebrow: "Valuation tool",
             title: "Start with the right price",
             desc: "An instant, data-backed range for your unit — built from registered Abu Dhabi transactions and comparable listings.",
-            cta: "Get your estimate",
+            cta: "Get Your Estimate",
             href: "/tools/valuation",
             primary: true,
             visual: "range",
@@ -332,7 +343,7 @@ export const SELL_PAGE: MasterPageDef = {
             eyebrow: "Abu Dhabi transactions",
             title: "See what buyers actually paid",
             desc: "Browse registered sales in your community and benchmark against real closings, not asking prices.",
-            cta: "Explore transactions",
+            cta: "Explore Transactions",
             href: "/market-reports",
             primary: false,
             visual: "transactions",
@@ -343,7 +354,7 @@ export const SELL_PAGE: MasterPageDef = {
             eyebrow: "Seller guides",
             title: "Everything you need to know",
             desc: "Written by the advisors who do this daily — the paperwork, the fees, and the mistakes that cost owners months.",
-            cta: "Read the guides",
+            cta: "Read the Guides",
             href: "/guides",
             primary: false,
             visual: "guides",
@@ -389,7 +400,8 @@ export const SELL_PAGE: MasterPageDef = {
     {
       key: "faq",
       label: "FAQs",
-      description: "Questions at the foot of the page, with FAQPage schema for search.",
+      description:
+        "Questions at the foot of the page, with FAQPage schema for search.",
       dataNote:
         "The phone number comes from Settings → Brand, and the tap-to-call link is built from it. These answers quote Abu Dhabi fees and procedures — have a correction signed off before publishing it.",
       fields: [

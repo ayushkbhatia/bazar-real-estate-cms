@@ -8,7 +8,10 @@ import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
 import Link from "@/components/i18n/link";
-import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
+import {
+  isMortgageFlowPublic,
+  MORTGAGE_ENTRY_LINKS,
+} from "@/lib/queries/mortgage-flow";
 import {
   ChevronRight,
   BedDouble,
@@ -159,6 +162,11 @@ import { PropertyActionRow } from "./_components/action-row";
 import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
 import { descriptionHtml } from "@/lib/rich-text";
+import {
+  cardFactProps,
+  listingFacts,
+  typeRules,
+} from "@/lib/properties/type-rules";
 import { SpecificationTable, type SpecRow } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
 import { TokenText } from "./_components/token-text";
@@ -235,7 +243,7 @@ export async function generateMetadata({
   const description =
     seo.meta_description ??
     property.short_description ??
-    `${formatPriceAED(property.price_aed)} · ${property.beds}-bed ${property.type} in ${property.areas?.name ?? "the UAE"}`;
+    `${formatPriceAED(property.price_aed)} · ${typeRules(property.type).rooms ? `${property.beds}-bed ` : ""}${property.type} in ${property.areas?.name ?? "the UAE"}`;
 
   const canonical = propertyUrl(property);
   const ogImage = property.hero
@@ -352,9 +360,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ? mediaPublicUrl(media.floorPlan.storage_key)
     : null;
 
+  // What this type is measured by: a plot of land has no rooms and no
+  // built-up area, and its price per ft² is per ft² of plot.
+  const rules = typeRules(property.type);
+  const facts = listingFacts(property);
   const aedPerFt =
-    property.built_up_ft2 && property.built_up_ft2 > 0
-      ? Math.round(property.price_aed / property.built_up_ft2)
+    facts.areaFt2 && facts.areaFt2 > 0
+      ? Math.round(property.price_aed / facts.areaFt2)
       : null;
 
   const heroPublicUrl = property.hero
@@ -449,7 +461,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             value: t("spec.parkingBays", { count: property.parking_bays }),
           }
         : null,
-      property.plot_ft2 && plotInSpecification(property.type)
+      property.plot_ft2 &&
+      rules.plot !== "none" &&
+      plotInSpecification(property.type)
         ? {
             label: t("spec.plotSize"),
             value: <AreaText ft2={property.plot_ft2} />,
@@ -496,6 +510,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ).filter((r): r is SpecRow => r !== null);
 
   const fifthFact = fifthKeyFact(property);
+  // Type, year built, the fifth fact when there is one, and whichever of
+  // bedrooms / bathrooms / built-up this type has.
+  const keyFactCount =
+    2 +
+    (fifthFact ? 1 : 0) +
+    (facts.beds !== null ? 1 : 0) +
+    (facts.baths !== null ? 1 : 0) +
+    (rules.builtUp !== "none" ? 1 : 0);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -650,22 +672,34 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
       {/* Key facts */}
       <section className="px-4 md:px-12 pb-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <FactTile
-            icon={<BedDouble size={16} strokeWidth={1.6} />}
-            label={t("stat.bedrooms")}
-            value={String(property.beds)}
-          />
-          <FactTile
-            icon={<Bath size={16} strokeWidth={1.6} />}
-            label={t("stat.bathrooms")}
-            value={String(property.baths)}
-          />
-          <FactTile
-            icon={<Maximize2 size={16} strokeWidth={1.6} />}
-            label={t("stat.builtUp")}
-            value={<AreaText ft2={property.built_up_ft2} />}
-          />
+        <div
+          className={cn(
+            "grid grid-cols-2 sm:grid-cols-3 gap-3",
+            // One row on a desktop, however many tiles this type has.
+            KEY_FACT_COLS[keyFactCount] ?? "lg:grid-cols-6",
+          )}
+        >
+          {facts.beds !== null ? (
+            <FactTile
+              icon={<BedDouble size={16} strokeWidth={1.6} />}
+              label={t("stat.bedrooms")}
+              value={String(facts.beds)}
+            />
+          ) : null}
+          {facts.baths !== null ? (
+            <FactTile
+              icon={<Bath size={16} strokeWidth={1.6} />}
+              label={t("stat.bathrooms")}
+              value={String(facts.baths)}
+            />
+          ) : null}
+          {rules.builtUp !== "none" ? (
+            <FactTile
+              icon={<Maximize2 size={16} strokeWidth={1.6} />}
+              label={t("stat.builtUp")}
+              value={<AreaText ft2={property.built_up_ft2} />}
+            />
+          ) : null}
           <FactTile
             icon={<Home size={16} strokeWidth={1.6} />}
             label={t("stat.type")}
@@ -721,9 +755,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             heading={copy.text("floor-plan", "heading")}
             locale={locale}
             imageUrl={floorPlanUrl}
-            beds={property.beds}
-            baths={property.baths}
-            builtUpFt2={property.built_up_ft2}
+            beds={facts.beds}
+            baths={facts.baths}
+            builtUpFt2={
+              rules.builtUp === "none" ? undefined : property.built_up_ft2
+            }
+            plotFt2={rules.builtUp === "none" ? property.plot_ft2 : undefined}
             reference={property.reference}
           />
 
@@ -891,8 +928,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         title={property.title}
         areaName={property.areas?.name ?? null}
         propertyType={typeLabel}
-        beds={property.beds}
-        baths={property.baths}
+        beds={facts.beds}
+        baths={facts.baths}
         tenure={property.tenure ?? null}
         listingPermitNo={property.listing_permit_no ?? null}
       />
@@ -917,9 +954,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   priceAed={row.price_aed}
                   title={row.title}
                   location={row.areas?.name ?? t("fallbackArea")}
-                  beds={row.beds}
-                  baths={row.baths}
-                  area={row.built_up_ft2 ?? 0}
+                  {...cardFactProps(row)}
                   imgLabel={row.reference}
                   heroSrc={
                     row.hero ? mediaPublicUrl(row.hero.storage_key) : null
@@ -967,6 +1002,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     </article>
   );
 }
+
+/** Static class per tile count, so Tailwind sees every one of them. */
+const KEY_FACT_COLS: Record<number, string> = {
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5",
+  6: "lg:grid-cols-6",
+};
 
 function FactTile({
   icon,

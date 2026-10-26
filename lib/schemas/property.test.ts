@@ -7,6 +7,7 @@ import {
   propertyLocationSchema,
   propertyAmenitiesSchema,
   propertySeoSchema,
+  clearUnusedAreas,
   propertyEditSchema,
   propertyCreateSchema,
   normaliseEditInput,
@@ -249,6 +250,97 @@ describe("propertyEditSchema (merged)", () => {
       expect(paths).toContain("price_aed");
       expect(paths).toContain("slug");
     }
+  });
+});
+
+describe("propertyEditSchema — developer by type", () => {
+  const payload = (type: string, developer_id: string) => ({
+    title: "A valid title",
+    type,
+    mode: "buy",
+    developer_id,
+    price_aed: 1_000_000,
+    beds: 0,
+    baths: 0,
+    built_up_ft2: 2000,
+    plot_ft2: 5000,
+    amenities: [],
+    slug: "valid-slug",
+  });
+
+  it("accepts No developer for land, hotel apartments and the commercial types", () => {
+    for (const type of ["land", "hotel_apartment", "office", "building", "retail", "commercial_villa"])
+      expect(propertyEditSchema.safeParse(payload(type, "")).success, type).toBe(true);
+  });
+
+  it("still requires a developer for residential types", () => {
+    for (const type of ["apartment", "villa", "townhouse", "penthouse"]) {
+      const res = propertyEditSchema.safeParse(payload(type, ""));
+      expect(res.success, type).toBe(false);
+      if (!res.success) expect(res.error.issues[0]?.path[0]).toBe("developer_id");
+    }
+  });
+
+  it("rejects a malformed developer whatever the type", () => {
+    expect(propertyEditSchema.safeParse(payload("land", "not-a-uuid")).success).toBe(false);
+  });
+});
+
+describe("propertyEditSchema — areas by type", () => {
+  const payload = (
+    type: string,
+    areas: { built_up_ft2?: number | null; plot_ft2?: number | null },
+  ) => ({
+    title: "A valid title",
+    type,
+    mode: "buy",
+    developer_id: "11111111-1111-1111-1111-111111111111",
+    price_aed: 1_000_000,
+    beds: 0,
+    baths: 0,
+    amenities: [],
+    slug: "valid-slug",
+    ...areas,
+  });
+  const failing = (type: string, areas: Parameters<typeof payload>[1]) => {
+    const res = propertyEditSchema.safeParse(payload(type, areas));
+    return res.success ? [] : res.error.issues.map((i) => i.path[0]);
+  };
+
+  it("land needs its plot and nothing else", () => {
+    expect(failing("land", { plot_ft2: 7575 })).toEqual([]);
+    expect(failing("land", {})).toEqual(["plot_ft2"]);
+  });
+
+  it("a hotel apartment needs its built-up area", () => {
+    expect(failing("hotel_apartment", { built_up_ft2: 900 })).toEqual([]);
+    expect(failing("hotel_apartment", {})).toEqual(["built_up_ft2"]);
+  });
+
+  it("office and retail need built-up; the plot is optional", () => {
+    for (const type of ["office", "retail"]) {
+      expect(failing(type, { built_up_ft2: 3000 }), type).toEqual([]);
+      expect(failing(type, { plot_ft2: 3000 }), type).toEqual(["built_up_ft2"]);
+    }
+  });
+
+  it("a building and a commercial villa need both", () => {
+    for (const type of ["building", "commercial_villa"]) {
+      expect(failing(type, { built_up_ft2: 3000 }), type).toEqual(["plot_ft2"]);
+      expect(failing(type, { built_up_ft2: 3000, plot_ft2: 6000 }), type).toEqual([]);
+    }
+  });
+
+  it("leaves residential types as they were", () => {
+    expect(failing("apartment", {})).toEqual([]);
+  });
+});
+
+describe("clearUnusedAreas", () => {
+  it("drops a hotel apartment's plot and a plot of land's built-up area", () => {
+    expect(clearUnusedAreas({ type: "hotel_apartment", built_up_ft2: 900, plot_ft2: 50 })).toMatchObject({ built_up_ft2: 900, plot_ft2: null });
+    expect(clearUnusedAreas({ type: "land", built_up_ft2: 47612, plot_ft2: 47612 })).toMatchObject({ built_up_ft2: null, plot_ft2: 47612 });
+    expect(clearUnusedAreas({ type: "villa", built_up_ft2: 4000, plot_ft2: 6000 })).toMatchObject({ built_up_ft2: 4000, plot_ft2: 6000 });
   });
 });
 

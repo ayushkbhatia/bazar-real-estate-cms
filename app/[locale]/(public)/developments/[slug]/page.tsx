@@ -58,6 +58,8 @@ import {
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { HERO_SIZES } from "../../_components/hero-sizes";
 import { isSupabaseConfigured } from "@/lib/env";
+import { asLocale } from "@/lib/i18n/locales";
+import { getStatusPills } from "@/lib/queries/card-labels";
 
 export const revalidate = 60;
 
@@ -195,6 +197,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // The public anchor strip's own labels — see `navItems` below.
   const tnav = await getTranslations({ locale, namespace: "development.nav" });
   const tc = await getTranslations({ locale, namespace: "development.card" });
+  // "Off-plan" on the hero, as edited under Pages & blocks → Pills.
+  const statusPill = await getStatusPills(asLocale(locale));
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
@@ -905,7 +909,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </span>
             ) : null}
             <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-black/70 text-white">
-              {tc("offPlan")}
+              {statusPill("off_plan")}
             </span>
             {handover ? (
               <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-white/15 text-white backdrop-blur-sm">

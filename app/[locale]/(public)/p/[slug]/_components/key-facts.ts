@@ -14,19 +14,20 @@
  * lost (see `tenureInSpecification`).
  */
 
-/** Property types whose key facts lead with the plot instead of tenure. */
-const PLOT_TYPES: ReadonlySet<string> = new Set(["villa", "townhouse"]);
+import { typeRules } from "@/lib/properties/type-rules";
+
+/** Property types whose key facts lead with the plot instead of tenure —
+ *  villas, townhouses and land (lib/properties/type-rules.ts). */
+const leadsWithPlot = (type: string) => typeRules(type).plotInKeyFacts;
 
 export type FifthKeyFact =
-  | { kind: "plot"; ft2: number }
-  | { kind: "tenure" }
-  | null;
+  { kind: "plot"; ft2: number } | { kind: "tenure" } | null;
 
 export function fifthKeyFact(property: {
   type: string;
   plot_ft2: number | null;
 }): FifthKeyFact {
-  if (!PLOT_TYPES.has(property.type)) return { kind: "tenure" };
+  if (!leadsWithPlot(property.type)) return { kind: "tenure" };
   return property.plot_ft2 ? { kind: "plot", ft2: property.plot_ft2 } : null;
 }
 
@@ -35,9 +36,9 @@ export function fifthKeyFact(property: {
  * tiles carry the plot and not the tenure, so the table swaps them.
  */
 export function tenureInSpecification(type: string): boolean {
-  return PLOT_TYPES.has(type);
+  return leadsWithPlot(type);
 }
 
 export function plotInSpecification(type: string): boolean {
-  return !PLOT_TYPES.has(type);
+  return !leadsWithPlot(type);
 }

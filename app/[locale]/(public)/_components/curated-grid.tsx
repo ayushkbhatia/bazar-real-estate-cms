@@ -6,6 +6,7 @@ import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import { ListingCardPriced } from "./listing-card-priced";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 type Props = {
   eyebrow: string;
@@ -83,9 +84,7 @@ export async function CuratedGrid({
                     priceAed={row.price_aed}
                     title={row.title}
                     location={row.areas?.name ?? "United Arab Emirates"}
-                    beds={row.beds}
-                    baths={row.baths}
-                    area={row.built_up_ft2 ?? 0}
+                    {...cardFactProps(row)}
                     badges={badges}
                     imgLabel={row.reference}
                     heroSrc={

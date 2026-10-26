@@ -38,6 +38,7 @@ import { ListingCardPriced } from "./listing-card-priced";
 import { GalleryPrefetch } from "./gallery-prefetch";
 import { fetchGalleryPreviews } from "@/lib/queries/property-gallery-preview";
 import { GALLERY_VISIBLE_TILES } from "../p/[slug]/_components/gallery-sizes";
+import { cardFactProps } from "@/lib/properties/type-rules";
 
 type Form = Database["public"]["Enums"]["property_form"];
 
@@ -222,13 +223,15 @@ export async function SearchList({
     ),
   ]);
   // The gallery photos each card warms for its listing page (gallery-prefetch).
-  const [t, cardLabels, galleryPreviews, unitLabels, prefs] = await Promise.all([
-    getTranslations("search"),
-    getCardLabelResolver(),
-    fetchGalleryPreviews(rows, GALLERY_VISIBLE_TILES),
-    currentLocale().then(getPublicUnitLabels),
-    readPreferencesFromCookie(),
-  ]);
+  const [t, cardLabels, galleryPreviews, unitLabels, prefs] = await Promise.all(
+    [
+      getTranslations("search"),
+      getCardLabelResolver(),
+      fetchGalleryPreviews(rows, GALLERY_VISIBLE_TILES),
+      currentLocale().then(getPublicUnitLabels),
+      readPreferencesFromCookie(),
+    ],
+  );
   const priceLabels = { currency: prefs.currency, labels: unitLabels };
 
   /*
@@ -368,9 +371,7 @@ export async function SearchList({
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
+                      {...cardFactProps(row)}
                       badges={badges}
                       imgLabel={row.reference}
                       heroSrc={
@@ -405,9 +406,7 @@ export async function SearchList({
                         priceAed={row.price_aed}
                         title={row.title}
                         location={row.areas?.name ?? "United Arab Emirates"}
-                        beds={row.beds}
-                        baths={row.baths}
-                        area={row.built_up_ft2 ?? 0}
+                        {...cardFactProps(row)}
                         badges={badges}
                         imgLabel={row.reference}
                         heroSrc={

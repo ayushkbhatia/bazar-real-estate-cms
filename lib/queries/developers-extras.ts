@@ -256,9 +256,11 @@ export type DeveloperListing = {
   slug: string;
   title: string;
   price_aed: number;
+  type: string;
   beds: number;
   baths: number;
   built_up_ft2: number | null;
+  plot_ft2: number | null;
   flags: Record<string, unknown> | null;
   area: { name: string; slug: string } | null;
   hero: { storage_key: string; alt_text: string | null } | null;
@@ -294,7 +296,7 @@ export async function listDeveloperListings(
         // so an embedded row has to be folded on its own — and it cannot be
         // folded at all if its twin was never selected. Without this the cards
         // printed "Yas Island" under an Arabic title.
-        "id, reference, slug, title, title_ar, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, name_ar, slug), property_media(role, media:media_assets(storage_key, alt_text, alt_text_ar))",
+        "id, reference, slug, title, title_ar, price_aed, type, beds, baths, built_up_ft2, plot_ft2, flags, published_at, areas!properties_area_id_fkey(name, name_ar, slug), property_media(role, media:media_assets(storage_key, alt_text, alt_text_ar))",
       )
       .eq("developer_id", developerId)
       .eq("status", "published")
@@ -312,10 +314,9 @@ export async function listDeveloperListings(
         locale,
       ) as unknown as typeof raw;
       const areaRaw = r.areas as
-        | Record<string, unknown>
-        | Record<string, unknown>[]
-        | null;
-      const areaSingle = (Array.isArray(areaRaw) ? areaRaw[0] : areaRaw) ?? null;
+        Record<string, unknown> | Record<string, unknown>[] | null;
+      const areaSingle =
+        (Array.isArray(areaRaw) ? areaRaw[0] : areaRaw) ?? null;
       const area = areaSingle
         ? (localiseRow(areaSingle, locale) as unknown as {
             name: string;
@@ -340,9 +341,11 @@ export async function listDeveloperListings(
         slug: r.slug,
         title: r.title,
         price_aed: Number(r.price_aed) || 0,
+        type: r.type,
         beds: r.beds,
         baths: r.baths,
         built_up_ft2: r.built_up_ft2,
+        plot_ft2: r.plot_ft2,
         flags: (r.flags as Record<string, unknown> | null) ?? null,
         area: area ? { name: area.name, slug: area.slug } : null,
         hero,

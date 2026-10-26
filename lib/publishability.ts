@@ -9,6 +9,14 @@ export type PublishabilityInput = {
   /** Optional so callers that don't track the developer (e.g. the bulk-publish
    *  path) are unaffected; the gate only applies when a value is supplied. */
   has_developer?: boolean;
+  /** The listing's type does not need a developer (land, hotel apartment and
+   *  the commercial types — lib/properties/type-rules.ts), so "No developer"
+   *  passes. */
+  developer_optional?: boolean;
+  /** Area columns the listing's type requires and it lacks (`missingAreas`
+   *  in lib/properties/type-rules.ts). Optional, like `has_developer`: the
+   *  bulk path supplies nothing and is unaffected. */
+  missing_areas?: ("built_up_ft2" | "plot_ft2")[];
   /** Optional pair, same precedent as `has_developer`: the sale-form check
    *  only runs when the caller supplies BOTH values. The bulk path selects
    *  neither column, so it is unaffected. */
@@ -50,9 +58,27 @@ export function evaluatePublishability(
   const checks: { label: string; passed: boolean }[] = [];
 
   if (input.has_developer !== undefined) {
-    const developerPassed = input.has_developer === true;
-    checks.push({ label: "Developer is set", passed: developerPassed });
-    if (!developerPassed) blockers.push("Developer is missing");
+    if (input.has_developer !== true && input.developer_optional === true) {
+      checks.push({
+        label: "No developer (not needed for this type)",
+        passed: true,
+      });
+    } else {
+      const developerPassed = input.has_developer === true;
+      checks.push({ label: "Developer is set", passed: developerPassed });
+      if (!developerPassed) blockers.push("Developer is missing");
+    }
+  }
+
+  if (input.missing_areas !== undefined) {
+    const missingBuiltUp = input.missing_areas.includes("built_up_ft2");
+    const missingPlot = input.missing_areas.includes("plot_ft2");
+    checks.push({
+      label: "Areas this type needs are filled in",
+      passed: !missingBuiltUp && !missingPlot,
+    });
+    if (missingBuiltUp) blockers.push("Built-up area is missing");
+    if (missingPlot) blockers.push("Plot size is missing");
   }
 
   // A sale listing with no form belongs to none of /buy/ready, /buy/resale or

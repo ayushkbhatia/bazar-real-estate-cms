@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { propertyEditSchema, normaliseEditInput } from "@/lib/schemas/property";
+import {
+  clearUnusedAreas,
+  propertyEditSchema,
+  normaliseEditInput,
+} from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/properties";
 import {
   evaluatePublishability,
@@ -16,6 +20,7 @@ import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { cleanLifestyleTags } from "@/lib/lifestyle-tags";
 import { BUILT_IN_FLAG } from "@/lib/card-labels";
 import { requireRole } from "@/lib/auth";
+import { developerOptional, missingAreas } from "@/lib/properties/type-rules";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -69,7 +74,9 @@ export async function updateProperty(
     return { status: "error", message: "Please fix the errors below.", fieldErrors };
   }
 
-  const { meta_title, meta_description, ...rest } = parsed.data;
+  const { meta_title, meta_description, ...rest } = clearUnusedAreas(
+    parsed.data,
+  );
 
   // The description arrives as an opaque HTML string, so the editor's
   // extension whitelist constrains nothing on this side. Sanitise before it is
@@ -85,6 +92,8 @@ export async function updateProperty(
 
   const updateData = {
     ...rest,
+    // Blank is "No developer" — allowed for some types; the column wants null.
+    developer_id: rest.developer_id || null,
     description,
     description_ar: descriptionAr,
     seo: {
@@ -801,13 +810,27 @@ export async function setPropertyDeveloper(
     return { status: "error", message: "Supabase env vars are not set." };
   await requireRole(PROPERTY_ROLES);
 
-  if (!UUID_RE.test(developerId))
+  const supabase = await createSupabaseServerClient();
+
+  // Blank is "No developer", which only some types may choose.
+  if (developerId === "") {
+    const { data: row } = await supabase
+      .from("properties")
+      .select("type")
+      .eq("id", propertyId)
+      .maybeSingle();
+    if (!row || !developerOptional(row.type))
+      return {
+        status: "error",
+        message:
+          "Pick a developer. If you just changed the type, save the listing first, then choose No developer.",
+      };
+  } else if (!UUID_RE.test(developerId))
     return { status: "error", message: "Pick a developer." };
 
-  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("properties")
-    .update({ developer_id: developerId })
+    .update({ developer_id: developerId || null })
     .eq("id", propertyId)
     .select("id")
     .maybeSingle();
@@ -849,7 +872,7 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const { data: p, error } = await supabase
     .from("properties")
     .select(
-      "id, slug, reference, status, title, price_aed, developer_id, mode, property_form, listing_permit_no, listing_permit_expires_at",
+      "id, slug, reference, status, title, price_aed, type, built_up_ft2, plot_ft2, developer_id, mode, property_form, listing_permit_no, listing_permit_expires_at",
     )
     .eq("id", propertyId)
     .maybeSingle();
@@ -860,6 +883,8 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const result = evaluatePublishability({
     status: p.status,
     has_developer: p.developer_id != null,
+    developer_optional: developerOptional(p.type),
+    missing_areas: missingAreas(p),
     mode: p.mode,
     property_form: p.property_form,
     listing_permit_no: p.listing_permit_no,

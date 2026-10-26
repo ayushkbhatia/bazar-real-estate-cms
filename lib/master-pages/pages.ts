@@ -45,6 +45,44 @@ import { PROPERTY_CONSULTATION_PAGE } from "./sections/property-consultation";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 import { MORTGAGE_PAGE } from "./sections/mortgage";
+import { MORTGAGE_TEASER_DEFAULTS } from "./mortgage-teaser";
+
+/**
+ * Home → Mortgage calculator: the band's words, each blank falling back to
+ * the catalogue (`common.mortgageTeaser`), shown as the placeholder.
+ * [key, editor label, English fallback, Arabic fallback].
+ */
+const MORTGAGE_TEASER_TEXT: [string, string, string, string][] = [
+  ["label_price", "Label · property price", "Property price", "سعر العقار"],
+  ["label_down", "Label · down payment", "Down payment", "الدفعة الأولى"],
+  ["label_rate", "Label · interest rate", "Interest rate", "معدل الفائدة"],
+  ["label_term", "Label · loan term", "Loan term", "مدة القرض"],
+  ["label_monthly", "Label · monthly payment", "Estimated monthly payment", "القسط الشهري التقديري"],
+  ["label_loan", "Label · loan amount", "Loan amount", "مبلغ القرض"],
+  ["label_interest", "Label · total interest", "Total interest", "إجمالي الفائدة"],
+  ["cta_label", "Button · label", "Get pre-approval today", "احصل على موافقة مبدئية اليوم"],
+];
+
+/**
+ * The sliders' starting values and ranges. [key, editor label, fallback].
+ * The fallbacks are MORTGAGE_TEASER_DEFAULTS, which the band also reads.
+ */
+const MORTGAGE_TEASER_CONTROLS: [string, string, number][] = [
+  ["price_default", "Property price · starting value (AED)", MORTGAGE_TEASER_DEFAULTS.price.value],
+  ["price_min", "Property price · minimum (AED)", MORTGAGE_TEASER_DEFAULTS.price.min],
+  ["price_max", "Property price · maximum (AED)", MORTGAGE_TEASER_DEFAULTS.price.max],
+  ["price_step", "Property price · step (AED)", MORTGAGE_TEASER_DEFAULTS.price.step],
+  ["down_default", "Down payment · starting value (%)", MORTGAGE_TEASER_DEFAULTS.down.value],
+  ["down_min", "Down payment · minimum (%)", MORTGAGE_TEASER_DEFAULTS.down.min],
+  ["down_max", "Down payment · maximum (%)", MORTGAGE_TEASER_DEFAULTS.down.max],
+  ["rate_default", "Interest rate · starting value (%)", MORTGAGE_TEASER_DEFAULTS.rate.value],
+  ["rate_min", "Interest rate · minimum (%)", MORTGAGE_TEASER_DEFAULTS.rate.min],
+  ["rate_max", "Interest rate · maximum (%)", MORTGAGE_TEASER_DEFAULTS.rate.max],
+  ["rate_step", "Interest rate · step (%)", MORTGAGE_TEASER_DEFAULTS.rate.step],
+  ["term_default", "Loan term · starting value (years)", MORTGAGE_TEASER_DEFAULTS.term.value],
+  ["term_min", "Loan term · minimum (years)", MORTGAGE_TEASER_DEFAULTS.term.min],
+  ["term_max", "Loan term · maximum (years)", MORTGAGE_TEASER_DEFAULTS.term.max],
+];
 
 
 // ── shared default content ──────────────────────────────────────────────
@@ -169,11 +207,7 @@ const HOME: MasterPageDef = {
       description: "Interactive map of Abu Dhabi communities.",
       dataNote:
         "Pins come from published areas and listings — only the copy above the map is editable here.",
-      fields: [
-        eyebrow(),
-        heading(),
-        body({ max: 400 }),
-      ],
+      fields: [eyebrow(), heading(), body({ max: 400 })],
       defaults: {
         eyebrow: "Where to live",
         heading: "Find your area first. The home follows.",
@@ -185,13 +219,19 @@ const HOME: MasterPageDef = {
       label: "Location-based browsing",
       description: "Overview tile plus a grid of community cards.",
       dataNote:
-        "Each card reads \"Explore homes\"; the overview tile shows the live count of homes for sale. Leave the card list empty to show the top 8 published areas automatically, each with its live count.",
+        'Each card and the overview tile read "Explore Homes" under their title unless you write a subtitle of your own. Leave the card list empty to show the top 8 published areas automatically, each with its live count.',
       fields: [
         eyebrow(),
         heading(),
         body(),
         ...ctaPair("CTA label"),
         text("overview_name", "Overview tile · title", { max: 80 }),
+        text("overview_subtitle", "Overview tile · subtitle", {
+          max: 60,
+          optional: true,
+          placeholder: "Explore Homes",
+          placeholderAr: "استكشف المنازل",
+        }),
         link("overview_href", "Overview tile · link"),
         image("overview_image", "Overview tile · image"),
         {
@@ -205,6 +245,13 @@ const HOME: MasterPageDef = {
           fields: [
             toggle("enabled", "Show this card"),
             text("name", "Title", { max: 80 }),
+            // The line under the title. Blank reads "Explore Homes".
+            text("subtitle", "Subtitle", {
+              max: 60,
+              optional: true,
+              placeholder: "Explore Homes",
+              placeholderAr: "استكشف المنازل",
+            }),
             link("href", "Link"),
             image("image", "Image"),
             text("slug", "Area slug", {
@@ -227,6 +274,7 @@ const HOME: MasterPageDef = {
         cta_label: "All locations",
         cta_href: "/areas",
         overview_name: "Abu Dhabi",
+        overview_subtitle: null,
         overview_href: "/buy/search",
         overview_image: { media_id: null, alt: null, label: "abu dhabi" },
         cards: [],
@@ -333,7 +381,42 @@ const HOME: MasterPageDef = {
       key: "mortgage_calculator",
       label: "Mortgage calculator",
       description: "Dark band with the inline repayment calculator.",
-      fields: [eyebrow(), heading()],
+      dataNote:
+        "Every label and the button, in English and Arabic, plus each slider's starting value and range. Blank keeps the words and numbers shown greyed in each box. The monthly figure is always computed live from the sliders.",
+      fields: [
+        eyebrow(),
+        heading(),
+        // ── Content ──
+        ...MORTGAGE_TEASER_TEXT.map(([key, label, en, ar]) =>
+          text(key, label, {
+            max: 60,
+            optional: true,
+            placeholder: en,
+            placeholderAr: ar,
+          }),
+        ),
+        text("term_value", "Loan term · value", {
+          max: 40,
+          optional: true,
+          placeholder: "{years} years",
+          placeholderAr: "{years} سنة",
+          help: "{years} is replaced with the slider's value.",
+        }),
+        link("cta_href", "Button · link", {
+          placeholder: "/tools/mortgage",
+          help: "Used while the mortgage application is closed; when it is open the button starts the application.",
+        }),
+        // ── Controls ──
+        ...MORTGAGE_TEASER_CONTROLS.map(([key, label, fallback]) =>
+          text(key, label, {
+            max: 12,
+            optional: true,
+            // A number, not prose.
+            i18n: false,
+            placeholder: String(fallback),
+          }),
+        ),
+      ],
       defaults: {
         eyebrow: "Mortgage calculator",
         heading: "Estimate your monthly payments before making your move",
@@ -379,7 +462,12 @@ const HOME: MasterPageDef = {
       label: "Developer partners",
       description: "Marquee of developer logos, and the words around it.",
       dataNote: "The logos themselves come from the developers catalogue.",
-      fields: [eyebrow(), heading(), body({ max: 400 }), text("cta_label", "Button label", { max: 60, optional: true })],
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+        text("cta_label", "Button label", { max: 60, optional: true }),
+      ],
       defaults: {
         eyebrow: "Our Developers",
         heading: "The developers shaping the UAE.",
@@ -393,7 +481,12 @@ const HOME: MasterPageDef = {
       description: "Shared partner band (also used on /about).",
       dataNote:
         "The logos come from the partner list in code. Editing the copy here changes the home page only — /about carries its own copy for the same band.",
-      fields: [eyebrow(), heading(), body({ max: 400 }), text("cta_label", "Button label", { max: 60, optional: true })],
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+        text("cta_label", "Button label", { max: 60, optional: true }),
+      ],
       defaults: PARTNER_BAND_DEFAULTS,
     },
     {
@@ -667,9 +760,7 @@ const BUY_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
   name,
   desc,
   cta:
-    name === "Commercial Properties"
-      ? "Browse commercial"
-      : `Browse ${name.toLowerCase()}`,
+    name === "Commercial Properties" ? "Browse Commercial" : `Browse ${name}`,
   href: BUY_TYPE_HREF[name] ?? "/buy/search",
   ...propTypeImageDefaults(name),
 }));
@@ -677,7 +768,7 @@ const BUY_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
 const RENT_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
   name,
   desc,
-  cta: "View rentals",
+  cta: "View Rentals",
   href: RENT_TYPE_HREF[name] ?? "/rent/search",
   ...propTypeImageDefaults(name),
 }));
@@ -719,7 +810,8 @@ const COMMERCIAL_PROP_TYPE_ITEMS = COMMERCIAL_PROP_TYPE_COPY.map(
   ([name, desc, type]) => ({
     name,
     desc,
-    cta: `Browse ${name.toLowerCase()}`,
+    // Title case, like every card label: "Whole buildings" → "Browse Whole Buildings".
+    cta: `Browse ${name.replace(/\b\w/g, (c) => c.toUpperCase())}`,
     // `/commercial/search` is retired — the segment is a filter now, and this
     // is the URL it redirects to. Pointed straight at it so the tiles don't
     // spend a hop. See lib/filters/search-redirect.ts.
@@ -760,8 +852,7 @@ const BUY: MasterPageDef = {
     map: {
       eyebrow: "On the map",
       heading: "Buy across Abu Dhabi's communities.",
-      body:
-        "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.",
+      body: "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.",
       cta: "Browse all for sale",
       cta_href: "/buy/search",
     },
@@ -783,7 +874,7 @@ const BUY: MasterPageDef = {
       {
         name: "Off-Plan Properties",
         desc: "New launches with structured payment plans.",
-        cta: "Browse off-plan",
+        cta: "Browse Off-Plan",
         href: "/off-plan/search",
         img: "off-plan tower · render",
         image: { media_id: null, alt: null, label: null },
@@ -791,7 +882,7 @@ const BUY: MasterPageDef = {
       {
         name: "Resale Properties",
         desc: "Established homes ready for handover.",
-        cta: "Browse resale",
+        cta: "Browse Resale",
         href: "/buy/search",
         img: "resale apartment",
         image: { media_id: null, alt: null, label: null },
@@ -799,7 +890,7 @@ const BUY: MasterPageDef = {
       {
         name: "Ready-to-Move Properties",
         desc: "Vacant, keys-in-hand homes.",
-        cta: "Browse ready",
+        cta: "Browse Ready",
         href: "/buy/search",
         img: "ready villa · interior",
         image: { media_id: null, alt: null, label: null },
@@ -807,7 +898,7 @@ const BUY: MasterPageDef = {
       {
         name: "Commercial Properties",
         desc: "Offices, retail and land.",
-        cta: "Browse commercial",
+        cta: "Browse Commercial",
         href: "/buy/search?segment=commercial",
         img: "commercial tower",
         image: { media_id: null, alt: null, label: null },
@@ -1024,7 +1115,8 @@ const COMMERCIAL: MasterPageDef = {
       communities_cta_href: "/areas",
     },
     why: {
-      why_title: "A commercial search is a business decision, not a listing search.",
+      why_title:
+        "A commercial search is a business decision, not a listing search.",
       why_body:
         "Fit-out liability, service charge, permitted use and the escalation clause matter more than the headline rent. Bazar advises on the whole cost of occupying a space, so the lease you sign is the one you thought you were signing.",
       stats: [
@@ -1112,31 +1204,31 @@ const OFF_PLAN: MasterPageDef = {
           {
             name: "Apartments",
             desc: "Discover modern off-plan apartments in Abu Dhabi's most connected communities.",
-            cta: "View off-plan apartments",
+            cta: "View Off-Plan Apartments",
             href: "/off-plan/search?type=apartment",
           },
           {
             name: "Villas",
             desc: "Explore spacious villas designed for privacy, comfort, and long-term family living.",
-            cta: "View off-plan villas",
+            cta: "View Off-Plan Villas",
             href: "/off-plan/search?type=villa",
           },
           {
             name: "Townhouses",
             desc: "Find contemporary townhouses built around community living and everyday convenience.",
-            cta: "View off-plan townhouses",
+            cta: "View Off-Plan Townhouses",
             href: "/off-plan/search?type=townhouse",
           },
           {
             name: "Penthouses",
             desc: "Discover exclusive penthouses with premium views, spacious layouts, and elevated living.",
-            cta: "View off-plan penthouses",
+            cta: "View Off-Plan Penthouses",
             href: "/off-plan/search?type=penthouse",
           },
           {
             name: "Branded Residences",
             desc: "Premium residences created with globally recognised lifestyle and hospitality brands.",
-            cta: "View branded residences",
+            cta: "View Branded Residences",
             href: "/off-plan/search?lifestyle=branded_residences",
           },
         ],
@@ -1200,8 +1292,7 @@ const OFF_PLAN: MasterPageDef = {
       defaults: {
         eyebrow: "On the map",
         heading: "Explore new projects across Abu Dhabi.",
-        body:
-          "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
+        body: "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
         all_label: "Across Abu Dhabi",
         all_cta_label: "View every launch",
         // Empty on purpose: areas order themselves busiest-first until someone
@@ -1360,7 +1451,8 @@ const AREAS: MasterPageDef = {
   key: "areas",
   label: "Areas",
   path: "/areas",
-  description: "The locations index — area cards, spotlights and community types.",
+  description:
+    "The locations index — area cards, spotlights and community types.",
   sections: [
     {
       key: "hero",
@@ -1422,11 +1514,7 @@ const AREAS: MasterPageDef = {
       description: "Interactive map of Abu Dhabi communities.",
       dataNote:
         "Pins come from published areas and listings — only the copy above the map is editable here.",
-      fields: [
-        eyebrow(),
-        heading(),
-        body({ max: 400 }),
-      ],
+      fields: [eyebrow(), heading(), body({ max: 400 })],
       defaults: {
         eyebrow: "Where to live",
         heading: "Find your area first. The home follows.",
@@ -1436,12 +1524,16 @@ const AREAS: MasterPageDef = {
     {
       key: "area_spotlights",
       label: "Area spotlights",
-      description: "Two large editorial tiles for the areas being pushed hardest.",
+      description:
+        "Two large editorial tiles for the areas being pushed hardest.",
       fields: [
         eyebrow(),
         heading(),
         area("sub", "Sub-heading", { max: 300 }),
-        text("tile_eyebrow", "Eyebrow on each tile", { max: 40, optional: true }),
+        text("tile_eyebrow", "Eyebrow on each tile", {
+          max: 40,
+          optional: true,
+        }),
         {
           key: "items",
           label: "Spotlights",
@@ -1563,7 +1655,7 @@ const AREAS: MasterPageDef = {
             chips:
               "Mamsha Al Saadiyat\nHidd Al Saadiyat\nAl Muneera\nAl Bandar\nAl Zeina\nYas Acres\nReem Hills\nGardenia Bay",
             chips_label: "Popular waterfront communities",
-            cta_label: "Explore waterfront communities",
+            cta_label: "Explore Waterfront Communities",
             lifestyle: "waterfront",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
@@ -1579,7 +1671,7 @@ const AREAS: MasterPageDef = {
             chips:
               "Yas Acres\nSaadiyat Lagoons\nSaadiyat Reserve\nAl Raha Gardens\nReem Hills\nAl Ghadeer\nBloom Living\nHidd Al Saadiyat",
             chips_label: "Popular gated communities",
-            cta_label: "Explore gated communities",
+            cta_label: "Explore Gated Communities",
             lifestyle: "gated",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
@@ -1595,7 +1687,7 @@ const AREAS: MasterPageDef = {
             chips:
               "Mamsha Al Saadiyat\nHidd Al Saadiyat\nSaadiyat Lagoons\nSaadiyat Reserve\nNurai Island\nNobu Residences\nBaccarat Residences Saadiyat\nRamhan Island",
             chips_label: "Popular luxury communities",
-            cta_label: "Explore luxury communities",
+            cta_label: "Explore Luxury Communities",
             lifestyle: "luxury",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },
@@ -1611,7 +1703,7 @@ const AREAS: MasterPageDef = {
             chips:
               "Yas Acres\nAl Raha Gardens\nBloom Living\nAl Ghadeer\nSaadiyat Lagoons\nNoya\nNoya Viva\nFay Al Reeman",
             chips_label: "Popular family-friendly communities",
-            cta_label: "Explore family-friendly communities",
+            cta_label: "Explore Family-Friendly Communities",
             lifestyle: "family_friendly",
             cta_href: "/areas",
             image: { media_id: null, alt: null, label: null },

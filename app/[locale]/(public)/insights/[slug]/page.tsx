@@ -32,6 +32,8 @@ import { getForm } from "@/lib/queries/forms";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { ARTICLE_COVER_SIZES } from "../_components/article-hero";
+import { asLocale } from "@/lib/i18n/locales";
+import { getStatusPills } from "@/lib/queries/card-labels";
 
 export const revalidate = 300;
 
@@ -126,12 +128,21 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   //
   // The newsletter box under the body borrows the /insights hero box's words
   // (see ArticleNewsletter), so it reads the same two documents that page does.
-  const [related, links, newsletterForm, insightsPage] = await Promise.all([
-    getRelatedArticles(article.id, article.category, 3),
-    resolveInternalLinks(articleBodyLinkRefs(article.body_html), locale),
-    getForm("insights_newsletter"),
-    getMasterPageContent("insights", locale),
-  ]);
+  const [related, links, newsletterForm, insightsPage, statusPill] =
+    await Promise.all([
+      getRelatedArticles(article.id, article.category, 3),
+      resolveInternalLinks(articleBodyLinkRefs(article.body_html), locale),
+      getForm("insights_newsletter"),
+      getMasterPageContent("insights", locale),
+      getStatusPills(asLocale(locale)),
+    ]);
+  // The listing cards' For Sale / For Rent / Off-plan, as edited under
+  // Pages & blocks → Pills.
+  const pills = {
+    off_plan: statusPill("off_plan"),
+    for_sale: statusPill("for_sale"),
+    for_rent: statusPill("for_rent"),
+  };
   const newsletterCopy = insightsPage.section("featured")?.values ?? {};
 
   const categoryLabel = article.category_label;
@@ -284,7 +295,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           {renderArticleBody(article.body_html, {
             lookup: links,
             renderBlock: (link, variant) => (
-              <InternalLinkCard link={link} variant={variant} />
+              <InternalLinkCard link={link} variant={variant} pills={pills} />
             ),
           })}
         </div>
