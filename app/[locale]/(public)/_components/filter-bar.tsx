@@ -319,7 +319,9 @@ export function FilterBar({ areas, leading, trailing }: Props) {
       {/* `md:justify-between`: each wrapped line of the band spreads to both
           edges. Packed to the start, every line stopped short and left a gap
           at its end — on /ar, a blank strip down the left (client, Oct 2026). */}
-      <div className="flex flex-wrap items-center gap-3 bz-pill-gutter md:justify-between">
+      <div className="flex flex-wrap items-center gap-3 bz-pill-gutter bz-pill-gutter-band md:justify-between">
+        {/* Holds the pills' room on the first line only, on /ar (globals.css). */}
+        <span aria-hidden className="bz-pill-spacer" />
         {leading ? (
           <div className="flex shrink-0 items-center gap-2">{leading}</div>
         ) : null}

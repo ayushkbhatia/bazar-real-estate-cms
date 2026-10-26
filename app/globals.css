@@ -1092,6 +1092,26 @@ html .maplibregl-map {
   padding-right: var(--bz-locale-pill-gutter);
 }
 
+/* The search filter band on /ar from md up: the floating pills only ever
+   overlap its FIRST line, so instead of reserving their width on every line
+   (a blank strip down the right of the whole band) a spacer takes it on the
+   first line alone, and the lines below run to the right edge (client, Oct
+   2026). It is the band's first flex item, which under dir="rtl" is the
+   right end of the first line. English keeps the plain gutter. */
+.bz-pill-spacer {
+  display: none;
+}
+@media (min-width: 768px) {
+  [dir="rtl"] .bz-pill-gutter-band {
+    padding-right: 0;
+  }
+  [dir="rtl"] .bz-pill-spacer {
+    display: block;
+    flex: 0 0 calc(var(--bz-locale-pill-gutter) - 0.75rem);
+    align-self: stretch;
+  }
+}
+
 /* 3 · Never mirror a map. Geography is not a reading direction: a flipped
    canvas would put Saadiyat west of the mainland. The GL container carries
    dir="ltr" in the components; this stops MapLibre's own injected controls
