@@ -53,15 +53,16 @@ export function PreferencesPopover() {
             hand. On /ar the pill was the label on a control offering Arabic
             for everything except itself.
 
-            `.mono` stays on both: globals.css isolates it as an LTR run on
-            Arabic pages, which is what stops the "·" between them being
-            reordered to the far end of the pill.
+            In the site face, like the map pills (client, Oct 2026). They were
+            `.mono`, and JetBrains Mono has no Arabic glyphs, so on /ar "درهم ·
+            قدم²" fell back to whatever face the device had. The pill takes the
+            page's direction from its wrapper, so the "·" stays between them.
           */}
-          <span className="mono tracking-tight">
+          <span className="tracking-tight">
             {prefs.labels.currency[prefs.currency]}
           </span>
           <span className="text-bz-muted">·</span>
-          <span className="mono tracking-tight">
+          <span className="tracking-tight">
             {prefs.labels.area[prefs.area_unit]}
           </span>
         </Button>
