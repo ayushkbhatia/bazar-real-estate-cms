@@ -13,6 +13,10 @@ export type PublishabilityInput = {
    *  the commercial types — lib/properties/type-rules.ts), so "No developer"
    *  passes. */
   developer_optional?: boolean;
+  /** Area columns the listing's type requires and it lacks (`missingAreas`
+   *  in lib/properties/type-rules.ts). Optional, like `has_developer`: the
+   *  bulk path supplies nothing and is unaffected. */
+  missing_areas?: ("built_up_ft2" | "plot_ft2")[];
   /** Optional pair, same precedent as `has_developer`: the sale-form check
    *  only runs when the caller supplies BOTH values. The bulk path selects
    *  neither column, so it is unaffected. */
@@ -64,6 +68,17 @@ export function evaluatePublishability(
       checks.push({ label: "Developer is set", passed: developerPassed });
       if (!developerPassed) blockers.push("Developer is missing");
     }
+  }
+
+  if (input.missing_areas !== undefined) {
+    const missingBuiltUp = input.missing_areas.includes("built_up_ft2");
+    const missingPlot = input.missing_areas.includes("plot_ft2");
+    checks.push({
+      label: "Areas this type needs are filled in",
+      passed: !missingBuiltUp && !missingPlot,
+    });
+    if (missingBuiltUp) blockers.push("Built-up area is missing");
+    if (missingPlot) blockers.push("Plot size is missing");
   }
 
   // A sale listing with no form belongs to none of /buy/ready, /buy/resale or

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
-import { developerOptional } from "@/lib/properties/type-rules";
+import { developerOptional, missingAreas, typeRules } from "@/lib/properties/type-rules";
 import { MAX_AMENITIES, normaliseAmenityList } from "@/lib/amenities";
 
 /** The transaction: for sale or to let, and nothing else (0168).
@@ -252,6 +252,25 @@ function refineDeveloperForType(
   }
 }
 
+/** The areas this type requires (lib/properties/type-rules.ts) — a building
+ *  needs both, land its plot, a hotel apartment its built-up area. */
+function refineAreasForType(
+  val: { type?: string | null; built_up_ft2?: number | null; plot_ft2?: number | null },
+  ctx: z.RefinementCtx,
+) {
+  const label = (val.type ?? "").replace(/_/g, " ");
+  for (const key of missingAreas({ ...val, type: val.type ?? null })) {
+    ctx.addIssue({
+      code: "custom",
+      path: [key],
+      message:
+        key === "plot_ft2"
+          ? `A ${label} listing needs its plot size`
+          : `A ${label} listing needs its built-up area`,
+    });
+  }
+}
+
 /** Shared rule, applied to every schema that carries both `mode` and
  *  `property_form`: rent listings must not carry a form. Mirrors the DB CHECK
  *  `properties_form_rent_null_ck`, so an operator sees a field error instead
@@ -395,7 +414,21 @@ export const propertyEditSchema = propertyOverviewFields
   .superRefine((val, ctx) => {
     refineRentHasNoForm(val, ctx);
     refineDeveloperForType(val, ctx);
+    refineAreasForType(val, ctx);
   });
+
+/** The area columns a type has no use for, emptied on save (a hotel
+ *  apartment's stray plot, a plot of land's built-up figure). */
+export function clearUnusedAreas<
+  T extends { type: string; built_up_ft2?: number | null; plot_ft2?: number | null },
+>(val: T): T {
+  const rules = typeRules(val.type);
+  return {
+    ...val,
+    ...(rules.builtUp === "none" ? { built_up_ft2: null } : {}),
+    ...(rules.plot === "none" ? { plot_ft2: null } : {}),
+  };
+}
 
 export type PropertyEditInput = z.infer<typeof propertyEditSchema>;
 
