@@ -86,6 +86,17 @@ export const PROPERTY_TYPES = [
   "retail",
   "commercial_villa",
 ] as const;
+
+/**
+ * The types an editor or a visitor picks from. `commercial` stays in the enum
+ * (older and Salesforce-imported listings carry it, and the database type
+ * lists it) but is not offered: "Commercial" is the segment, and a Type
+ * picker offering it as well put the same word in two fields (client, Oct
+ * 2026). A listing that already has it keeps it until its type is changed.
+ */
+export const PICKABLE_PROPERTY_TYPES = PROPERTY_TYPES.filter(
+  (t) => t !== "commercial",
+);
 /**
  * Residential or commercial — the BUILDING axis, and the second one a listing
  * has.

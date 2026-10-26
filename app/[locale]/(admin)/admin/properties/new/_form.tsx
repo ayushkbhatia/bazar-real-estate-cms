@@ -18,6 +18,7 @@ import {
   PROPERTY_MODES,
   PROPERTY_SEGMENT_LABELS,
   PROPERTY_SEGMENTS,
+  PICKABLE_PROPERTY_TYPES,
   PROPERTY_TYPES,
 } from "@/lib/schemas/property";
 import { Button } from "@/components/ui/button";
@@ -156,7 +157,7 @@ export function NewPropertyForm({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PROPERTY_TYPES.map((t) => (
+                {PICKABLE_PROPERTY_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
                     {TYPE_LABELS[t]}
                   </SelectItem>
