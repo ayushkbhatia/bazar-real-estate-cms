@@ -1419,6 +1419,19 @@ html .maplibregl-map {
   unicode-bidi: isolate;
 }
 
+/* Mono in English only. For short lines that read as data in English ("15
+   minutes from downtown", "About 15 min") but are Arabic prose on /ar: there
+   `.mono` drew them in JetBrains Mono, which has no Arabic glyphs, so the
+   device's fallback face showed through, and forced them left to right. This
+   keeps the Latin rhythm in English and the master Arabic face, in the page's
+   own direction, on /ar (client, Oct 2026). */
+.mono-en {
+  font-family: var(--bz-font-mono);
+}
+:lang(ar) .mono-en {
+  font-family: var(--bz-font-ar-body);
+}
+
 /* The pill's options drop from `min-w-11` to 30px at `md`, so the space it
    needs drops with them. Same breakpoint as `locale-toggle.tsx`; if that file
    changes its `md:min-w-[30px]`, change this with it. */
