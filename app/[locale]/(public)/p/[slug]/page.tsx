@@ -461,7 +461,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             value: t("spec.parkingBays", { count: property.parking_bays }),
           }
         : null,
-      property.plot_ft2 && plotInSpecification(property.type)
+      property.plot_ft2 &&
+      rules.plot !== "none" &&
+      plotInSpecification(property.type)
         ? {
             label: t("spec.plotSize"),
             value: <AreaText ft2={property.plot_ft2} />,

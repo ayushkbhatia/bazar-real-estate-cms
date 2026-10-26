@@ -26,8 +26,15 @@ describe("fifthKeyFact", () => {
     expect(fifthKeyFact({ type: "townhouse", plot_ft2: null })).toBeNull();
   });
 
+  it("shows the plot for land and the commercial types that take one (Oct 2026)", () => {
+    for (const type of ["land", "office", "retail", "building", "commercial_villa"]) {
+      expect(fifthKeyFact({ type, plot_ft2: 3000 })).toEqual({ kind: "plot", ft2: 3000 });
+      expect(fifthKeyFact({ type, plot_ft2: null })).toBeNull();
+    }
+  });
+
   it("keeps tenure for every other type, plot or not", () => {
-    for (const type of ["apartment", "penthouse", "commercial_villa"]) {
+    for (const type of ["apartment", "penthouse", "hotel_apartment"]) {
       expect(fifthKeyFact({ type, plot_ft2: 3000 })).toEqual({ kind: "tenure" });
       expect(fifthKeyFact({ type, plot_ft2: null })).toEqual({ kind: "tenure" });
     }

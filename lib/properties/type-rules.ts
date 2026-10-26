@@ -43,6 +43,17 @@ const DEFAULT_RULES: PropertyTypeRules = {
   developer: "required",
 };
 
+/** A commercial type: built-up required, the plot as given, no developer needed. */
+function commercialRules(plot: Exclude<AreaRule, "none">): PropertyTypeRules {
+  return {
+    ...DEFAULT_RULES,
+    builtUp: "required",
+    plot,
+    plotInKeyFacts: true,
+    developer: "optional",
+  };
+}
+
 const RULES: Readonly<Record<string, PropertyTypeRules>> = {
   villa: { ...DEFAULT_RULES, plotInKeyFacts: true },
   townhouse: { ...DEFAULT_RULES, plotInKeyFacts: true },
@@ -54,11 +65,21 @@ const RULES: Readonly<Record<string, PropertyTypeRules>> = {
     plotInKeyFacts: true,
     developer: "optional",
   },
-  hotel_apartment: { ...DEFAULT_RULES, developer: "optional" },
-  office: { ...DEFAULT_RULES, developer: "optional" },
-  building: { ...DEFAULT_RULES, developer: "optional" },
-  retail: { ...DEFAULT_RULES, developer: "optional" },
-  commercial_villa: { ...DEFAULT_RULES, developer: "optional" },
+  // The commercial types, as the client set them out (Oct 2026). Where a plot
+  // is allowed and the listing has one, it is shown in the key facts.
+  // A unit in a hotel tower: built-up only, never a plot.
+  hotel_apartment: {
+    ...DEFAULT_RULES,
+    builtUp: "required",
+    plot: "none",
+    developer: "optional",
+  },
+  // Built-up, plus a plot when there is one.
+  office: commercialRules("optional"),
+  retail: commercialRules("optional"),
+  // Both, always.
+  building: commercialRules("required"),
+  commercial_villa: commercialRules("required"),
 };
 
 export function typeRules(type: string | null | undefined): PropertyTypeRules {
@@ -115,4 +136,22 @@ export function cardFactProps(row: Parameters<typeof listingFacts>[0]): {
     area: f.areaKind === "built_up" ? (f.areaFt2 ?? 0) : f.areaFt2,
     areaKind: f.areaKind,
   };
+}
+
+/**
+ * The areas a listing of this type is missing, by column. Read by the edit
+ * schema (a field error) and the publish gate (a blocker).
+ */
+export function missingAreas(row: {
+  type: string | null | undefined;
+  built_up_ft2?: number | null;
+  plot_ft2?: number | null;
+}): ("built_up_ft2" | "plot_ft2")[] {
+  const rules = typeRules(row.type);
+  const out: ("built_up_ft2" | "plot_ft2")[] = [];
+  if (rules.builtUp === "required" && !(row.built_up_ft2 && row.built_up_ft2 > 0))
+    out.push("built_up_ft2");
+  if (rules.plot === "required" && !(row.plot_ft2 && row.plot_ft2 > 0))
+    out.push("plot_ft2");
+  return out;
 }

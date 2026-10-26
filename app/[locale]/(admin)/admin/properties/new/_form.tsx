@@ -36,6 +36,7 @@ import type { CardLabel } from "@/lib/card-labels";
 import type { LifestyleTag } from "@/lib/lifestyle-tags";
 import { LifestyleTagPicker } from "../_lifestyle-tag-picker";
 import { createProperty } from "./_actions";
+import { typeRules } from "@/lib/properties/type-rules";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -149,9 +150,13 @@ export function NewPropertyForm({
             <Label htmlFor="type">Type</Label>
             <Select
               value={type}
-              onValueChange={(v) =>
-                setValue("type", v as PropertyCreateInput["type"])
-              }
+              onValueChange={(v) => {
+                setValue("type", v as PropertyCreateInput["type"]);
+                if (!typeRules(v).rooms) {
+                  setValue("beds", 0);
+                  setValue("baths", 0);
+                }
+              }}
             >
               <SelectTrigger id="type">
                 <SelectValue />
@@ -271,30 +276,35 @@ export function NewPropertyForm({
               }
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="beds">Beds</Label>
-            <Input
-              id="beds"
-              type="number"
-              step="1"
-              {...register("beds", { valueAsNumber: true })}
-            />
-            <FieldError
-              message={errors.beds?.message ?? serverFieldErrors.beds}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="baths">Baths</Label>
-            <Input
-              id="baths"
-              type="number"
-              step="1"
-              {...register("baths", { valueAsNumber: true })}
-            />
-            <FieldError
-              message={errors.baths?.message ?? serverFieldErrors.baths}
-            />
-          </div>
+          {/* A plot of land has no rooms: no fields, and 0 / 0 is saved. */}
+          {typeRules(type).rooms ? (
+            <>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="beds">Beds</Label>
+                <Input
+                  id="beds"
+                  type="number"
+                  step="1"
+                  {...register("beds", { valueAsNumber: true })}
+                />
+                <FieldError
+                  message={errors.beds?.message ?? serverFieldErrors.beds}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="baths">Baths</Label>
+                <Input
+                  id="baths"
+                  type="number"
+                  step="1"
+                  {...register("baths", { valueAsNumber: true })}
+                />
+                <FieldError
+                  message={errors.baths?.message ?? serverFieldErrors.baths}
+                />
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
 
