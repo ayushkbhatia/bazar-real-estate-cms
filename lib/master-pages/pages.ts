@@ -1236,16 +1236,16 @@ const OFF_PLAN: MasterPageDef = {
     },
     {
       key: "map",
-      label: "Map explorer",
+      label: "Map explorer & “Across Abu Dhabi” rail",
       description:
-        "Map of off-plan projects by community, and the single project rail beneath it.",
+        "Map of off-plan projects by community, and the “Across Abu Dhabi” project rail beneath it — its heading, links and buttons.",
       dataNote:
         "Pins and project cards come from published developments — the rail fills itself as projects are published, and an area chip filters it. The copy, the area order and the rail settings below are what's editable here.",
       fields: [
         eyebrow(),
         heading(),
         body({ max: 400 }),
-        text("all_label", "Rail heading", {
+        text("all_label", "Rail heading (“Across Abu Dhabi”)", {
           max: 60,
           help: 'Heading over the rail before an area is picked, e.g. "Across Abu Dhabi".',
         }),
@@ -1286,7 +1286,17 @@ const OFF_PLAN: MasterPageDef = {
         text("group_cta_label", "Area link label", {
           max: 60,
           optional: true,
-          help: 'Shown beside each area heading. Leave blank for "View all in <area>".',
+          // {name} becomes the picked area's name.
+          placeholder: "View all in {name}",
+          placeholderAr: "عرض الكل في {name}",
+          help: 'Shown beside each area heading; {name} is the area. Leave blank for "View all in <area>".',
+        }),
+        text("show_all_label", "“Show all areas” button", {
+          max: 40,
+          optional: true,
+          placeholder: "Show all areas",
+          placeholderAr: "عرض جميع المناطق",
+          help: "Under the area chips once one is picked; it clears the pick.",
         }),
       ],
       defaults: {
@@ -1304,6 +1314,7 @@ const OFF_PLAN: MasterPageDef = {
         // wants one, not imposed on a page that never had one.
         group_limit: null,
         group_cta_label: null,
+        show_all_label: null,
       },
     },
     {
