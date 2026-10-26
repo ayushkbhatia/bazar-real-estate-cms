@@ -180,13 +180,19 @@ const HOME: MasterPageDef = {
       label: "Location-based browsing",
       description: "Overview tile plus a grid of community cards.",
       dataNote:
-        'Each card and the overview tile read "Explore Homes". Leave the card list empty to show the top 8 published areas automatically, each with its live count.',
+        'Each card and the overview tile read "Explore Homes" under their title unless you write a subtitle of your own. Leave the card list empty to show the top 8 published areas automatically, each with its live count.',
       fields: [
         eyebrow(),
         heading(),
         body(),
         ...ctaPair("CTA label"),
         text("overview_name", "Overview tile · title", { max: 80 }),
+        text("overview_subtitle", "Overview tile · subtitle", {
+          max: 60,
+          optional: true,
+          placeholder: "Explore Homes",
+          placeholderAr: "استكشف المنازل",
+        }),
         link("overview_href", "Overview tile · link"),
         image("overview_image", "Overview tile · image"),
         {
@@ -200,6 +206,13 @@ const HOME: MasterPageDef = {
           fields: [
             toggle("enabled", "Show this card"),
             text("name", "Title", { max: 80 }),
+            // The line under the title. Blank reads "Explore Homes".
+            text("subtitle", "Subtitle", {
+              max: 60,
+              optional: true,
+              placeholder: "Explore Homes",
+              placeholderAr: "استكشف المنازل",
+            }),
             link("href", "Link"),
             image("image", "Image"),
             text("slug", "Area slug", {
@@ -222,6 +235,7 @@ const HOME: MasterPageDef = {
         cta_label: "All locations",
         cta_href: "/areas",
         overview_name: "Abu Dhabi",
+        overview_subtitle: null,
         overview_href: "/buy/search",
         overview_image: { media_id: null, alt: null, label: "abu dhabi" },
         cards: [],

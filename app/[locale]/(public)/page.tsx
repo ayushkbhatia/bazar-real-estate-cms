@@ -4,16 +4,10 @@ import type { Metadata } from "next";
 import * as React from "react";
 import Link from "@/components/i18n/link";
 import { Button } from "@/components/ui/button";
-import {
-  listPublishedProperties,
-  propertyUrl,
-} from "@/lib/queries/properties";
+import { listPublishedProperties, propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { getPublicSiteSettings } from "@/lib/queries/site-settings";
-import {
-  HeroForVariant,
-  type HeroVariant,
-} from "./_components/hero-variants";
+import { HeroForVariant, type HeroVariant } from "./_components/hero-variants";
 import { AreaMapSection } from "./_components/area-map-section";
 import { ListingCardPriced } from "./_components/listing-card-priced";
 import { CarouselGrid } from "@/components/brand/mobile";
@@ -30,7 +24,10 @@ import {
   HOME_TESTIMONIAL_COUNT,
 } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { isMortgageFlowPublic, MORTGAGE_ENTRY_LINKS } from "@/lib/queries/mortgage-flow";
+import {
+  isMortgageFlowPublic,
+  MORTGAGE_ENTRY_LINKS,
+} from "@/lib/queries/mortgage-flow";
 import { getPartners, getTestimonials } from "@/lib/queries/content-sections";
 import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
@@ -206,6 +203,7 @@ export default async function HomePage({
         ctaLabel={str(locationV, "cta_label")}
         ctaHref={str(locationV, "cta_href")}
         overviewName={str(locationV, "overview_name")}
+        overviewSubtitle={str(locationV, "overview_subtitle")}
         overviewHref={str(locationV, "overview_href")}
         overviewImageUrl={overviewImage?.url ?? null}
         overviewImageAlt={overviewImage?.alt ?? null}
@@ -219,6 +217,10 @@ export default async function HomePage({
           return {
             enabled: c.enabled !== false,
             name: typeof c.name === "string" ? c.name : null,
+            subtitle:
+              typeof c.subtitle === "string" && c.subtitle.trim()
+                ? c.subtitle
+                : null,
             href: typeof c.href === "string" ? c.href : null,
             slug: typeof c.slug === "string" ? c.slug : null,
             imageUrl: image?.url ?? null,
@@ -245,7 +247,10 @@ export default async function HomePage({
     ),
 
     featured_properties: (
-      <section key="featured_properties" className="px-4 md:px-12 py-14 md:py-20">
+      <section
+        key="featured_properties"
+        className="px-4 md:px-12 py-14 md:py-20"
+      >
         <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
           <div>
             <div
@@ -270,35 +275,35 @@ export default async function HomePage({
           ) : null}
         </div>
         {featured.length > 0 ? (
-            <CarouselGrid cols={3}>
-              {featured.map((row, index) => {
-                const badges = cardLabels(row.flags);
-                return (
-                  <Link
-                    key={row.reference}
-                    href={propertyUrl(row)}
-                    className="block"
-                  >
-                    <ListingCardPriced
-                      priceAed={row.price_aed}
-                      title={row.title}
-                      location={row.areas?.name ?? "United Arab Emirates"}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
-                      badges={badges}
-                      imgLabel={row.reference}
-                      heroSrc={
-                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                      }
-                      heroAlt={row.hero?.alt_text ?? row.title}
-                      priority={index === 0}
-                      propertyId={row.id}
-                    />
-                  </Link>
-                );
-              })}
-            </CarouselGrid>
+          <CarouselGrid cols={3}>
+            {featured.map((row, index) => {
+              const badges = cardLabels(row.flags);
+              return (
+                <Link
+                  key={row.reference}
+                  href={propertyUrl(row)}
+                  className="block"
+                >
+                  <ListingCardPriced
+                    priceAed={row.price_aed}
+                    title={row.title}
+                    location={row.areas?.name ?? "United Arab Emirates"}
+                    beds={row.beds}
+                    baths={row.baths}
+                    area={row.built_up_ft2 ?? 0}
+                    badges={badges}
+                    imgLabel={row.reference}
+                    heroSrc={
+                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                    }
+                    heroAlt={row.hero?.alt_text ?? row.title}
+                    priority={index === 0}
+                    propertyId={row.id}
+                  />
+                </Link>
+              );
+            })}
+          </CarouselGrid>
         ) : (
           <p className="text-bz-muted text-[14px]">
             Listings appear here once published. Seed the database to see real
@@ -326,7 +331,9 @@ export default async function HomePage({
         key="mortgage_calculator"
         eyebrow={str(mortgageV, "eyebrow")}
         heading={str(mortgageV, "heading")}
-        preApprovalHref={mortgageFlowOpen ? MORTGAGE_ENTRY_LINKS.home : undefined}
+        preApprovalHref={
+          mortgageFlowOpen ? MORTGAGE_ENTRY_LINKS.home : undefined
+        }
       />
     ),
 
