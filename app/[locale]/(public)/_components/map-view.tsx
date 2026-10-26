@@ -92,7 +92,7 @@ export function MapView({ pins, className }: Props) {
         zoom: pins.length ? 10 : 9,
         attributionControl: false,
         // Without this the canvas claims every one-finger drag that starts on
-        // it, and the map view is `h-[70vh]` on a phone — a thumb that lands
+        // it, and the map view is `h-[calc(70vh/var(--bz-zoom,1))]` on a phone — a thumb that lands
         // anywhere in the top two-thirds of the screen pans the map instead of
         // scrolling, so the pagination below it is unreachable. With it the
         // canvas takes `touch-action: pan-x pan-y`, the page scrolls, and two

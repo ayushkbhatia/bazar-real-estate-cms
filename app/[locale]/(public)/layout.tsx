@@ -194,11 +194,15 @@ export default async function PublicLayout({
           {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
             carries the preferences entry via footerSlot, so an md gate here
             would render both controls at once between 768 and 1279. */}
-          <div dir={LOCALE_DIR[active]} className="hidden xl:flex">
+          <div dir={LOCALE_DIR[active]} className="hidden desk:flex">
             <PreferencesPopover />
           </div>
         </div>
-        <main className="flex-1">{children}</main>
+        {/* `data-bz-public` scopes the laptop zoom in globals.css to the
+            public site; the CMS keeps its own layout at every width. */}
+        <main className="flex-1" data-bz-public="">
+          {children}
+        </main>
         {/*
         T3-B: floating shortlist drawer.  Self-renders nothing until the
         user has at least one shortlisted property, so the corner stays

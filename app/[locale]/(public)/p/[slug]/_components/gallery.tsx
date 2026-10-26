@@ -257,7 +257,7 @@ function Lightbox({
             <ChevronRight size={20} strokeWidth={1.8} />
           </button>
 
-          <div className="relative w-[min(92vw,1400px)] h-[min(85vh,900px)]">
+          <div className="relative w-[min(92vw,1400px)] h-[min(calc(85vh/var(--bz-zoom,1)),900px)]">
             {current.src ? (
               <Image
                 src={current.src}

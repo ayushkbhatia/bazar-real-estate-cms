@@ -176,7 +176,7 @@ export function PublicMegaNav({
           )}
         />
 
-        {/* `xl:shrink-0` so the logo keeps its box when the trigger row is
+        {/* `desk:shrink-0` (globals.css: xl, or a mouse laptop from 1024px) so the logo keeps its box when the trigger row is
             wide — without it the flex row steals width from the brand first,
             and at xl the row it competes with is the centred megamenu.
 
@@ -220,7 +220,7 @@ export function PublicMegaNav({
         <Link
           href="/"
           aria-label={t("home")}
-          className="flex items-center min-h-11 xl:min-h-0 min-w-0 xl:shrink-0 [&_img]:shrink"
+          className="flex items-center min-h-11 desk:min-h-0 min-w-0 desk:shrink-0 [&_img]:shrink"
         >
           <Wordmark logo={logo} className="min-w-0" />
         </Link>
@@ -230,7 +230,7 @@ export function PublicMegaNav({
             ~766px wide: alongside the wordmark, right cluster and px-12
             gutters the header needs ~1205px, so md and lg both overflow
             the viewport. */}
-        <div className="hidden xl:flex flex-1 justify-center">
+        <div className="hidden desk:flex flex-1 justify-center">
           <NavigationMenu
             viewport={false}
             value={openTab}
@@ -290,7 +290,7 @@ export function PublicMegaNav({
         </div>
 
         {/* Right cluster */}
-        <div className="hidden xl:flex gap-2 items-center">
+        <div className="hidden desk:flex gap-2 items-center">
           <Button asChild size="sm">
             <Link href={cta?.href ?? "/services/sell"}>
               {cta?.label || t("listProperty")}
@@ -306,7 +306,7 @@ export function PublicMegaNav({
             (see the `min-w-0` there). Without it flex would take the
             difference out of whichever item happened to be more compressible,
             which on a wide uploaded lockup is the button. */}
-        <div className="xl:hidden ms-auto flex shrink-0 items-center gap-2">
+        <div className="desk:hidden ms-auto flex shrink-0 items-center gap-2">
           {/* Deliberately no height override. `size="sm"` is 28px, but Slot
               forwards `data-slot="button"` onto the rendered <a>, so the
               `(pointer: coarse)` block in app/globals.css already clamps this

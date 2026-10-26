@@ -68,7 +68,7 @@ export function PropertyEnquiryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[520px] max-h-[90dvh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[520px] max-h-[calc(90dvh/var(--bz-zoom,1))] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="serif text-[24px] leading-tight">
             {copy.title}
