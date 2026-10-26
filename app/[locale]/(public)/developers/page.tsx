@@ -21,8 +21,7 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("developers", asLocale((await params).locale),
-  {
+  return masterPageMetadata("developers", asLocale((await params).locale), {
     alternates: { canonical: "/developers" },
   });
 }
@@ -78,7 +77,7 @@ export default async function DevelopersPage({
 
   const heroEyebrow = str(heroV, "eyebrow");
   const heroSub = str(heroV, "sub");
-  const cardCta = str(dirV, "card_cta") ?? "View developments";
+  const cardCta = str(dirV, "card_cta") ?? "View Developments";
 
   const nodes: Record<string, React.ReactNode> = {
     hero: (

@@ -6479,21 +6479,21 @@
   "editorial.internalLink.areaEyebrow": {
     "by": "hand",
     "model": null,
-    "sourceHash": "0fdcaac91dae",
+    "sourceHash": "7e681ef3f77c",
     "reviewed": false,
     "note": "Same wording as area.hero.guide, which heads the page this card links to."
   },
   "editorial.internalLink.areaHomes": {
     "by": "hand",
     "model": null,
-    "sourceHash": "7a6715d9edaa",
+    "sourceHash": "20b9ba9438a6",
     "reviewed": false,
     "note": "Same six-form plural as area.cards.homesForSale — the /areas grid prints the same count."
   },
   "editorial.internalLink.areaCta": {
     "by": "hand",
     "model": null,
-    "sourceHash": "83b3b277abbf",
+    "sourceHash": "30717bf15c6d",
     "reviewed": false,
     "note": "Imperative, matching the other card calls to action on the site."
   },
@@ -6507,14 +6507,14 @@
   "editorial.internalLink.projectCta": {
     "by": "hand",
     "model": null,
-    "sourceHash": "3f4250c87682",
+    "sourceHash": "24beb1fccdbb",
     "reviewed": false,
     "note": "Same verb as the listing card below, so the cards read as a set."
   },
   "editorial.internalLink.listingCta": {
     "by": "hand",
     "model": null,
-    "sourceHash": "63597cd0cf8b",
+    "sourceHash": "b287d222d5e0",
     "reviewed": false,
     "note": "Aqar (property) rather than a word for 'listing', which reads as a catalogue entry in Arabic."
   },

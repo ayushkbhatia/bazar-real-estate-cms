@@ -19928,5 +19928,161 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "View Rentals": {
+    "ar": "عرض الإيجارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:37:34.607Z"
+  },
+  "Browse Off-Plan": {
+    "ar": "تصفّح العقارات على الخارطة",
+    "by": "reviewed",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:31:57.617Z"
+  },
+  "Browse Resale": {
+    "ar": "تصفح إعادة البيع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Browse Ready": {
+    "ar": "تصفح الجاهز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Browse Commercial": {
+    "ar": "تصفح العقارات التجارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.269Z"
+  },
+  "View Off-Plan Apartments": {
+    "ar": "عرض الشقق على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:41:34.610Z"
+  },
+  "View Off-Plan Villas": {
+    "ar": "عرض الفلل على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:41:34.610Z"
+  },
+  "View Off-Plan Townhouses": {
+    "ar": "عرض التاون هاوس على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:41:34.610Z"
+  },
+  "View Off-Plan Penthouses": {
+    "ar": "عرض البنتهاوس على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:41:34.610Z"
+  },
+  "View Branded Residences": {
+    "ar": "المساكن ذات العلامات التجارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T13:18:09.430Z"
+  },
+  "Explore Waterfront Communities": {
+    "ar": "مجتمعات على الواجهة المائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Explore Gated Communities": {
+    "ar": "مجمعات سكنية مغلقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Explore Luxury Communities": {
+    "ar": "اكتشف المجتمعات الفاخرة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Explore Family-Friendly Communities": {
+    "ar": "المجتمعات المناسبة للعائلات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Learn More": {
+    "ar": "معرفة المزيد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T14:17:31.300Z"
+  },
+  "Get Your Estimate": {
+    "ar": "احصل على تقديرك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Explore Transactions": {
+    "ar": "استعراض المعاملات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T12:26:41.479Z"
+  },
+  "View Developments": {
+    "ar": "اعرض المشاريع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:22.472Z"
+  },
+  "Browse Apartments": {
+    "ar": "تصفح الشقق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Browse Villas": {
+    "ar": "تصفح الفلل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Browse Townhouses": {
+    "ar": "تصفح التاون هاوس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Browse Penthouses": {
+    "ar": "تصفح البنتهاوس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Browse Offices": {
+    "ar": "تصفح المكاتب",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:48:07.333Z"
+  },
+  "Browse Retail": {
+    "ar": "تصفح المحلات التجارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:48:07.333Z"
+  },
+  "Browse Showrooms": {
+    "ar": "تصفح صالات العرض",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:48:07.334Z"
+  },
+  "Browse Whole Buildings": {
+    "ar": "تصفح المباني الكاملة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T10:48:07.334Z"
   }
 }

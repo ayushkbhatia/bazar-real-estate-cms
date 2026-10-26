@@ -66,7 +66,7 @@ export const DEVELOPERS_PAGE: MasterPageDef = {
         eyebrow: "Our partners",
         heading: "Working with leading developers across the UAE.",
         body: "Access to established communities, new launches, luxury residences, and investment opportunities across Abu Dhabi, Dubai and the wider UAE.",
-        card_cta: "View developments",
+        card_cta: "View Developments",
       },
     },
   ],

@@ -22,12 +22,10 @@ const label = (
 
 describe("the shipped vocabulary", () => {
   /**
-   * The migration changes nothing on apply, and this is the assertion behind
-   * that claim: the two built-ins carry the exact words and colours
-   * `listingBadge` returned, so a site whose client never opens the new screen
-   * renders what it rendered before.
+   * The two built-ins carry the colours `listingBadge` returned. The English
+   * words are title case, like every card label since Oct 2026.
    */
-  it("reproduces what listingBadge used to return", () => {
+  it("ships the two built-ins", () => {
     const [exclusive, vacant] = CARD_LABEL_DEFAULTS;
     expect(exclusive).toMatchObject({
       id: "exclusive",
@@ -37,7 +35,7 @@ describe("the shipped vocabulary", () => {
     });
     expect(vacant).toMatchObject({
       id: "vacant_on_transfer",
-      text: "Vacant on transfer",
+      text: "Vacant on Transfer",
       text_ar: "شاغر عند نقل الملكية",
       kind: "accent",
     });
