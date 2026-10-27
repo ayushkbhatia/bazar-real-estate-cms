@@ -11,6 +11,10 @@ import {
 import { asLocale } from "@/lib/i18n/locales";
 import type { SectionValues } from "@/lib/master-pages";
 import { MortgageCalculator } from "./mortgage-calculator";
+import {
+  mortgageCalculatorControls,
+  mortgageOpening,
+} from "@/lib/master-pages/mortgage-calculator-controls";
 import { RouteMessages } from "@/lib/i18n/route-messages";
 import {
   calculatorCopyOverlay,
@@ -75,6 +79,8 @@ export default async function MortgagePage({
   const preApprovalForm = flowOpen ? { ...storedForm, enabled: false } : storedForm;
 
   const v = (key: string) => content.section(key)?.values ?? {};
+  // Ranges, term options and opening choices, edited beside the section's words.
+  const controls = mortgageCalculatorControls(v("scenario"));
   const heroV = v("hero");
   const bandV = v("pre_approval");
   const journeyV = v("journey");
@@ -180,13 +186,18 @@ export default async function MortgagePage({
               .map((item) => [str(item, "q")!, str(item, "a")!] as [string, string]),
           }}
           assumptions={toMortgageAssumptions(mortgage)}
-          opening={{
-            priceAed: mortgage.default_price_aed,
-            downPaymentPct: mortgage.default_down_payment_pct / 100,
-            ratePct: mortgage.default_rate_pct,
-            termYears: mortgage.default_term_years,
-            annualIncomeAed: mortgage.default_annual_income_aed,
-          }}
+          controls={controls}
+          opening={mortgageOpening(
+            v("scenario"),
+            {
+              priceAed: mortgage.default_price_aed,
+              downPaymentPct: mortgage.default_down_payment_pct / 100,
+              ratePct: mortgage.default_rate_pct,
+              termYears: mortgage.default_term_years,
+              annualIncomeAed: mortgage.default_annual_income_aed,
+            },
+            controls,
+          )}
         />
       </div>
     </RouteMessages>

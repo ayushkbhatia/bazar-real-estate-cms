@@ -21,6 +21,8 @@ type Props = {
   dbrCapPct: number;
   /** The same cap as a fraction, for the gauge's band boundary. */
   maxDbr: number;
+  /** The gauge's comfortable band, from Pages & blocks. */
+  comfortDbr: number;
   toInput: (n: number) => string;
   fromInput: (raw: string) => number;
 };
@@ -48,6 +50,7 @@ export function AffordabilitySection({
   afford,
   dbrCapPct,
   maxDbr,
+  comfortDbr,
   toInput,
   fromInput,
 }: Props) {
@@ -122,6 +125,7 @@ export function AffordabilitySection({
             monthlyPaymentAed={monthlyPaymentAed}
             monthlyIncomeAed={annualIncome / 12}
             maxDbr={maxDbr}
+            comfortDbr={comfortDbr}
           />
         ) : (
           // A held place rather than a collapse: the gauge appearing on the
