@@ -106,6 +106,8 @@ async function persist(
   await revalidateReaders(entry.usedOn);
   revalidatePath(`/admin/pages/sub/section/${entry.key}`);
   revalidatePath("/admin/pages/sub/section");
+  // The partner list is also edited on the Partners master page.
+  if (entry.key === "partners") revalidatePath("/admin/pages/master/partners");
   return { status: "ok", message: "Saved." };
 }
 

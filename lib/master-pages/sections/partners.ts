@@ -17,13 +17,12 @@
  *
  * WHAT IS AND IS NOT EDITABLE
  *
- * The page's own copy is editable here. The partner CARDS are editable too,
- * but not here: they are site-owned content — the same institutions render in
- * the logo strip on the home page and on /about — so they live in the section
- * library and are edited once at /admin/pages/sub/section/partners. Filing
- * them under this page would make one marketing route the owner of a list two
- * other routes read. `dataNote` points at the right screen rather than leaving
- * an editor to find it.
+ * The page's own copy is editable here. The partner CARDS are site-owned
+ * content — the same institutions render in the logo strip on the home page
+ * and on /about — so they live in the section library
+ * (/admin/pages/sub/section/partners). This page's editor draws that same
+ * document under "Partner cards" (client, Oct 2026: editors look for the cards
+ * on the page they sit on), saving to the library rather than to this page.
  *
  * (They were not editable at all until Sprint 15: every name, tag and logo was
  * a literal in `ECOSYSTEM_PARTNERS`, which also meant `/ar/partners` printed
@@ -55,41 +54,20 @@ export const PARTNERS_PAGE: MasterPageDef = {
       label: "Hero",
       description: "Eyebrow, headline and standfirst at the top of the page.",
       locked: true,
-      /*
-       * Three headline fields rather than the two every other master page
-       * uses.
-       *
-       * The registry's usual shape is `title` + `title_emphasis`, where the
-       * emphasis is an italic TAIL — "…advised properly.", "…since 2005.".
-       * This headline italicises a word in the MIDDLE: "The institutions
-       * *behind* every deal." Neither the tail pattern nor `headlineParts`
-       * (which italicises the last word of a single field) can express that.
-       *
-       * So the emphasis gets a lead and a tail around it. Leaving `title_tail`
-       * blank degrades exactly to the tail pattern every other page uses, so
-       * this generalises the convention rather than competing with it — an
-       * editor who wants the ordinary look simply empties the last box.
-       */
       fields: [
         eyebrow(),
-        text("title", "Headline · before the italic", { max: 80 }),
-        text("title_emphasis", "Headline · italic word", {
+        text("title", "Headline", { max: 80 }),
+        text("title_emphasis", "Headline · italic tail", {
           max: 60,
           optional: true,
-          help: "Rendered in italic in the middle of the headline.",
-        }),
-        text("title_tail", "Headline · after the italic", {
-          max: 80,
-          optional: true,
-          help: "Leave blank to end the headline on the italic word.",
+          help: "Rendered in italic at the end of the headline.",
         }),
         body({ key: "sub", label: "Sub-headline" }),
       ],
       defaults: {
         eyebrow: "Our Partner Ecosystem",
         title: "The institutions",
-        title_emphasis: "behind",
-        title_tail: "every deal.",
+        title_emphasis: "behind every deal.",
         sub: "Beyond our developer relationships, Bazar works alongside the region's leading banks and regulatory authorities — so financing, compliance, and registration are handled end to end.",
       },
     },
@@ -98,10 +76,10 @@ export const PARTNERS_PAGE: MasterPageDef = {
       label: "Banking group",
       description: "Heading and intro above the finance partners.",
       dataNote:
-        "The cards under this heading — every bank's name, one-line tag and logo — are edited once for the whole site, because the same institutions ride the logo strip on the home page and /about. This section is the words around them.",
+        "The cards under this heading — every bank's name, one-line tag and logo — are edited under Partner cards at the foot of this page. They are the site's one partner list, so the same institutions ride the logo strip on the home page and /about. This section is the words around them.",
       dataLink: {
-        label: "Edit the partner list",
-        href: "/admin/pages/sub/section/partners",
+        label: "Edit the partner cards",
+        href: "/admin/pages/master/partners#partner-cards",
       },
       fields: [eyebrow(), heading(), body()],
       defaults: {
@@ -117,8 +95,8 @@ export const PARTNERS_PAGE: MasterPageDef = {
       dataNote:
         "The cards under this heading come from the same shared partner list, filtered to the ones marked Regulatory & government.",
       dataLink: {
-        label: "Edit the partner list",
-        href: "/admin/pages/sub/section/partners",
+        label: "Edit the partner cards",
+        href: "/admin/pages/master/partners#partner-cards",
       },
       fields: [eyebrow(), heading(), body()],
       defaults: {
