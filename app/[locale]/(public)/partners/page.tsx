@@ -34,17 +34,8 @@ export async function generateMetadata({
 
 export const revalidate = 300;
 
-/**
- * The headline italicises a word in the middle rather than at the end, so it
- * takes three fields — see the comment on the hero section in
- * `lib/master-pages/sections/partners.ts`. An empty tail ends the line on the
- * italic, which is the shape every other master page's headline has.
- */
-function heroTitle(
-  lead: string | null,
-  emphasis: string | null,
-  tail: string | null,
-): React.ReactNode {
+/** The headline, with its italic tail — the shape every master page's headline has. */
+function heroTitle(lead: string | null, emphasis: string | null): React.ReactNode {
   return (
     <>
       {lead}
@@ -54,7 +45,6 @@ function heroTitle(
           <em className="italic">{emphasis}</em>
         </>
       ) : null}
-      {tail ? ` ${tail}` : null}
     </>
   );
 }
@@ -114,7 +104,8 @@ export default async function PartnersPage({
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
   // Two documents, one round: the page's own copy comes from
   // /admin/pages/master/partners, and the institutions themselves from
@@ -148,17 +139,19 @@ export default async function PartnersPage({
           <Eyebrow>{str(heroV, "eyebrow")}</Eyebrow>
         ) : null}
         <h1
-          className="serif mt-3.5 max-w-[16ch]"
+          className="serif mt-3.5 max-w-[1000px]"
           style={{
-            fontSize: fluid(72),
+            // The developers hero's measure and size, so the two sibling pages
+            // read alike and the headline sits on two lines rather than four
+            // in a 16ch column (client, Oct 2026).
+            fontSize: locale === "ar" ? fluid(52) : fluid(84),
             letterSpacing: "-0.03em",
-            lineHeight: 1.0,
+            lineHeight: 0.98,
           }}
         >
           {heroTitle(
             str(heroV, "title") ?? "The institutions",
             str(heroV, "title_emphasis"),
-            str(heroV, "title_tail"),
           )}
         </h1>
         {str(heroV, "sub") ? (

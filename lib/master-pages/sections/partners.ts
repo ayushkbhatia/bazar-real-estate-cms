@@ -55,41 +55,20 @@ export const PARTNERS_PAGE: MasterPageDef = {
       label: "Hero",
       description: "Eyebrow, headline and standfirst at the top of the page.",
       locked: true,
-      /*
-       * Three headline fields rather than the two every other master page
-       * uses.
-       *
-       * The registry's usual shape is `title` + `title_emphasis`, where the
-       * emphasis is an italic TAIL — "…advised properly.", "…since 2005.".
-       * This headline italicises a word in the MIDDLE: "The institutions
-       * *behind* every deal." Neither the tail pattern nor `headlineParts`
-       * (which italicises the last word of a single field) can express that.
-       *
-       * So the emphasis gets a lead and a tail around it. Leaving `title_tail`
-       * blank degrades exactly to the tail pattern every other page uses, so
-       * this generalises the convention rather than competing with it — an
-       * editor who wants the ordinary look simply empties the last box.
-       */
       fields: [
         eyebrow(),
-        text("title", "Headline · before the italic", { max: 80 }),
-        text("title_emphasis", "Headline · italic word", {
+        text("title", "Headline", { max: 80 }),
+        text("title_emphasis", "Headline · italic tail", {
           max: 60,
           optional: true,
-          help: "Rendered in italic in the middle of the headline.",
-        }),
-        text("title_tail", "Headline · after the italic", {
-          max: 80,
-          optional: true,
-          help: "Leave blank to end the headline on the italic word.",
+          help: "Rendered in italic at the end of the headline.",
         }),
         body({ key: "sub", label: "Sub-headline" }),
       ],
       defaults: {
         eyebrow: "Our Partner Ecosystem",
         title: "The institutions",
-        title_emphasis: "behind",
-        title_tail: "every deal.",
+        title_emphasis: "behind every deal.",
         sub: "Beyond our developer relationships, Bazar works alongside the region's leading banks and regulatory authorities — so financing, compliance, and registration are handled end to end.",
       },
     },
