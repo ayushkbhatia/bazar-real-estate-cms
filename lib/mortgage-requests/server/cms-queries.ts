@@ -578,7 +578,30 @@ export type RequestFile = {
    * too (SR-17). `move` isn't either: the owner or the Head moves a file to
    * any stage, a closed or declined one included (0158).
    */
-  can: { act: boolean; reassign: boolean; claim: boolean; withdrawConsent: boolean; move: boolean };
+  can: {
+    act: boolean;
+    reassign: boolean;
+    claim: boolean;
+    withdrawConsent: boolean;
+    move: boolean;
+    /**
+     * Add internal notes and case documents (0171): the owner or the Head,
+     * closed files included — a note or a bank's letter can come after.
+     */
+    annotate: boolean;
+  };
+  /** Staff-only notes (0171), newest first. */
+  notes: { id: string; body: string; author: TeamMember | null; when: string }[];
+  /** Files the team uploaded to the case (0171), oldest first, at most 10 live. */
+  caseDocuments: {
+    id: string;
+    title: string;
+    description: string | null;
+    addedBy: TeamMember | null;
+    when: string;
+    /** Null while its upload has not completed. */
+    file: { id: string; name: string; mime: string; sizeBytes: number } | null;
+  }[];
 };
 
 type RequestDbRow = SlaFields & {
@@ -643,7 +666,7 @@ export async function getRequestFile(
   if (!found) return null;
   const r = found as RequestDbRow;
 
-  const [documents, consent, events, contacts, consultations, team, reuploads] = await Promise.all([
+  const [documents, consent, events, contacts, consultations, team, reuploads, notes, caseDocs] = await Promise.all([
     r.service === "pre_approval"
       ? db
           .from("mortgage_documents")
@@ -685,8 +708,22 @@ export async function getRequestFile(
           .is("fulfilled_at", null)
           .is("cancelled_at", null)
       : Promise.resolve({ data: [], error: null }),
+    db
+      .from("mortgage_notes")
+      .select("id, author_id, body, created_at")
+      .eq("request_id", r.id)
+      .order("created_at", { ascending: false })
+      .limit(200),
+    db
+      .from("mortgage_case_documents")
+      .select(
+        "id, title, description, created_by, created_at, files:mortgage_files(id, original_name, mime, size_bytes, state)",
+      )
+      .eq("request_id", r.id)
+      .is("removed_at", null)
+      .order("created_at", { ascending: true }),
   ]);
-  for (const res of [documents, consent, events, contacts, consultations, reuploads]) {
+  for (const res of [documents, consent, events, contacts, consultations, reuploads, notes, caseDocs]) {
     if (res.error) throw new Error(`request file read failed: ${res.error.message}`);
   }
 
@@ -700,6 +737,8 @@ export async function getRequestFile(
     ...(r.owner_staff_id ? [r.owner_staff_id] : []),
     ...((documents.data ?? []) as { accepted_by: string | null }[]).flatMap((d) => (d.accepted_by ? [d.accepted_by] : [])),
     ...((consultations.data ?? []) as { adviser_staff_id: string }[]).map((c) => c.adviser_staff_id),
+    ...((notes.data ?? []) as { author_id: string | null }[]).flatMap((n) => (n.author_id ? [n.author_id] : [])),
+    ...((caseDocs.data ?? []) as { created_by: string | null }[]).flatMap((d) => (d.created_by ? [d.created_by] : [])),
   ].filter((id) => !names.has(id));
   const others: TeamMember[] = [];
   if (missing.length) {
@@ -871,7 +910,31 @@ export async function getRequestFile(
       claim: !closed && r.owner_staff_id === null,
       withdrawConsent: role === "head" || isOwner,
       move: r.service === "pre_approval" && (role === "head" || isOwner),
+      annotate: role === "head" || isOwner,
     },
+    notes: ((notes.data ?? []) as { id: string; author_id: string | null; body: string; created_at: string }[]).map(
+      (n) => ({ id: n.id, body: n.body, author: person(n.author_id), when: formatDayTime(n.created_at) }),
+    ),
+    caseDocuments: (
+      (caseDocs.data ?? []) as {
+        id: string;
+        title: string;
+        description: string | null;
+        created_by: string | null;
+        created_at: string;
+        files: { id: string; original_name: string; mime: string; size_bytes: number; state: string }[];
+      }[]
+    ).map((d) => {
+      const f = d.files.find((x) => x.state === "active");
+      return {
+        id: d.id,
+        title: d.title,
+        description: d.description,
+        addedBy: person(d.created_by),
+        when: formatDayTime(d.created_at),
+        file: f ? { id: f.id, name: f.original_name, mime: f.mime, sizeBytes: f.size_bytes } : null,
+      };
+    }),
   };
 }
 

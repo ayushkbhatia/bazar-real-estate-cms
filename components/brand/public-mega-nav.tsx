@@ -279,7 +279,18 @@ export function PublicMegaNav({
                     >
                       {tab.label}
                     </NavigationMenuTrigger>
-                    <NavigationMenuContent className={PANEL_CONTENT_CLASS}>
+                    <NavigationMenuContent
+                      className={PANEL_CONTENT_CLASS}
+                      // Close the panel the moment any link in it is
+                      // followed. Radix keeps it open while the pointer is
+                      // over it, and a client navigation does not move the
+                      // pointer, so the panel stayed open over the page it had
+                      // just opened (client, Oct 2026).
+                      onClickCapture={(e) => {
+                        if ((e.target as HTMLElement).closest("a[href]"))
+                          setOpenTab("");
+                      }}
+                    >
                       <MegamenuPanel tab={tab} />
                     </NavigationMenuContent>
                   </NavigationMenuItem>

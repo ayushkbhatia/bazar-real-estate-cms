@@ -44,6 +44,7 @@ import {
   type Target,
 } from "../_components/file-actions";
 import { ActivityList, Card, CRUMB_LINK, DocTile, DocumentBar, FILE_TAG, FileHeader, FileTagBody, KeyValueList, OwnerAvatar, Pill, PromiseClock, roleLabel, StageRail, StatusPill } from "../_components/ui";
+import { CaseDocumentsCard, InternalNotesCard } from "../_components/internal-cards";
 
 export const dynamic = "force-dynamic";
 
@@ -388,6 +389,9 @@ function PreApproval({
               <p className="text-[12.5px] text-bz-muted">—</p>
             )}
           </Card>
+          {/* Internal notes and case documents (0171): the team's own, never the applicant's. */}
+          <InternalNotesCard target={target} notes={file.notes} canAdd={file.can.annotate} />
+          <CaseDocumentsCard target={target} documents={file.caseDocuments} canAdd={file.can.annotate} />
           <ActivityCard items={file.activity} />
         </div>
       </div>
@@ -586,6 +590,8 @@ function Consultancy({
           <Card title={t("c6.docs.title")}>
             <p className="text-[12.5px] leading-[1.5] text-bz-ink-2">{t("c6.docs.body")}</p>
           </Card>
+          <InternalNotesCard target={target} notes={file.notes} canAdd={file.can.annotate} />
+          <CaseDocumentsCard target={target} documents={file.caseDocuments} canAdd={file.can.annotate} />
           {file.status !== "completed" ? (
             <div className="rounded-[10px] bg-bz-accent-soft p-5">
               <h2 className="text-[13.5px] font-medium">{t("c6.ready.title")}</h2>

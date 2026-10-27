@@ -1795,3 +1795,50 @@ The application, W1–W8, in Arabic when it is opened from the Arabic site.
     machine draft (ADR-0008) elsewhere; counted phrases stay catalogue-only.
   - `test:db` (`submit.db.test.ts`) needs the local stack.
 
+
+---
+
+## Internal notes and case documents (0171) · 27 Oct 2026
+
+Client request: on every request, staff-only comments the form doesn't ask
+for, and up to 10 files the team uploads to the case, each with a title and a
+short description.
+
+**Built**
+- Migration `0171_mortgage_notes_case_documents.sql`:
+  - `mortgage_notes` (append-only; body 1–4000 chars) and
+    `mortgage_case_documents` (title ≤120, description ≤500, soft-removed).
+    RLS: any mortgage role reads; nobody but the service role writes directly.
+  - `mortgage_files.case_document_id` (cascade from the case document); the
+    owner check is now `num_nonnulls(draft_id, document_id, case_document_id) >= 1`.
+  - `mortgage_add_note`, `mortgage_add_case_document` (≤10 live per request,
+    creates the pending file row), `mortgage_complete_case_document`
+    (service role only, after the bytes are checked) and
+    `mortgage_remove_case_document` (retires the file, returns its key). Each
+    staff function locks the request, authorises the owner or the Head, logs
+    `note.added` / `case_document.added` / `case_document.removed`, and
+    touches `updated_at` for Realtime.
+  - Redefined, behaviour otherwise unchanged: `mortgage_log_event` (a staff
+    open may name a case document's file of the same request),
+    `mortgage_retention_files`, `mortgage_retire_files`, `mortgage_erasure_files`
+    (find case document files too).
+- CMS (`/admin/mortgages/[reference]`, C2 and C6 right column):
+  `InternalNotesCard` and `CaseDocumentsCard`
+  (`_components/internal-cards.tsx`), actions in `_case-actions.ts`. Uploads go
+  browser → private bucket through a signed URL (Vercel's 4.5 MB body limit),
+  then `completeCaseDocument` re-reads the bytes (sniffed type, ≤25 MB,
+  unencrypted PDF, sha256) before the file goes live; a failed check removes
+  the document. Opens and downloads use the logged file route, which now
+  accepts case document files and logs them by title.
+- `getRequestFile` loads notes and live case documents; `can.annotate` is the
+  owner or the Head, closed files included.
+- DSR export includes `internal_notes` and `case_documents`; the i18n domain
+  registry lists both tables. Copy in `cms-strings.ts` (`internal.*`, three
+  `activity.*` lines), listed in `PENDING_CMS_COPY`.
+- Tests: `notes-case-documents.db.test.ts` (7, local stack). Full `test:db`
+  passes (141).
+
+**Open**
+- `db/types.ts` was spliced from the local schema (as for 0138); re-run
+  `npm run db:types` once 0171 is on production and check the diff is empty.
+- Notes are append-only by design; no edit or delete.
