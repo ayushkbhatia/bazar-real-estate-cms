@@ -33,9 +33,9 @@ import {
 } from "./_sections/shared";
 import {
   ScenarioSection,
-  DOWN_MAX_PCT,
   MORTGAGE_TYPES,
 } from "./_sections/scenario";
+import type { MortgageCalculatorControls } from "@/lib/master-pages/mortgage-calculator-controls";
 import { AffordabilitySection } from "./_sections/affordability";
 import { CompareSection } from "./_sections/compare";
 import { AmortizationSection } from "./_sections/amortization";
@@ -69,7 +69,10 @@ export type MortgageHeroCopy = {
   showForm: boolean;
 };
 
-/** The four figures the calculator opens on, from Settings → Mortgage. */
+/**
+ * The figures the calculator opens on: Settings → Mortgage, overridden by the
+ * starting values on Pages & blocks → Mortgage calculator.
+ */
 export type MortgageOpeningValues = {
   priceAed: number;
   downPaymentPct: number;
@@ -90,6 +93,8 @@ type Props = {
   preApproval: PreApprovalCopy;
   preApprovalForm: ResolvedForm;
   assumptions: MortgageAssumptions;
+  /** Ranges, term options and opening choices, from Pages & blocks. */
+  controls: MortgageCalculatorControls;
   opening: MortgageOpeningValues;
   /**
    * The online application's doors, while it's open; null with it closed,
@@ -137,6 +142,7 @@ export function MortgageCalculator({
   preApproval,
   preApprovalForm,
   assumptions,
+  controls,
   opening,
   apply,
   questions,
@@ -158,8 +164,8 @@ export function MortgageCalculator({
   const [downPct, setDownPct] = useState(opening.downPaymentPct);
   const [annualRatePct, setAnnualRatePct] = useState(opening.ratePct);
   const [termYears, setTermYears] = useState<number>(opening.termYears);
-  const [mortgageType, setMortgageType] = useState<MortgageType>("fixed");
-  const [buyerStatus, setBuyerStatus] = useState<BuyerStatus>("uae_resident");
+  const [mortgageType, setMortgageType] = useState<MortgageType>(controls.type);
+  const [buyerStatus, setBuyerStatus] = useState<BuyerStatus>(controls.status);
   const [annualIncome, setAnnualIncome] = useState<number>(
     opening.annualIncomeAed,
   );
@@ -190,7 +196,7 @@ export function MortgageCalculator({
 
   // Three preset scenarios: "current", "more upfront", "shorter term".
   const scenarios = useMemo(() => {
-    const altDownPct = Math.min(DOWN_MAX_PCT, Math.max(downPct + 0.15, 0.4));
+    const altDownPct = Math.min(controls.down.max, Math.max(downPct + 0.15, 0.4));
     const shorterTerm = Math.max(5, Math.min(termYears - 10, 15));
     const alt = totals({ ...inputs, downPaymentPct: altDownPct });
     const short = totals({ ...inputs, termYears: shorterTerm });
@@ -240,6 +246,7 @@ export function MortgageCalculator({
     annualRatePct,
     downPct,
     termYears,
+    controls.down.max,
   ]);
 
   /**
@@ -403,6 +410,7 @@ export function MortgageCalculator({
     scenario: (
       <ScenarioSection
         copy={scenario}
+        controls={controls}
         prefs={prefs}
         price={price}
         downPct={downPct}
@@ -434,6 +442,7 @@ export function MortgageCalculator({
         afford={afford}
         dbrCapPct={dbrCapPct}
         maxDbr={assumptions.dbrMaxPct}
+        comfortDbr={controls.gaugeComfort}
         toInput={toInput}
         fromInput={fromInput}
       />

@@ -16,9 +16,11 @@
  *
  * Two things are deliberately NOT sections:
  *
- *  - the calculator's own figures — the opening scenario, the fee schedule,
- *    the LTV tiers, the DBR bands. They are arithmetic, they are shared by
- *    every section below, and they live in Settings → Mortgage.
+ *  - the calculator's regulated figures — the fee schedule, the LTV tiers,
+ *    the DBR cap. They are arithmetic, shared by every section below and by
+ *    the application, and they live in Settings → Mortgage. Its controls —
+ *    slider ranges, term options, starting values — are fields on `scenario`
+ *    (`mortgage-calculator-controls.ts`).
  *  - the pre-approval form's fields, button and confirmation, which belong to
  *    the Forms Manager. `pre_approval` owns the words around it; `headingSource`
  *    on the form definition points back here so the manager links out.
@@ -35,6 +37,11 @@
 import type { MasterPageDef } from "../types";
 import { area, eyebrow, faqList, heading, image, link, text, toggle } from "../fields";
 import { MORTGAGE_CALCULATOR_COPY_SECTIONS } from "./mortgage-calculator-copy";
+import {
+  BUYER_STATUS_OPTIONS,
+  MORTGAGE_CALCULATOR_CONTROL_FIELDS,
+  MORTGAGE_TYPE_OPTIONS,
+} from "../mortgage-calculator-controls";
 
 /** Where the closing CTA jumps back to, and what the hero's form card anchors. */
 export const MORTGAGE_FORM_ANCHOR = "pre-approval";
@@ -56,7 +63,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         "Photograph, the pitch, and the pre-approval form beside it — the shape /services/manage opens with.",
       locked: true,
       dataNote:
-        "The calculator's own numbers — the opening scenario, the closing-cost percentages, the Central Bank LTV tiers and the DBR thresholds — are set under Settings → Mortgage. The form's fields and button are in Forms → Start your pre-approval.",
+        "The calculator's sliders, ranges, term options and starting values are on the Mortgage calculator section below; the closing-cost percentages, Central Bank LTV tiers and DBR cap are under Settings → Mortgage. The form's fields and button are in Forms → Start your pre-approval.",
       fields: [
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
@@ -185,7 +192,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         "The calculator: the inputs, and the dark box beside them with the monthly payment, total to be paid, total interest and principal share. The one section the whole page is really about.",
       locked: true,
       dataNote:
-        "What the sliders and dropdowns open on — price, deposit, rate, term — is set under Settings → Mortgage, along with the deposit floors the 'below guidance' warning quotes. The labels inside the calculator are under Calculator · Your numbers and Calculator · Results and affordability.",
+        "Every control below is optional. A blank starting value keeps the figure from Settings → Mortgage (shared with the home page's calculator); a blank range keeps the range the page shipped with, shown greyed in each box. A range that cannot work — a minimum at or above its maximum — is ignored whole. The closing-cost percentages, Central Bank LTV tiers and DBR cap stay under Settings → Mortgage. The labels inside the calculator are under Calculator · Your numbers and Calculator · Results and affordability.",
       fields: [
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
@@ -195,6 +202,29 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "Results box · background image",
           "Fills the dark box with the monthly payment, under a dark scrim so the white figures stay legible. Leave unset to keep the plain dark box.",
         ),
+        ...MORTGAGE_CALCULATOR_CONTROL_FIELDS.map(([key, label, fallback]) =>
+          text(key, label, {
+            max: 24,
+            optional: true,
+            // A number, not prose.
+            i18n: false,
+            placeholder: fallback,
+          }),
+        ),
+        {
+          key: "type_default",
+          label: "Mortgage type · opens on",
+          kind: "select",
+          options: MORTGAGE_TYPE_OPTIONS,
+          placeholder: "Fixed (as shipped)",
+        },
+        {
+          key: "status_default",
+          label: "Buyer status · opens on",
+          kind: "select",
+          options: BUYER_STATUS_OPTIONS,
+          placeholder: "UAE resident (as shipped)",
+        },
       ],
       defaults: {
         eyebrow: "Scenario",
@@ -206,6 +236,9 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         intro_ar:
           "حرّك السعر والدفعة المقدّمة، واختر مدة التمويل، وسيتغيّر المبلغ الشهري تبعاً لذلك.",
         result_image: { media_id: null, alt: null, label: null },
+        // Blank = what the page shipped opening on.
+        type_default: null,
+        status_default: null,
       },
     },
     {

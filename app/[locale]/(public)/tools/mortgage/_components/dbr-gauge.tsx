@@ -30,15 +30,19 @@ export function DbrGauge({
   monthlyPaymentAed,
   monthlyIncomeAed,
   maxDbr = 0.5,
+  comfortDbr = 0.35,
 }: {
   monthlyPaymentAed: number;
   monthlyIncomeAed: number;
   /**
-   * The Central Bank cap, from Settings → Mortgage. The 0.35 band below it is
-   * the lenders' stress-test convention rather than a regulator's number, so
-   * it stays in code — `affordability()` carries the editable comfort line.
+   * The Central Bank cap, from Settings → Mortgage.
    */
   maxDbr?: number;
+  /**
+   * The band below it — the lenders' stress-test convention (0.35) rather than
+   * a regulator's number — edited on Pages & blocks → Mortgage calculator.
+   */
+  comfortDbr?: number;
 }) {
   const t = useTranslations("tools");
   const dbr =
@@ -59,7 +63,7 @@ export function DbrGauge({
   const largeArc = angle > 180 ? 1 : 0;
 
   const band =
-    dbr <= 0.35
+    dbr <= comfortDbr
       ? { key: "dbrComfortable", color: "var(--bz-success, oklch(0.55 0.14 145))" }
       : dbr <= maxDbr
         ? { key: "dbrWithinLimit", color: "var(--bz-warning, oklch(0.7 0.13 65))" }

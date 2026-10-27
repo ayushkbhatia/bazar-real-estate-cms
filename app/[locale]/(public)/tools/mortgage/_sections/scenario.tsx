@@ -20,14 +20,8 @@ import {
   type Preferences,
 } from "@/lib/preferences";
 import { ToolSection, formatPct, money, type SectionCopy } from "./shared";
+import type { MortgageCalculatorControls } from "@/lib/master-pages/mortgage-calculator-controls";
 
-export const PRICE_MIN = 500_000;
-export const PRICE_MAX = 50_000_000;
-/** Where the slider stops. Above it the visitor types the figure. */
-export const PRICE_SLIDER_MAX = 10_000_000;
-export const DOWN_MIN_PCT = 0.15;
-export const DOWN_MAX_PCT = 0.8;
-export const TERM_OPTIONS = [25, 20, 15, 10] as const;
 
 /**
  * Message keys, not labels.
@@ -60,6 +54,11 @@ export const BUYER_STATUSES: { value: BuyerStatus; key: string }[] = [
 type Props = {
   /** `resultImageUrl`: the photograph behind the results box, if one is set. */
   copy: SectionCopy & { resultImageUrl?: string | null };
+  /**
+   * Ranges and term options from Pages & blocks. The price slider stops at
+   * `price.sliderMax`; above it the visitor types the figure, up to `max`.
+   */
+  controls: MortgageCalculatorControls;
   prefs: Preferences;
   price: number;
   downPct: number;
@@ -102,6 +101,7 @@ export function ScenarioSection(props: Props) {
   const t = useTranslations("tools");
   const {
     copy,
+    controls: { price: priceRange, down: downRange, rate: rateRange, termOptions },
     prefs,
     price,
     downPct,
@@ -141,7 +141,7 @@ export function ScenarioSection(props: Props) {
               value={toInput(price)}
               onChange={(e) => {
                 const next = fromInput(e.target.value);
-                props.onPrice(Math.max(PRICE_MIN, Math.min(PRICE_MAX, next)));
+                props.onPrice(Math.max(priceRange.min, Math.min(priceRange.max, next)));
               }}
               aria-label={t("mortgage.propertyPriceAria", {
                 currency: prefs.currency,
@@ -149,18 +149,18 @@ export function ScenarioSection(props: Props) {
             />
             <input
               type="range"
-              min={PRICE_MIN}
-              max={PRICE_SLIDER_MAX}
-              step={50_000}
-              value={Math.min(price, PRICE_SLIDER_MAX)}
+              min={priceRange.min}
+              max={priceRange.sliderMax}
+              step={priceRange.step}
+              value={Math.min(price, priceRange.sliderMax)}
               onChange={(e) => props.onPrice(Number(e.target.value))}
               className="w-full mt-3 accent-bz-accent"
               aria-label={t("mortgage.propertyPriceSlider")}
             />
             {/* Slider bounds and step stay AED; only the ticks convert. */}
             <div className="flex justify-between text-[11px] text-bz-muted mt-1">
-              <span>{formatPrice(PRICE_MIN, prefs)}</span>
-              <span>{formatPrice(PRICE_SLIDER_MAX, prefs)}</span>
+              <span>{formatPrice(priceRange.min, prefs)}</span>
+              <span>{formatPrice(priceRange.sliderMax, prefs)}</span>
             </div>
           </fieldset>
 
@@ -186,17 +186,17 @@ export function ScenarioSection(props: Props) {
             />
             <input
               type="range"
-              min={DOWN_MIN_PCT * 100}
-              max={DOWN_MAX_PCT * 100}
-              step={1}
+              min={downRange.min * 100}
+              max={downRange.max * 100}
+              step={downRange.step * 100}
               value={Math.round(downPct * 100)}
               onChange={(e) => props.onDownPct(Number(e.target.value) / 100)}
               className="w-full mt-3 accent-bz-accent"
               aria-label={t("mortgage.downPaymentSlider")}
             />
             <div className="flex justify-between text-[11px] text-bz-muted mt-1">
-              <span>{formatPct(DOWN_MIN_PCT)}</span>
-              <span>{formatPct(DOWN_MAX_PCT)}</span>
+              <span>{formatPct(downRange.min)}</span>
+              <span>{formatPct(downRange.max)}</span>
             </div>
             {belowGuidance ? (
               <p className="text-[12px] text-bz-warning mt-1.5">
@@ -238,7 +238,7 @@ export function ScenarioSection(props: Props) {
                 onChange={(e) => {
                   const n = Number(e.target.value);
                   if (Number.isFinite(n))
-                    props.onRate(Math.max(0, Math.min(20, n)));
+                    props.onRate(Math.max(rateRange.min, Math.min(rateRange.max, n)));
                 }}
                 aria-label={t("mortgage.interestRateAria")}
               />
@@ -253,7 +253,7 @@ export function ScenarioSection(props: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {TERM_OPTIONS.map((y) => (
+                  {termOptions.map((y) => (
                     <SelectItem key={y} value={String(y)}>
                       {t("mortgage.termYears", { years: y })}
                     </SelectItem>
