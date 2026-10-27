@@ -150,9 +150,22 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       return { ...base, text: t("activity.assigned.title", { owner }), sub: t("activity.assigned.roundRobin") };
     }
     case "document.viewed":
-      return { ...base, text: t("activity.opened", { actor, document: docLabel(e.data.kind) }) };
+      return {
+        ...base,
+        text: t("activity.opened", { actor, document: str(e.data.case_document) ?? docLabel(e.data.kind) }),
+      };
     case "document.downloaded":
-      return { ...base, text: t("activity.downloaded", { actor, document: docLabel(e.data.kind) }) };
+      return {
+        ...base,
+        text: t("activity.downloaded", { actor, document: str(e.data.case_document) ?? docLabel(e.data.kind) }),
+      };
+    // Internal notes and case documents (0171).
+    case "note.added":
+      return { ...base, text: t("activity.noteAdded", { actor }) };
+    case "case_document.added":
+      return { ...base, text: t("activity.caseDocAdded", { actor }) };
+    case "case_document.removed":
+      return { ...base, text: t("activity.caseDocRemoved", { actor }) };
     case "stage.changed": {
       // A stage move (0158), named as the stage was called at the time.
       const to = str(e.data.to) ?? "";

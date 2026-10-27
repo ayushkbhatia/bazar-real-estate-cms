@@ -57,26 +57,36 @@ export async function openStaffFile(
 
   const { data: file, error } = await deps.db
     .from("mortgage_files")
-    .select("id, document_id, kind, state, storage_key, original_name, mime, size_bytes")
+    .select("id, document_id, case_document_id, kind, state, storage_key, original_name, mime, size_bytes")
     .eq("id", input.fileId)
     .maybeSingle();
   if (error) throw new Error(`file read failed: ${error.message}`);
-  const row = file as Pick<
-    FileRow,
-    "id" | "document_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes"
-  > | null;
+  const row = file as
+    | (Pick<
+        FileRow,
+        "id" | "document_id" | "kind" | "state" | "storage_key" | "original_name" | "mime" | "size_bytes"
+      > & { case_document_id: string | null })
+    | null;
   // Draft files aren't on a request yet, removed ones are gone, and a pending
-  // one never finished uploading.
-  if (!row || row.state !== "active" || !row.document_id) throw notFound();
+  // one never finished uploading. A file belongs to an applicant document or,
+  // since 0171, to a case document the team uploaded.
+  if (!row || row.state !== "active" || (!row.document_id && !row.case_document_id)) throw notFound();
 
   const request = await requestOf(deps, row);
   if (!request) throw notFound();
+
+  // A case document (0171) is named in the log by its title: it has no kind.
+  const caseTitle = row.case_document_id
+    ? ((
+        await deps.db.from("mortgage_case_documents").select("title").eq("id", row.case_document_id).maybeSingle()
+      ).data as { title: string } | null)?.title ?? null
+    : null;
 
   // Log first. A failure here returns an error and no bytes.
   await deps.logAccess({
     requestId: request.id,
     type: input.download ? "document.downloaded" : "document.viewed",
-    data: { file_id: row.id, kind: row.kind },
+    data: caseTitle !== null ? { file_id: row.id, case_document: caseTitle } : { file_id: row.id, kind: row.kind },
   });
 
   // Opening a document no longer moves the file (0158): its stage is the team's to set.
@@ -90,9 +100,16 @@ type RequestSummary = { id: string; service: string; status: string; owner_staff
 
 async function requestOf(
   deps: FileAccessDeps,
-  row: { document_id: string | null },
+  row: { document_id: string | null; case_document_id?: string | null },
 ): Promise<RequestSummary | null> {
-  const parent = await deps.db.from("mortgage_documents").select("request_id").eq("id", row.document_id!).maybeSingle();
+  const parent = row.document_id
+    ? await deps.db.from("mortgage_documents").select("request_id").eq("id", row.document_id).maybeSingle()
+    : await deps.db
+        .from("mortgage_case_documents")
+        .select("request_id")
+        .eq("id", row.case_document_id!)
+        .is("removed_at", null)
+        .maybeSingle();
   const requestId = (parent.data as { request_id: string } | null)?.request_id;
   if (!requestId) return null;
   const { data } = await deps.db

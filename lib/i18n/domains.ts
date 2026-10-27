@@ -944,6 +944,7 @@ export const DOMAINS: Domain[] = [
   ...[
     "mortgage_access_links",
     "mortgage_adviser_hours",
+    "mortgage_case_documents",
     "mortgage_consents",
     "mortgage_consultations",
     "mortgage_contact_attempts",
@@ -951,6 +952,7 @@ export const DOMAINS: Domain[] = [
     "mortgage_events",
     "mortgage_files",
     "mortgage_holidays",
+    "mortgage_notes",
     "mortgage_notifications",
     "mortgage_reference_counters",
     "mortgage_requests",

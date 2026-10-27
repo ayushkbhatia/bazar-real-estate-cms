@@ -57,7 +57,7 @@ type Row = Record<string, unknown>;
 export async function mortgageExport(db: SupabaseClient, ids: readonly string[]): Promise<Row[]> {
   if (ids.length === 0) return [];
   const list = [...ids];
-  const [requests, consents, documents, consultations, contacts, reuploads, events] = await Promise.all([
+  const [requests, consents, documents, consultations, contacts, reuploads, events, notes, caseDocuments] = await Promise.all([
     db
       .from("mortgage_requests")
       .select(
@@ -75,8 +75,15 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
     db.from("mortgage_contact_attempts").select("request_id, channel, outcome, body, duration_seconds, occurred_at").in("request_id", list),
     db.from("mortgage_reupload_requests").select("request_id, reason, message, requested_at, fulfilled_at, cancelled_at, document:mortgage_documents(kind)").in("request_id", list),
     db.from("mortgage_events").select("request_id, type, created_at").in("request_id", list).order("created_at"),
+    // The team's notes about the subject and the files it added to the case (0171).
+    db.from("mortgage_notes").select("request_id, body, created_at").in("request_id", list).order("created_at"),
+    db
+      .from("mortgage_case_documents")
+      .select("request_id, title, description, created_at, removed_at, files:mortgage_files(original_name, mime, size_bytes, uploaded_at, state)")
+      .in("request_id", list)
+      .order("created_at"),
   ]);
-  for (const r of [requests, consents, documents, consultations, contacts, reuploads, events]) {
+  for (const r of [requests, consents, documents, consultations, contacts, reuploads, events, notes, caseDocuments]) {
     if (r.error) throw new Error(`mortgage export read failed: ${r.error.code}`);
   }
 
@@ -122,6 +129,13 @@ export async function mortgageExport(db: SupabaseClient, ids: readonly string[])
           document: (u.document as { kind?: string } | null)?.kind ?? null,
           ...without(u, "request_id", "document"),
         })),
+        internal_notes: of(notes.data, id).map((n) => without(n, "request_id")),
+        case_documents: of(caseDocuments.data, id)
+          .filter((d) => !d.removed_at)
+          .map((d) => ({
+            ...without(d, "request_id", "files", "removed_at"),
+            files: ((d.files ?? []) as Row[]).filter((f) => f.state !== "removed").map((f) => without(f, "state")),
+          })),
         activity: of(events.data, id).map((e) => ({ type: e.type, at: e.created_at })),
       };
     });
