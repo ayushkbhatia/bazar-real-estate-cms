@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { PlanCard, UnitTypeCard } from "@/lib/queries/development-unit-plans";
@@ -20,6 +21,8 @@ import {
 } from "@/lib/preferences";
 import type { AreaLabels, Preferences } from "@/lib/preferences";
 import type { ResolvedForm } from "@/lib/forms/types";
+
+type Translate = ReturnType<typeof useTranslations<"development.floorPlans">>;
 
 /**
  * Units and their layouts — the row of unit-type buttons above the map.
@@ -105,6 +108,7 @@ export function UnitFloorPlans({
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const warm = useWarmOnApproach(sectionRef);
   const { prefs } = usePreferences();
+  const t = useTranslations("development.floorPlans");
 
   const warmIds = useMemo(() => {
     const ids = new Set<string>();
@@ -120,30 +124,29 @@ export function UnitFloorPlans({
   if (types.length === 0) return null;
 
   const active = types.find((t) => t.id === activeId) ?? types[0]!;
-  const summary = summaryLine(active, prefs);
+  const summary = summaryLine(active, prefs, t);
   const gateForm = gated && floorplanForm?.enabled ? floorplanForm : null;
   const openType = lightbox ? types.find((t) => t.id === lightbox.typeId) : null;
-  const openPlans = openType ? lightboxPlans(openType, prefs) : [];
+  const openPlans = openType ? lightboxPlans(openType, prefs, t) : [];
 
   return (
     <div ref={sectionRef} className="px-4 md:px-12 py-16">
-      <Eyebrow>{eyebrow ?? "Units"}</Eyebrow>
+      <Eyebrow>{eyebrow ?? t("eyebrow")}</Eyebrow>
       <h2
         className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
         style={{ letterSpacing: "-0.02em" }}
       >
-        {heading ?? "Unit types & layouts"}
+        {heading ?? t("heading")}
       </h2>
       <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-        {intro ??
-          `Pick a unit type to see the layouts ${developmentName} offers it in.`}
+        {intro ?? t("intro", { name: developmentName })}
       </p>
 
       {/* Scrolls rather than wraps on narrow screens: seven unit types stacked
           into three rows pushes the cards below the fold on a phone. */}
       <div
         role="tablist"
-        aria-label="Unit types"
+        aria-label={t("tabs")}
         className="mt-7 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {types.map((t) => {
@@ -190,7 +193,7 @@ export function UnitFloorPlans({
                   </p>
                 ) : null}
                 {summary ? (
-                  <span className="mono text-[12px] text-bz-muted">{summary}</span>
+                  <span className="mono-en text-[12px] text-bz-muted">{summary}</span>
                 ) : null}
               </div>
             ) : null}
@@ -219,7 +222,7 @@ export function UnitFloorPlans({
                         }
                         onPointerEnter={reach}
                         onFocus={reach}
-                        aria-label={`${plan.label} — open full screen`}
+                        aria-label={t("open", { label: plan.label })}
                         className="relative aspect-square rounded overflow-hidden bg-bz-surface-2 cursor-zoom-in"
                       >
                         <Image
@@ -242,8 +245,8 @@ export function UnitFloorPlans({
                     )}
                     <div className="mt-3">
                       <div className="text-[14px] font-medium">{plan.label}</div>
-                      <div className="text-[11.5px] text-bz-ink-2 mono mt-0.5">
-                        {planStats(plan, prefs)}
+                      <div className="text-[11.5px] text-bz-ink-2 mono-en mt-0.5">
+                        {planStats(plan, prefs, t)}
                       </div>
                     </div>
                     {plan.description ? (
@@ -369,11 +372,15 @@ function openableIndex(type: UnitTypeCard, planId: string): number {
   return type.plans.filter((p) => p.image_url).findIndex((p) => p.id === planId);
 }
 
-function lightboxPlans(type: UnitTypeCard, prefs: AreaLabels): LightboxPlan[] {
+function lightboxPlans(
+  type: UnitTypeCard,
+  prefs: AreaLabels,
+  t: Translate,
+): LightboxPlan[] {
   const out: LightboxPlan[] = [];
   for (const p of type.plans) {
     if (!p.image_url) continue;
-    const meta = planStats(p, prefs);
+    const meta = planStats(p, prefs, t);
     out.push({
       id: p.id,
       src: p.image_url,
@@ -393,12 +400,16 @@ function lightboxPlans(type: UnitTypeCard, prefs: AreaLabels): LightboxPlan[] {
  * true at the time, and no longer: the units table and payment plan beside it
  * now convert too.
  */
-function summaryLine(type: UnitTypeCard, prefs: Preferences): string | null {
+function summaryLine(
+  type: UnitTypeCard,
+  prefs: Preferences,
+  t: Translate,
+): string | null {
   const parts: string[] = [];
   const size = formatAreaRange(type.size_from_ft2, type.size_to_ft2, prefs);
   if (size) parts.push(size);
   if (type.price_from_aed != null) {
-    parts.push(`from ${formatMoneyValue(type.price_from_aed, prefs)}`);
+    parts.push(t("from", { price: formatMoneyValue(type.price_from_aed, prefs) }));
   }
   return parts.length ? parts.join(" · ") : null;
 }
@@ -406,10 +417,11 @@ function summaryLine(type: UnitTypeCard, prefs: Preferences): string | null {
 function planStats(
   plan: Pick<PlanCard, "beds" | "baths" | "area_ft2">,
   prefs: AreaLabels,
+  t: Translate,
 ): string {
   const parts: string[] = [];
-  if (plan.beds != null) parts.push(plan.beds === 0 ? "Studio" : `${plan.beds} bed`);
-  if (plan.baths != null) parts.push(`${plan.baths} bath`);
+  if (plan.beds != null) parts.push(plan.beds === 0 ? t("studio") : t("beds", { count: plan.beds }));
+  if (plan.baths != null) parts.push(t("baths", { count: plan.baths }));
   if (plan.area_ft2 != null) parts.push(formatArea(plan.area_ft2, prefs));
   return parts.length ? parts.join(" · ") : "—";
 }
