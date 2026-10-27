@@ -464,7 +464,7 @@ export function DocumentUploadRow({
                   style={{ width: `${Math.min(100, (view.usedBytes / rule.maxTotalBytes) * 100)}%` }}
                 />
               </div>
-              <span className="mono text-[11.5px] whitespace-nowrap text-bz-muted">
+              <span className="mono-en text-[11.5px] whitespace-nowrap text-bz-muted">
                 {t("upload.totalUsed", { used: formatMb(view.usedBytes), limit: formatLimitMb(rule.maxTotalBytes) })}
               </span>
             </div>

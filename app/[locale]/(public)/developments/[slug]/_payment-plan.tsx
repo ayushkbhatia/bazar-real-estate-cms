@@ -352,7 +352,7 @@ export function PaymentPlanSection({
                     </span>
                   ) : null}
                   {amount ? (
-                    <span className="mono text-[11.5px] text-bz-ink mt-2 px-2 py-[3px] bg-bz-surface rounded-[3px]">
+                    <span className="mono-en text-[11.5px] text-bz-ink mt-2 px-2 py-[3px] bg-bz-surface rounded-[3px]">
                       {amount}
                     </span>
                   ) : null}
@@ -395,7 +395,7 @@ export function PaymentPlanSection({
                 ) : null}
               </span>
               {amount ? (
-                <span className="mono text-[12px] self-center whitespace-nowrap px-2 py-[3px] bg-bz-surface rounded-[3px]">
+                <span className="mono-en text-[12px] self-center whitespace-nowrap px-2 py-[3px] bg-bz-surface rounded-[3px]">
                   {amount}
                 </span>
               ) : null}

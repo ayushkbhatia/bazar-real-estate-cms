@@ -238,7 +238,7 @@ export function PickerDrawer({
                               {item.area_name ?? t("picker.fallbackArea")}
                             </span>
                             <span className="mt-1 flex items-baseline justify-between gap-2">
-                              <span className="mono text-[12px] text-bz-ink">
+                              <span className="mono-en text-[12px] text-bz-ink">
                                 {formatPrice(item.price_aed, prefs)}
                               </span>
                               <span className="text-[11px] text-bz-ink-2">

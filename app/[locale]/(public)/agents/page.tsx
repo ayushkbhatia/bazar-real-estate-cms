@@ -198,7 +198,7 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
                         ))}
                       </div>
                       {a.languages.length > 0 ? (
-                        <div className="mt-3 mono text-[11px] text-bz-ink-2">
+                        <div className="mt-3 mono-en text-[11px] text-bz-ink-2">
                           {a.languages.join(" · ")}
                         </div>
                       ) : null}

@@ -130,7 +130,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <div className="min-w-0">
                     <div className="text-[14px] font-medium">{u.unit_type}</div>
                     {u.plot_number ? (
-                      <div className="mono text-[11.5px] text-bz-muted mt-0.5">
+                      <div className="mono-en text-[11.5px] text-bz-muted mt-0.5">
                         {t("units.plotNumber")} {u.plot_number}
                       </div>
                     ) : null}
@@ -146,12 +146,12 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                 <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[12.5px]">
                   <Field label={t("units.beds")}>{u.beds ?? "—"}</Field>
                   <Field label={t("units.builtUp")}>
-                    <span className="mono">
+                    <span className="mono-en">
                       <AreaText ft2={u.built_up_ft2} />
                     </span>
                   </Field>
                   <Field label={t("units.plot")}>
-                    <span className="mono">
+                    <span className="mono-en">
                       <AreaText ft2={u.plot_ft2} />
                     </span>
                   </Field>
@@ -203,10 +203,10 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                 >
                   <td className="px-4 py-3 font-medium">{u.unit_type}</td>
                   <td className="px-2 py-3">{u.beds ?? "—"}</td>
-                  <td className="px-2 py-3 mono">
+                  <td className="px-2 py-3 mono-en">
                     <AreaText ft2={u.built_up_ft2} />
                   </td>
-                  <td className="px-2 py-3 mono">
+                  <td className="px-2 py-3 mono-en">
                     <AreaText ft2={u.plot_ft2} />
                   </td>
                   <td className="px-2 py-3">{u.lagoon_access ?? "—"}</td>

@@ -61,7 +61,7 @@ export default async function PressPage({
                   horizontally. */}
               <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-2 md:gap-10">
                 <div>
-                  <div className="mono text-[12px] text-bz-muted">
+                  <div className="mono-en text-[12px] text-bz-muted">
                     {formatDate(item.date, locale)}
                   </div>
                   <div className="text-[12.5px] uppercase tracking-wider text-bz-accent mt-1">

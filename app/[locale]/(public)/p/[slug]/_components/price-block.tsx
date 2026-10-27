@@ -59,11 +59,11 @@ export function PriceBlock({
       </span>
       <div className="flex flex-col gap-1">
         {subline ? (
-          <span className="mono text-[13px] text-bz-ink-2">
+          <span className="mono-en text-[13px] text-bz-ink-2">
             {subline} · ~ {otherLabel}
           </span>
         ) : (
-          <span className="mono text-[13px] text-bz-ink-2">~ {otherLabel}</span>
+          <span className="mono-en text-[13px] text-bz-ink-2">~ {otherLabel}</span>
         )}
         {listedDays != null ? (
           <Eyebrow className="text-bz-accent">
