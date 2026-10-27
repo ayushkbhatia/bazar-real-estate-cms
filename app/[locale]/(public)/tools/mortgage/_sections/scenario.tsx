@@ -137,7 +137,7 @@ export function ScenarioSection(props: Props) {
             <Input
               id="price"
               inputMode="numeric"
-              className="mt-1.5 mono text-[18px] h-12"
+              className="mt-1.5 mono-en text-[18px] h-12"
               value={toInput(price)}
               onChange={(e) => {
                 const next = fromInput(e.target.value);
@@ -174,7 +174,7 @@ export function ScenarioSection(props: Props) {
               /* `readOnly` is not `disabled` — the field still takes focus on
                  tap, so at 15px iOS Safari zooms the viewport for a number the
                  visitor cannot even edit. 16px on the phone, 15 from `md`. */
-              className="mt-1.5 mono text-[16px] md:text-[15px]"
+              className="mt-1.5 mono-en text-[16px] md:text-[15px]"
               value={money(Math.round(price * downPct), prefs)}
               /* The figure beside it follows the visitor's currency, so the
                  label naming that currency has to as well — it said "AED" for
