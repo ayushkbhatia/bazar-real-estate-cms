@@ -1,4 +1,5 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
@@ -239,7 +240,11 @@ export async function listDevelopmentSubPages(
   kind: SubPageKind = "development",
 ): Promise<SubPageRow[]> {
   if (!isSupabaseConfigured) return [];
-  const supabase = createSupabasePublicClient();
+  // The signed-in editor's session, not the anonymous client: RLS shows anon
+  // only published developments, so every draft — a project saved in the
+  // builder but not yet published — was missing from this list while its slug
+  // was already taken (client, Oct 2026). Admin-only caller.
+  const supabase = await createSupabaseServerClient();
 
   const [{ data: rows }, { data: pages }] = await Promise.all([
     supabase
@@ -307,7 +312,9 @@ export async function countSubPagesByKind(): Promise<
   const sections = LIBRARY_SECTIONS.length;
   const search = SEARCH_HEADERS.length;
   if (!isSupabaseConfigured) return { section: sections, search };
-  const supabase = createSupabasePublicClient();
+  // Staff session, so the development count includes drafts — the list it
+  // links to shows them. Admin-only callers.
+  const supabase = await createSupabaseServerClient();
   const [developments, areas, developers, listings, advisors] =
     await Promise.all([
       supabase.from("developments").select("id", { count: "exact", head: true }),
