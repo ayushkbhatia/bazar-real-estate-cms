@@ -22,6 +22,10 @@ import {
 import { unknownTokenIssues } from "@/lib/master-pages/tokens";
 import { AGENTS_PAGE_TOKENS } from "@/lib/master-pages/sections/agents";
 import {
+  AREAS_PAGE_TOKENS,
+  areaCardSubtitleIssues,
+} from "@/lib/master-pages/area-card-subtitle";
+import {
   calculatorCopyIssues,
   calculatorCopyStoredValues,
 } from "@/lib/master-pages/sections/mortgage-calculator-copy";
@@ -31,7 +35,8 @@ const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 /**
  * The `{token}`s a master page fills, for the pages that fill any.
  *
- * Only `/agents` does — its WhatsApp message names each advisor. A token the
+ * `/agents` (its WhatsApp message names each advisor) and `/areas` (each card
+ * carries its live count). A token the
  * page does not fill would go live as typed, braces and all, so the save is
  * refused first, as the shared-copy documents refuse theirs. Pages with no
  * entry are not checked: their copy has never been templated, and a brace in
@@ -39,6 +44,8 @@ const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
  */
 const PAGE_TOKENS: Partial<Record<MasterPageKey, readonly string[]>> = {
   agents: AGENTS_PAGE_TOKENS,
+  // The /areas cards' subtitles carry the live listing count.
+  areas: AREAS_PAGE_TOKENS,
 };
 
 export type SaveMasterPageResult =
@@ -139,6 +146,17 @@ export async function saveMasterPage(
         issues: tokenIssues.map(
           (i) => `${i.section} · ${i.field}: ${i.message}`,
         ),
+      };
+    }
+  }
+
+  if (key === "areas") {
+    const subtitleIssues = areaCardSubtitleIssues(result.sections);
+    if (subtitleIssues.length > 0) {
+      return {
+        status: "invalid",
+        message: "A card's subtitle would lose its live count.",
+        issues: subtitleIssues.map((i) => `${i.section} · ${i.field}: ${i.message}`),
       };
     }
   }

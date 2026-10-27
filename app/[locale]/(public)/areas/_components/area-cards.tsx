@@ -4,6 +4,7 @@ import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
+import { areaCardSubtitle } from "@/lib/master-pages/area-card-subtitle";
 
 /**
  * Curated "marquee" order for the index cards — the recognisable lifestyle
@@ -31,7 +32,7 @@ export const AREAS_CARD_COUNT = 8;
 export type AreaCard = {
   enabled?: boolean;
   name?: string | null;
-  /** The line under the name, from the CMS. Blank ⇒ the live count. */
+  /** The line under the name, from the CMS; `{count}` is the live count. Blank ⇒ the catalogue line. */
   subtitle?: string | null;
   href?: string | null;
   slug?: string | null;
@@ -71,8 +72,9 @@ export async function AreaCards({
           key: `${slug || "card"}-${i}`,
           href: c.href ?? (slug ? `/areas/${slug}` : "/areas"),
           name: c.name ?? slug,
+          // An editor's wording with the live count in it, else the catalogue.
           countLabel:
-            c.subtitle?.trim() ||
+            areaCardSubtitle(c.subtitle, count) ??
             (count !== undefined
               ? t("cards.propertiesForSale", { count })
               : t("cards.exploreHomes")),
