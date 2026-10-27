@@ -1546,7 +1546,7 @@ const AREAS: MasterPageDef = {
       label: "Abu Dhabi Locations",
       description: "The 4×2 grid of clickable area cards below the hero.",
       dataNote:
-        "Listing counts always come from live data. Leave the card list empty to show the eight marquee areas automatically.",
+        "Each card's subtitle reads its live count (\"10 Properties for Sale\") unless you write one of your own, in English and Arabic. Leave the card list empty to show the eight marquee areas automatically.",
       fields: [
         {
           key: "cards",
@@ -1559,6 +1559,13 @@ const AREAS: MasterPageDef = {
           fields: [
             toggle("enabled", "Show this card"),
             text("name", "Title", { max: 80 }),
+            // The line under the title. Blank reads the live count.
+            text("subtitle", "Subtitle", {
+              max: 60,
+              optional: true,
+              placeholder: "10 Properties for Sale",
+              placeholderAr: "10 عقارات للبيع",
+            }),
             link("href", "Link"),
             image("image", "Image"),
             text("slug", "Area slug", {

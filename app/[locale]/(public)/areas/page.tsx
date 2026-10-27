@@ -123,6 +123,7 @@ export default async function AreasPage({
         cards={list<Record<string, unknown>>(cardsV, "cards").map((c) => ({
           enabled: c.enabled !== false,
           name: s(c.name),
+          subtitle: s(c.subtitle),
           href: s(c.href),
           slug: s(c.slug),
           ...imageProps(c.image),

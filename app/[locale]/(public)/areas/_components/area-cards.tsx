@@ -31,6 +31,8 @@ export const AREAS_CARD_COUNT = 8;
 export type AreaCard = {
   enabled?: boolean;
   name?: string | null;
+  /** The line under the name, from the CMS. Blank ⇒ the live count. */
+  subtitle?: string | null;
   href?: string | null;
   slug?: string | null;
   imageUrl?: string | null;
@@ -70,9 +72,10 @@ export async function AreaCards({
           href: c.href ?? (slug ? `/areas/${slug}` : "/areas"),
           name: c.name ?? slug,
           countLabel:
-            count !== undefined
+            c.subtitle?.trim() ||
+            (count !== undefined
               ? t("cards.propertiesForSale", { count })
-              : t("cards.exploreHomes"),
+              : t("cards.exploreHomes")),
           imgLabel: c.imageLabel ?? slug,
           imgUrl: c.imageUrl,
           imgAlt: c.imageAlt,
