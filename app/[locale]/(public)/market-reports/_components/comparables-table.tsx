@@ -88,10 +88,10 @@ export function ComparablesTable({ rows, locale }: Props) {
                       <td className="px-4 py-3">
                         {r.bedrooms != null ? r.bedrooms : "—"}
                       </td>
-                      <td className="px-4 py-3 mono text-[12px]">
+                      <td className="px-4 py-3 mono-en text-[12px]">
                         <AreaText ft2={r.built_up_ft2} />
                       </td>
-                      <td className="px-4 py-3 text-end mono">
+                      <td className="px-4 py-3 text-end mono-en">
                         <PriceText aed={r.price_aed} />
                       </td>
                       <td className="px-4 py-3 text-end mono text-bz-muted">

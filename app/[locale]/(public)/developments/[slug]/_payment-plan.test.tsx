@@ -69,7 +69,7 @@ describe("PaymentPlanSection · pricing dropdown", () => {
     const { container } = draw();
     const figures = () =>
       within(container.querySelector("ol")!).getAllByText(/\d/, {
-        selector: ".mono",
+        selector: ".mono-en",
       });
     const before = figures().map((n) => n.textContent);
     fireEvent.change(select(), { target: { value: "type-t2" } });

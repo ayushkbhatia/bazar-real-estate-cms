@@ -1173,14 +1173,26 @@ html .maplibregl-map {
   /* Follows body unless set apart — an eyebrow is a UI label, and a client who
      chose a body face means it to cover labels too. */
   --bz-font-ar-eyebrow: var(--bz-font-ar-body);
-  /* Latin by default: `.mono` only ever carries reference codes, prices and
-     dates, all of which are Latin-typeset. Pointing it at an Arabic family is
-     an opt-in for a face that draws Arabic-Indic numerals. */
+  /* Latin by default: `.mono` carries reference codes, prices and dates.
+     Pointing it at an Arabic family is an opt-in for a face that draws
+     Arabic-Indic numerals. The Arabic WORDS mono text carries on /ar
+     ("درهم", "المرجع", a month name) come from the body face through the
+     `:lang(ar)` stack below. */
   --bz-font-ar-mono: var(--bz-font-mono);
 }
 
 :lang(ar) {
   --bz-font-sans: var(--bz-font-ar-body);
+  /* JetBrains Mono has no Arabic glyphs. Every Arabic letter inside `.mono`
+     or Tailwind's `font-mono` — a price's "درهم", the "المرجع" label, a
+     date's month — fell through to the next family that has them:
+     next/font's "JetBrains Mono Fallback", which is `local("Arial")` scaled
+     to 134%. That was the "old font" (client, Oct 2026). So on /ar the stack
+     names JetBrains Mono itself (not `--font-jetbrains-mono`, which carries
+     that fallback) and puts the site's Arabic body face straight after it:
+     Latin digits keep the mono rhythm, and Arabic letters are drawn in the
+     master Arabic face, glyph by glyph, on every page, existing and future. */
+  --bz-font-mono: "JetBrains Mono", var(--bz-font-ar-body);
   /* Instrument Serif has zero Arabic glyphs — left alone, every display
      heading silently falls back to whatever the device happens to have, which
      is how an Arabic page ends up looking different on every machine. */

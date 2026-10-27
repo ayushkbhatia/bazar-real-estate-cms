@@ -55,7 +55,7 @@ export function PreferencesControls() {
 
                       `min-w-9`, not `w-9`, so a wider label is not clipped. */}
                   {locale === "ar" ? null : (
-                    <span className="mono text-[12px] min-w-9 inline-block text-start text-bz-ink-2">
+                    <span className="mono-en text-[12px] min-w-9 inline-block text-start text-bz-ink-2">
                       {labels.currency[c]}
                     </span>
                   )}

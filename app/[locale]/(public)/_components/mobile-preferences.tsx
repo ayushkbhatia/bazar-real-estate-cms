@@ -39,7 +39,7 @@ export function MobilePreferences() {
             {t("currencyAndUnits")}
           </span>
           {/* Same dictionary as the desktop pill — see the note there. */}
-          <span className="mono text-[12px] text-bz-muted">
+          <span className="mono-en text-[12px] text-bz-muted">
             {prefs.labels.currency[prefs.currency]} ·{" "}
             {prefs.labels.area[prefs.area_unit]}
           </span>

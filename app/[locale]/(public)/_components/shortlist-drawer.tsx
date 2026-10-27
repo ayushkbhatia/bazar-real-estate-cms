@@ -607,7 +607,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
                             {item.area_name ?? copy.area_fallback}
                           </div>
                           <div className="mt-1 flex items-baseline justify-between gap-2">
-                            <span className="mono text-[12.5px] text-bz-ink">
+                            <span className="mono-en text-[12.5px] text-bz-ink">
                               {formatPrice(item.price_aed, prefs)}
                             </span>
                             <span className="text-[11px] text-bz-ink-2">

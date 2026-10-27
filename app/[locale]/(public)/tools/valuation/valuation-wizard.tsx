@@ -344,7 +344,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
                 {t(`valuation.step.${STEP_KEYS[step]}`)}
               </h2>
             </div>
-            <span className="mono text-[11px] text-bz-muted">
+            <span className="mono-en text-[11px] text-bz-muted">
               {t("valuation.stepCounter", { n: step + 1 })}
             </span>
           </div>
@@ -986,7 +986,7 @@ function LivePreview({
           </div>
         </div>
         {estimate ? (
-          <div className="mono text-[10.5px] text-white/70">
+          <div className="mono-en text-[10.5px] text-white/70">
             {t("valuation.rangeBadge", {
               pct: Math.round(estimate.basis.rangeFraction * 100),
               confidence: t(

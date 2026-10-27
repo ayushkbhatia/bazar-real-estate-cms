@@ -111,7 +111,7 @@ export default async function CareersPage({
                     <span>·</span>
                     <span>{role.type}</span>
                     <span>·</span>
-                    <span className="mono">
+                    <span className="mono-en">
                       {t("posted", {
                         date: formatPublishedDate(role.posted, locale),
                       })}

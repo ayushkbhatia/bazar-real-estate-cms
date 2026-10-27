@@ -228,7 +228,14 @@ export async function listPublishedProperties(opts: {
         config: "english",
       });
     }
-    if (filters.type) query = query.eq("type", filters.type);
+    // "Commercial" in the Type menu is the commercial SEGMENT, whatever the
+    // listing's own type: a commercial plot is `type: land`, an office
+    // floor `type: apartment`, and matching `type = 'commercial'` alone hid
+    // them from /buy/search?type=commercial (client, Oct 2026). Listings
+    // still typed `commercial` are kept.
+    if (filters.type === "commercial") {
+      query = query.or("type.eq.commercial,segment.eq.commercial");
+    } else if (filters.type) query = query.eq("type", filters.type);
     // The segmented control above the results. Absent means both, which is
     // what "no filter" has to mean — a search route defaulting to residential
     // would hide the commercial stock from anyone who never touched the
