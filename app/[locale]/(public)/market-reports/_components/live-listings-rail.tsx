@@ -95,7 +95,7 @@ export function LiveListingsRail({
                     {r.area_name ?? area_name}
                   </div>
                   <div className="mt-3 flex items-baseline justify-between gap-2">
-                    <span className="mono text-[13.5px] text-bz-ink">
+                    <span className="mono-en text-[13.5px] text-bz-ink">
                       <PriceText aed={r.price_aed} />
                     </span>
                     <span className="text-[11px] text-bz-ink-2">

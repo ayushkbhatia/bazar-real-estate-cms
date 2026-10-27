@@ -60,13 +60,14 @@ export function PropertyActionRow({
 
   return (
     <div className="px-4 md:px-12 pt-6 flex items-center justify-between gap-4 flex-wrap">
-      {/* `font-mono`, not `.mono`, on the row: under `:lang(ar)` `.mono` also
-          forces `direction: ltr`, which put the Arabic label on the wrong side
-          of its own reference. Same face either way; the reference carries its
-          own isolate instead, so it still reads `BAZ-AD-09790`. */}
-      <div className="font-mono text-[11px] uppercase tracking-wider text-bz-muted">
+      {/* `.mono-en` on the row: mono in English, and on /ar the label in the
+          site's Arabic face, in the page's direction (`.mono` is LTR there,
+          which put the label on the wrong side of its reference). The
+          reference keeps the mono face and its own isolate, so it still reads
+          `BAZ-AD-09790`. */}
+      <div className="mono-en text-[11px] uppercase tracking-wider text-bz-muted">
         {t("actions.reference")} ·{" "}
-        <bdi className="text-bz-ink">{reference}</bdi>
+        <bdi className="font-mono text-bz-ink">{reference}</bdi>
       </div>
       <div className="flex items-center gap-2">
         <CompareButton propertyId={propertyId} />

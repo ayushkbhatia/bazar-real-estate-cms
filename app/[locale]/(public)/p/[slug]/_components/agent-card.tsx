@@ -109,12 +109,12 @@ export function AgentCard({
             </div>
           ) : null}
           {advisor.brn ? (
-            // `font-mono` rather than `.mono` for the same reason as the REF
-            // line in `action-row.tsx`: `.mono` is LTR under `:lang(ar)`, and
-            // the label is Arabic there.
-            <div className="mt-2 font-mono tracking-normal text-[11px] text-bz-muted">
+            // `.mono-en` for the same reason as the REF line in
+            // `action-row.tsx`: the label is Arabic on /ar, in the Arabic face;
+            // the number keeps the mono face.
+            <div className="mt-2 mono-en tracking-normal text-[11px] text-bz-muted">
               {copy.brn} ·{" "}
-              <bdi className="text-bz-ink-2">{advisor.brn}</bdi>
+              <bdi className="font-mono text-bz-ink-2">{advisor.brn}</bdi>
             </div>
           ) : null}
         </div>

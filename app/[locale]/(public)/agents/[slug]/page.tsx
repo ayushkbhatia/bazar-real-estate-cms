@@ -258,7 +258,7 @@ export default async function AgentProfilePage({
                   ) : null}
                   <figcaption className="mt-auto pt-2 text-[12.5px] text-bz-muted">
                     {r.author_name ?? "Bazar client"} ·{" "}
-                    <span className="mono">
+                    <span className="mono-en">
                       {new Date(r.created_at).toLocaleDateString(
                         localeDateTag(locale),
                         { year: "numeric", month: "short" },
