@@ -21,7 +21,12 @@ import {
   AREAS_CARD_COUNT,
   MARQUEE_SLUGS,
 } from "@/app/[locale]/(public)/areas/_components/area-cards";
-import { MasterPageEditor } from "./_editor";
+import { MasterPageEditor, type SectionActions } from "./_editor";
+import { getLibrarySectionContent } from "@/lib/queries/content-sections";
+import {
+  resetLibrarySection,
+  saveLibrarySection,
+} from "../../sub/section/_actions";
 import { SearchAppearanceCard } from "../../../_fields/search-appearance";
 import { MASTER_PAGE_SEO_DEFAULTS } from "@/lib/master-pages/seo-defaults";
 import {
@@ -37,6 +42,12 @@ import {
 } from "../../../_fields/record-seeds";
 
 export const dynamic = "force-dynamic";
+
+// Passed by reference: see the same constant on the library section route.
+const LIBRARY_ACTIONS: SectionActions = {
+  save: saveLibrarySection,
+  reset: resetLibrarySection,
+};
 
 type PageProps = { params: Promise<{ key: string }> };
 
@@ -70,7 +81,7 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   const def = getMasterPage(key);
   if (!def) notFound();
 
-  const [content, media, areas, developments, properties, seo, chrome] =
+  const [content, media, areas, developments, properties, seo, chrome, partnerCards] =
     await Promise.all([
     // Bilingual: the editor needs both sides of every field at once.
     getMasterPageContent(key, "bilingual"),
@@ -81,6 +92,11 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     key === "home" ? listPropertyOptions() : Promise.resolve([]),
     getMasterPageSearchAppearance(def.key),
     getSearchPreviewChrome(),
+    // The partner cards are the site's shared partner list (Sections →
+    // Partner ecosystem), drawn here too so /partners is edited in one place.
+    key === "partners"
+      ? getLibrarySectionContent("partners", "bilingual")
+      : Promise.resolve(null),
   ]);
 
   const seoDefaults = MASTER_PAGE_SEO_DEFAULTS[def.key];
@@ -198,6 +214,38 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
             values: s.values,
           }))}
         />
+        {partnerCards ? (
+          <div id="partner-cards" className="flex flex-col gap-3 scroll-mt-24">
+            <div className="rounded-lg border border-bz-border bg-bz-surface-2 p-4">
+              <h2 className="text-[13.5px] font-medium">Partner cards</h2>
+              <p className="mt-1 text-[12.5px] text-bz-ink-2 leading-relaxed">
+                Every card on this page — the institution&apos;s name, the line
+                under it, its group and its logo, in English and Arabic. This
+                is the site&apos;s one partner list: the same cards ride the
+                logo strip on the home page and /about, so a change here shows
+                there too. Saved separately from the sections above.
+              </p>
+            </div>
+            <MasterPageEditor
+              pageKey="partners"
+              pageLabel="Partner cards"
+              path={def.path}
+              usingDefaults={partnerCards.usingDefaults}
+              media={media}
+              seeds={{}}
+              actions={LIBRARY_ACTIONS}
+              allowReorder={false}
+              initial={[
+                {
+                  key: partnerCards.section.key,
+                  def: partnerCards.section.def,
+                  enabled: partnerCards.section.enabled,
+                  values: partnerCards.section.values,
+                },
+              ]}
+            />
+          </div>
+        ) : null}
         {/*
           Below the sections rather than above them. The sections are what an
           editor came here to change; the search appearance is a once-a-quarter

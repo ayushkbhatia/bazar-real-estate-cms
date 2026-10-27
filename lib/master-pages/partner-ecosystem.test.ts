@@ -93,8 +93,9 @@ describe("the partner ecosystem section", () => {
     const partnersPage = getMasterPage("partners")!;
     for (const key of PARTNER_CATEGORIES) {
       const band = partnersPage.sections.find((s) => s.key === key)!;
+      // The list is drawn at the foot of the Partners editor itself.
       expect(band.dataLink?.href, `${key} band has no link to the list`).toBe(
-        `/admin/pages/sub/section/${PARTNERS.key}`,
+        "/admin/pages/master/partners#partner-cards",
       );
     }
   });
