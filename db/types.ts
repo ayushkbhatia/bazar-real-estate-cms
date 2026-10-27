@@ -2691,6 +2691,47 @@ export type Database = {
           },
         ]
       }
+      mortgage_case_documents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          removed_at: string | null
+          removed_by: string | null
+          request_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          removed_at?: string | null
+          removed_by?: string | null
+          request_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          removed_at?: string | null
+          removed_by?: string | null
+          request_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mortgage_case_documents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "mortgage_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mortgage_consents: {
         Row: {
           given_at: string
@@ -2941,6 +2982,7 @@ export type Database = {
       }
       mortgage_files: {
         Row: {
+          case_document_id: string | null
           document_id: string | null
           draft_id: string | null
           id: string
@@ -2960,6 +3002,7 @@ export type Database = {
           uploaded_at: string
         }
         Insert: {
+          case_document_id?: string | null
           document_id?: string | null
           draft_id?: string | null
           id?: string
@@ -2979,6 +3022,7 @@ export type Database = {
           uploaded_at?: string
         }
         Update: {
+          case_document_id?: string | null
           document_id?: string | null
           draft_id?: string | null
           id?: string
@@ -2998,6 +3042,13 @@ export type Database = {
           uploaded_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "mortgage_files_case_document_id_fkey"
+            columns: ["case_document_id"]
+            isOneToOne: false
+            referencedRelation: "mortgage_case_documents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "mortgage_files_document_id_fkey"
             columns: ["document_id"]
@@ -3031,6 +3082,38 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      mortgage_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mortgage_notes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "mortgage_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mortgage_notifications: {
         Row: {
@@ -5091,6 +5174,54 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      mortgage_add_case_document: {
+        Args: {
+          p_description: string
+          p_expected_updated_at?: string
+          p_file_id: string
+          p_mime: string
+          p_original_name: string
+          p_request_id: string
+          p_size_bytes: number
+          p_title: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          removed_at: string | null
+          removed_by: string | null
+          request_id: string
+          title: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "mortgage_case_documents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      mortgage_add_note: {
+        Args: {
+          p_body: string
+          p_expected_updated_at?: string
+          p_request_id: string
+        }
+        Returns: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "mortgage_notes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mortgage_allocate_reference: { Args: { p_at?: string }; Returns: string }
       mortgage_assert_reviewable: {
         Args: {
@@ -5271,6 +5402,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      mortgage_complete_case_document: {
+        Args: { p_file_id: string; p_page_count?: number; p_sha256: string }
+        Returns: undefined
       }
       mortgage_consultation_held: {
         Args: { p_expected_updated_at?: string; p_request_id: string }
@@ -5743,6 +5878,13 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      mortgage_remove_case_document: {
+        Args: { p_case_document_id: string; p_expected_updated_at?: string }
+        Returns: {
+          file_id: string
+          storage_key: string
+        }[]
       }
       mortgage_request_reupload: {
         Args: {

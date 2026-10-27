@@ -18,6 +18,9 @@ import { createTranslator } from "next-intl";
 export const CMS_MESSAGES = {
   "activity": {
     "accepted": "{actor} accepted {document}",
+    "caseDocAdded": "{actor} uploaded a case document",
+    "caseDocRemoved": "{actor} removed a case document",
+    "noteAdded": "{actor} added an internal note",
     "assigned": {
       "invite": "Sent the pre-approval link",
       "roundRobin": "Round-robin · mortgage team",
@@ -594,6 +597,38 @@ export const CMS_MESSAGES = {
   "owner": {
     "unassigned": "Unassigned"
   },
+  "internal": {
+    "notes": {
+      "title": "Internal notes",
+      "help": "Only the mortgage team sees these. The applicant never does.",
+      "placeholder": "Add a note for the team…",
+      "submit": "Add note",
+      "saved": "Note added.",
+      "empty": "No notes yet.",
+      "by": "{name} · {when}"
+    },
+    "docs": {
+      "title": "Case documents",
+      "help": "Files the team adds to this case, up to {max}. PDF, JPEG or PNG, up to 25 MB.",
+      "count": "{count} of {max}",
+      "titleLabel": "Title",
+      "descriptionLabel": "Short description",
+      "fileLabel": "File",
+      "submit": "Upload document",
+      "uploading": "Uploading…",
+      "saved": "Document uploaded.",
+      "removed": "Document removed.",
+      "remove": "Remove",
+      "removeConfirm": "Remove “{title}”? Its file is deleted.",
+      "open": "Open",
+      "download": "Download",
+      "empty": "No case documents yet.",
+      "full": "This case already holds {max} documents.",
+      "pending": "The upload didn't finish",
+      "badFile": "That file couldn't be used. Upload a PDF, JPEG or PNG under 25 MB, without a password.",
+      "by": "Added by {name} · {when}"
+    }
+  },
   "reassign": {
     "label": "New owner",
     "submit": "Reassign",
@@ -702,6 +737,36 @@ export const CMS_MESSAGES = {
 
 /** Keys written here because the designs don't cover them (CMS-2 and friends). */
 export const PENDING_CMS_COPY: readonly string[] = [
+  // Internal notes and case documents (0171, client, Oct 2026).
+  "activity.caseDocAdded",
+  "activity.caseDocRemoved",
+  "activity.noteAdded",
+  "internal.notes.title",
+  "internal.notes.help",
+  "internal.notes.placeholder",
+  "internal.notes.submit",
+  "internal.notes.saved",
+  "internal.notes.empty",
+  "internal.notes.by",
+  "internal.docs.title",
+  "internal.docs.help",
+  "internal.docs.count",
+  "internal.docs.titleLabel",
+  "internal.docs.descriptionLabel",
+  "internal.docs.fileLabel",
+  "internal.docs.submit",
+  "internal.docs.uploading",
+  "internal.docs.saved",
+  "internal.docs.removed",
+  "internal.docs.remove",
+  "internal.docs.removeConfirm",
+  "internal.docs.open",
+  "internal.docs.download",
+  "internal.docs.empty",
+  "internal.docs.full",
+  "internal.docs.pending",
+  "internal.docs.badFile",
+  "internal.docs.by",
   "propertyPrice.chip",
   "field.language",
   "language.ar",
