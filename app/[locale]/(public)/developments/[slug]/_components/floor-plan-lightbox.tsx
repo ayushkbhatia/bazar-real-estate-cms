@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import { inlineArrowStep } from "@/lib/dom/inline-arrows";
@@ -110,6 +111,7 @@ export function FloorPlanLightbox({
   onClose: () => void;
 }) {
   const rtl = useIsRtl();
+  const t = useTranslations("development.floorPlans");
   const [zoomed, setZoomed] = useState(false);
   // Keyed by plan id rather than reset per navigation: stepping back to a plan
   // should not re-fall-back to the square frame it has already measured.
@@ -212,7 +214,7 @@ export function FloorPlanLightbox({
             <button
               type="button"
               onClick={() => setZoomed((z) => !z)}
-              aria-label={zoomed ? "Fit to screen" : "View at full size"}
+              aria-label={zoomed ? t("fit") : t("full")}
               className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
             >
               {zoomed ? (
@@ -224,7 +226,7 @@ export function FloorPlanLightbox({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close floor plan"
+              aria-label={t("close")}
               className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
             >
               <X size={18} strokeWidth={1.8} />
@@ -239,7 +241,7 @@ export function FloorPlanLightbox({
               <button
                 type="button"
                 onClick={prev}
-                aria-label="Previous layout"
+                aria-label={t("prev")}
                 className="absolute start-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
               >
                 <ChevronLeft size={20} strokeWidth={1.8} />
@@ -247,7 +249,7 @@ export function FloorPlanLightbox({
               <button
                 type="button"
                 onClick={next}
-                aria-label="Next layout"
+                aria-label={t("next")}
                 className="absolute end-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
               >
                 <ChevronRight size={20} strokeWidth={1.8} />
@@ -261,7 +263,7 @@ export function FloorPlanLightbox({
             <button
               type="button"
               onClick={() => setZoomed(true)}
-              aria-label={`${current.label} — view at full size`}
+              aria-label={t("viewFull", { label: current.label })}
               className="relative w-[min(96vw,1600px)] h-[min(calc(88vh/var(--bz-zoom,1)),1000px)] cursor-zoom-in"
             >
               {/* The card's own variant: already decoded, so it paints on the
@@ -304,18 +306,18 @@ export function FloorPlanLightbox({
             </p>
             <p className="mt-1 text-[11.5px] text-white/60">
               {total > 1 ? (
-                <span className="mono">
+                <span className="mono-en">
                   {index + 1} / {total} ·{" "}
                 </span>
               ) : null}
-              {zoomed ? "Drag to pan · " : ""}
+              {zoomed ? t("drag") : ""}
               <a
                 href={current.src}
                 target="_blank"
                 rel="noreferrer"
                 className="underline hover:text-white"
               >
-                Open the original
+                {t("original")}
               </a>
             </p>
           </div>

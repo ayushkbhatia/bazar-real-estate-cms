@@ -108,5 +108,24 @@
   "floorplanGate": {
     "request": "Request layout",
     "view": "See the plan"
+  },
+  "floorPlans": {
+    "eyebrow": "Units",
+    "heading": "Unit types & layouts",
+    "intro": "Pick a unit type to see the layouts {name} offers it in.",
+    "tabs": "Unit types",
+    "open": "{label} — open full screen",
+    "studio": "Studio",
+    "beds": "{count, plural, one {# bed} other {# bed}}",
+    "baths": "{count, plural, one {# bath} other {# bath}}",
+    "from": "from {price}",
+    "fit": "Fit to screen",
+    "full": "View at full size",
+    "close": "Close floor plan",
+    "prev": "Previous layout",
+    "next": "Next layout",
+    "viewFull": "{label} — view at full size",
+    "drag": "Drag to pan · ",
+    "original": "Open the original"
   }
 }
