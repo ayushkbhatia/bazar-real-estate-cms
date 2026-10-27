@@ -66,7 +66,7 @@ export function AffordabilitySection({
             <Input
               id="income"
               inputMode="numeric"
-              className="mt-1.5 mono text-[18px] h-12"
+              className="mt-1.5 mono-en text-[18px] h-12"
               value={toInput(annualIncome)}
               onChange={(e) => onIncome(Math.max(0, fromInput(e.target.value)))}
               aria-label={t("mortgage.annualIncomeAria", {

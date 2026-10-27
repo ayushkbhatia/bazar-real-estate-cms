@@ -198,7 +198,7 @@ export function PreApprovalSection({
                       <dt className="text-[11.5px] text-bz-muted">
                         {t(`mortgage.${key}`)}
                       </dt>
-                      <dd className="mono text-[13.5px] text-bz-ink mt-0.5">
+                      <dd className="mono-en text-[13.5px] text-bz-ink mt-0.5">
                         {value}
                       </dd>
                     </div>

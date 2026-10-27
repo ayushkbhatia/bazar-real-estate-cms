@@ -85,7 +85,7 @@ export function CashToCloseSection({ copy, prefs, closing, pdf }: Props) {
                 <td className="py-2.5 text-bz-ink">
                   {t(`mortgage.cashLine.${line.key}`, { pct: line.pct ?? "" })}
                 </td>
-                <td className="py-2.5 text-end mono">
+                <td className="py-2.5 text-end mono-en">
                   {money(line.amountAed, prefs)}
                 </td>
                 <td className="py-2.5 text-end text-[11.5px] text-bz-muted">
@@ -100,7 +100,7 @@ export function CashToCloseSection({ copy, prefs, closing, pdf }: Props) {
                 {t("mortgage.cashTotal")}
               </td>
               <td
-                className="py-3 px-2 text-end mono text-[16px] font-medium text-bz-navy"
+                className="py-3 px-2 text-end mono-en text-[16px] font-medium text-bz-navy"
                 data-testid="cash-to-close-total"
               >
                 {money(closing.totalAed, prefs)}

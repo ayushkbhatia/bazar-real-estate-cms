@@ -100,7 +100,9 @@ export function DbrGauge({
             fontSize="28"
             fontWeight="500"
             fill="var(--bz-ink, #13110f)"
-            style={{ fontFamily: "var(--bz-font-mono, ui-monospace)" }}
+            // The site face, as every other figure in the calculator now is:
+            // the mono face has no Arabic and drew /ar's numerals apart.
+            style={{ fontFamily: "var(--bz-font-sans)" }}
           >
             {pct}%
           </text>

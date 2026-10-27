@@ -67,7 +67,7 @@ export function CompareSection({ copy, prefs, scenarios }: Props) {
             </div>
             <div
               className={cn(
-                "mono text-[11.5px] mt-1",
+                "mono-en text-[11.5px] mt-1",
                 s.active ? "text-white/70" : "text-bz-muted",
               )}
             >
