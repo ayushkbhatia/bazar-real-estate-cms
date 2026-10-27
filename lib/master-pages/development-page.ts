@@ -349,6 +349,20 @@ export const DEVELOPMENT_PAGE_COPY_SECTIONS: SectionDef[] = [
     "The schedule itself comes from the project's record.",
   ),
   copyBand(
+    "unit-plans",
+    "Units & floor plans",
+    "Unit-type buttons and the layouts under each.",
+    [sharedEyebrow(""), sharedHeading(""), sharedIntro(TOKEN_HELP.name)],
+    {
+      eyebrow: "Browse the Options",
+      eyebrow_ar: "تصفح الخيارات",
+      heading: "Units & Floor Plans",
+      heading_ar: "الوحدات ومخططات الطوابق",
+      intro: "Choose the layout that best suits your lifestyle.",
+      intro_ar: "اختر المخطط الذي يناسب أسلوب حياتك.",
+    },
+  ),
+  copyBand(
     "units",
     "Units",
     "The availability table.",
@@ -419,20 +433,6 @@ export const DEVELOPMENT_PAGE_COPY_SECTIONS: SectionDef[] = [
     },
   ),
   copyBand(
-    "unit-plans",
-    "Units & floor plans",
-    "Unit-type buttons and the layouts under each.",
-    [sharedEyebrow(""), sharedHeading(""), sharedIntro(TOKEN_HELP.name)],
-    {
-      eyebrow: "Browse the Options",
-      eyebrow_ar: "تصفح الخيارات",
-      heading: "Units & Floor Plans",
-      heading_ar: "الوحدات ومخططات الطوابق",
-      intro: "Choose the layout that best suits your lifestyle.",
-      intro_ar: "اختر المخطط الذي يناسب أسلوب حياتك.",
-    },
-  ),
-  copyBand(
     "location",
     "Location",
     "The map and its surroundings.",
@@ -448,6 +448,20 @@ export const DEVELOPMENT_PAGE_COPY_SECTIONS: SectionDef[] = [
       intro: "See where the community is located and what’s nearby.",
       intro_ar: "تعرّف على موقع المجتمع وما يحيط به.",
     },
+  ),
+  copyBand(
+    "developer",
+    "Developer",
+    "The label and heading above the developer's card.",
+    [sharedEyebrow(""), sharedHeading("")],
+    {
+      eyebrow: "Behind the Project",
+      eyebrow_ar: "وراء المشروع",
+      heading: "Developer",
+      // The glossary binding. A bare مطور is a software one.
+      heading_ar: "المطور العقاري",
+    },
+    "The card itself — name, founding year, profile copy — comes from the developer's record.",
   ),
   copyBand(
     "nearby",
@@ -467,20 +481,6 @@ export const DEVELOPMENT_PAGE_COPY_SECTIONS: SectionDef[] = [
       intro_ar: "استكشف مجموعة من المشاريع القريبة.",
     },
     "The cards come from the neighbours picked on the project, or from the same area's published projects.",
-  ),
-  copyBand(
-    "developer",
-    "Developer",
-    "The label and heading above the developer's card.",
-    [sharedEyebrow(""), sharedHeading("")],
-    {
-      eyebrow: "Behind the Project",
-      eyebrow_ar: "وراء المشروع",
-      heading: "Developer",
-      // The glossary binding. A bare مطور is a software one.
-      heading_ar: "المطور العقاري",
-    },
-    "The card itself — name, founding year, profile copy — comes from the developer's record.",
   ),
   copyBand(
     "other-projects",

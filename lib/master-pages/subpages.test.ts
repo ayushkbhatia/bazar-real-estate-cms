@@ -52,13 +52,12 @@ describe("development sub-pages", () => {
     }
   });
 
-  it("puts units & floor plans between the features and the map", () => {
-    // The design places the unit-type buttons under Named features and above
-    // the map. An editor can move it afterwards; this is where it starts, and
-    // migration 0080 splices it into the same slot in already-saved documents.
+  it("starts in the house order: units & floor plans 6th, developer 12th", () => {
+    // Client, Oct 2026. An editor can move sections afterwards; this is where a
+    // new project starts.
     const keys = DEVELOPMENT_SECTIONS.map((s) => s.key);
-    expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("features") + 1);
-    expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("location") - 1);
+    expect(keys.indexOf("unit-plans")).toBe(5);
+    expect(keys.indexOf("developer")).toBe(11);
   });
 
   it("lets the units & floor plans section be hidden and moved", () => {

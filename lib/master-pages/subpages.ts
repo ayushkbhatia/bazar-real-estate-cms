@@ -16,11 +16,10 @@ import type {
  * once per route. Development detail pages are the first kind.
  *
  * They reuse the master-page machinery wholesale — same section documents,
- * same resolve/validate, same `pages.blocks` storage — with one difference:
- * the section *order* is fixed by the template. The development page carries an
- * anchor sub-nav whose links point at section ids in document order, so
- * shuffling sections would silently break those links. Sections can still be
- * switched off, and their copy and images edited.
+ * same resolve/validate, same `pages.blocks` storage. A page's stored order is
+ * the order it renders in, and the sub-nav follows it. The order below is the
+ * house standard (client, Oct 2026: Units & floor plans 6th, Developer 12th)
+ * and is what a project with no saved page — a new draft — gets.
  */
 
 export const SUBPAGE_SLUG_PREFIX = "subpage/";
@@ -373,6 +372,15 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     "Instalment schedule and calculator.",
     { dataNote: "The schedule comes from the development record." },
   ),
+  copySection(
+    "unit-plans",
+    "Units & floor plans",
+    "Unit-type buttons and the layouts under each.",
+    {
+      dataNote:
+        "Types and layouts come from the project's unit types — edit them in “Units & floor plans” above. Up to four layouts show per type.",
+    },
+  ),
   copySection("units", "Units", "Availability table.", {
     dataNote: "Rows come from the development's units.",
   }),
@@ -412,16 +420,11 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     },
   ),
   copySection("features", "Features", "Amenity and finish highlights."),
-  copySection(
-    "unit-plans",
-    "Units & floor plans",
-    "Unit-type buttons and the layouts under each.",
-    {
-      dataNote:
-        "Types and layouts come from the project's unit types — edit them in “Units & floor plans” above. Up to four layouts show per type.",
-    },
-  ),
   copySection("location", "Location", "Map and surroundings."),
+  copySection("developer", "Developer", "Profile of the developer behind it.", {
+    dataNote:
+      "The card itself — name, founding year, profile copy — comes from the developer record.",
+  }),
   copySection(
     "nearby",
     "Nearby Developments",
@@ -431,10 +434,6 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
         "Projects come from the neighbours picked in Page content — or, left empty, the same area's published developments.",
     },
   ),
-  copySection("developer", "Developer", "Profile of the developer behind it.", {
-    dataNote:
-      "The card itself — name, founding year, profile copy — comes from the developer record.",
-  }),
   copySection(
     "other-projects",
     "Other projects",
