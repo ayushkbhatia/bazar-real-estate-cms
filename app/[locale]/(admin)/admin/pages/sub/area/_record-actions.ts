@@ -410,10 +410,10 @@ export async function deleteArea(
   revalidateLocalised("/areas");
   revalidateLocalised(`/areas/${record.slug}`);
   revalidatePath("/sitemap.xml");
-  // Salesforce's area picklists can't be told: the Website Locations API adds
-  // and renames only. 0168 records the delete as a held event for whoever
-  // retires the value there.
+  // The delete queued a DELETE for Salesforce's picklists (0172); send it now.
+  // Salesforce deactivates the value; its listings keep theirs.
   const inSalesforce = record.kind === "area" || record.kind === "sub_community";
+  if (inSalesforce) syncLocationsAfterSave();
   const unpublished = describeUnpublished(usage);
   return {
     status: "ok",
@@ -423,7 +423,7 @@ export async function deleteArea(
         ? `Its ${unpublished} ${usage.unpublished.properties.count + usage.unpublished.developments.count === 1 ? "has" : "have"} no area now.`
         : null,
       inSalesforce
-        ? "Salesforce still lists it as an area until it is removed there."
+        ? "Salesforce is told to stop offering it; listings already filed under it keep it."
         : null,
     ]
       .filter(Boolean)

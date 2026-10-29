@@ -7,15 +7,18 @@ import { salesforceApexRequest, SalesforceError } from "./client";
 
 /**
  * Website areas to Salesforce — Levarus's "Website Locations Sync" API
- * (v1.0, 22 Oct 2026).
+ * (v1.0, 22 Oct 2026) and its "Website Locations Delete" addition (v1.0,
+ * 25 Oct 2026).
  *
  * `Area__c` and `Sub_Area__c` on a Salesforce listing are restricted
  * picklists of the website's own area names, and the listing sync places a
  * listing by matching them (listings/plan.ts). An area added on the website
  * that the picklist lacks is an area no CRM user can file a listing under.
- * This keeps the picklists in step: an add is an UPSERT, a rename a REPLACE.
+ * This keeps the picklists in step: an add is an UPSERT, a rename a REPLACE,
+ * a delete a DELETE — which Salesforce deactivates rather than erases, so an
+ * UPSERT of the same name brings it back.
  *
- * Migration 0169's trigger on `areas` writes the events, with the payload
+ * Migration 0169's trigger (0172 for deletes) on `areas` writes the events, with the payload
  * fixed at the moment of the change; this file only sends them. Both callers
  * — the area actions straight after a save, and the lead-sync cron for
  * anything that failed — drain the same queue, in order.
@@ -34,8 +37,8 @@ const BACKOFF_MINUTES = [1, 5, 25, 120, 600];
 const CLAIM_MINUTES = 2;
 
 /**
- * What the trigger stores. A `DELETE` is stored `held` and never picked up:
- * the API has no verb for it (see 0169).
+ * What the trigger stores. A `DELETE` with `subAreas` retires only those
+ * sub-areas; without, the area and the sub-areas under it (0172).
  */
 export type LocationEventPayload = {
   action: "UPSERT" | "REPLACE" | "DELETE";
@@ -47,7 +50,7 @@ export type LocationEventPayload = {
 
 /** The request body the API documents. */
 export type LocationRequest = {
-  action: "UPSERT" | "REPLACE";
+  action: "UPSERT" | "REPLACE" | "DELETE";
   eventId: string;
   emirate: string;
   area: string;
@@ -63,7 +66,8 @@ export function locationEventId(id: string): string {
 /**
  * The body for one event, or why it cannot be sent. Pure.
  *
- * `emirate` and `area` are required by the API. They are null only when the
+ * `emirate` and `area` are required by the API, a DELETE's included: a
+ * sub-area is retired from the area named. They are null only when the
  * website's own tree is incomplete — an area with no emirate above it, a
  * sub-area not under an area — and sending would be refused, so the event
  * fails here with the reason instead.
@@ -72,9 +76,6 @@ export function buildLocationRequest(
   id: string,
   payload: LocationEventPayload,
 ): { ok: true; body: LocationRequest } | { ok: false; reason: string } {
-  if (payload.action === "DELETE") {
-    return { ok: false, reason: "The Website Locations API cannot delete an area; retire it in Salesforce by hand." };
-  }
   const emirate = payload.emirate?.trim();
   const area = payload.area?.trim();
   if (!emirate) {
@@ -105,9 +106,12 @@ export type LocationPushResult =
   | { ok: false; retryable: boolean; message: string };
 
 /**
- * One POST. The API documents no response body for it; its ping answers
- * `{ "status": "ok" }`, so a 2xx carrying any other `status` — or
- * `success: false` — is read as a refusal rather than trusted.
+ * One POST. The delete document gives the body — `{ status: "ok", action,
+ * area: { result }, subAreas?: [{ result }] }` — and the sync document none,
+ * so a 2xx carrying any other `status`, or `success: false`, is read as a
+ * refusal rather than trusted. A DELETE whose result is `not_found` is a
+ * success: Salesforce no longer lists the value, which is what was asked.
+ * The body is kept on the row either way.
  */
 export async function pushLocation(body: LocationRequest): Promise<LocationPushResult> {
   try {
