@@ -87,8 +87,32 @@ describe("buildLocationRequest", () => {
     expect(buildLocationRequest("x", { action: "UPSERT", emirate: null, area: "Yas Island" }).ok).toBe(false);
     expect(buildLocationRequest("x", { action: "UPSERT", emirate: "Abu Dhabi", area: null, subAreas: ["A"] }).ok).toBe(false);
     expect(buildLocationRequest("x", { action: "REPLACE", emirate: "Abu Dhabi", area: "A", newArea: " " }).ok).toBe(false);
-    // A delete has no verb in the API; it is never sent, even if re-queued.
-    expect(buildLocationRequest("x", { action: "DELETE", emirate: "Abu Dhabi", area: "A" }).ok).toBe(false);
+    expect(buildLocationRequest("x", { action: "DELETE", emirate: null, area: "A" }).ok).toBe(false);
+    expect(buildLocationRequest("x", { action: "DELETE", emirate: "Abu Dhabi", area: null, subAreas: ["B"] }).ok).toBe(false);
+  });
+
+  it("sends a deleted area as DELETE without sub-areas, which retires its sub-areas too", () => {
+    const out = buildLocationRequest("e4", { action: "DELETE", emirate: "Abu Dhabi", area: " Al Samha " });
+    expect(out).toEqual({
+      ok: true,
+      body: { action: "DELETE", eventId: "WEB-AREA-e4", emirate: "Abu Dhabi", area: "Al Samha" },
+    });
+  });
+
+  it("sends a deleted sub-area as DELETE of only that sub-area, keeping the area", () => {
+    const out = buildLocationRequest("e5", {
+      action: "DELETE",
+      emirate: "Abu Dhabi",
+      area: "Al Samha",
+      subAreas: ["Al Samha East"],
+    });
+    expect(out.ok && out.body).toEqual({
+      action: "DELETE",
+      eventId: "WEB-AREA-e5",
+      emirate: "Abu Dhabi",
+      area: "Al Samha",
+      subAreas: ["Al Samha East"],
+    });
   });
 });
 
@@ -104,6 +128,13 @@ describe("pushLocation", () => {
   it("reads a 200 that says it failed as a refusal", async () => {
     salesforceApexRequest.mockResolvedValue({ status: "error", message: "Emirate not found" });
     expect(await pushLocation(body)).toEqual({ ok: false, retryable: false, message: "Emirate not found" });
+  });
+
+  it("takes a DELETE that Salesforce did not find as done, keeping its answer", async () => {
+    const del = { action: "DELETE" as const, eventId: "WEB-AREA-e4", emirate: "Abu Dhabi", area: "Gone" };
+    const answer = { status: "ok", action: "DELETE", area: { result: "not_found" } };
+    salesforceApexRequest.mockResolvedValue(answer);
+    expect(await pushLocation(del)).toEqual({ ok: true, response: answer });
   });
 
   it("carries the client's retry verdict through", async () => {
@@ -147,6 +178,24 @@ describe("drainLocationEvents", () => {
     expect(first).toMatchObject({ state: "pending", attempts: 1, last_error: "down" });
     expect(Date.parse(first.next_attempt_at as string)).toBeGreaterThan(NOW);
     expect(second).toMatchObject({ state: "pending", attempts: 0 });
+  });
+
+  it("sends a move as DELETE of the old place, then UPSERT of the new, and leaves held rows alone", async () => {
+    db.seed(
+      "salesforce_location_events",
+      event("h1", { action: "DELETE", emirate: "Abu Dhabi", area: "KIZAD" }, { state: "held" }),
+      event("e1", { action: "DELETE", emirate: "Abu Dhabi", area: "Yas Island", subAreas: ["Yas Acres"] }),
+      event("e2", { action: "UPSERT", emirate: "Abu Dhabi", area: "Saadiyat Island", subAreas: ["Yas Acres"] }),
+    );
+    salesforceApexRequest
+      .mockResolvedValueOnce({ status: "ok", action: "DELETE", area: { result: "unchanged" }, subAreas: [{ result: "deleted" }] })
+      .mockResolvedValueOnce({ status: "ok" });
+
+    const out = await drainLocationEvents(admin(), { now });
+
+    expect(out).toMatchObject({ sent: 2, failed: 0 });
+    expect(salesforceApexRequest.mock.calls.map((c) => c[1].body.action)).toEqual(["DELETE", "UPSERT"]);
+    expect(db.rows("salesforce_location_events").map((r) => r.state)).toEqual(["held", "sent", "sent"]);
   });
 
   it("waits while the oldest event is backing off", async () => {

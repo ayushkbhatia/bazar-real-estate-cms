@@ -570,8 +570,9 @@ once the draft exists its photos are the editor's. Placeholder `example.com` URL
 
 ## Areas — website to Salesforce
 
-Vendor document: *Website Area Locations Sync* (Levarus, v1.0, 22 Oct 2026,
-production). Same Connected App and token as everything else; the run-as user
+Vendor documents: *Website Area Locations Sync* (Levarus, v1.0, 22 Oct 2026,
+production) and *Website Area Locations Delete* (v1.0, 25 Oct 2026,
+production), which adds `DELETE` to the same endpoint. Same Connected App and token as everything else; the run-as user
 needs Levarus's **Website Locations Admin** permission.
 
 `Area__c` and `Sub_Area__c` on a Salesforce listing are restricted picklists
@@ -583,8 +584,19 @@ website adds that the picklist lacks is an area no CRM user can list in.
 POST /services/apexrest/properties/website-locations
   UPSERT  { action, eventId, emirate, area, subAreas? }   add or reactivate
   REPLACE { action, eventId, emirate, area, newArea, subAreas? }   rename an area
+  DELETE  { action, eventId, emirate, area }              deactivate the area and its sub-areas
+  DELETE  { action, eventId, emirate, area, subAreas }    deactivate only those sub-areas
 GET  same path → { "status": "ok" }                         ping
 ```
+
+A DELETE answers `{ status: "ok", action: "DELETE", area: { result },
+subAreas: [{ result }] }`, each result `deleted`, `not_found` (no such name
+there; nothing changed) or `unchanged` (the area, when only sub-areas went).
+Salesforce *deactivates*: listings keep their value, and an UPSERT of the
+same name reactivates it — which is also how a mistaken delete is undone. A
+sub-area that also sits under another area stays active there. The sender
+counts `not_found` as done (the value is not offered, which was the point);
+the body is kept on the row.
 
 **How it runs.** A trigger on `areas` (0169) writes a row to
 `salesforce_location_events` for every change Salesforce holds, with the
@@ -600,8 +612,11 @@ minutes. `lib/salesforce/locations.ts` is the sender.
 | `area` added | `UPSERT { emirate, area }` |
 | `sub_community` added under an area | `UPSERT { emirate, area: <parent>, subAreas: [name] }` |
 | `area` renamed, same emirate | `REPLACE { emirate, area: <old>, newArea: <new> }` |
+| `sub_community` renamed or moved to another area | `DELETE` of where it was, then `UPSERT` of where it is (0172) |
+| `area` moved to another emirate (renamed or not) | `DELETE` of where it was, then `UPSERT` of where it is with its sub-areas, which the DELETE took with it (0172) |
+| either kind turned into an `emirate` or `building` | `DELETE` of where it was (0172) |
 | any other change of name, kind or parent of either | `UPSERT` of where it is now |
-| `area` or `sub_community` deleted (0167's CMS delete) | `DELETE`, stored `held`, **never sent** |
+| `area` or `sub_community` deleted (0167's CMS delete) | `DELETE` (0172; before it, stored `held` and never sent) |
 | `emirate` or `building`, a description, a slug, a photo | nothing |
 
 `eventId` is `WEB-AREA-<event uuid>`, so a Salesforce log line traces to its
@@ -616,15 +631,31 @@ refusal (an unknown emirate, a 400, a 200 whose `status` is not `ok`), the row
 is `failed`, reported on the health page, and the queue moves on. An area with
 no emirate above it is failed locally with that reason and no call.
 
-**What the API cannot do.** No delete or deactivate, and no sub-area rename.
-So a deleted area, a renamed sub-area, or an area moved to another emirate
-leaves its old value active in Salesforce. Asked of Levarus (items 19–20
-below). Deletes are recorded anyway, `state = 'held'`, which the sender never
-reads: the list of values someone must retire in Salesforce by hand, and,
-once Levarus add a deactivate action, a backlog to send — map `DELETE` to
-their verb in `buildLocationRequest`, then
-`update salesforce_location_events set state = 'pending', next_attempt_at = now() where state = 'held';`.
-The CMS's delete message tells the editor Salesforce still lists the area.
+**Deletes (0172).** Until 25 Oct 2026 the API had no delete, so 0169 stored
+each website delete `held`, never sent. 0172 sends them: a delete is a
+pending `DELETE`, and a move or sub-area rename retires the old place first
+(DELETE before UPSERT, because an UPSERT reactivates whatever the DELETE
+retired, so nothing the website still has is left inactive). The area
+delete action sends straight away, like a save. The API still has no
+sub-area rename; delete-then-add is one.
+
+0172 must be applied **after** the code that maps `DELETE` is deployed: the
+older sender refuses a DELETE and would fail any made in between (set them
+back to pending to recover).
+
+The `held` rows from before stay held until released by hand — eleven on
+29 Oct 2026 (areas KIZAD, ADGM, Al Fayah, Private Contractor; sub-areas Al
+Raha Beach, Al Raha Gardens, Hidd Al Saadiyat, Mamsha Al Saadiyat, Saadiyat
+Lagoons, Saadiyat Reserve, Yas Acres), none back on the website. Release
+them once the run-as user can write (below):
+`update salesforce_location_events set state = 'pending', next_attempt_at = now() where state = 'held';`
+
+**Run-as permission (26 Oct 2026).** The two UPSERTs sent so far (Al
+Shamkha, Private Contractor) were refused: "Tooling CustomField is not
+available to this session user". The Connected App's client-credentials
+Run As user must be a System Administrator holding **Website Locations
+Admin** — the delete document says the same. Once Levarus confirm, set the
+`failed` rows back to pending (below) and release the held ones.
 
 **Starting state (22 Oct 2026).** A describe of `Listing__c` showed every
 website area (31) and sub-area (7) already in the picklists, so nothing was
@@ -640,8 +671,12 @@ select created_at, state, attempts, payload, last_error, response
  order by created_at desc
  limit 20;
 
--- Deleted on the website, still to retire in Salesforce:
+-- Deleted on the website before 0172, not yet sent:
 select created_at, payload from salesforce_location_events where state = 'held';
+
+-- Sent, but Salesforce had no such value:
+select created_at, payload, response from salesforce_location_events
+ where state = 'sent' and response::text like '%not_found%';
 ```
 
 To resend a failed event after fixing its cause:
@@ -655,7 +690,7 @@ To resend a failed event after fixing its cause:
 | `Lead__c` create | ✅ | ✅ — live since 25 Sept |
 | `Property_Listing__c`, `Listing__c` visible | ✅ | ✅ — fixed 25 Sept; first sweep 1 Oct |
 | Write-back fields editable | ✅ (proven with a no-op PATCH, v1.2 names) | not yet tried — write-back is off |
-| Website Locations API | — | ✅ ping and token, 22 Oct 2026 (with the document's credentials) |
+| Website Locations API | — | ✅ ping and token, 22 Oct 2026 (with the document's credentials); ❌ UPSERT refused 26 Oct (run-as permission, item 24) |
 
 The production sweep was unpaused on 1 Oct and has run every fifteen minutes
 since. Its first run found one listing, `LST-00001` — a sandbox test record
@@ -746,10 +781,8 @@ whole-number floor and the Arabic field lengths. Still open:
 
 ### Raised 22 Oct 2026 (Website Locations Sync v1.0)
 
-19. **A way to retire an area.** The API adds and renames only, and the
-    CMS can delete an area since 22 Oct 2026 (#637). Salesforce needs a
-    `DEACTIVATE` action (`{ emirate, area }`, and `subAreas` to retire only
-    those); until then each website delete is a `held` row to act on by hand.
+19. ~~**A way to retire an area.**~~ Answered 25 Oct 2026: `DELETE`
+    (*Website Area Locations Delete* v1.0), sent since 0172.
 20. **Sub-area rename.** REPLACE renames an area; a renamed sub-area can only
     be UPSERTed under its new name, leaving the old one active. A
     `REPLACE_SUB_AREA` (`area`, `subArea`, `newSubArea`), or `newSubArea` on
@@ -758,10 +791,17 @@ whole-number floor and the Arabic field lengths. Still open:
     145820` look like test values and should be deactivated; `Al Shamkha`
     is in Salesforce and not on the website — add it on the website or
     retire it there.
-22. **The response body.** The document gives none for POST. The sender
+22. **The response body.** Answered for DELETE by the 25 Oct document;
+    still none for UPSERT/REPLACE. The sync document gives none for POST. The sender
     treats any 2xx as success unless its `status` is not `ok` or `success`
     is false, and stores the body on the row; please confirm the shape.
-23. **Rotate the Connected App secret** — this document prints it too.
+23. **Rotate the Connected App secret** — this document prints it too, and
+    so does the 25 Oct delete document.
+24. **Run-as permission** (25–26 Oct 2026). Both UPSERTs sent so far were
+    refused with "Tooling CustomField is not available to this session
+    user". Please confirm the client-credentials Run As user is a System
+    Administrator with Website Locations Admin, then tell us so we can
+    release the queued deletes.
 
 ## Design rules that held
 
