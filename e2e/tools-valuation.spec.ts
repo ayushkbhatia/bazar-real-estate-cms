@@ -55,12 +55,12 @@ test("valuation wizard walks owner through all four steps and submits", async ({
   // Tagged before it is typed — the afterEach hook deletes the row whether or
   // not the confirmation assertions below pass.
   const email = trackLead(`pw+val-${ts}@example.com`);
-  await page.getByLabel(/^Full name$/i).fill(`Playwright Owner ${ts}`);
+  await page.getByLabel(/^Full name$/i).fill("Playwright Owner");
   await page.getByLabel(/^Email$/i).fill(email);
   // Required since intake was aligned with Salesforce, which refuses a Lead__c
   // with no Phone__c. Leaving it blank is what caught the label still saying
   // "Phone (optional)" while the schema had stopped accepting one.
-  await page.getByLabel(/^Phone$/i).fill("+971500000000");
+  await page.getByLabel(/^Phone$/i).fill("+971501234567");
   await page.getByRole("button", { name: /Send for review/i }).click();
 
   // Confirmation card + frozen instant range.
@@ -86,7 +86,7 @@ test("wizard rejects step 4 with an invalid email", async ({ page }) => {
   // Filled so the only thing wrong with this submission is the email —
   // otherwise the phone rule fires too and the assertion below stops proving
   // which rule caught it.
-  await page.getByLabel(/^Phone$/i).fill("+971500000000");
+  await page.getByLabel(/^Phone$/i).fill("+971501234567");
   await page.getByRole("button", { name: /Send for review/i }).click();
   await expect(page.getByText(/Enter a valid email/i)).toBeVisible();
 });
