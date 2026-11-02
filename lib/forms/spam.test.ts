@@ -4,6 +4,7 @@ import {
   classifySubmission,
   heldNote,
   HONEYPOT_FIELD,
+  isRepeatSender,
   LEGACY_HONEYPOT_FIELD,
   MIN_FILL_MS,
   RENDERED_AT_FIELD,
@@ -217,5 +218,28 @@ describe("heldNote", () => {
       expect(note).toMatch(/restore/);
     }
     expect(heldNote("too-fast")).toContain(`${MIN_FILL_MS / 1000} seconds`);
+  });
+});
+
+describe("isRepeatSender", () => {
+  const ago = (minutes: number) => new Date(NOW - minutes * 60_000);
+
+  it("lets a first and a second enquiry through", () => {
+    expect(isRepeatSender([], NOW)).toBe(false);
+    expect(isRepeatSender([ago(5)], NOW)).toBe(false);
+  });
+
+  it("holds a third inside the hour", () => {
+    expect(isRepeatSender([ago(5), ago(40)], NOW)).toBe(true);
+    expect(isRepeatSender([ago(5), ago(90)], NOW)).toBe(false);
+  });
+
+  it("holds a fourth inside the day", () => {
+    expect(isRepeatSender([ago(90), ago(300), ago(1000)], NOW)).toBe(true);
+    expect(isRepeatSender([ago(90), ago(300), ago(1500)], NOW)).toBe(false);
+  });
+
+  it("names the reason for the desk", () => {
+    expect(heldNote("repeat")).toContain("same email address");
   });
 });

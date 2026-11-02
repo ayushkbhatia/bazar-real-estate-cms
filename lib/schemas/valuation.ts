@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { refineName, refinePhone } from "@/lib/contact-validation";
 import { PROPERTY_TYPES, FURNISHINGS } from "@/lib/schemas/property";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
 
@@ -93,7 +94,7 @@ export const valuationStep3Schema = z.object({
 /** Step 4 — about you. */
 export const valuationStep4Schema = z
   .object({
-    owner_name: z.string().min(2, "Name is too short").max(120),
+    owner_name: z.string().min(2, "Name is too short").max(120).superRefine(refineName),
     owner_email: z.string().email("Enter a valid email"),
     // Required alongside the email since 23 Sept: a valuation request becomes
     // an `enquiries` row like any other lead, and Salesforce refuses a record
@@ -101,7 +102,8 @@ export const valuationStep4Schema = z
     owner_phone: z
       .string()
       .min(5, "Enter a phone number we can reach you on")
-      .max(32, "Phone is too long"),
+      .max(32, "Phone is too long")
+      .superRefine(refinePhone),
     marketing_opt_in: z.boolean().default(false),
   })
   .refine((v) => v.owner_email.length > 0, {

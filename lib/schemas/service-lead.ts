@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { refineName, refinePhone } from "@/lib/contact-validation";
 import { LP_TYPES } from "./list-property";
 import { CONSULTATION_INTENTS } from "@/lib/master-pages/sections/property-consultation";
 
@@ -52,11 +53,13 @@ export const serviceLeadSchema = z
     name: z
       .string()
       .min(2, "Enter your full name")
-      .max(120, "That name is too long"),
+      .max(120, "That name is too long")
+      .superRefine(refineName),
     phone: z
       .string()
       .min(5, "Enter a phone number we can reach you on")
-      .max(32, "That number is too long"),
+      .max(32, "That number is too long")
+      .superRefine(refinePhone),
     email: z.string().email("Enter a valid email"),
     /** Management only — free text, matched against the area index for routing. */
     location: optionalText(160),

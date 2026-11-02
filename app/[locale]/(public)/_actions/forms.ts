@@ -23,6 +23,7 @@ import {
   withoutSpamControls,
 } from "@/lib/forms/spam";
 import type { FormOption, ResolvedForm } from "@/lib/forms/types";
+import { nameIssue } from "@/lib/contact-validation";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { list, type SectionValues } from "@/lib/master-pages";
 import { fileEnquiry } from "@/lib/enquiries/intake";
@@ -252,7 +253,7 @@ export async function submitForm(
         buildFormBrief(form, lead, values, tokens, dynamic),
       );
       const result = await fileEnquiry({
-        name: leadName(lead.name, lead.email, lead.phone),
+        name: leadName(lead.name, lead.email),
         email: lead.email,
         phone: lead.phone,
         message: brief,
@@ -280,16 +281,18 @@ export async function submitForm(
             : undefined,
         };
       }
+      // Held by this check, or by intake's repeat-sender check.
+      const filedHeld = held !== null || result.held === true;
       await captureFormSubmission({
         formKey,
         data,
         enquiryId: result.id,
         sourcePath,
-        held: held !== null,
+        held: filedHeld,
       });
       // A held lead's id stays on the server: the visitor's side needs none,
       // and it answers exactly as the old drop did.
-      return { status: "ok", enquiryId: held ? null : result.id };
+      return { status: "ok", enquiryId: filedHeld ? null : result.id };
     }
   }
 }
@@ -303,11 +306,14 @@ export async function submitForm(
  * chose to remove, fall back to the part of the address before the @, then to
  * the number. The desk sees where it came from either way.
  */
-function leadName(name: string, email: string, phone: string): string {
+function leadName(name: string, email: string): string {
   if (name.trim().length >= 2) return name.trim();
-  const local = email.split("@")[0]?.trim();
-  if (local && local.length >= 2) return local;
-  if (phone.trim().length >= 5) return phone.trim();
+  // Only when it reads as a name: "sara.khan" does, "jack1984" doesn't — and
+  // intake holds every name to `nameIssue`, so a local part with digits in it
+  // would refuse a lead whose visitor never saw a name box. The number, which
+  // used to be the next fallback, never can.
+  const local = email.split("@")[0]?.replace(/[._]+/g, " ").trim();
+  if (local && local.length >= 2 && nameIssue(local) === null) return local;
   return "Website enquiry";
 }
 

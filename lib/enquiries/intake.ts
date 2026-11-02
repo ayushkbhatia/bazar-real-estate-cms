@@ -19,6 +19,7 @@ import {
   rateLimitMessage,
 } from "@/lib/rate-limit";
 import type { Database } from "@/db/types";
+import { heldNote, isRepeatSender, REPEAT_LIMITS } from "@/lib/forms/spam";
 
 /**
  * Public enquiry intake — the write behind every generic lead form.
@@ -82,7 +83,8 @@ async function resolveFallbackAgent(): Promise<string | null> {
 }
 
 export type CreateEnquiryResult =
-  | { status: "ok"; id: string }
+  /** `held`: filed archived — by the caller's bot check or by intake's own repeat-sender check. */
+  | { status: "ok"; id: string; held?: true }
   | {
       status: "error";
       message: string;
@@ -106,6 +108,30 @@ export type FileEnquiryOptions = {
 };
 
 /**
+ * Whether this address has already filed as many leads as REPEAT_LIMITS allow.
+ *
+ * Read with the service role (anonymous visitors can't select enquiries), and
+ * fails open: a lead is never held because the check couldn't run.
+ */
+async function isRepeatEmail(email: string): Promise<boolean> {
+  const admin = createAdminClient();
+  if (!admin) return false;
+  const longest = Math.max(...REPEAT_LIMITS.map((l) => l.windowMs));
+  try {
+    const { data, error } = await admin
+      .from("enquiries")
+      .select("created_at")
+      .eq("email", email.toLowerCase())
+      .gte("created_at", new Date(Date.now() - longest).toISOString())
+      .limit(10);
+    if (error || !data) return false;
+    return isRepeatSender(data.map((r) => r.created_at));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Write one enquiry. Anonymous and authed both supported.
  * The on_enquiry_created trigger creates the conversation + first message.
  */
@@ -113,7 +139,7 @@ export async function fileEnquiry(
   raw: Record<string, unknown>,
   opts: FileEnquiryOptions = {},
 ): Promise<CreateEnquiryResult> {
-  const held = opts.held ?? null;
+  let held = opts.held ?? null;
   if (!isSupabaseConfigured)
     return {
       status: "error",
@@ -121,16 +147,21 @@ export async function fileEnquiry(
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
 
-  // Per-IP submission cap. Covers enquiry / contact / mortgage / property
-  // enquiry forms since they all flow through here.
-  const rl = await checkRateLimit({
-    name: "enquiry",
-    ip: extractClientIp(await headers()),
-    requests: 10,
-    windowSeconds: 60,
-  });
-  if (!rl.ok) {
-    return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+  // Per-IP submission caps. Covers enquiry / contact / mortgage / property
+  // enquiry forms since they all flow through here. The minute stops a burst;
+  // the hour and the day stop a script that has learned to pace itself — the
+  // 2 Nov 2026 bot sent one every few minutes, all day. Nobody sends a
+  // boutique agency six enquiries an hour.
+  const ip = extractClientIp(await headers());
+  for (const [name, requests, windowSeconds] of [
+    ["enquiry", 10, 60],
+    ["enquiry_hour", 6, 3600],
+    ["enquiry_day", 20, 86_400],
+  ] as const) {
+    const rl = await checkRateLimit({ name, ip, requests, windowSeconds });
+    if (!rl.ok) {
+      return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+    }
   }
 
   const parsed = enquirySchema.safeParse(normaliseEnquiryInput(raw));
@@ -148,6 +179,11 @@ export async function fileEnquiry(
   }
 
   const data: EnquiryInput = parsed.data;
+
+  // An address that keeps coming back is filed held (see REPEAT_LIMITS).
+  if (!held && data.email && (await isRepeatEmail(data.email))) {
+    held = { reason: "repeat", note: heldNote("repeat") };
+  }
 
   // Auth-aware server client to pick up the current account_id when signed in.
   // RLS on enquiries allows anonymous INSERT, so this works either way.
@@ -246,7 +282,7 @@ export async function fileEnquiry(
 
   // A held lead gets no email: the address on a bot's submission is usually
   // someone else's, and mailing it is how a sender's reputation goes.
-  if (held) return { status: "ok", id: insertedId };
+  if (held) return { status: "ok", id: insertedId, held: true };
 
   // The acknowledgement goes out now, and is stamped on the row when it does —
   // that stamp is what keeps the minute sweep from sending it again. A send
