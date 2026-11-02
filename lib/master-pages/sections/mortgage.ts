@@ -36,12 +36,15 @@
  */
 import type { MasterPageDef } from "../types";
 import { area, eyebrow, faqList, heading, image, link, text, toggle } from "../fields";
-import { MORTGAGE_CALCULATOR_COPY_SECTIONS } from "./mortgage-calculator-copy";
+import { MORTGAGE_CALCULATOR_COPY_SECTIONS, calculatorCopyHostedBy } from "./mortgage-calculator-copy";
 import {
   BUYER_STATUS_OPTIONS,
   MORTGAGE_CALCULATOR_CONTROL_FIELDS,
   MORTGAGE_TYPE_OPTIONS,
 } from "../mortgage-calculator-controls";
+
+/** The calculator inputs' own words, carried by the Mortgage calculator section. */
+const SCENARIO_COPY = calculatorCopyHostedBy("scenario");
 
 /** Where the closing CTA jumps back to, and what the hero's form card anchors. */
 export const MORTGAGE_FORM_ANCHOR = "pre-approval";
@@ -192,7 +195,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         "The calculator: the inputs, and the dark box beside them with the monthly payment, total to be paid, total interest and principal share. The one section the whole page is really about.",
       locked: true,
       dataNote:
-        "Every control below is optional. A blank starting value keeps the figure from Settings → Mortgage (shared with the home page's calculator); a blank range keeps the range the page shipped with, shown greyed in each box. A range that cannot work — a minimum at or above its maximum — is ignored whole. The closing-cost percentages, Central Bank LTV tiers and DBR cap stay under Settings → Mortgage. The labels inside the calculator are under Calculator · Your numbers and Calculator · Results and affordability.",
+        "Every control below is optional. A blank starting value keeps the figure from Settings → Mortgage (shared with the home page's calculator); a blank range keeps the range the page shipped with, shown greyed in each box. A range that cannot work — a minimum at or above its maximum — is ignored whole. The closing-cost percentages, Central Bank LTV tiers and DBR cap stay under Settings → Mortgage. Below the controls are the calculator's words — every label, button and option, in English and Arabic; keep anything in {curly braces}, which the calculator fills in. The words in the dark results box are under Calculator · Results and affordability.",
       fields: [
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
@@ -225,6 +228,8 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           options: BUYER_STATUS_OPTIONS,
           placeholder: "UAE resident (as shipped)",
         },
+        // The inputs' labels, buttons and options — see mortgage-calculator-copy.ts.
+        ...SCENARIO_COPY.fields,
       ],
       defaults: {
         eyebrow: "Scenario",
@@ -239,6 +244,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         // Blank = what the page shipped opening on.
         type_default: null,
         status_default: null,
+        ...SCENARIO_COPY.defaults,
       },
     },
     {
