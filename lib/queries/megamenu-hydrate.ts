@@ -8,37 +8,33 @@ import type { Megamenu, MegamenuFeaturedTile } from "@/lib/schemas/megamenu";
 /**
  * App-level hydration on top of the CMS megamenu.
  *
- * The public "Rent" tab's featured tiles are dynamic: rather than the static
- * rows seeded in the DB, they surface the two most-recent published rent
- * listings (mirroring the client's "Featured Rentals — dynamically listed
- * properties for rent 2x" brief).
+ * The public "Rent" tab's featured tiles are whatever an editor sets at
+ * /admin/megamenu/rent, like every other tab's. Only when the tab has NO tiles
+ * does it fall back to the two most-recent published rent listings (the
+ * client's original "Featured Rentals — dynamically listed properties for rent
+ * 2x" brief). Until Nov 2026 the live listings replaced the edited tiles
+ * whenever any rent listing existed, so the editor's headline, image, link and
+ * Arabic never reached the site.
  *
  * This lives in app-level query code, NOT in the brand renderer: the megamenu
  * components (public-mega-nav / megamenu-panel / megamenu-tile, desktop and
  * mobile) render whatever `featured[]` they receive, so injecting live tiles
  * here keeps those components untouched.
  *
- * Falls back to the DB-seeded tiles when Supabase is unconfigured or no rent
- * listings resolve.
- *
  * Mounted in the public layout, so this runs for every public request.
  * `cache()` collapses it to one round-trip per render (matching its neighbour
- * `listFloatingCtas`), and the two queries are issued together rather than in
- * sequence — the featured-rent tiles don't depend on the menu, so waiting for
- * one before starting the other only added latency to every page in the site.
+ * `listFloatingCtas`). The listings are read only when the fallback is
+ * needed, so a menu with edited tiles costs no extra query.
  */
 export const getPublishedMegamenuHydrated = cache(
   async (locale?: Locale): Promise<Megamenu> => {
-    const [menu, rent] = await Promise.all([
-      getPublishedMegamenu(locale),
-      listPublishedProperties({ mode: "rent", limit: 2 }),
-    ]);
+    const menu = await getPublishedMegamenu(locale);
 
     const rentTab = menu.tabs.find((t) => t.slug === "rent");
-    if (!rentTab) return menu;
+    if (!rentTab || rentTab.featured.length > 0) return menu;
 
-    const { rows } = rent;
-    if (rows.length === 0) return menu; // keep the seeded fallback tiles
+    const { rows } = await listPublishedProperties({ mode: "rent", limit: 2 });
+    if (rows.length === 0) return menu;
 
     const tiles: MegamenuFeaturedTile[] = rows.slice(0, 2).map((row, i) => ({
       id: `rent-featured-${row.id}`,

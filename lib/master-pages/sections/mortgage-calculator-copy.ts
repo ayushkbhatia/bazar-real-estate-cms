@@ -13,6 +13,12 @@
  *
  * These sections are copy, not layout: `locked`, so they can't be hidden or
  * moved, and the calculator renders nothing for their keys.
+ *
+ * The inputs' words are the exception. They sit on the Mortgage calculator
+ * section itself (`scenario`), beside the ranges and the "opens on" choices
+ * for the same controls: an editor looking at "Mortgage type · opens on"
+ * looked there for the Fixed / Variable / Hybrid wording too, and never found
+ * it in a section of its own further down the list.
  */
 
 import enTools from "@/messages/en/tools.json";
@@ -40,6 +46,11 @@ type Group = {
   description: string;
   /** Whether a message (by its path under `tools.mortgage`) belongs here. */
   owns: (path: string) => boolean;
+  /**
+   * A band of the page that carries these fields after its own, instead of a
+   * section of their own. The band keeps its key, so nothing stored moves.
+   */
+  host?: string;
 };
 
 const starts = (...prefixes: string[]) => (path: string) => prefixes.some((p) => path.startsWith(p));
@@ -48,6 +59,7 @@ const starts = (...prefixes: string[]) => (path: string) => prefixes.some((p) =>
 const GROUPS: readonly Group[] = [
   {
     key: "calc_inputs",
+    host: "scenario",
     label: "Calculator · Your numbers",
     description:
       "The calculator's inputs: property price, down payment and its minimum warning, interest rate, term, mortgage type, buyer status and annual income.",
@@ -124,8 +136,45 @@ function words(segment: string): string {
     .join(" ");
 }
 
+/**
+ * The inputs' labels by hand: they share a section with the controls they name,
+ * so each says which control and which part of it ("Mortgage type · Fixed
+ * button"), where the derived "Type fixed" did not.
+ */
+const LABELS: Record<string, string> = {
+  propertyPrice: "Property price · label",
+  propertyPriceAria: "Property price · box (screen-reader text)",
+  propertyPriceSlider: "Property price · slider (screen-reader text)",
+  downPayment: "Down payment · label",
+  downPaymentAria: "Down payment · box (screen-reader text)",
+  downPaymentSlider: "Down payment · slider (screen-reader text)",
+  belowGuidance: "Down payment · below the minimum",
+  belowGuidanceHighTier: "Down payment · below the minimum, AED 5M and above",
+  belowGuidanceHighTierConverted: "Down payment · below the minimum, AED 5M and above, other currency",
+  interestRate: "Interest rate · label",
+  interestRateAria: "Interest rate · box (screen-reader text)",
+  term: "Term · label",
+  termYears: "Term · each option",
+  mortgageType: "Mortgage type · label",
+  typeFixed: "Mortgage type · Fixed button",
+  typeVariable: "Mortgage type · Variable button",
+  typeHybrid: "Mortgage type · Hybrid button",
+  typeFixedInline: "Mortgage type · Fixed, mid-sentence",
+  typeVariableInline: "Mortgage type · Variable, mid-sentence",
+  typeHybridInline: "Mortgage type · Hybrid, mid-sentence",
+  buyerStatus: "Buyer status · label",
+  statusUaeNational: "Buyer status · UAE national button",
+  statusUaeResident: "Buyer status · UAE resident button",
+  statusNonResident: "Buyer status · Non-resident button",
+  statusGccNational: "Buyer status · GCC national button",
+  annualIncome: "Annual income · label",
+  annualIncomeAria: "Annual income · box (screen-reader text)",
+  affordabilityHelp: "Annual income · note under the box",
+};
+
 /** "cashLine.dld_transfer" → "Cash line · DLD transfer"; "propertyPriceAria" → "Property price screen-reader text". */
 function labelFor(path: string): string {
+  if (LABELS[path]) return LABELS[path];
   const label = path.split(".").map(words).join(" · ");
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
@@ -145,16 +194,32 @@ export const MORTGAGE_CALCULATOR_COPY_KEYS: readonly string[] = [...EN.entries()
   .filter(([, message]) => !isCountedMessage(message))
   .map(([key]) => key);
 
+const byGroup = new Map<string, string[]>(GROUPS.map((g) => [g.key, []]));
+for (const path of MORTGAGE_CALCULATOR_COPY_KEYS) byGroup.get(groupOf(path).key)!.push(path);
+
+function defaultsFor(paths: readonly string[]): SectionValues {
+  const defaults: SectionValues = {};
+  for (const path of paths) {
+    defaults[path] = EN.get(path)!;
+    defaults[`${path}_ar`] = AR.get(path) ?? EN.get(path)!;
+  }
+  return defaults;
+}
+
+/**
+ * The calculator copy a band of the page carries after its own fields (see
+ * `Group.host`), with the catalogue's English and Arabic as defaults. Empty
+ * for a band that hosts none.
+ */
+export function calculatorCopyHostedBy(host: string): { fields: SimpleFieldDef[]; defaults: SectionValues } {
+  const paths = GROUPS.filter((g) => g.host === host).flatMap((g) => byGroup.get(g.key)!);
+  return { fields: paths.map(fieldFor), defaults: defaultsFor(paths) };
+}
+
 function buildSections(): SectionDef[] {
-  const byGroup = new Map<string, string[]>(GROUPS.map((g) => [g.key, []]));
-  for (const path of MORTGAGE_CALCULATOR_COPY_KEYS) byGroup.get(groupOf(path).key)!.push(path);
-  return GROUPS.map((group): SectionDef => {
+  return GROUPS.filter((group) => !group.host).map((group): SectionDef => {
     const paths = byGroup.get(group.key)!;
-    const defaults: SectionValues = {};
-    for (const path of paths) {
-      defaults[path] = EN.get(path)!;
-      defaults[`${path}_ar`] = AR.get(path) ?? EN.get(path)!;
-    }
+    const defaults = defaultsFor(paths);
     return {
       key: group.key,
       label: group.label,
@@ -170,11 +235,17 @@ function buildSections(): SectionDef[] {
 
 export const MORTGAGE_CALCULATOR_COPY_SECTIONS: readonly SectionDef[] = buildSections();
 
-const COPY_KEYS = new Set(GROUPS.map((g) => g.key));
+const COPY_KEYS = new Set(GROUPS.filter((g) => !g.host).map((g) => g.key));
+const HOSTS = new Set(GROUPS.flatMap((g) => (g.host ? [g.host] : [])));
 
 /** Whether a section of the Mortgage page is calculator copy rather than a band of the page. */
 export function isCalculatorCopySection(key: string): boolean {
   return COPY_KEYS.has(key);
+}
+
+/** Whether a section holds calculator copy at all: a copy section, or a band hosting some. */
+function carriesCalculatorCopy(key: string): boolean {
+  return COPY_KEYS.has(key) || HOSTS.has(key);
 }
 
 /** The save's checks for the calculator copy: placeholders kept, nothing unformattable. */
@@ -182,23 +253,39 @@ export function calculatorCopyIssues(sections: readonly { key: string; values: S
   return catalogueCopyIssues(
     sections.flatMap((section) => {
       const def = MORTGAGE_CALCULATOR_COPY_SECTIONS.find((s) => s.key === section.key);
-      return def ? [{ label: def.label, fields: def.fields, values: section.values }] : [];
+      if (def) return [{ label: def.label, fields: def.fields, values: section.values }];
+      // A hosting band's own fields aren't catalogue messages, so the check
+      // passes over them; its label is the band's, which is where the editor is.
+      const hosted = HOSTS.has(section.key) ? calculatorCopyHostedBy(section.key).fields : [];
+      return hosted.length ? [{ label: "Mortgage calculator", fields: hosted, values: section.values }] : [];
     }),
     EN,
   );
 }
 
-/** Calculator copy as stored: only what differs from the catalogue. Other sections pass through. */
+/**
+ * Calculator copy as stored: only what differs from the catalogue. Other
+ * sections pass through, and so do a hosting band's own fields — a blank
+ * eyebrow there is an editor's choice, not a default to fall back to.
+ */
 export function calculatorCopyStoredValues<T extends { key: string; values: SectionValues }>(sections: readonly T[]): T[] {
-  return sections.map((section) =>
-    isCalculatorCopySection(section.key) ? { ...section, values: catalogueStoredValues(section.values, EN, AR) } : section,
-  );
+  return sections.map((section) => {
+    if (isCalculatorCopySection(section.key)) return { ...section, values: catalogueStoredValues(section.values, EN, AR) };
+    if (!HOSTS.has(section.key)) return section;
+    const own: SectionValues = {};
+    const copy: SectionValues = {};
+    for (const [k, v] of Object.entries(section.values)) {
+      if (EN.has(k.endsWith("_ar") ? k.slice(0, -3) : k)) copy[k] = v;
+      else own[k] = v;
+    }
+    return { ...section, values: { ...own, ...catalogueStoredValues(copy, EN, AR) } };
+  });
 }
 
 /** The `tools.mortgage` messages an editor changed, for one locale; empty when nothing is. */
 export function calculatorCopyOverlay(sections: readonly ResolvedSection[], locale: Locale): MessageTree {
   return catalogueOverlay(
-    sections.filter((s) => isCalculatorCopySection(s.key)),
+    sections.filter((s) => carriesCalculatorCopy(s.key)),
     locale,
     EN,
     AR,

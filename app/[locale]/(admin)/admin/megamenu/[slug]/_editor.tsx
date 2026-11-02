@@ -874,7 +874,11 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
           {/* Featured tiles */}
           <Section
             title="Featured tiles"
-            description="Up to two large promo cards rendered in the middle of the panel."
+            description={
+              tab.slug === "rent"
+                ? "Up to two large promo cards rendered in the middle of the panel. Remove both and the panel shows the two newest rent listings instead."
+                : "Up to two large promo cards rendered in the middle of the panel."
+            }
           >
             <div className="flex flex-col gap-3">
               {featured.map((tile, idx) => (
