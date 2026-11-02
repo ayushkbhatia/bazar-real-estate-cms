@@ -16,8 +16,12 @@ import { z } from "zod";
 import type { FormFieldDef, ResolvedForm } from "./types";
 import { parseRangeValue, rangeBounds } from "./types";
 import { activeFields, visibleFields } from "./resolve";
+import { refineName, refinePhone } from "@/lib/contact-validation";
 
 const MAX_TEXT = 200;
+
+/** Field mappings that carry a person's name (lib/contact-validation.ts). */
+const NAME_MAPPINGS = new Set(["name", "first_name", "last_name"]);
 const MAX_LONG_TEXT = 2000;
 
 function labelOf(field: FormFieldDef): string {
@@ -120,16 +124,23 @@ function fieldSchema(
         .trim()
         .min(1, "Enter a phone number we can reach you on")
         .min(5, "That number looks too short")
-        .max(32, "That number looks too long");
+        .max(32, "That number looks too long")
+        // Digits only, and the right count for the country code picked.
+        .superRefine(refinePhone);
       return field.required ? base : z.union([base, z.literal("")]).optional();
     }
 
     default: {
-      const base = z
+      const text = z
         .string()
         .trim()
         .min(2, `${label} is too short`)
         .max(MAX_TEXT, `${label} is too long`);
+      // A box that files as the lead's name is held to what a name is —
+      // whatever the editor labelled it.
+      const base = NAME_MAPPINGS.has(field.mapping ?? "")
+        ? text.superRefine(refineName)
+        : text;
       return field.required ? base : z.union([base, z.literal("")]).optional();
     }
   }

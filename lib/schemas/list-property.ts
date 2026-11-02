@@ -11,6 +11,7 @@
  * answers that *do* have a column across.
  */
 import { z } from "zod";
+import { refineName } from "@/lib/contact-validation";
 import type { ENQUIRY_INTENTS, ENQUIRY_TIMELINES } from "./enquiry";
 
 export const LP_INTENTS = ["sell", "rent_out"] as const;
@@ -220,7 +221,8 @@ export const listPropertySchema = z
       .string()
       .trim()
       .min(2, "Tell us who to ask for")
-      .max(120, "That name is too long"),
+      .max(120, "That name is too long")
+      .superRefine(refineName),
     /** National format as typed; the server stores the +971 form. */
     mobile: z
       .string()

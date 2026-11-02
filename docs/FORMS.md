@@ -132,6 +132,37 @@ let their browser fill in their details was shown the thank-you while their
 lead was thrown away. The honeypot's name must contain no word an autofill
 heuristic knows — `lib/forms/spam.test.ts` enforces a list.
 
+### Names, numbers, repeat senders and rate limits
+
+Added 2026-11-02, after a browser-driven bot that left the honeypot alone filed
+96 leads in a day through the home page's List your property card — random
+ten-character names, a US number typed after +971, and the same few real
+people's addresses over and over, each mailed our acknowledgement.
+
+- **Names and phone numbers** (`lib/contact-validation.ts`) are checked on
+  every public form, in the browser and again on the server: in
+  `buildFormSchema` for any field mapped to `name` / `first_name` /
+  `last_name` and any `tel` / `phone_dial` field, and in the enquiry,
+  service-lead, valuation and list-property schemas. A name may hold letters
+  in any script, spaces, `'`, `-` and `.` — no digits, no symbols, and no
+  word with machine-made capitals ("kzidRYKLAA"). A phone number must be valid
+  for its country code (`libphonenumber-js`): the right digit count after the
+  code picked, no second code typed after it. Arabic-Indic digits are read,
+  not refused. These are visible errors the visitor can fix — never a silent
+  hold.
+- **Repeat senders** are held (`isRepeatSender` in `lib/forms/spam.ts`,
+  checked in `fileEnquiry`): an email address's third lead inside an hour, or
+  its fourth inside a day, is filed held like a honeypot hit — the visitor
+  sees the thank-you, nobody is emailed, nothing goes to Salesforce, and the
+  desk can restore it. Staff testing a form repeatedly with one address will
+  see their later tests land in Archived.
+- **Rate limits** now run. `lib/rate-limit.ts` counts in Postgres
+  (`rate_limit_hit()`, migration 0173; IPs hashed, rows swept after two days)
+  when Upstash is not configured, which is how production has always run —
+  until this it limited nothing. Only on Vercel deployments; local runs and
+  CI's e2e are never counted. Enquiries allow 10 a minute, 6 an hour and 20 a
+  day per IP.
+
 If the server action itself fails — an action id from an earlier deploy, a
 dropped connection — the renderer retries the same `submitForm` through
 `POST /api/forms/<key>`, whose URL does not change between builds, and shows

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
+import { refineName, refinePhone } from "@/lib/contact-validation";
 
 
 export const ENQUIRY_SOURCES = [
@@ -56,7 +57,13 @@ export const enquirySchema = z
      * round.
      */
     locale: z.enum(["en", "ar"]).default("en"),
-    name: z.string().min(2, "Name is too short").max(120, "Name is too long"),
+    // Every enquiry door files through this schema, so it is the one place
+    // the name and number rules can't be skipped (lib/contact-validation.ts).
+    name: z
+      .string()
+      .min(2, "Name is too short")
+      .max(120, "Name is too long")
+      .superRefine(refineName),
     /**
      * Both required, not either-or.
      *
@@ -76,7 +83,8 @@ export const enquirySchema = z
     phone: z
       .string()
       .min(5, "Enter a phone number we can reach you on")
-      .max(32, "Phone is too long"),
+      .max(32, "Phone is too long")
+      .superRefine(refinePhone),
     message: z
       .string()
       .min(2, "Tell us a bit more")

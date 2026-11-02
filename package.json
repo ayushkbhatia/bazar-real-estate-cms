@@ -49,6 +49,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "html-react-parser": "^6.1.5",
+    "libphonenumber-js": "^1.13.15",
     "lucide-react": "^1.16.0",
     "mapbox-gl": "^3.24.0",
     "maplibre-gl": "^5.24.0",
