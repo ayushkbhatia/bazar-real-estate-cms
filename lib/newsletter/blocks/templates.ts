@@ -103,7 +103,7 @@ const b = newBlock;
 function footerBlocks(site: SiteFooter, background = ""): Block[] {
   const blocks: Block[] = [];
   if (site.socials.length) {
-    blocks.push(b("social", { items: site.socials.slice(0, 8), tone: background ? "light" : "dark", background, padding: "m" }));
+    blocks.push(b("social", { items: site.socials.slice(0, 8), tone: background ? "light" : "dark", background, padding: "s" }));
   }
   blocks.push(
     b("contact", {
@@ -123,6 +123,7 @@ function footerBlocks(site: SiteFooter, background = ""): Block[] {
       ],
       background,
       textColor: background ? "#FFFFFF" : "",
+      padding: "s",
     }),
   );
   return blocks;

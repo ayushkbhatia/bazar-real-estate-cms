@@ -143,7 +143,7 @@ function UploadDialog({ open, id, onClose, onDone }: { open: boolean; id: string
             <p>
               <strong className="mono">{parsed.contacts.length}</strong> {parsed.contacts.length === 1 ? "person" : "people"} to add
               {parsed.duplicates ? ` · ${parsed.duplicates} repeated in the file` : ""}
-              {parsed.invalid.length ? ` · ${parsed.invalid.length} lines without a usable address` : ""}
+              {parsed.invalid.length ? ` · ${parsed.invalid.length} line${parsed.invalid.length === 1 ? "" : "s"} without a usable address` : ""}
               {parsed.truncated ? ` · ${parsed.truncated} past the limit, not read` : ""}
             </p>
             <p className="text-[11.5px] text-bz-muted">

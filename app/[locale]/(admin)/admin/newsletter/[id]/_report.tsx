@@ -17,6 +17,7 @@ export function CampaignReport({
   from,
   replyTo,
   canWrite,
+  listNames = [],
 }: {
   campaign: CampaignRow;
   counts: DeliveryCounts;
@@ -25,6 +26,8 @@ export function CampaignReport({
   from: string;
   replyTo: string;
   canWrite: boolean;
+  /** The custom lists it also went to (0176). */
+  listNames?: string[];
 }) {
   const total = campaign.recipient_count;
   const done = counts.sent + counts.failed + counts.skipped;
@@ -89,7 +92,14 @@ export function CampaignReport({
           </p>
           <dl className="grid grid-cols-[120px_1fr] gap-y-1.5 text-[12.5px]">
             <dt className="text-bz-muted">Audience</dt>
-            <dd>{AUDIENCE_LABELS[campaign.audience as Audience] ?? campaign.audience}</dd>
+            <dd>
+              {[
+                campaign.audience === "none" ? null : (AUDIENCE_LABELS[campaign.audience as Audience] ?? campaign.audience),
+                listNames.length ? `${listNames.length === 1 ? "list" : "lists"}: ${listNames.join(", ")}` : null,
+              ]
+                .filter(Boolean)
+                .join(" + ")}
+            </dd>
             <dt className="text-bz-muted">Started</dt>
             <dd>{formatDubai(campaign.started_at)}</dd>
             <dt className="text-bz-muted">Finished</dt>

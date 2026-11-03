@@ -37,6 +37,7 @@ import {
 } from "@/lib/newsletter/blocks/types";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { uploadToLibrary } from "../../media/_upload-client";
+import { mediaPublicUrl } from "@/lib/media";
 import { FeatureDialog, type FeatureRequest } from "../../content-assets/emails/_feature-dialog";
 import { FEATURE_KIND_META, type FeatureTarget } from "../../content-assets/emails/_feature-types";
 
@@ -278,8 +279,7 @@ function BlockLibrary({ open, onClose, onPick }: { open: boolean; onClose: () =>
         <DialogHeader>
           <DialogTitle>Add a block</DialogTitle>
           <DialogDescription>
-            {PRESETS.length} ready-made blocks across {BLOCKS.length} kinds. Pick one — everything in it can be changed
-            once it&apos;s in the email.
+            {`${PRESETS.length} ready-made blocks across ${BLOCKS.length} kinds. Pick one — everything in it can be changed once it's in the email.`}
           </DialogDescription>
         </DialogHeader>
         <label className="relative">
@@ -574,6 +574,8 @@ function ImageField({
   const [picking, setPicking] = useState(false);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  // The key first, as the email does: the stored URL may name another project.
+  const thumb = (value?.key ? mediaPublicUrl(value.key) : "") || value?.url || "";
 
   async function upload(file: File | undefined) {
     if (!file) return;
@@ -595,9 +597,9 @@ function ImageField({
       <span className={LABEL}>{label}</span>
       <div className="flex items-start gap-3">
         <div className="relative h-16 w-28 shrink-0 rounded overflow-hidden border border-bz-border bg-bz-surface-2 grid place-items-center">
-          {value?.url ? (
+          {thumb ? (
             // eslint-disable-next-line @next/next/no-img-element -- a library thumbnail of any size; next/image would need every Supabase host configured
-            <img src={value.url} alt="" className="absolute inset-0 size-full object-cover" />
+            <img src={thumb} alt="" className="absolute inset-0 size-full object-cover" />
           ) : (
             <ImageIcon size={16} className="text-bz-muted" />
           )}

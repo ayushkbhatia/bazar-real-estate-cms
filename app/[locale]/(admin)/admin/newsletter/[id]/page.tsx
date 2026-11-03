@@ -87,6 +87,14 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       body_ar: campaign.body_ar ?? "",
     };
     const unsubscribe = `${emailSiteUrl()}/newsletter/unsubscribe/preview`;
+    const { data: lists } = campaign.list_ids?.length
+      ? await supabase.from("newsletter_lists").select("name").in("id", campaign.list_ids)
+      : { data: [] as { name: string }[] };
+    // A list deleted since is still counted, by the number it went to.
+    const listNames = [
+      ...(lists ?? []).map((l) => l.name),
+      ...Array(Math.max(0, (campaign.list_ids?.length ?? 0) - (lists?.length ?? 0))).fill("a deleted list"),
+    ];
     const admin = createAdminClient();
     // Featured cards as they would draw today — the records are live, so a
     // listing repriced since the send shows its new price here.
@@ -119,6 +127,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           from={sender.from}
           replyTo={sender.replyTo}
           canWrite={canWrite}
+          listNames={listNames}
         />
       </CmsShell>
     );

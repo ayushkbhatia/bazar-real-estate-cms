@@ -21,6 +21,7 @@ type ListRow = {
   subject: string;
   status: CampaignStatus;
   audience: string;
+  list_ids: string[];
   subject_ar: string | null;
   recipient_count: number;
   scheduled_at: string | null;
@@ -39,7 +40,7 @@ export default async function NewsletterPage() {
     isSupabaseConfigured
       ? supabase
           .from("newsletter_campaigns")
-          .select("id, subject, status, audience, subject_ar, recipient_count, scheduled_at, sent_at, started_at, updated_at")
+          .select("id, subject, status, audience, list_ids, subject_ar, recipient_count, scheduled_at, sent_at, started_at, updated_at")
           .order("created_at", { ascending: false })
           .limit(200)
       : Promise.resolve({ data: [] as ListRow[] }),
@@ -113,7 +114,14 @@ export default async function NewsletterPage() {
                     <td className="px-4 py-3">
                       <CampaignStatusPill status={r.status} />
                     </td>
-                    <td className="px-4 py-3 text-bz-ink-2">{AUDIENCE_LABELS[r.audience as Audience] ?? r.audience}</td>
+                    <td className="px-4 py-3 text-bz-ink-2">
+                      {[
+                        r.audience === "none" ? null : (AUDIENCE_LABELS[r.audience as Audience] ?? r.audience),
+                        r.list_ids?.length ? `${r.list_ids.length} custom list${r.list_ids.length === 1 ? "" : "s"}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" + ")}
+                    </td>
                     <td className="px-4 py-3 text-end mono">{r.status === "sending" || r.status === "sent" ? r.recipient_count : "—"}</td>
                     <td className="px-4 py-3 text-bz-ink-2 whitespace-nowrap">
                       {r.status === "sent"

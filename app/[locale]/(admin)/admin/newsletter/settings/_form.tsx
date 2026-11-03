@@ -89,7 +89,7 @@ export function SenderForm({
       )}
       {unverified && !errors.from_address ? (
         <p className="-mt-2 rounded border border-[oklch(0.85_0.08_70)] bg-[oklch(0.97_0.03_80)] px-3 py-2 text-[12px] text-[oklch(0.4_0.08_60)]">
-          {domain} isn&apos;t verified in Resend, so it can&apos;t be saved: Resend would refuse every newsletter from
+          {`${domain} isn't verified in Resend, so it can't be saved:`} Resend would refuse every newsletter from
           it. Add the domain in Resend, set the DNS records it lists at your domain registrar, wait for it to show
           Verified, then save here.
         </p>

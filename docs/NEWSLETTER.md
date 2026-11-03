@@ -55,7 +55,7 @@ with two buttons, social icons and a contact footer.
   heading, paragraph, heading + text + button, quote, image, image beside
   text, image row, feature columns, cards, figures, tags, list, at a glance,
   advisor card, button, call-to-action band, live listings/projects/articles,
-  social links, contact and footer, divider, space — and 58 ready-made
+  social links, contact and footer, divider, space — and 55 ready-made
   presets in **Add a block**, searchable and grouped.
 - **Each block** has its words, links, pictures (from the media library or
   uploaded on the spot) and colours (Bazar's swatches or any hex), plus page

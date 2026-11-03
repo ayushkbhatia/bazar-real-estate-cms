@@ -143,6 +143,13 @@ function rgba(hex: string, opacity: number): string {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.max(0, Math.min(1, opacity)).toFixed(2)})`;
 }
 
+/** Light icons on a light ink (a dark band), dark ones otherwise. */
+function iconTone(ink: string): "light" | "dark" {
+  const n = Number.parseInt(ink.slice(1), 16);
+  const lum = (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
+  return lum > 0.6 ? "light" : "dark";
+}
+
 const dirAttr = (ctx: Ctx) => `dir="${ctx.rtl ? "rtl" : "ltr"}"`;
 const TABLE = 'role="presentation" cellspacing="0" cellpadding="0" border="0"';
 
@@ -571,7 +578,7 @@ const DRAW: Record<string, Drawer> = {
       .filter(([, v]) => v.trim())
       .map(([icon, v, to]) => {
         ctx.text.push(v);
-        return `<a href="${esc(to(v.trim()))}" style="display:inline-block;margin-${ctx.rtl ? "left" : "right"}:14px;font-family:${font(ctx, "sans")};font-size:13px;color:${ctx.settings.linkColor};text-decoration:none"><img src="${esc(`${ctx.siteUrl}/email/social/${icon}-dark.png`)}" alt="" width="14" height="14" style="display:inline-block;vertical-align:middle;width:14px;height:14px;border:0;margin-${ctx.rtl ? "left" : "right"}:5px"><bdi>${esc(v.trim())}</bdi></a>`;
+        return `<a href="${esc(to(v.trim()))}" style="display:inline-block;margin-${ctx.rtl ? "left" : "right"}:14px;font-family:${font(ctx, "sans")};font-size:13px;color:${ctx.settings.linkColor};text-decoration:none"><img src="${esc(`${ctx.siteUrl}/email/social/${icon}-${iconTone(ink)}.png`)}" alt="" width="14" height="14" style="display:inline-block;vertical-align:middle;width:14px;height:14px;border:0;margin-${ctx.rtl ? "left" : "right"}:5px"><bdi>${esc(v.trim())}</bdi></a>`;
       })
       .join("");
     const words =
@@ -686,7 +693,7 @@ const DRAW: Record<string, Drawer> = {
       .filter(([, v]) => v.trim())
       .map(([icon, v, to]) => {
         ctx.text.push(v.trim());
-        return `<a href="${esc(to(v.trim()))}" style="display:inline-block;margin:0 9px;font-family:${font(ctx, "sans")};font-size:12px;color:${ink};text-decoration:none"><img src="${esc(`${ctx.siteUrl}/email/social/${icon}-dark.png`)}" alt="" width="13" height="13" style="display:inline-block;vertical-align:middle;width:13px;height:13px;border:0;margin-${ctx.rtl ? "left" : "right"}:5px;opacity:0.7"><bdi>${esc(v.trim())}</bdi></a>`;
+        return `<a href="${esc(to(v.trim()))}" style="display:inline-block;margin:0 9px;font-family:${font(ctx, "sans")};font-size:12px;color:${ink};text-decoration:none"><img src="${esc(`${ctx.siteUrl}/email/social/${icon}-${iconTone(ink)}.png`)}" alt="" width="13" height="13" style="display:inline-block;vertical-align:middle;width:13px;height:13px;border:0;margin-${ctx.rtl ? "left" : "right"}:5px;opacity:0.7"><bdi>${esc(v.trim())}</bdi></a>`;
       });
     if (reach.length) lines.push(`<p style="margin:0 0 8px 0;text-align:${align}">${reach.join("")}</p>`);
     const links = items(p, "links")

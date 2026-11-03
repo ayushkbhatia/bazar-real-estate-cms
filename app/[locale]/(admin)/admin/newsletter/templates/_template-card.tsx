@@ -60,7 +60,8 @@ export function TemplateCard({
         <iframe
           title={`${name} preview`}
           srcDoc={html}
-          sandbox=""
+          // As the composer's preview: scripts never run, images load.
+          sandbox="allow-same-origin"
           tabIndex={-1}
           className="absolute top-0 left-1/2 w-[680px] h-[1100px] origin-top -translate-x-1/2 scale-[0.5] pointer-events-none border-0"
         />

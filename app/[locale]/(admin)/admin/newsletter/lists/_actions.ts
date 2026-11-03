@@ -154,7 +154,7 @@ export async function importContacts(
     `${added} added`,
     report.alreadyOnList ? `${report.alreadyOnList} already on the list` : "",
     report.suppressed ? `${report.suppressed} left out — they unsubscribed or bounced before` : "",
-    report.invalid ? `${report.invalid} lines weren't email addresses` : "",
+    report.invalid ? `${report.invalid} line${report.invalid === 1 ? " wasn't an email address" : "s weren't email addresses"}` : "",
   ].filter(Boolean);
   return { status: "ok", message: `${parts.join(", ")}.`, report };
 }
