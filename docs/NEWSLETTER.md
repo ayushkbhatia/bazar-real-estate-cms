@@ -94,6 +94,20 @@ page's `featured` section (/admin/pages/master/insights), so an edit there
 words both, in English and Arabic. Their sign-ups are told apart by `source`:
 `insights_header` and `insights_article`.
 
+### Bot sign-ups
+
+From August to November 2026 a bot signed up 26 addresses and had a
+confirmation email sent to each: real people's work addresses, and Gmail
+inboxes padded with dots (`c.o.v.o.yovu.z.u.49@gmail.com` is one person's
+`covoyovuzu49`). None ever confirmed; all 26 were deleted on 3 Nov 2026.
+
+`subscribeToNewsletter` now drops, without storing or emailing anything, a
+sign-up that fills the signup box's hidden trap, arrives under two seconds
+after the box was drawn, or uses a dot-padded Gmail address
+(`isDotPaddedGmail` in `lib/forms/spam.ts`). The visitor sees the usual
+"check your inbox" either way. One IP may also sign up at most 4 times an
+hour and 8 times a day.
+
 ## Who may do what
 
 | | admin | marketing | editor | others |

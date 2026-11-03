@@ -120,6 +120,25 @@ export function isRepeatSender(earlier: readonly (string | Date)[], now: number 
   return REPEAT_LIMITS.some(({ windowMs, max }) => times.filter((t) => now - t < windowMs).length >= max);
 }
 
+/**
+ * Whether an address is a Gmail inbox padded out with dots.
+ *
+ * Gmail ignores dots in the part before the @, so `c.o.v.o.yovu.z.u.49` is
+ * one person's `covoyovuzu49` — a bot uses that to sign the same real mailbox
+ * up again and again, each time looking new. Every bot signup to the
+ * newsletter between Aug and Nov 2026 that used a Gmail address looked like
+ * this; no confirmed subscriber did. The rule wants three dots AND a
+ * one-character piece between them, so a real `john.paul.smith.jr` passes.
+ */
+export function isDotPaddedGmail(email: string): boolean {
+  const at = email.lastIndexOf("@");
+  if (at < 0) return false;
+  const domain = email.slice(at + 1).trim().toLowerCase();
+  if (domain !== "gmail.com" && domain !== "googlemail.com") return false;
+  const pieces = email.slice(0, at).split("+")[0].split(".");
+  return pieces.length >= 4 && pieces.some((p) => p.length === 1);
+}
+
 type Submission = {
   /** Whatever arrived in the honeypot field, if anything. */
   honeypot?: unknown;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { subscribeToNewsletter } from "../_actions/newsletter";
 import type { NewsletterSource } from "@/lib/schemas/newsletter";
 import type { ResolvedForm } from "@/lib/forms/types";
+import { HONEYPOT_FIELD, RENDERED_AT_FIELD } from "@/lib/forms/spam";
 
 type Props = {
   source: NewsletterSource;
@@ -27,6 +28,13 @@ type Props = {
 export function NewsletterSignup({ source, variant = "light", form }: Props) {
   const [email, setEmail] = useState("");
   const [pending, startTransition] = useTransition();
+  // The same bot check the lead forms carry (lib/forms/spam.ts): a trap no
+  // person sees, and when the box was drawn.
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const renderedAtRef = useRef<number | null>(null);
+  useEffect(() => {
+    renderedAtRef.current = Date.now();
+  }, []);
   const [message, setMessage] = useState<{
     kind: "success" | "error" | "info";
     text: string;
@@ -36,7 +44,12 @@ export function NewsletterSignup({ source, variant = "light", form }: Props) {
     e.preventDefault();
     setMessage(null);
     startTransition(async () => {
-      const result = await subscribeToNewsletter({ email, source });
+      const result = await subscribeToNewsletter({
+        email,
+        source,
+        [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
+        [RENDERED_AT_FIELD]: renderedAtRef.current ?? "",
+      });
       if (result.status === "ok") {
         setMessage({ kind: "success", text: result.message });
         setEmail("");
@@ -56,7 +69,22 @@ export function NewsletterSignup({ source, variant = "light", form }: Props) {
   if (form && !form.enabled) return null;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3">
+    <form onSubmit={onSubmit} className="relative flex flex-col gap-3">
+      {/* See form-renderer.tsx for why it is named and flagged like this. */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name={HONEYPOT_FIELD}
+        defaultValue=""
+        tabIndex={-1}
+        autoComplete="off"
+        data-1p-ignore=""
+        data-lpignore="true"
+        data-bwignore=""
+        data-form-type="other"
+        aria-hidden="true"
+        className="absolute -start-[9999px] h-px w-px opacity-0"
+      />
       <div className="flex gap-2 max-w-md">
         <Input
           type="email"
