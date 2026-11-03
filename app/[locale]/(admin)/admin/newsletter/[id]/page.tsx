@@ -6,7 +6,7 @@ import { getStaffRole, requireRole } from "@/lib/auth";
 import { STAFF_ROLES } from "@/lib/schemas/staff";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
-import { emailSender } from "@/lib/email";
+import { readNewsletterSender } from "@/lib/newsletter/sender-read";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { emailSiteUrl } from "@/lib/email-templates";
@@ -57,7 +57,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
   const [role, counts] = await Promise.all([getStaffRole(), subscriberCounts()]);
   const canWrite = role !== null && (NEWSLETTER_WRITE_ROLES as readonly string[]).includes(role);
   const canSend = role !== null && (NEWSLETTER_SEND_ROLES as readonly string[]).includes(role);
-  const sender = emailSender();
+  const sender = await readNewsletterSender();
   const title = campaign.subject.trim() || "Untitled draft";
 
   const crumbs = (

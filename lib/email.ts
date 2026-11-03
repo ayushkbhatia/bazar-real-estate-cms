@@ -95,6 +95,31 @@ export function emailSender(): { from: string; replyTo: string } {
 }
 
 /**
+ * The domains Resend will send from: verified, with sending enabled. The
+ * newsletter's sender settings refuse a From on any other domain, because
+ * Resend refuses every message from one — a newsletter would fail in full,
+ * batch after batch, with nothing on the settings page to say why.
+ */
+export async function resendSendingDomains(): Promise<
+  { status: "ok"; domains: string[] } | { status: "unavailable"; reason: string }
+> {
+  const resend = getClient();
+  if (!resend) return { status: "unavailable", reason: "RESEND_API_KEY not set" };
+  try {
+    const result = await resend.domains.list();
+    if (result.error) return { status: "unavailable", reason: scrubPii(result.error.message) };
+    return {
+      status: "ok",
+      domains: (result.data?.data ?? [])
+        .filter((d) => d.status === "verified" && d.capabilities?.sending !== "disabled")
+        .map((d) => d.name.toLowerCase()),
+    };
+  } catch (err) {
+    return { status: "unavailable", reason: scrubPii(err instanceof Error ? err.message : String(err)) };
+  }
+}
+
+/**
  * Whether delivery is blocked.
  *
  * ── Why this defaults to ON outside production ───────────────────────────

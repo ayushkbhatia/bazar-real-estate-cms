@@ -31,6 +31,7 @@ import { missingFeatures, unresolvedFeatures } from "@/lib/newsletter/feature-re
 import { isStarter, starterDraft, STARTER_NEEDS, type StarterPicks } from "@/lib/newsletter/starters";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { drainNewsletterQueue, finishCampaigns, startCampaign } from "@/lib/newsletter/send";
+import { readNewsletterSender } from "@/lib/newsletter/sender-read";
 
 export type NewsletterActionResult =
   | { status: "ok"; message: string }
@@ -231,11 +232,14 @@ export async function sendCampaignTest(raw: unknown, locale: "en" | "ar"): Promi
     unsubscribeUrl: `${emailSiteUrl()}${locale === "ar" ? "/ar" : ""}/newsletter/unsubscribe/test`,
     features: features.draw,
   });
+  const sender = await readNewsletterSender();
   const result = await sendEmail({
     to: user.email,
     subject: `[Test] ${email.subject}`,
     text: email.text,
     html: email.html,
+    from: sender.from,
+    replyTo: sender.replyTo,
   });
   if (result.status === "ok") {
     return { status: "ok", message: `Test sent to ${user.email}${email.locale === "ar" ? " (Arabic edition)" : ""}.` };

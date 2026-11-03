@@ -8,6 +8,7 @@ vi.mock("@/lib/email", () => ({
 }));
 vi.mock("@/lib/content-assets/system-resolve", () => ({ readEmailBrand: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => null }));
+vi.mock("./sender-read", () => ({ readNewsletterSender: vi.fn() }));
 // Featured records: whatever each test says the catalogue answers.
 vi.mock("./features", () => ({
   newsletterFeatures: async () => ({ lookup: { get: mocks.lookup }, labels: undefined }),
@@ -67,6 +68,18 @@ describe("sendClaimed", () => {
   beforeEach(() => {
     mocks.sendEmailBatch.mockReset();
     mocks.lookup.mockReset();
+  });
+
+  it("sends from the newsletter's own sender when given one, and the env's otherwise", async () => {
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r1", "r2"] });
+    const sender = { from: "Marketing at Bazar Real Estate <marketing@bazarrealestate.com>", replyTo: "marketing@bazarrealestate.ae" };
+    await sendClaimed(fakeDb({ campaigns: [campaign], subscribers }).client, claimed(), DEFAULT_EMAIL_BRAND, sender);
+    for (const input of mocks.sendEmailBatch.mock.calls[0]![0]) {
+      expect(input).toMatchObject({ from: sender.from, replyTo: sender.replyTo });
+    }
+    mocks.sendEmailBatch.mockClear();
+    await sendClaimed(fakeDb({ campaigns: [campaign], subscribers }).client, claimed(), DEFAULT_EMAIL_BRAND);
+    expect(mocks.sendEmailBatch.mock.calls[0]![0][0]).not.toHaveProperty("from");
   });
 
   it("sends one batch, each in the recipient's language with their own unsubscribe link, and skips anyone who left", async () => {

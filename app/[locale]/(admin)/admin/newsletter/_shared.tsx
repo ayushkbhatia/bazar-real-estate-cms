@@ -1,19 +1,20 @@
 import Link from "next/link";
-import { Send, Users } from "lucide-react";
+import { Send, Settings, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CAMPAIGN_STATUS_LABELS, type CampaignStatus } from "@/lib/newsletter/campaign";
 
-/** Campaigns | Subscribers, the two halves of /admin/newsletter. */
+/** Campaigns | Subscribers | Settings: the parts of /admin/newsletter. */
 export function NewsletterTabs({
   active,
   counts,
 }: {
-  active: "campaigns" | "subscribers";
+  active: "campaigns" | "subscribers" | "settings";
   counts: { campaigns: number; confirmed: number };
 }) {
   const tabs = [
     { id: "campaigns", label: "Newsletters", href: "/admin/newsletter", icon: Send, count: counts.campaigns },
     { id: "subscribers", label: "Subscribers", href: "/admin/newsletter/subscribers", icon: Users, count: counts.confirmed },
+    { id: "settings", label: "Sender", href: "/admin/newsletter/settings", icon: Settings, count: null },
   ] as const;
   return (
     <nav
@@ -34,7 +35,9 @@ export function NewsletterTabs({
           >
             <tab.icon size={12} strokeWidth={1.8} />
             {tab.label}
-            <span className={cn("mono text-[10.5px]", on ? "text-bz-bg/80" : "text-bz-muted")}>{tab.count}</span>
+            {tab.count === null ? null : (
+              <span className={cn("mono text-[10.5px]", on ? "text-bz-bg/80" : "text-bz-muted")}>{tab.count}</span>
+            )}
           </Link>
         );
       })}

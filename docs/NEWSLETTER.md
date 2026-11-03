@@ -108,6 +108,26 @@ after the box was drawn, or uses a dot-padded Gmail address
 "check your inbox" either way. One IP may also sign up at most 4 times an
 hour and 8 times a day.
 
+## Sender
+
+Newsletters carry their own From and Reply-To, set at **Newsletter → Sender**
+(`/admin/newsletter/settings`, `newsletter_settings`, migration 0174). Every
+other email the site sends keeps the env's `RESEND_FROM_ADDRESS` /
+`RESEND_REPLY_TO`; a blank field here falls back to those too.
+
+- Seeded as **Marketing at Bazar Real Estate**
+  `<marketing@bazarrealestate.com>`, replies to `marketing@bazarrealestate.ae`.
+- The From must be on a domain Resend has verified: saving asks Resend
+  (`resendSendingDomains()` in `lib/email.ts`) and refuses any other, because
+  Resend refuses every message from an unverified domain. As of 3 Nov 2026 the
+  verified domain is **bazarrealestate.com**; `bazarrealestate.ae` is not.
+  To send from `marketing@bazarrealestate.ae`: add the domain in Resend, set
+  the SPF/DKIM records it lists at the .ae registrar, wait for *Verified*,
+  then change the address here — no deploy.
+- The Reply-To can be any address; replies need no verification.
+- The sender, "Send me a test" and the preview's inbox header all read
+  `readNewsletterSender()` (`lib/newsletter/sender-read.ts`).
+
 ## Who may do what
 
 | | admin | marketing | editor | others |
@@ -211,6 +231,7 @@ who never asked to go.
 | `admin/newsletter/_feature-targets.ts` | what the picker offers (published records + articles) |
 | `admin/newsletter/_translate.ts` | Translate from English |
 | `lib/newsletter/send.ts` | start, drain, finish — the sender |
+| `lib/newsletter/sender.ts`, `sender-read.ts` | the newsletter's From / Reply-To (0174) |
 | `lib/email.ts` | `headers` on a send; `sendEmailBatch` |
 | `app/api/cron/newsletter-send/` | the minute cron |
 | `app/api/newsletter/unsubscribe/` | one-click unsubscribe |

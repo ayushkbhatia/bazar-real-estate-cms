@@ -3712,6 +3712,33 @@ export type Database = {
           },
         ]
       }
+      newsletter_settings: {
+        Row: {
+          from_address: string
+          from_name: string
+          id: boolean
+          reply_to: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          from_address?: string
+          from_name?: string
+          id?: boolean
+          reply_to?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          from_address?: string
+          from_name?: string
+          id?: boolean
+          reply_to?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           account_id: string | null

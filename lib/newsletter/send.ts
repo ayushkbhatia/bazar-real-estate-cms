@@ -15,6 +15,8 @@ import {
 import { featureDrawer, newsletterFeatures, type NewsletterFeatures } from "./features";
 import { unresolvedFeatures } from "./feature-render";
 import { featureBlocksIn } from "@/lib/content-assets/email-feature";
+import { readNewsletterSender } from "./sender-read";
+import type { NewsletterSender } from "./sender";
 
 /**
  * The newsletter sender: start a campaign, drain its deliveries in Resend
@@ -94,6 +96,8 @@ export async function sendClaimed(
   client: Db,
   claimed: Delivery[],
   brand: EmailBrand,
+  /** The newsletter's own From and Reply-To (0174); the env's when omitted. */
+  sender?: NewsletterSender,
 ): Promise<Omit<DrainReport, "batches">> {
   const report = { sent: 0, skipped: 0, failed: 0, retried: 0 };
   if (claimed.length === 0) return report;
@@ -179,6 +183,7 @@ export async function sendClaimed(
         text: email.text,
         html: email.html,
         headers: unsubscribeHeaders(subscriber.unsubscribe_token, locale),
+        ...(sender ? { from: sender.from, replyTo: sender.replyTo } : {}),
       },
     });
   }
@@ -236,6 +241,7 @@ export async function drainNewsletterQueue(
   const deadline = Date.now() + (opts.deadlineMs ?? 45_000);
   const report: DrainReport = { batches: 0, sent: 0, skipped: 0, failed: 0, retried: 0 };
   let brand: EmailBrand | null = null;
+  let sender: NewsletterSender | null = null;
 
   while (report.batches < maxBatches && Date.now() < deadline) {
     const { data, error } = await client.rpc("newsletter_claim_deliveries", { p_limit: EMAIL_BATCH_LIMIT });
@@ -243,7 +249,8 @@ export async function drainNewsletterQueue(
     const claimed = (data ?? []) as Delivery[];
     if (claimed.length === 0) break;
     brand ??= await readEmailBrand();
-    const r = await sendClaimed(client, claimed, brand);
+    sender ??= await readNewsletterSender();
+    const r = await sendClaimed(client, claimed, brand, sender);
     report.batches += 1;
     report.sent += r.sent;
     report.skipped += r.skipped;
