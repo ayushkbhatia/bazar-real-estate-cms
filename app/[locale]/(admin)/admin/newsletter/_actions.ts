@@ -542,7 +542,7 @@ export async function saveAsTemplate(
     target_id: result.data.id,
     after: { name: m.data.name, blocks: parsed.draft.design.blocks.length },
   });
-  revalidatePath(`${ADMIN_PATH}/templates`);
+  revalidatePath("/admin/newsletter/templates");
   return { status: "ok", message: replace ? `Template “${m.data.name}” updated.` : `Saved as template “${m.data.name}”.`, id: result.data.id };
 }
 
@@ -558,7 +558,7 @@ export async function renameTemplate(id: string, meta: { name: string; descripti
     .maybeSingle();
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "That template no longer exists." };
-  revalidatePath(`${ADMIN_PATH}/templates`);
+  revalidatePath("/admin/newsletter/templates");
   return { status: "ok", message: "Saved." };
 }
 
@@ -568,7 +568,7 @@ export async function deleteTemplate(id: string): Promise<NewsletterActionResult
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "That template no longer exists." };
   await logAudit({ action: "newsletter.template_delete", target_kind: "newsletter_template", target_id: id, before: { name: data.name } });
-  revalidatePath(`${ADMIN_PATH}/templates`);
+  revalidatePath("/admin/newsletter/templates");
   return { status: "ok", message: `Deleted “${data.name}”. Newsletters made from it are unchanged.` };
 }
 

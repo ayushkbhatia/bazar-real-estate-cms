@@ -840,6 +840,31 @@ export const DOMAINS: Domain[] = [
     columns: [],
     excluded: "The send queue: one row per recipient per newsletter. Ids, statuses and Resend message ids only.",
   },
+  {
+    table: "newsletter_templates",
+    columns: [],
+    excluded: "Saved block templates (0175): starting points in the CMS. Nothing reads them on a page or in an email — using one copies its words, Arabic twins included, into a newsletter_campaigns row, which is classified above.",
+  },
+  {
+    table: "newsletter_settings",
+    columns: [],
+    excluded: "The newsletter's From name and address and Reply-To (0174): mail headers, one row, edited at /admin/newsletter/settings. No page shows them.",
+  },
+  {
+    table: "newsletter_lists",
+    columns: [],
+    excluded: "Custom recipient lists (0176): a name and note for the marketing team, shown only in the CMS.",
+  },
+  {
+    table: "newsletter_list_contacts",
+    columns: [],
+    excluded: "Addresses on custom lists (0176): personal data, never rendered on a public page.",
+  },
+  {
+    table: "newsletter_suppressions",
+    columns: [],
+    excluded: "SHA-256 fingerprints of addresses never to mail again (0176). No text.",
+  },
 
   // ── No public text ───────────────────────────────────────────────────────
   {

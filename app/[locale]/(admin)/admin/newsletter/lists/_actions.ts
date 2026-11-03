@@ -47,7 +47,7 @@ export async function createList(raw: unknown): Promise<ListActionResult> {
     .single();
   if (error || !data) return { status: "error", message: error?.message ?? "Could not create the list." };
   await logAudit({ action: "newsletter.list_create", target_kind: "newsletter_list", target_id: data.id, after: { name: parsed.data.name } });
-  revalidatePath(PATH);
+  revalidatePath("/admin/newsletter/lists");
   redirect(`${PATH}/${data.id}`);
 }
 
@@ -63,7 +63,7 @@ export async function updateList(id: string, raw: unknown): Promise<ListActionRe
     .maybeSingle();
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "That list no longer exists." };
-  revalidatePath(`${PATH}/${id}`);
+  revalidatePath(`/admin/newsletter/lists/${id}`);
   return { status: "ok", message: "Saved." };
 }
 
@@ -79,7 +79,7 @@ export async function deleteList(id: string): Promise<ListActionResult> {
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "That list no longer exists." };
   await logAudit({ action: "newsletter.list_delete", target_kind: "newsletter_list", target_id: id, before: { name: data.name, contacts: count ?? 0 } });
-  revalidatePath(PATH);
+  revalidatePath("/admin/newsletter/lists");
   redirect(PATH);
 }
 
@@ -148,8 +148,8 @@ export async function importContacts(
     truncated: parsed.truncated,
   };
   await logAudit({ action: "newsletter.list_import", target_kind: "newsletter_list", target_id: listId, after: report });
-  revalidatePath(`${PATH}/${listId}`);
-  revalidatePath(PATH);
+  revalidatePath(`/admin/newsletter/lists/${listId}`);
+  revalidatePath("/admin/newsletter/lists");
   const parts = [
     `${added} added`,
     report.alreadyOnList ? `${report.alreadyOnList} already on the list` : "",
@@ -189,7 +189,7 @@ export async function addContact(listId: string, raw: unknown): Promise<ListActi
     return { status: "error", message: error.message };
   }
   await logAudit({ action: "newsletter.list_contact_add", target_kind: "newsletter_list", target_id: listId });
-  revalidatePath(`${PATH}/${listId}`);
+  revalidatePath(`/admin/newsletter/lists/${listId}`);
   return { status: "ok", message: "Added." };
 }
 
@@ -206,7 +206,7 @@ export async function removeContact(listId: string, contactId: string): Promise<
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "Already removed." };
   await logAudit({ action: "newsletter.list_contact_remove", target_kind: "newsletter_list", target_id: listId });
-  revalidatePath(`${PATH}/${listId}`);
+  revalidatePath(`/admin/newsletter/lists/${listId}`);
   return { status: "ok", message: "Removed from the list." };
 }
 
@@ -227,7 +227,7 @@ export async function unsubscribeContact(listId: string, contactId: string): Pro
   if (error) return { status: "error", message: error.message };
   if (!data) return { status: "error", message: "Already unsubscribed." };
   await logAudit({ action: "newsletter.list_contact_unsubscribe", target_kind: "newsletter_list", target_id: listId });
-  revalidatePath(`${PATH}/${listId}`);
+  revalidatePath(`/admin/newsletter/lists/${listId}`);
   return { status: "ok", message: "Unsubscribed — they won't receive anything from any list or the newsletter." };
 }
 
