@@ -17,8 +17,12 @@ import { isCalculatorCopySection } from "./mortgage-calculator-copy";
  * switched off without taking the calculator with them are all asserted.
  */
 const page = getMasterPage("mortgage") as MasterPageDef;
-/** The page's bands, without the calculator copy sections that follow them. */
-const bands = (keys: string[]) => keys.filter((key) => !isCalculatorCopySection(key));
+/**
+ * The page's bands, without the calculator copy sections that follow them or
+ * the hero panel's words (`start_panel`), which draw inside the hero.
+ */
+const bands = (keys: string[]) =>
+  keys.filter((key) => !isCalculatorCopySection(key) && key !== "start_panel");
 const values = (key: string): SectionValues =>
   resolveSections(page, null).find((s) => s.key === key)?.values ?? {};
 
@@ -88,7 +92,9 @@ describe("mortgage master page", () => {
   });
 
   it("folds to Arabic rather than to the English default", () => {
-    const [hero, , scenario] = resolveSections(page, null, "ar");
+    const resolved = resolveSections(page, null, "ar");
+    const hero = resolved.find((s) => s.key === "hero")!;
+    const scenario = resolved.find((s) => s.key === "scenario")!;
     expect(str(hero.values, "title")).toBe("ما الذي سيكلفك هذا العقار");
     expect(str(scenario.values, "eyebrow")).toBe("السيناريو");
     // The fold must never leak the storage shape to a renderer.
@@ -119,6 +125,21 @@ describe("mortgage master page", () => {
     // twice.
     expect(values("hero").show_form).toBe(true);
     expect(str(values("pre_approval"), "jump_cta_label")).toBeTruthy();
+  });
+
+  it("keeps the Start your application panel's words in a section of their own", () => {
+    // They were Hero fields until 3 Nov 2026, where the client could not find
+    // them. Their own section sits straight after the hero, in a page saved
+    // before it existed too, and the hero no longer carries them.
+    const saved = ["hero", "journey", "scenario"].map((key) => ({ key, enabled: true, values: {} }));
+    expect(resolveSections(page, saved).map((s) => s.key).slice(0, 3)).toEqual(["hero", "start_panel", "journey"]);
+    expect(str(values("start_panel"), "panel_title")).toBe("Start your application");
+    expect(str(values("start_panel"), "sticky_cta")).toBe("Start pre-approval");
+    const ar = resolveSections(page, null, "ar").find((s) => s.key === "start_panel")!;
+    expect(str(ar.values, "panel_title")).toBe("ابدأ طلبك");
+    expect(str(ar.values, "preapproval_title")).toBe("الموافقة المبدئية السريعة");
+    const heroKeys = page.sections.find((s) => s.key === "hero")!.fields.map((f) => f.key);
+    expect(heroKeys.filter((k) => k.startsWith("panel_") || k.startsWith("sticky_"))).toEqual([]);
   });
 
   it("templates the amortization eyebrow on the selected term", () => {

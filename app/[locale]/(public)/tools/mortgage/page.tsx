@@ -82,6 +82,9 @@ export default async function MortgagePage({
   // Ranges, term options and opening choices, edited beside the section's words.
   const controls = mortgageCalculatorControls(v("scenario"));
   const heroV = v("hero");
+  // The application's first step, drawn in the hero; its own section so the
+  // words are found under their own name in Pages & blocks.
+  const panelV = v("start_panel");
   const bandV = v("pre_approval");
   const journeyV = v("journey");
   const bridgeV = v("apply_bridge");
@@ -152,14 +155,14 @@ export default async function MortgagePage({
                     start: MORTGAGE_ENTRY_LINKS.calculatorPreApproval,
                   },
                   panel: {
-                    step: str(heroV, "panel_step"),
-                    title: str(heroV, "panel_title"),
-                    sub: str(heroV, "panel_sub"),
-                    preApprovalTitle: str(heroV, "preapproval_title"),
-                    preApprovalDesc: str(heroV, "preapproval_desc"),
-                    consultancyTitle: str(heroV, "consultancy_title"),
-                    consultancyDesc: str(heroV, "consultancy_desc"),
-                    note: str(heroV, "panel_note"),
+                    step: str(panelV, "panel_step"),
+                    title: str(panelV, "panel_title"),
+                    sub: str(panelV, "panel_sub"),
+                    preApprovalTitle: str(panelV, "preapproval_title"),
+                    preApprovalDesc: str(panelV, "preapproval_desc"),
+                    consultancyTitle: str(panelV, "consultancy_title"),
+                    consultancyDesc: str(panelV, "consultancy_desc"),
+                    note: str(panelV, "panel_note"),
                   },
                   journey: {
                     ...head(journeyV),
@@ -175,7 +178,7 @@ export default async function MortgagePage({
                     primaryLabel: str(bridgeV, "primary_label"),
                     secondaryLabel: str(bridgeV, "secondary_label"),
                   },
-                  startBar: { text: str(heroV, "sticky_text"), cta: str(heroV, "sticky_cta") },
+                  startBar: { text: str(panelV, "sticky_text"), cta: str(panelV, "sticky_cta") },
                 }
               : null
           }
