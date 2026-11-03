@@ -175,11 +175,12 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
     if (name === "email" || type === "email") {
       await field.fill(email);
     } else if (name === "phone" || type === "tel") {
-      await field.fill("+971500000000");
+      await field.fill("+971501234567");
     } else if (name === "message") {
       await field.fill("Automated marketplace E2E test enquiry — please disregard.");
     } else {
-      await field.fill(`Playwright ${ts}`);
+      // Any other text box on a lead form is the name: no digits since #707.
+      await field.fill("Playwright Tester");
     }
   }
   // Located by role, never by label: the submit label is editor-controlled

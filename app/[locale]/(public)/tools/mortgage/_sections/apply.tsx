@@ -169,6 +169,11 @@ export function JourneySection({ copy, href }: { copy: JourneyCopy; href: string
                   "mono absolute start-0 top-0 flex size-8 items-center justify-center rounded-full text-[12px]",
                   last ? "bg-bz-accent text-white" : "border border-bz-border-strong bg-bz-surface text-bz-ink",
                 )}
+                /* `.mono` makes the circle left to right, and `start-0` reads
+                   the circle's own direction — so on /ar it sat at the left of
+                   its column while the line, still right to left, ran from the
+                   right. Inheriting puts it back at the start the line leaves. */
+                style={{ direction: "inherit" }}
               >
                 {i + 1}
               </span>

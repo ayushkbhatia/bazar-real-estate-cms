@@ -695,8 +695,18 @@ export function ListPropertyForm({ areas, deskPhone, copy, questions }: Props) {
                        carry the pairing; the pills and the consent checkbox can
                        take focus but accept no caret, so the rule skips them. */
                     className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
+                    /* `.mono` sets left-to-right, which on /ar put the caret
+                       and the digits at the left edge — the same edge as the
+                       unit, so the number was typed over it. Inheriting keeps
+                       the box right-to-left; digits still read left to right. */
+                    style={{ direction: "inherit" }}
                   />
-                  <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
+                  <span
+                    /* Reads like a placeholder, so it goes the way one does:
+                       once there is a number in the box. */
+                    hidden={areaText !== ""}
+                    className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none"
+                  >
                     {/* The CMS can override this per locale (`unit_ar` on the
                         form field); the code default now comes from the
                         site-wide dictionary rather than being typed here, so an

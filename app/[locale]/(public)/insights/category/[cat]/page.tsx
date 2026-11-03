@@ -21,6 +21,10 @@ import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
+import {
+  ARTICLE_CARD_SIZES,
+  ARTICLE_GRID_COLUMNS,
+} from "../../_components/grid-columns";
 
 export const revalidate = 300;
 
@@ -57,7 +61,7 @@ function ArticleHero({ row }: { row: ArticleListRow }) {
         src={mediaPublicUrl(row.hero.storage_key)}
         alt={row.hero.alt_text ?? row.title}
         fill
-        sizes="(min-width: 1280px) 380px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        sizes={ARTICLE_CARD_SIZES}
         className="object-cover"
       />
     );
@@ -93,7 +97,7 @@ export default async function InsightsCategoryPage({
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10">
         <Link
           href="/insights"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
@@ -118,7 +122,7 @@ export default async function InsightsCategoryPage({
       </section>
 
       {/* Grid */}
-      <section className="px-4 md:px-12 pb-24 max-w-[1280px]">
+      <section className="px-4 md:px-12 pb-24">
         {rows.length === 0 ? (
           <div className="py-24 text-center max-w-[44ch] mx-auto border border-dashed border-bz-border rounded-md">
             <p className="text-[15px] text-bz-ink-2">
@@ -130,7 +134,7 @@ export default async function InsightsCategoryPage({
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
+          <div className={`grid gap-9 gap-y-14 ${ARTICLE_GRID_COLUMNS}`}>
             {rows.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">

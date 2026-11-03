@@ -4,6 +4,7 @@ import {
   classifySubmission,
   heldNote,
   HONEYPOT_FIELD,
+  isDotPaddedGmail,
   isRepeatSender,
   LEGACY_HONEYPOT_FIELD,
   MIN_FILL_MS,
@@ -241,5 +242,32 @@ describe("isRepeatSender", () => {
 
   it("names the reason for the desk", () => {
     expect(heldNote("repeat")).toContain("same email address");
+  });
+});
+
+describe("isDotPaddedGmail", () => {
+  it("catches the dot-padded Gmail addresses the newsletter bot used", () => {
+    for (const email of [
+      "c.o.v.o.yovu.z.u.49@gmail.com",
+      "krof.o.rd.p1989@gmail.com",
+      "u.vos.isub4.7@gmail.com",
+      "vev.icisol.8.7@googlemail.com",
+      "S.HA.NNONC.37.8@GMAIL.COM",
+    ]) {
+      expect(isDotPaddedGmail(email), email).toBe(true);
+    }
+  });
+
+  it("leaves real addresses alone", () => {
+    for (const email of [
+      "sara.almansoori@gmail.com",
+      "john.paul.smith.jr@gmail.com",
+      "j.smith@gmail.com",
+      "a.b.c.d@company.ae",
+      "97hasano@gmail.com",
+      "not-an-email",
+    ]) {
+      expect(isDotPaddedGmail(email), email).toBe(false);
+    }
   });
 });
