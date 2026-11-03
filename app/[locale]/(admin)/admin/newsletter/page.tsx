@@ -10,7 +10,8 @@ import {
   type CampaignStatus,
 } from "@/lib/newsletter/campaign";
 import { NewNewsletterButton } from "./_new-newsletter";
-import { subscriberCounts } from "./_data";
+import { savedTemplates, subscriberCounts } from "./_data";
+import { launchableProjects } from "@/lib/newsletter/blocks/template-data";
 import { CampaignStatusPill, NewsletterTabs, formatDubai } from "./_shared";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +31,11 @@ type ListRow = {
 
 export default async function NewsletterPage() {
   const { supabase } = await requireRole(STAFF_ROLES);
-  const [role, counts, { data }] = await Promise.all([
+  const [role, counts, templates, projects, { data }] = await Promise.all([
     getStaffRole(),
     subscriberCounts(),
+    savedTemplates(),
+    isSupabaseConfigured ? launchableProjects() : Promise.resolve([]),
     isSupabaseConfigured
       ? supabase
           .from("newsletter_campaigns")
@@ -49,11 +52,16 @@ export default async function NewsletterPage() {
       title="Newsletter"
       breadcrumbs="Content · Newsletter"
       primary={
-        canWrite ? <NewNewsletterButton /> : undefined
+        canWrite ? (
+          <NewNewsletterButton
+            templates={templates.map((t) => ({ id: t.id, name: t.name, description: t.description }))}
+            projects={projects}
+          />
+        ) : undefined
       }
     >
       <div className="flex flex-col gap-6">
-        <NewsletterTabs active="campaigns" counts={{ campaigns: rows.length, confirmed: counts.confirmed }} />
+        <NewsletterTabs active="campaigns" counts={{ campaigns: rows.length, confirmed: counts.confirmed, templates: templates.length }} />
 
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[

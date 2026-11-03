@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
@@ -32,6 +33,10 @@ import { isStarter, starterDraft, STARTER_NEEDS, type StarterPicks } from "@/lib
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { drainNewsletterQueue, finishCampaigns, startCampaign } from "@/lib/newsletter/send";
 import { readNewsletterSender } from "@/lib/newsletter/sender-read";
+import { designFeatureHtml, normaliseDesign } from "@/lib/newsletter/blocks/document";
+import { isBuiltInTemplate } from "@/lib/newsletter/blocks/templates";
+import { builtInTemplateDraft } from "@/lib/newsletter/blocks/template-data";
+import type { Json } from "@/db/types";
 
 export type NewsletterActionResult =
   | { status: "ok"; message: string }
@@ -39,8 +44,23 @@ export type NewsletterActionResult =
 
 const ADMIN_PATH = "/admin/newsletter";
 
-/** Sanitise both bodies at the save boundary, exactly as Content assets does. */
+/**
+ * Sanitise both bodies at the save boundary, exactly as Content assets does.
+ * A block-built newsletter keeps no body — its words are in the design, which
+ * the schema has already normalised.
+ */
 function clean(draft: CampaignDraft): CampaignDraft {
+  if (draft.format === "blocks") {
+    return {
+      ...draft,
+      subject: draft.subject.trim(),
+      preheader: draft.preheader.trim(),
+      subject_ar: draft.subject_ar.trim(),
+      preheader_ar: draft.preheader_ar.trim(),
+      body: "",
+      body_ar: "",
+    };
+  }
   return {
     ...draft,
     subject: draft.subject.trim(),
@@ -58,7 +78,7 @@ function clean(draft: CampaignDraft): CampaignDraft {
  */
 async function featuresFor(draft: CampaignDraft, want: EmailLocale, brand: EmailBrand) {
   const edition = editionLocale(draft, want);
-  const body = edition === "ar" ? draft.body_ar : draft.body;
+  const body = draft.format === "blocks" ? designFeatureHtml(draft.design) : edition === "ar" ? draft.body_ar : draft.body;
   const found = await newsletterFeatures([body], edition);
   const blocks = featureBlocksIn(body);
   const missing = blocks.flatMap((b) => missingFeatures(b, found.lookup));
@@ -86,6 +106,8 @@ function parseDraft(raw: unknown): { ok: true; draft: CampaignDraft } | { ok: fa
 
 function toRow(draft: CampaignDraft) {
   return {
+    format: draft.format,
+    design: draft.format === "blocks" ? ((draft.design ?? null) as Json) : null,
     subject: draft.subject,
     preheader: draft.preheader,
     body: draft.body,
@@ -148,6 +170,11 @@ async function starterPicks(needs: Partial<Record<keyof StarterPicks, number>>):
 export async function createCampaign(formData?: FormData): Promise<void> {
   if (!isSupabaseConfigured) throw new Error("Supabase env vars are not set.");
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const template = formData?.get("template");
+  if (typeof template === "string" && template) {
+    const project = formData?.get("project");
+    return createFromTemplate(template, typeof project === "string" && /^[0-9a-f-]{36}$/i.test(project) ? project : null);
+  }
   const raw = formData?.get("starter");
   const starter = isStarter(raw) ? raw : "blank";
   const fields = starter === "blank" ? {} : starterDraft(starter, await starterPicks(STARTER_NEEDS[starter]));
@@ -383,7 +410,7 @@ export async function duplicateCampaign(id: string): Promise<void> {
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
   const { data: source, error } = await supabase
     .from("newsletter_campaigns")
-    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience")
+    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience, format, design")
     .eq("id", id)
     .single();
   if (error || !source) throw new Error(error?.message ?? "Newsletter not found.");
@@ -400,6 +427,133 @@ export async function duplicateCampaign(id: string): Promise<void> {
     after: { from: id },
   });
   redirect(`${ADMIN_PATH}/${data.id}`);
+}
+
+// ── Templates ────────────────────────────────────────────────────
+
+/**
+ * A new block-built draft from a template — a built-in one, filled from the
+ * live site (a project's own record for a launch), or one an editor saved.
+ */
+async function createFromTemplate(template: string, project: string | null): Promise<void> {
+  const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  let fields: { subject: string; preheader: string; subject_ar: string; preheader_ar: string; design: unknown };
+  if (isBuiltInTemplate(template)) {
+    const draft = await builtInTemplateDraft(template, project);
+    if (!draft) throw new Error("That project isn't published, so there's nothing to launch.");
+    fields = draft;
+  } else if (/^[0-9a-f-]{36}$/i.test(template)) {
+    const { data, error } = await supabase
+      .from("newsletter_templates")
+      .select("subject, preheader, subject_ar, preheader_ar, design")
+      .eq("id", template)
+      .single();
+    if (error || !data) throw new Error(error?.message ?? "Template not found.");
+    fields = data;
+  } else {
+    throw new Error("Unknown template.");
+  }
+  const { data, error } = await supabase
+    .from("newsletter_campaigns")
+    .insert({
+      format: "blocks",
+      design: normaliseDesign(fields.design) as unknown as Json,
+      subject: fields.subject,
+      preheader: fields.preheader,
+      subject_ar: fields.subject_ar || null,
+      preheader_ar: fields.preheader_ar || null,
+      created_by: user.id,
+      updated_by: user.id,
+    })
+    .select("id")
+    .single();
+  if (error || !data) throw new Error(error?.message ?? "Could not create the newsletter.");
+  await logAudit({
+    action: "newsletter.campaign_create",
+    target_kind: "newsletter_campaign",
+    target_id: data.id,
+    after: { template, project },
+  });
+  redirect(`${ADMIN_PATH}/${data.id}`);
+}
+
+const templateMetaSchema = z.object({
+  name: z.string().trim().min(1, "Give the template a name.").max(120, "Keep the name under 120 characters."),
+  description: z.string().trim().max(400, "Keep the description under 400 characters."),
+});
+
+/**
+ * Keep a block-built newsletter's layout — every block, its words in both
+ * languages, colours and images, the subject and preview line — as a
+ * template to start the next one from. `replace` overwrites a saved template
+ * instead of adding one.
+ */
+export async function saveAsTemplate(
+  raw: unknown,
+  meta: { name: string; description: string },
+  replace?: string | null,
+): Promise<NewsletterActionResult & { id?: string }> {
+  const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const parsed = parseDraft(raw);
+  if (!parsed.ok) return parsed.result;
+  if (parsed.draft.format !== "blocks" || !parsed.draft.design) {
+    return { status: "error", message: "Only a newsletter built from blocks can be saved as a template." };
+  }
+  const m = templateMetaSchema.safeParse(meta);
+  if (!m.success) return { status: "error", message: m.error.issues[0]?.message ?? "Check the name." };
+  const row = {
+    ...m.data,
+    subject: parsed.draft.subject,
+    preheader: parsed.draft.preheader,
+    subject_ar: parsed.draft.subject_ar,
+    preheader_ar: parsed.draft.preheader_ar,
+    design: parsed.draft.design as unknown as Json,
+    updated_by: user.id,
+  };
+  const result =
+    replace && /^[0-9a-f-]{36}$/i.test(replace)
+      ? await supabase.from("newsletter_templates").update(row).eq("id", replace).select("id").maybeSingle()
+      : await supabase
+          .from("newsletter_templates")
+          .insert({ ...row, created_by: user.id })
+          .select("id")
+          .single();
+  if (result.error) return { status: "error", message: result.error.message };
+  if (!result.data) return { status: "error", message: "That template no longer exists." };
+  await logAudit({
+    action: replace ? "newsletter.template_update" : "newsletter.template_create",
+    target_kind: "newsletter_template",
+    target_id: result.data.id,
+    after: { name: m.data.name, blocks: parsed.draft.design.blocks.length },
+  });
+  revalidatePath(`${ADMIN_PATH}/templates`);
+  return { status: "ok", message: replace ? `Template “${m.data.name}” updated.` : `Saved as template “${m.data.name}”.`, id: result.data.id };
+}
+
+export async function renameTemplate(id: string, meta: { name: string; description: string }): Promise<NewsletterActionResult> {
+  const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const m = templateMetaSchema.safeParse(meta);
+  if (!m.success) return { status: "error", message: m.error.issues[0]?.message ?? "Check the name." };
+  const { data, error } = await supabase
+    .from("newsletter_templates")
+    .update({ ...m.data, updated_by: user.id })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  if (error) return { status: "error", message: error.message };
+  if (!data) return { status: "error", message: "That template no longer exists." };
+  revalidatePath(`${ADMIN_PATH}/templates`);
+  return { status: "ok", message: "Saved." };
+}
+
+export async function deleteTemplate(id: string): Promise<NewsletterActionResult> {
+  const { supabase } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const { data, error } = await supabase.from("newsletter_templates").delete().eq("id", id).select("id, name").maybeSingle();
+  if (error) return { status: "error", message: error.message };
+  if (!data) return { status: "error", message: "That template no longer exists." };
+  await logAudit({ action: "newsletter.template_delete", target_kind: "newsletter_template", target_id: id, before: { name: data.name } });
+  revalidatePath(`${ADMIN_PATH}/templates`);
+  return { status: "ok", message: `Deleted “${data.name}”. Newsletters made from it are unchanged.` };
 }
 
 // ── Subscribers ──────────────────────────────────────────────────

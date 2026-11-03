@@ -12,6 +12,7 @@ import {
   Copy,
   Languages,
   Loader2,
+  LayoutTemplate,
   Save,
   Send,
   Trash2,
@@ -35,7 +36,11 @@ import {
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../../content-assets/emails/_body-editor";
 import type { FeatureTarget } from "../../content-assets/emails/_feature-types";
-import { translateNewsletter } from "../_translate";
+import { translateDesign, translateNewsletter } from "../_translate";
+import { textSlots, withArabic } from "@/lib/newsletter/blocks/document";
+import type { Design } from "@/lib/newsletter/blocks/types";
+import { BlockDesigner } from "./_designer";
+import { SaveTemplateDialog } from "./_save-template";
 import { EmailFrame, InboxHeader, ViewportToggle, type EmailViewport } from "../../content-assets/emails/_email-frame";
 import {
   deleteCampaign,
@@ -122,6 +127,8 @@ export function Composer({
   const request = useRef(0);
 
   const tokens = useMemo(() => TOKENS.filter((t) => NEWSLETTER_TOKENS.includes(t.name)), []);
+  const blocks = draft.format === "blocks" && draft.design !== null;
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const locked = !canWrite;
   const arabicReady = hasArabicEdition(draft);
@@ -238,9 +245,11 @@ export function Composer({
     });
   }
 
-  const arabicStarted = Boolean(draft.subject_ar.trim()) || !isBlankBody(draft.body_ar);
+  const arabicStarted =
+    Boolean(draft.subject_ar.trim()) ||
+    (blocks ? textSlots(draft.design as Design).some((slot) => slot.ar) : !isBlankBody(draft.body_ar));
 
-  function fillArabic(fields: Pick<CampaignDraft, "subject_ar" | "preheader_ar" | "body_ar">) {
+  function fillArabic(fields: Partial<Pick<CampaignDraft, "subject_ar" | "preheader_ar" | "body_ar" | "design">>) {
     setDraft((d) => ({ ...d, ...fields }));
     setErrors((e) => ({ ...e, subject_ar: "", body_ar: "", preheader_ar: "" }));
     setEditorVersion((v) => v + 1);
@@ -250,13 +259,32 @@ export function Composer({
     if (arabicStarted && !window.confirm("Replace the Arabic edition with a copy of the English?")) return;
     // The body and preview line only: an English subject in the Arabic field
     // would make the edition "complete" before a word of it is Arabic.
-    fillArabic({ subject_ar: "", preheader_ar: draft.preheader, body_ar: toArabicLinks(draft.body) });
+    if (blocks) {
+      const design = draft.design as Design;
+      const slots = textSlots(design);
+      fillArabic({ subject_ar: "", preheader_ar: draft.preheader, design: withArabic(design, new Map(slots.map((slot) => [slot, slot.en]))) });
+    } else {
+      fillArabic({ subject_ar: "", preheader_ar: draft.preheader, body_ar: toArabicLinks(draft.body) });
+    }
     setTranslateNotes([]);
     toast.success("English copied into the Arabic edition — translate it, then write the Arabic subject.");
   }
 
   function translate() {
     if (arabicStarted && !window.confirm("Replace the Arabic edition with a fresh translation of the English?")) return;
+    if (blocks) {
+      startTranslate(async () => {
+        const r = await translateDesign(id, { subject: draft.subject, preheader: draft.preheader, design: draft.design });
+        if (r.status === "error") {
+          toast.error(r.message);
+          return;
+        }
+        fillArabic({ subject_ar: r.subject_ar, preheader_ar: r.preheader_ar, design: r.design });
+        setTranslateNotes(r.notes);
+        toast.success("Arabic drafted from the English. Read it through before you save and send.");
+      });
+      return;
+    }
     startTranslate(async () => {
       const r = await translateNewsletter(id, {
         subject: draft.subject,
@@ -363,7 +391,9 @@ export function Composer({
             </div>
             <p className="text-[12px] text-bz-muted max-w-[70ch] -mt-2">
               {lang === "ar"
-                ? "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead. Featured listings, projects and articles appear in Arabic by themselves."
+                ? blocks
+                  ? "Arabic subscribers receive this edition once it has an Arabic subject; then every block's words need their Arabic. Leave the Arabic subject empty and they receive the English. Featured listings, projects and articles appear in Arabic by themselves."
+                  : "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead. Featured listings, projects and articles appear in Arabic by themselves."
                 : "Everyone receives this edition, unless you write an Arabic one for Arabic subscribers."}
             </p>
 
@@ -441,8 +471,19 @@ export function Composer({
             </label>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-bz-ink-2">Newsletter</span>
-              {locked ? (
+              <span className="text-[12px] font-medium text-bz-ink-2">{blocks ? "Blocks" : "Newsletter"}</span>
+              {blocks ? (
+                <BlockDesigner
+                  key={`blocks-${editorVersion}`}
+                  design={draft.design as Design}
+                  onChange={(design) => set("design", design)}
+                  lang={lang}
+                  locked={locked}
+                  media={media}
+                  onMediaUploaded={(m) => setMedia((list) => [m, ...list])}
+                  records={records}
+                />
+              ) : locked ? (
                 <div
                   className="rounded border border-bz-border bg-bz-bg p-3 text-[13px] [&_p]:mb-2 [&_a]:underline"
                   dir={lang === "ar" ? "rtl" : "ltr"}
@@ -463,6 +504,11 @@ export function Composer({
               )}
               {allProblems[bodyKey] ? (
                 <span className={FIELD_ERROR}>{allProblems[bodyKey]}</span>
+              ) : blocks ? (
+                <span className="text-[11.5px] text-bz-muted">
+                  Every block&apos;s words, pictures, links and colours are yours to change; the preview is the real
+                  email. Every newsletter ends with the subscriber&apos;s own unsubscribe link.
+                </span>
               ) : (
                 <span className="text-[11.5px] text-bz-muted">
                   Headings, lists, links, buttons, images — and <strong>Feature</strong> for listings, projects,
@@ -488,7 +534,7 @@ export function Composer({
               </p>
             ) : null}
 
-            {lang === "ar" && draft.body ? (
+            {lang === "ar" && draft.body && !blocks ? (
               <details className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2">
                 <summary className="cursor-pointer text-[12px] text-bz-ink-2">The English, to translate from</summary>
                 <p className="mt-2 text-[12px] text-bz-muted">{draft.subject || "No subject"}</p>
@@ -631,6 +677,12 @@ export function Composer({
               Next <ChevronRight size={14} />
             </Button>
           ) : null}
+          {canWrite && blocks ? (
+            <Button variant="outline" onClick={() => setSavingTemplate(true)} disabled={busy}>
+              <LayoutTemplate size={14} strokeWidth={1.8} />
+              Save as template
+            </Button>
+          ) : null}
           {canWrite && status === "draft" ? (
             <button
               type="button"
@@ -642,6 +694,7 @@ export function Composer({
             </button>
           ) : null}
         </div>
+        {blocks ? <SaveTemplateDialog open={savingTemplate} draft={draft} onClose={() => setSavingTemplate(false)} /> : null}
         <p className="text-[11.5px] text-bz-muted -mt-3">
           {dirty
             ? "You have unsaved changes."

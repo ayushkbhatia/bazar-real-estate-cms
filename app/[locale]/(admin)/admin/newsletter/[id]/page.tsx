@@ -21,6 +21,7 @@ import { deliveryCounts, EMPTY_DELIVERY_COUNTS } from "@/lib/newsletter/send";
 import { featureDrawer, newsletterFeatures } from "@/lib/newsletter/features";
 import { isAnthropicConfigured } from "@/lib/concierge/env";
 import { listFeatureTargets } from "../_feature-targets";
+import { designFeatureHtml, normaliseDesign } from "@/lib/newsletter/blocks/document";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { subscriberCounts } from "../_data";
 import { CampaignStatusPill } from "../_shared";
@@ -72,7 +73,10 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
 
   if (campaign.status === "sending" || campaign.status === "sent" || campaign.status === "cancelled") {
     const brand = await readEmailBrand();
+    const design = campaign.format === "blocks" ? normaliseDesign(campaign.design) : null;
     const draft = {
+      format: campaign.format,
+      design,
       subject: campaign.subject,
       preheader: campaign.preheader,
       body: campaign.body,
@@ -86,8 +90,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     // listing repriced since the send shows its new price here.
     const arabicEdition = hasArabicEdition(draft);
     const [enFeatures, arFeatures] = await Promise.all([
-      newsletterFeatures([draft.body], "en"),
-      arabicEdition ? newsletterFeatures([draft.body_ar], "ar") : null,
+      newsletterFeatures([design ? designFeatureHtml(design) : draft.body], "en"),
+      arabicEdition ? newsletterFeatures([design ? designFeatureHtml(design) : draft.body_ar], "ar") : null,
     ]);
     return (
       <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
@@ -127,6 +131,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         scheduledAt={campaign.scheduled_at}
         updatedAt={campaign.updated_at}
         initial={{
+          format: campaign.format === "blocks" ? "blocks" : "rich",
+          design: campaign.format === "blocks" ? normaliseDesign(campaign.design) : null,
           subject: campaign.subject,
           preheader: campaign.preheader,
           body: campaign.body,

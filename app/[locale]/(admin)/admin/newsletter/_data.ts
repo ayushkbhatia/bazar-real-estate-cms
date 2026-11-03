@@ -56,3 +56,34 @@ export async function campaignCount(): Promise<number> {
   const { count } = await supabase.from("newsletter_campaigns").select("id", { count: "exact", head: true });
   return count ?? 0;
 }
+
+export type SavedTemplateRow = {
+  id: string;
+  name: string;
+  description: string;
+  subject: string;
+  subject_ar: string;
+  design: unknown;
+  updated_at: string;
+};
+
+/** The team's saved block templates, newest first. */
+export async function savedTemplates(): Promise<SavedTemplateRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("newsletter_templates")
+    .select("id, name, description, subject, subject_ar, design, updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(200);
+  // Before 0175 is applied the table isn't there: no saved templates yet.
+  if (error) return [];
+  return data ?? [];
+}
+
+export async function templateCount(): Promise<number> {
+  if (!isSupabaseConfigured) return 0;
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase.from("newsletter_templates").select("id", { count: "exact", head: true });
+  return count ?? 0;
+}

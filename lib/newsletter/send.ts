@@ -15,6 +15,7 @@ import {
 import { featureDrawer, newsletterFeatures, type NewsletterFeatures } from "./features";
 import { unresolvedFeatures } from "./feature-render";
 import { featureBlocksIn } from "@/lib/content-assets/email-feature";
+import { designFeatureHtml, normaliseDesign } from "./blocks/document";
 import { readNewsletterSender } from "./sender-read";
 import type { NewsletterSender } from "./sender";
 
@@ -107,7 +108,7 @@ export async function sendClaimed(
   const [{ data: campaigns, error: cErr }, { data: subscribers, error: sErr }] = await Promise.all([
     client
       .from("newsletter_campaigns")
-      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar")
+      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar, format, design")
       .in("id", campaignIds),
     client
       .from("newsletter_subscribers")
@@ -116,18 +117,30 @@ export async function sendClaimed(
   ]);
   if (cErr || sErr) throw new Error(`load batch: ${(cErr ?? sErr)!.message}`);
 
-  const campaignById = new Map((campaigns ?? []).map((c) => [c.id, c as Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar">]));
+  type Loaded = Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar" | "format" | "design">;
+  // A block design is normalised once per batch, and its featured blocks read
+  // as the same tags a rich-text body carries — one lookup path for both.
+  const campaignById = new Map(
+    ((campaigns ?? []) as Loaded[]).map((c) => {
+      const design = c.format === "blocks" ? normaliseDesign(c.design) : null;
+      const featureHtml = design ? designFeatureHtml(design) : null;
+      return [c.id, { ...c, design, featureHtml }];
+    }),
+  );
   const subscriberById = new Map((subscribers ?? []).map((s) => [s.id, s]));
 
   // Featured records, looked up once per campaign and edition for the whole
   // batch — never per recipient. A batch is at most one minute's worth of a
   // send, so every reader of it sees the same prices.
   const features = new Map<string, Promise<NewsletterFeatures>>();
-  const featuresFor = (campaign: { id: string; body: string; body_ar: string | null }, edition: EmailLocale) => {
+  const featuresFor = (
+    campaign: { id: string; body: string; body_ar: string | null; featureHtml: string | null },
+    edition: EmailLocale,
+  ) => {
     const key = `${campaign.id}:${edition}`;
     let hit = features.get(key);
     if (!hit) {
-      hit = newsletterFeatures([edition === "ar" ? campaign.body_ar : campaign.body], edition);
+      hit = newsletterFeatures([campaign.featureHtml ?? (edition === "ar" ? campaign.body_ar : campaign.body)], edition);
       features.set(key, hit);
     }
     return hit;
@@ -150,6 +163,8 @@ export async function sendClaimed(
     const locale: EmailLocale = delivery.locale === "ar" ? "ar" : "en";
     const links = unsubscribeLinks(subscriber.unsubscribe_token, locale);
     const draft = {
+      format: campaign.format,
+      design: campaign.design,
       subject: campaign.subject,
       preheader: campaign.preheader,
       body: campaign.body,
@@ -159,7 +174,8 @@ export async function sendClaimed(
     };
     const edition = editionLocale(draft, locale);
     const found = await featuresFor(campaign, edition);
-    if (unresolvedFeatures(featureBlocksIn(edition === "ar" ? draft.body_ar : draft.body), found.lookup) > 0) {
+    const blocks = featureBlocksIn(campaign.featureHtml ?? (edition === "ar" ? draft.body_ar : draft.body));
+    if (unresolvedFeatures(blocks, found.lookup) > 0) {
       const final = delivery.attempts >= MAX_ATTEMPTS;
       if (final) report.failed += 1;
       else report.retried += 1;

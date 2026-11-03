@@ -1,18 +1,19 @@
 import Link from "next/link";
-import { Send, Settings, Users } from "lucide-react";
+import { LayoutTemplate, Send, Settings, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CAMPAIGN_STATUS_LABELS, type CampaignStatus } from "@/lib/newsletter/campaign";
 
-/** Campaigns | Subscribers | Settings: the parts of /admin/newsletter. */
+/** Newsletters | Templates | Subscribers | Sender: the parts of /admin/newsletter. */
 export function NewsletterTabs({
   active,
   counts,
 }: {
-  active: "campaigns" | "subscribers" | "settings";
-  counts: { campaigns: number; confirmed: number };
+  active: "campaigns" | "templates" | "subscribers" | "settings";
+  counts: { campaigns: number; confirmed: number; templates?: number };
 }) {
   const tabs = [
     { id: "campaigns", label: "Newsletters", href: "/admin/newsletter", icon: Send, count: counts.campaigns },
+    { id: "templates", label: "Templates", href: "/admin/newsletter/templates", icon: LayoutTemplate, count: counts.templates ?? null },
     { id: "subscribers", label: "Subscribers", href: "/admin/newsletter/subscribers", icon: Users, count: counts.confirmed },
     { id: "settings", label: "Sender", href: "/admin/newsletter/settings", icon: Settings, count: null },
   ] as const;

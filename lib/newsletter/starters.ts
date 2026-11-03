@@ -158,7 +158,10 @@ function body(starter: Exclude<Starter, "blank">, picks: StarterPicks, locale: "
 }
 
 /** A new draft's fields for a starter. Blank is the empty draft. */
-export function starterDraft(starter: Starter, picks: StarterPicks): Partial<CampaignDraft> {
+export function starterDraft(
+  starter: Starter,
+  picks: StarterPicks,
+): Partial<Omit<CampaignDraft, "format" | "design">> {
   if (starter === "blank") return {};
   return {
     subject: COPY.en.subject[starter],

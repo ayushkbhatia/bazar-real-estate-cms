@@ -3587,6 +3587,8 @@ export type Database = {
           body_ar: string | null
           created_at: string
           created_by: string | null
+          design: Json | null
+          format: string
           id: string
           preheader: string
           preheader_ar: string | null
@@ -3607,6 +3609,8 @@ export type Database = {
           body_ar?: string | null
           created_at?: string
           created_by?: string | null
+          design?: Json | null
+          format?: string
           id?: string
           preheader?: string
           preheader_ar?: string | null
@@ -3627,6 +3631,8 @@ export type Database = {
           body_ar?: string | null
           created_at?: string
           created_by?: string | null
+          design?: Json | null
+          format?: string
           id?: string
           preheader?: string
           preheader_ar?: string | null
@@ -3797,6 +3803,51 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      newsletter_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          design: Json
+          id: string
+          name: string
+          preheader: string
+          preheader_ar: string
+          subject: string
+          subject_ar: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          design: Json
+          id?: string
+          name: string
+          preheader?: string
+          preheader_ar?: string
+          subject?: string
+          subject_ar?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          design?: Json
+          id?: string
+          name?: string
+          preheader?: string
+          preheader_ar?: string
+          subject?: string
+          subject_ar?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
