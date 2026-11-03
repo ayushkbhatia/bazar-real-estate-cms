@@ -63,7 +63,7 @@ export const MORTGAGE_PAGE: MasterPageDef = {
       key: "hero",
       label: "Hero",
       description:
-        "Photograph, the pitch, and the pre-approval form beside it — the shape /services/manage opens with.",
+        "Photograph and the pitch. Beside them sits the \"Start your application\" panel — its words are the next section — or, while the online application is closed, the pre-approval form.",
       locked: true,
       dataNote:
         "The calculator's sliders, ranges, term options and starting values are on the Mortgage calculator section below; the closing-cost percentages, Central Bank LTV tiers and DBR cap are under Settings → Mortgage. The form's fields and button are in Forms → Start your pre-approval.",
@@ -83,26 +83,9 @@ export const MORTGAGE_PAGE: MasterPageDef = {
         ),
         toggle(
           "show_form",
-          "Show the pre-approval form here",
-          "On: the form sits in the hero and the section at the foot of the page becomes a button that scrolls back up to it. Off: the hero is copy alone and the form renders at the foot. It is never drawn twice — two live copies of one form on one page is two sets of answers to reconcile.",
+          "Show the pre-approval form here (application closed)",
+          "Only while the online application is closed — while it is open the hero shows the Start your application panel instead, whatever this says. On: the form sits in the hero and the section at the foot of the page becomes a button that scrolls back up to it. Off: the hero is copy alone and the form renders at the foot. It is never drawn twice — two live copies of one form on one page is two sets of answers to reconcile.",
         ),
-        // While the online application is open (docs/mortgage), the hero's
-        // right-hand side is its first step instead of the old form: two
-        // choices that land the visitor on "Your details" with the service
-        // already chosen.
-        text("panel_step", "Application panel · step line", { max: 40 }),
-        text("panel_title", "Application panel · heading", { max: 80 }),
-        area("panel_sub", "Application panel · line under the heading", { max: 200 }),
-        text("preapproval_title", "Application panel · Fast Pre-Approval · name", { max: 60 }),
-        area("preapproval_desc", "Application panel · Fast Pre-Approval · description", { max: 200 }),
-        text("consultancy_title", "Application panel · Mortgage Consultancy · name", { max: 60 }),
-        area("consultancy_desc", "Application panel · Mortgage Consultancy · description", { max: 200 }),
-        area("panel_note", "Application panel · note under the choices", { max: 240 }),
-        text("sticky_text", "Start bar · line", {
-          max: 100,
-          help: "The bar that slides up from the foot of the screen once the visitor has scrolled past the hero.",
-        }),
-        text("sticky_cta", "Start bar · button", { max: 40 }),
       ],
       defaults: {
         eyebrow: "For buyers and investors",
@@ -116,6 +99,33 @@ export const MORTGAGE_PAGE: MasterPageDef = {
           "الرقم الذي تراه في الإعلان العقاري نادراً ما يكون الرقم الذي تدفعه. تشمل هذه الحاسبة كل شيء: رسوم نقل الملكية، وأتعاب الاستشارة، ورسوم تمويل عقاري، وكامل المبلغ النقدي اللازم لإتمام الصفقة.",
         image: { media_id: null, alt: null, label: null },
         show_form: true,
+      },
+    },
+    {
+      key: "start_panel",
+      label: "Start your application",
+      description:
+        "The panel beside the hero headline while the online application is open — the application's first step, with its two services — and the start bar that slides up once the visitor scrolls past it. Choosing a service takes the visitor to \"Your details\"; the words from there on are in Wizards → Mortgage application.",
+      // Words only: the panel is drawn inside the hero, so there is nothing
+      // here to switch off or move.
+      locked: true,
+      placeAfter: "hero",
+      fields: [
+        text("panel_step", "Step line", { max: 40, help: "Above the heading, beside the step dots." }),
+        text("panel_title", "Heading", { max: 80 }),
+        area("panel_sub", "Line under the heading", { max: 200 }),
+        text("preapproval_title", "Fast Pre-Approval · name", { max: 60 }),
+        area("preapproval_desc", "Fast Pre-Approval · description", { max: 200 }),
+        text("consultancy_title", "Mortgage Consultancy · name", { max: 60 }),
+        area("consultancy_desc", "Mortgage Consultancy · description", { max: 200 }),
+        area("panel_note", "Note under the two choices", { max: 240 }),
+        text("sticky_text", "Start bar · line", {
+          max: 100,
+          help: "The bar that slides up from the foot of the screen once the visitor has scrolled past the hero.",
+        }),
+        text("sticky_cta", "Start bar · button", { max: 40 }),
+      ],
+      defaults: {
         panel_step: "Step 1 of 3",
         panel_step_ar: "الخطوة 1 من 3",
         panel_title: "Start your application",

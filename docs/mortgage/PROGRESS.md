@@ -1842,3 +1842,22 @@ short description.
 - `db/types.ts` was spliced from the local schema (as for 0138); re-run
   `npm run db:types` once 0171 is on production and check the diff is empty.
 - Notes are append-only by design; no edit or delete.
+
+## Start your application panel: its own section · 3 Nov 2026
+
+The client asked for the hero's "Start your application" panel to be editable
+in the mortgage page's Pages & blocks. It was: its words were ten fields deep in
+the Hero section, under a description that only spoke of the old pre-approval
+form, so it was never found.
+
+- The panel's eight fields and the start bar's two now form their own section,
+  **Start your application** (`start_panel`). It is placed after Hero in
+  /admin/pages/master/mortgage and is locked, because it draws inside the hero.
+  English and Arabic are edited side by side as before.
+- Hero's description and its "Show the pre-approval form here" toggle now say
+  they apply only while the application is closed.
+- No data move: production's hero held those ten values word for word as the
+  shipped defaults, which the new section starts from. Old keys left on the
+  stored hero are ignored.
+- The wizard's own words, from "Your details" on, stay in Wizards → Mortgage
+  application.
