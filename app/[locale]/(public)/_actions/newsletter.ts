@@ -22,6 +22,10 @@ import {
   extractClientIp,
   rateLimitMessage,
 } from "@/lib/rate-limit";
+import { classifyRawSubmission, isDotPaddedGmail } from "@/lib/forms/spam";
+
+/** What every signup is told, a bot's included — it learns nothing from the answer. */
+const CHECK_INBOX = "Check your inbox to confirm — link valid for 14 days.";
 
 function siteUrl(): string {
   return (
@@ -40,14 +44,18 @@ export async function subscribeToNewsletter(
   if (!isSupabaseConfigured)
     return { status: "error", message: "Subscriptions are offline." };
 
-  const rl = await checkRateLimit({
-    name: "newsletter",
-    ip: extractClientIp(await headers()),
-    requests: 10,
-    windowSeconds: 60,
-  });
-  if (!rl.ok) {
-    return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+  // The minute stops a burst; the hour and the day stop a script that paces
+  // itself. Nobody subscribes to one newsletter more than a few times a day.
+  const ip = extractClientIp(await headers());
+  for (const [name, requests, windowSeconds] of [
+    ["newsletter", 10, 60],
+    ["newsletter_hour", 4, 3600],
+    ["newsletter_day", 8, 86_400],
+  ] as const) {
+    const rl = await checkRateLimit({ name, ip, requests, windowSeconds });
+    if (!rl.ok) {
+      return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+    }
   }
 
   const parsed = newsletterSignupSchema.safeParse(raw);
@@ -59,6 +67,17 @@ export async function subscribeToNewsletter(
   }
 
   const email = normaliseEmail(parsed.data.email);
+
+  // A bot's signup is answered like anyone's and goes no further: no row, and
+  // above all no confirmation email, because the address is usually a
+  // stranger's. Unlike a held lead there is nothing to restore — a person
+  // the check gets wrong can sign up again from another box or address.
+  // The honeypot and timing ride in from the signup box; a missing value is
+  // no evidence (see classifySubmission).
+  if (classifyRawSubmission(raw).spam || isDotPaddedGmail(email)) {
+    console.info("[newsletter.spam] dropped a signup");
+    return { status: "ok", message: CHECK_INBOX };
+  }
   const source = parsed.data.source;
   const locale = parsed.data.locale;
 
@@ -130,10 +149,7 @@ export async function subscribeToNewsletter(
     data: withLabels({ email }, { email: "Email" }),
   });
 
-  return {
-    status: "ok",
-    message: "Check your inbox to confirm — link valid for 14 days.",
-  };
+  return { status: "ok", message: CHECK_INBOX };
 }
 
 export type ConfirmResult =
