@@ -216,7 +216,7 @@ export function FormEditor({
       min: type === "range" ? (field.min ?? seed.min) : field.min,
       max: type === "range" ? (field.max ?? seed.max) : field.max,
       step: type === "range" ? (field.step ?? seed.step) : null,
-      unit: type === "range" ? field.unit : null,
+      unit: type === "range" || type === "number" ? field.unit : null,
     });
 
     // Anything depending on this field's answers depended on it having some.
@@ -1025,22 +1025,29 @@ function FieldDetail({
                 }
               />
             </label>
-            <label className="flex items-center gap-2 text-[12px] text-bz-ink-2">
-              Unit
-              <input
-                className={cn(fieldCls, "w-20")}
-                placeholder="AED"
-                value={field.unit ?? ""}
-                disabled={wordingLocked}
-                onChange={(e) => onChange({ unit: e.target.value || null })}
-              />
-              <ArabicTwin
-                field={{ key: "unit_ar", label: "Unit", kind: "text", max: 12 }}
-                value={field.unit_ar ?? ""}
-                onChange={(v) => onChange({ unit_ar: v || null })}
-              />
-            </label>
           </>
+        ) : null}
+        {/* The suffix inside the box — "AED" on a slider, "ft²" on a number
+            box. The shared renderer draws no suffix on a number box, so there
+            it shows only on a form a bespoke component draws (the sell
+            wizard's built-up area). */}
+        {field.type === "range" ||
+        (field.type === "number" && !editsStructure) ? (
+          <label className="flex items-center gap-2 text-[12px] text-bz-ink-2">
+            Unit
+            <input
+              className={cn(fieldCls, "w-20")}
+              placeholder={field.type === "range" ? "AED" : "ft²"}
+              value={field.unit ?? ""}
+              disabled={wordingLocked}
+              onChange={(e) => onChange({ unit: e.target.value || null })}
+            />
+            <ArabicTwin
+              field={{ key: "unit_ar", label: "Unit", kind: "text", max: 12 }}
+              value={field.unit_ar ?? ""}
+              onChange={(v) => onChange({ unit_ar: v || null })}
+            />
+          </label>
         ) : null}
       </div>
 
