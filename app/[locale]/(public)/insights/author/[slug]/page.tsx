@@ -18,6 +18,10 @@ import { mediaPublicUrl } from "@/lib/media";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
 import { listAgents } from "@/lib/queries/agents";
+import {
+  ARTICLE_CARD_SIZES,
+  ARTICLE_GRID_COLUMNS,
+} from "../../_components/grid-columns";
 
 export const revalidate = 300;
 
@@ -49,7 +53,7 @@ function ArticleHero({ row }: { row: ArticleListRow }) {
         src={mediaPublicUrl(row.hero.storage_key)}
         alt={row.hero.alt_text ?? row.title}
         fill
-        sizes="(min-width: 1280px) 380px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        sizes={ARTICLE_CARD_SIZES}
         className="object-cover"
       />
     );
@@ -96,7 +100,7 @@ export default async function InsightsAuthorPage({
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10">
         <Link
           href="/insights"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
@@ -107,7 +111,7 @@ export default async function InsightsAuthorPage({
       </div>
 
       {/* Author header */}
-      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
+      <section className="px-4 md:px-12 pt-8 pb-14">
         <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-10 items-start">
           <PlaceholderImage
             label={slug}
@@ -138,7 +142,7 @@ export default async function InsightsAuthorPage({
       </section>
 
       {/* Articles */}
-      <section className="border-t border-bz-border px-4 md:px-12 py-16 max-w-[1280px]">
+      <section className="border-t border-bz-border px-4 md:px-12 py-16">
         <Eyebrow>{t("eyebrow.articles")}</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
@@ -159,7 +163,7 @@ export default async function InsightsAuthorPage({
             </Button>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
+          <div className={`mt-10 grid gap-9 gap-y-14 ${ARTICLE_GRID_COLUMNS}`}>
             {rows.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">
