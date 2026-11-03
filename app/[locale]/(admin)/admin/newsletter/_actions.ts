@@ -115,6 +115,7 @@ function toRow(draft: CampaignDraft) {
     preheader_ar: draft.preheader_ar || null,
     body_ar: draft.body_ar || null,
     audience: draft.audience,
+    list_ids: draft.list_ids,
   };
 }
 
@@ -217,6 +218,21 @@ export async function saveCampaign(id: string, raw: unknown): Promise<Newsletter
   return { status: "ok", message: "Saved." };
 }
 
+/**
+ * How many people the audience reaches right now, each address once: the
+ * subscribers chosen plus the active contacts on the chosen lists, less
+ * anyone suppressed (newsletter_audience_size, 0176).
+ */
+export async function audienceSize(audience: string, listIds: string[]): Promise<number | null> {
+  const { supabase } = await requireRole(NEWSLETTER_WRITE_ROLES);
+  const ids = listIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 20);
+  const { data, error } = await supabase.rpc("newsletter_audience_size", {
+    p_audience: ["all", "en", "ar", "none"].includes(audience) ? audience : "all",
+    p_lists: ids,
+  });
+  return error ? null : (data as number);
+}
+
 export type CampaignPreview = {
   email: RenderedEmail;
   problems: Record<string, string>;
@@ -317,7 +333,7 @@ export async function sendCampaignNow(id: string, raw: unknown): Promise<Newslet
     action: "newsletter.campaign_send",
     target_kind: "newsletter_campaign",
     target_id: id,
-    after: { audience: loaded.draft.audience, recipients: count },
+    after: { audience: loaded.draft.audience, lists: loaded.draft.list_ids.length, recipients: count },
   });
 
   if (count > 0) {
@@ -330,7 +346,7 @@ export async function sendCampaignNow(id: string, raw: unknown): Promise<Newslet
   revalidatePath(`/admin/newsletter/${id}`);
   return {
     status: "ok",
-    message: count === 0 ? "Nobody matched this audience, so nothing was sent." : `Sending to ${count} subscriber${count === 1 ? "" : "s"}.`,
+    message: count === 0 ? "Nobody matched this audience, so nothing was sent." : `Sending to ${count} recipient${count === 1 ? "" : "s"}.`,
   };
 }
 
@@ -410,7 +426,7 @@ export async function duplicateCampaign(id: string): Promise<void> {
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
   const { data: source, error } = await supabase
     .from("newsletter_campaigns")
-    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience, format, design")
+    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience, list_ids, format, design")
     .eq("id", id)
     .single();
   if (error || !source) throw new Error(error?.message ?? "Newsletter not found.");

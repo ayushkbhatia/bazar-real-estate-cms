@@ -16,21 +16,24 @@ vi.mock("./features", () => ({
 }));
 
 import { DEFAULT_EMAIL_BRAND } from "@/lib/content-assets/email-brand";
-import { MAX_ATTEMPTS, sendClaimed } from "./send";
+import { MAX_ATTEMPTS, emailHash, sendClaimed } from "./send";
 
 type Patch = { id: string; patch: Record<string, unknown> };
 
 /** Just enough of the Supabase client for one batch: two reads and per-row updates. */
-function fakeDb(rows: { campaigns: object[]; subscribers: object[] }) {
+function fakeDb(rows: { campaigns: object[]; subscribers: object[]; contacts?: object[]; suppressed?: string[] }) {
   const updates: Patch[] = [];
+  const tables: Record<string, object[]> = {
+    newsletter_campaigns: rows.campaigns,
+    newsletter_subscribers: rows.subscribers,
+    newsletter_list_contacts: rows.contacts ?? [],
+    newsletter_suppressions: (rows.suppressed ?? []).map((email) => ({ email_hash: emailHash(email) })),
+  };
   const client = {
     from(table: string) {
       return {
         select: () => ({
-          in: async () => ({
-            data: table === "newsletter_campaigns" ? rows.campaigns : rows.subscribers,
-            error: null,
-          }),
+          in: async () => ({ data: tables[table] ?? [], error: null }),
         }),
         update: (patch: Record<string, unknown>) => ({
           eq: async (_col: string, id: string) => {
@@ -68,6 +71,36 @@ describe("sendClaimed", () => {
   beforeEach(() => {
     mocks.sendEmailBatch.mockReset();
     mocks.lookup.mockReset();
+  });
+
+  it("mails a custom list's contact with the list footer and their own unsubscribe link, and skips suppressed or removed addresses", async () => {
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r1"] });
+    const contacts = [
+      { id: "k1", email: "guest@example.com", status: "active", unsubscribe_token: "kt1" },
+      { id: "k2", email: "gone@example.com", status: "unsubscribed", unsubscribe_token: "kt2" },
+      { id: "k3", email: "a@example.com", status: "active", unsubscribe_token: "kt3" },
+    ];
+    const { client, updates } = fakeDb({ campaigns: [campaign], subscribers: [], contacts, suppressed: ["A@example.com"] });
+    const report = await sendClaimed(client, [
+      { id: "d1", campaign_id: "c1", subscriber_id: null, contact_id: "k1", locale: "en", attempts: 1 },
+      { id: "d2", campaign_id: "c1", subscriber_id: null, contact_id: "k2", locale: "en", attempts: 1 },
+      { id: "d3", campaign_id: "c1", subscriber_id: null, contact_id: "k3", locale: "en", attempts: 1 },
+    ], DEFAULT_EMAIL_BRAND);
+    expect(report).toMatchObject({ sent: 1, skipped: 2 });
+    const [sent] = mocks.sendEmailBatch.mock.calls[0]![0];
+    expect(sent.to).toBe("guest@example.com");
+    expect(sent.html).toContain("mailing list");
+    expect(sent.html).toContain("/newsletter/unsubscribe/kt1");
+    expect(sent.headers["List-Unsubscribe"]).toContain("token=kt1");
+    expect(updates.filter((u) => u.patch.status === "skipped").map((u) => u.id).sort()).toEqual(["d2", "d3"]);
+  });
+
+  it("skips a confirmed subscriber whose address was suppressed on a list since the snapshot", async () => {
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r2"] });
+    const { client } = fakeDb({ campaigns: [campaign], subscribers, suppressed: ["a@example.com"] });
+    const report = await sendClaimed(client, claimed(), DEFAULT_EMAIL_BRAND);
+    expect(report).toMatchObject({ sent: 1, skipped: 2 });
+    expect(mocks.sendEmailBatch.mock.calls[0]![0].map((i: { to: string }) => i.to)).toEqual(["b@example.com"]);
   });
 
   it("sends from the newsletter's own sender when given one, and the env's otherwise", async () => {

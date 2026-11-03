@@ -3590,6 +3590,7 @@ export type Database = {
           design: Json | null
           format: string
           id: string
+          list_ids: string[]
           preheader: string
           preheader_ar: string | null
           recipient_count: number
@@ -3612,6 +3613,7 @@ export type Database = {
           design?: Json | null
           format?: string
           id?: string
+          list_ids?: string[]
           preheader?: string
           preheader_ar?: string | null
           recipient_count?: number
@@ -3634,6 +3636,7 @@ export type Database = {
           design?: Json | null
           format?: string
           id?: string
+          list_ids?: string[]
           preheader?: string
           preheader_ar?: string | null
           recipient_count?: number
@@ -3657,6 +3660,7 @@ export type Database = {
           campaign_id: string
           claimed_at: string | null
           complained_at: string | null
+          contact_id: string | null
           created_at: string
           delivered_at: string | null
           error: string | null
@@ -3665,7 +3669,7 @@ export type Database = {
           resend_id: string | null
           sent_at: string | null
           status: string
-          subscriber_id: string
+          subscriber_id: string | null
         }
         Insert: {
           attempts?: number
@@ -3674,6 +3678,7 @@ export type Database = {
           campaign_id: string
           claimed_at?: string | null
           complained_at?: string | null
+          contact_id?: string | null
           created_at?: string
           delivered_at?: string | null
           error?: string | null
@@ -3682,7 +3687,7 @@ export type Database = {
           resend_id?: string | null
           sent_at?: string | null
           status?: string
-          subscriber_id: string
+          subscriber_id?: string | null
         }
         Update: {
           attempts?: number
@@ -3691,6 +3696,7 @@ export type Database = {
           campaign_id?: string
           claimed_at?: string | null
           complained_at?: string | null
+          contact_id?: string | null
           created_at?: string
           delivered_at?: string | null
           error?: string | null
@@ -3710,6 +3716,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "newsletter_deliveries_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_list_contacts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "newsletter_deliveries_subscriber_id_fkey"
             columns: ["subscriber_id"]
             isOneToOne: false
@@ -3717,6 +3730,86 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      newsletter_list_contacts: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          email: string
+          id: string
+          list_id: string
+          locale: string
+          name: string
+          source: string
+          status: string
+          unsubscribe_token: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          list_id: string
+          locale?: string
+          name?: string
+          source?: string
+          status?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          list_id?: string
+          locale?: string
+          name?: string
+          source?: string
+          status?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_list_contacts_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_lists: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       newsletter_settings: {
         Row: {
@@ -3803,6 +3896,24 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      newsletter_suppressions: {
+        Row: {
+          created_at: string
+          email_hash: string
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email_hash: string
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email_hash?: string
+          reason?: string
+        }
+        Relationships: []
       }
       newsletter_templates: {
         Row: {
@@ -6268,6 +6379,11 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      newsletter_audience_size: {
+        Args: { p_audience: string; p_lists: string[] }
+        Returns: number
+      }
+      newsletter_email_hash: { Args: { p_email: string }; Returns: string }
       newsletter_claim_deliveries: {
         Args: { p_limit: number }
         Returns: {
@@ -6277,6 +6393,7 @@ export type Database = {
           campaign_id: string
           claimed_at: string | null
           complained_at: string | null
+          contact_id: string | null
           created_at: string
           delivered_at: string | null
           error: string | null
@@ -6285,7 +6402,7 @@ export type Database = {
           resend_id: string | null
           sent_at: string | null
           status: string
-          subscriber_id: string
+          subscriber_id: string | null
         }[]
         SetofOptions: {
           from: "*"

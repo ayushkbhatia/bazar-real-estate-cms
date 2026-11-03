@@ -20,6 +20,7 @@ const draft = (over: Partial<CampaignDraft> = {}): CampaignDraft => ({
   preheader_ar: "",
   body_ar: "",
   audience: "all",
+  list_ids: [],
   ...over,
 });
 

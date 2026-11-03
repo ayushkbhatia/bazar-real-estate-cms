@@ -187,6 +187,7 @@ describe("block-built campaigns", () => {
     preheader_ar: "",
     body_ar: "",
     audience: "all",
+    list_ids: [],
     ...over,
   });
 

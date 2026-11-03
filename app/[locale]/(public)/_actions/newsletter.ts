@@ -246,7 +246,7 @@ export async function unsubscribeNewsletterToken(
         .eq("confirmation_token", token)
         .maybeSingle()
     ).data;
-  if (!row) return { status: "not_found" };
+  if (!row) return unsubscribeListContact(admin, token);
 
   if (row.status !== "unsubscribed") {
     const { error } = await admin
@@ -260,6 +260,31 @@ export async function unsubscribeNewsletterToken(
   }
 
   return { status: "ok", email: row.email };
+}
+
+/**
+ * A custom list's contact unsubscribing (0176). Marking the row unsubscribed
+ * is enough: a trigger suppresses the address everywhere — every other list
+ * it is on, and the subscription if it has one.
+ */
+async function unsubscribeListContact(
+  admin: NonNullable<Awaited<ReturnType<typeof adminSupabase>>>,
+  token: string,
+): Promise<UnsubscribeResult> {
+  const { data: contact } = await admin
+    .from("newsletter_list_contacts")
+    .select("id, email, status")
+    .eq("unsubscribe_token", token)
+    .maybeSingle();
+  if (!contact) return { status: "not_found" };
+  if (contact.status === "active") {
+    const { error } = await admin
+      .from("newsletter_list_contacts")
+      .update({ status: "unsubscribed", unsubscribed_at: new Date().toISOString() })
+      .eq("id", contact.id);
+    if (error) return { status: "error", message: error.message };
+  }
+  return { status: "ok", email: contact.email };
 }
 
 /** Used by the signed-in /account/newsletter page to toggle subscription

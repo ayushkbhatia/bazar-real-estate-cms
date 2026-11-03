@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildDataExport, type DataExportPayload } from "@/lib/dsr";
 import { findMortgageRequests, mortgageExport } from "@/lib/mortgage-requests/server/dsr";
@@ -25,6 +26,8 @@ export type SubjectTally = {
   /** Fast Pre-Approval and Mortgage Consultancy requests, by email or the mobile given. */
   mortgage_requests: number;
   newsletter: number;
+  /** Rows on custom newsletter lists (0176). */
+  newsletter_lists: number;
 };
 
 export type SubjectRecord = {
@@ -42,6 +45,7 @@ const EMPTY: SubjectTally = {
   valuation_requests: 0,
   mortgage_requests: 0,
   newsletter: 0,
+  newsletter_lists: 0,
 };
 
 /**
@@ -62,7 +66,7 @@ export async function getSubjectByEmail(
   if (!admin) return null;
 
   try {
-    const [enquiries, valuations, newsletter, mortgageRequests] = await Promise.all([
+    const [enquiries, valuations, newsletter, mortgageRequests, listRows, suppression] = await Promise.all([
       admin
         .from("enquiries")
         .select(
@@ -77,7 +81,21 @@ export async function getSubjectByEmail(
         .maybeSingle(),
       // The mortgage module also matches a UAE mobile, when the request gave one.
       findMortgageRequests(admin, { email, mobile: opts.mobile }),
+      // Custom lists store the address lower-cased, so an exact match is exact.
+      admin
+        .from("newsletter_list_contacts")
+        .select("email, name, locale, status, source, created_at, unsubscribed_at, list:newsletter_lists(name)")
+        .eq("email", email),
+      admin
+        .from("newsletter_suppressions")
+        .select("reason, created_at")
+        .eq("email_hash", createHash("sha256").update(email).digest("hex"))
+        .maybeSingle(),
     ]);
+    const lists = ((listRows.data ?? []) as Record<string, unknown>[]).map(({ list, ...row }) => ({
+      ...row,
+      list_name: (list as { name?: string } | null)?.name ?? null,
+    }));
     const mortgageRequestIds = mortgageRequests.map((r) => r.id);
     const mortgageRows = await mortgageExport(admin, mortgageRequestIds);
 
@@ -114,6 +132,7 @@ export async function getSubjectByEmail(
       valuation_requests: (valuations.data ?? []).length,
       mortgage_requests: mortgageRequestIds.length,
       newsletter: newsletter.data ? 1 : 0,
+      newsletter_lists: lists.length,
     };
 
     const found = Object.values(tally).some((n) => n > 0);
@@ -132,6 +151,8 @@ export async function getSubjectByEmail(
         newsletter_subscription:
           (newsletter.data as Record<string, unknown> | null) ?? null,
         mortgage_requests: mortgageRows,
+        newsletter_lists: lists,
+        newsletter_suppressed: (suppression.data as Record<string, unknown> | null) ?? null,
       }),
     };
   } catch (error) {

@@ -15,8 +15,10 @@ import {
   NEWSLETTER_WRITE_ROLES,
   hasArabicEdition,
   renderNewsletter,
+  type Audience,
   type CampaignRow,
 } from "@/lib/newsletter/campaign";
+import { listOptions } from "../_data";
 import { deliveryCounts, EMPTY_DELIVERY_COUNTS } from "@/lib/newsletter/send";
 import { featureDrawer, newsletterFeatures } from "@/lib/newsletter/features";
 import { isAnthropicConfigured } from "@/lib/concierge/env";
@@ -122,7 +124,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  const [media, records] = await Promise.all([fetchImages(supabase), listFeatureTargets()]);
+  const [media, records, lists] = await Promise.all([fetchImages(supabase), listFeatureTargets(), listOptions()]);
   return (
     <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
       <Composer
@@ -139,9 +141,11 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           subject_ar: campaign.subject_ar ?? "",
           preheader_ar: campaign.preheader_ar ?? "",
           body_ar: campaign.body_ar ?? "",
-          audience: (["all", "en", "ar"].includes(campaign.audience) ? campaign.audience : "all") as "all" | "en" | "ar",
+          audience: (["all", "en", "ar", "none"].includes(campaign.audience) ? campaign.audience : "all") as Audience,
+          list_ids: campaign.list_ids ?? [],
         }}
-        audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr }}
+        audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr, none: 0 }}
+        lists={lists}
         media={media}
         records={records}
         canTranslate={isAnthropicConfigured}

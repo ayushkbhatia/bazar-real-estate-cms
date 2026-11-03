@@ -281,7 +281,7 @@ describe("starter layouts", () => {
   };
 
   it("fill both editions with the same featured blocks, and block sending until the placeholder is replaced", () => {
-    const draft = { format: "rich" as const, design: null, subject: "", preheader: "", body: "", subject_ar: "", preheader_ar: "", body_ar: "", audience: "all" as const, ...starterDraft("digest", picks) };
+    const draft = { format: "rich" as const, design: null, subject: "", preheader: "", body: "", subject_ar: "", preheader_ar: "", body_ar: "", audience: "all" as const, list_ids: [], ...starterDraft("digest", picks) };
     expect(featureRefsIn(draft.body)).toEqual(featureRefsIn(draft.body_ar));
     expect(featureRefsIn(draft.body)).toHaveLength(4);
     expect(draft.body_ar).toContain("{{contact_url}}");

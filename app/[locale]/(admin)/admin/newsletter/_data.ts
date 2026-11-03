@@ -87,3 +87,28 @@ export async function templateCount(): Promise<number> {
   const { count } = await supabase.from("newsletter_templates").select("id", { count: "exact", head: true });
   return count ?? 0;
 }
+
+export type ListOption = { id: string; name: string; active: number };
+
+/**
+ * Custom lists for the audience step: name and how many active contacts.
+ * The names are visible to all staff; the counts only to admin and
+ * marketing (RLS on the contacts), which is who may send.
+ */
+export async function listOptions(): Promise<ListOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("newsletter_lists").select("id, name").order("name").limit(200);
+  // Before 0176 is applied the table isn't there: no lists yet.
+  if (error || !data) return [];
+  return Promise.all(
+    data.map(async (l) => {
+      const { count } = await supabase
+        .from("newsletter_list_contacts")
+        .select("id", { count: "exact", head: true })
+        .eq("list_id", l.id)
+        .eq("status", "active");
+      return { id: l.id, name: l.name, active: count ?? 0 };
+    }),
+  );
+}
