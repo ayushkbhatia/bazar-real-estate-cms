@@ -83,18 +83,28 @@ test("the completion strip sits beside the segment one, on /buy/search", async (
   await expect(
     page.getByRole("group", { name: "Property segment" }),
   ).toBeVisible();
-  await expect(page.getByRole("group", { name: "Completion" })).toBeVisible();
-  for (const name of ["Off-plan", "Ready (new)", "Resale"]) {
-    await expect(
-      page.getByRole("button", { name, exact: true }),
-    ).toHaveAttribute("aria-pressed", "false");
+  const completion = page.getByRole("group", { name: "Completion" });
+  await expect(completion).toBeVisible();
+  // By position, not by name: the three words are editor copy (Pages &
+  // blocks → search filters) and the client has already reworded them
+  // ("Off-Plan", "Ready"). The order is PROPERTY_FORMS's.
+  const forms = completion.getByRole("button");
+  await expect(forms).toHaveCount(3);
+  for (let i = 0; i < 3; i++) {
+    await expect(forms.nth(i)).toHaveAttribute("aria-pressed", "false");
   }
 });
 
 test("the two strips narrow independently and compose", async ({ page }) => {
   await page.goto("/buy/search");
   await page.getByRole("button", { name: "Residential", exact: true }).click();
-  await page.getByRole("button", { name: "Off-plan", exact: true }).click();
+  // The completion strip's first button is off-plan (PROPERTY_FORMS order);
+  // its word is editor copy, so it is not looked up by name.
+  const offPlan = page
+    .getByRole("group", { name: "Completion" })
+    .getByRole("button")
+    .first();
+  await offPlan.click();
 
   await expect(page).toHaveURL(/segment=residential/);
   await expect(page).toHaveURL(/form=off_plan/);
@@ -102,9 +112,7 @@ test("the two strips narrow independently and compose", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "Residential", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
-  await expect(
-    page.getByRole("button", { name: "Off-plan", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  await expect(offPlan).toHaveAttribute("aria-pressed", "true");
 });
 
 test("the completion strip is hidden where the axis is not free", async ({
