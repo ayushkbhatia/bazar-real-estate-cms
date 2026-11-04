@@ -70,7 +70,7 @@ export function DsrConsole({
     }
     if (
       !confirm(
-        `Erase every personal-data field held for ${email}${mobile.trim() ? ` (and mortgage requests for ${mobile.trim()})` : ""}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright. Mortgage requests (Fast Pre-Approval and Consultancy) are deleted outright, documents included; copies the mortgage team shared with partner banks can't be recalled.\n\nOnly do this once you have verified the requester's identity.`,
+        `Erase every personal-data field held for ${email}${mobile.trim() ? ` (and mortgage requests for ${mobile.trim()})` : ""}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription and any custom mailing-list entries are deleted outright (a one-way fingerprint stays on the do-not-mail list). Mortgage requests (Fast Pre-Approval and Consultancy) are deleted outright, documents included; copies the mortgage team shared with partner banks can't be recalled.\n\nOnly do this once you have verified the requester's identity.`,
       )
     )
       return;
@@ -105,7 +105,7 @@ export function DsrConsole({
           <p className="text-[11.5px] text-bz-muted">
             The address the request came from. Everything Bazar holds is keyed
             to it — enquiries and their message threads, valuation requests,
-            mortgage enquiries, mortgage requests, and the newsletter list.
+            mortgage enquiries, mortgage requests, the newsletter list and its custom mailing lists.
           </p>
         </div>
         <div className="mt-4 flex flex-col gap-1.5">

@@ -6,11 +6,18 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
 
 ## What an editor does
 
-1. **Newsletter → New newsletter.** Pick a starting point — **Blank**, or a
-   layout already filled with what is newest on the site, in both editions:
-   **Monthly digest** (a featured project, the four newest listings, the
-   latest three articles), **New listings**, **Project launches**, **From
-   Insights**. A draft opens in the composer.
+1. **Newsletter → New newsletter.** Pick a starting point:
+   - **Built from blocks** — a template laid out block by block (below):
+     **Project launch** (from the project picked in the same dialog),
+     **Featured listings**, **Market update**, **Event invitation**,
+     **Announcement**, or **Build your own**.
+   - **Your templates** — any the team saved.
+   - **Rich text** — **Blank**, or a layout already filled with what is
+     newest on the site, in both editions: **Monthly digest** (a featured
+     project, the four newest listings, the latest three articles), **New
+     listings**, **Project launches**, **From Insights**.
+
+   A draft opens in the composer.
 2. **Write** — subject, preview line and body in the same rich-text editor the
    Content assets emails use (headings, lists, links, buttons, images, fields),
    plus **Feature** for the site's own listings, projects, articles and area
@@ -19,8 +26,9 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
    An optional **Arabic edition** (subject + body); Arabic subscribers get it,
    and get the English when it's blank. **Translate from English** drafts it
    by machine, **Copy the English** copies the layout to translate by hand.
-3. **Audience** — every confirmed subscriber, English only, or Arabic only,
-   with the live count beside each.
+3. **Audience** — every confirmed subscriber, English only, Arabic only, or
+   none; plus any **custom lists** (below). The count is exact: each address
+   once, suppressed addresses left out.
 4. **Review** — the real email in a desktop / phone frame, English and Arabic,
    and **Send me a test** to the signed-in address.
 5. **Send** — now, or scheduled for a date and time. Sending asks for the
@@ -31,6 +39,92 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
 dates — filterable and searchable, with **Re-send confirmation** for anyone
 still pending (per row, or every pending address at once) and **Unsubscribe**
 for anyone who asks by other means.
+
+## Block-built newsletters
+
+A newsletter can be built from blocks instead of written as rich text
+(`newsletter_campaigns.format = 'blocks'`, the document in `design`,
+migration 0175). It is how a launch mailer is made: a full-width hero
+photograph with the logo and a headline over it, serif headings on cream
+bands, photo bands between sections, a row of features, tags for the unit
+types, a two-column amenities list, an "at a glance" table, a closing band
+with two buttons, social icons and a contact footer.
+
+- **The library** (`lib/newsletter/blocks/catalogue.ts`, presets in
+  `presets.ts`): 23 kinds of block — hero with background image, logo bar,
+  heading, paragraph, heading + text + button, quote, image, image beside
+  text, image row, feature columns, cards, figures, tags, list, at a glance,
+  advisor card, button, call-to-action band, live listings/projects/articles,
+  social links, contact and footer, divider, space — and 55 ready-made
+  presets in **Add a block**, searchable and grouped.
+- **Each block** has its words, links, pictures (from the media library or
+  uploaded on the spot) and colours (Bazar's swatches or any hex), plus page
+  colours and typefaces. Blocks are moved, duplicated, inserted below and
+  removed in the composer; the preview beside it is the real email.
+- **Arabic** sits beside the English in each block (`<key>_ar`). The Arabic
+  tab shows only the words, each with its English. Writing an Arabic subject
+  turns the Arabic edition on; from then every text needs its Arabic, and the
+  composer names the ones missing. **Translate from English** (one field at a
+  time through lib/i18n/mt) and **Copy the English** fill them. The Arabic
+  email is drawn right to left, in fonts the reader has, never letter-spaced,
+  and its site links go to `/ar` pages.
+- **Rendering** (`render.ts`): 600px email-safe tables and inline styles; one
+  `<style>` that stacks columns on a phone. The hero's photo is a CSS
+  background with the overlay colour as fallback (Outlook desktop shows the
+  colour). Every link goes through one check — https, http, mailto:, tel:, a
+  page on the site, or a `{{token}}`; anything else draws as text and the
+  composer blocks the send. The unsubscribe footer is always the last row.
+- **Logos and icons** are PNGs in `public/email/` (email clients don't show
+  SVG), drawn by `scripts/email/social-icons.mjs`.
+- **Built-in templates** (`templates.ts`, filled by `template-data.ts`) are
+  code, like the rich-text starters; what fills them is live. **Project
+  launch** reads the chosen project: its hero, name and tagline, its feature
+  blocks (titles, copy and photos, with their Arabic), bedrooms, handover,
+  developer and area. Every template's footer reads the footer CMS
+  (/admin/footer): socials, phone, WhatsApp, email, address, licence line.
+- **Saved templates** (`newsletter_templates`): **Save as template** in the
+  composer keeps every block, both languages, the subject and preview line.
+  **Newsletter → Templates** shows each as its email, to use, rename or
+  delete.
+
+## Custom lists
+
+**Newsletter → Lists** (`/admin/newsletter/lists`, migration 0176): lists of
+people to send a campaign to besides — or instead of — the subscribers, such
+as an event's guests. Admin and marketing only; the contacts are personal
+data.
+
+- **Upload a CSV** with an email column and a name column (or first + last
+  name), optionally a language column (`ar`/`Arabic` → Arabic edition).
+  Comma, semicolon or tab; a header row or none (`lib/newsletter/lists.ts`).
+  The dialog previews what it read and what it left out, and asks the
+  editor to confirm everyone agreed to hear from Bazar. Up to 20,000 a file.
+- **Add someone** by hand, **Download CSV**, **Unsubscribe** or **Remove** a
+  row, rename or delete the list.
+- **In a campaign**, tick lists in the Audience step. Someone on a list and
+  subscribed, or on two lists, gets one copy. List contacts get a footer
+  that doesn't claim they signed up, and their own unsubscribe link and
+  one-click header (the same `/newsletter/unsubscribe/[token]` page and
+  endpoint read either kind of token).
+
+### Suppression
+
+`newsletter_suppressions` holds the SHA-256 of every address that
+unsubscribed, hard-bounced or complained — from the subscriber list or any
+list — and never the address. Triggers keep it: unsubscribing anywhere
+suppresses the address everywhere, ends its subscription and marks its other
+list rows; confirming a subscription again (an explicit opt-in) lifts it.
+The campaign snapshot leaves suppressed addresses out, the sender checks
+again per batch, an import skips them, and adding one by hand is refused.
+Resend's webhook marks list contacts bounced or unsubscribed like
+subscribers.
+
+### Data-subject requests
+
+`/admin/dsr`'s export lists the subject's list rows and whether the address
+is suppressed; erasure (`anonymise_by_email`, 0176) deletes their list rows
+with the subscription. The suppression fingerprint stays: it is what keeps
+the objection honoured, and it can't be turned back into an address.
 
 ## Featured listings, projects, articles and areas
 
@@ -107,6 +201,26 @@ after the box was drawn, or uses a dot-padded Gmail address
 (`isDotPaddedGmail` in `lib/forms/spam.ts`). The visitor sees the usual
 "check your inbox" either way. One IP may also sign up at most 4 times an
 hour and 8 times a day.
+
+## Sender
+
+Newsletters carry their own From and Reply-To, set at **Newsletter → Sender**
+(`/admin/newsletter/settings`, `newsletter_settings`, migration 0174). Every
+other email the site sends keeps the env's `RESEND_FROM_ADDRESS` /
+`RESEND_REPLY_TO`; a blank field here falls back to those too.
+
+- Seeded as **Marketing at Bazar Real Estate**
+  `<marketing@bazarrealestate.com>`, replies to `marketing@bazarrealestate.ae`.
+- The From must be on a domain Resend has verified: saving asks Resend
+  (`resendSendingDomains()` in `lib/email.ts`) and refuses any other, because
+  Resend refuses every message from an unverified domain. As of 3 Nov 2026 the
+  verified domain is **bazarrealestate.com**; `bazarrealestate.ae` is not.
+  To send from `marketing@bazarrealestate.ae`: add the domain in Resend, set
+  the SPF/DKIM records it lists at the .ae registrar, wait for *Verified*,
+  then change the address here — no deploy.
+- The Reply-To can be any address; replies need no verification.
+- The sender, "Send me a test" and the preview's inbox header all read
+  `readNewsletterSender()` (`lib/newsletter/sender-read.ts`).
 
 ## Who may do what
 
@@ -211,6 +325,13 @@ who never asked to go.
 | `admin/newsletter/_feature-targets.ts` | what the picker offers (published records + articles) |
 | `admin/newsletter/_translate.ts` | Translate from English |
 | `lib/newsletter/send.ts` | start, drain, finish — the sender |
+| `lib/newsletter/sender.ts`, `sender-read.ts` | the newsletter's From / Reply-To (0174) |
+| `supabase/migrations/0175_newsletter_block_designs.sql` | `format`, `design`, `newsletter_templates` |
+| `supabase/migrations/0176_newsletter_lists.sql` | lists, contacts, suppressions, deliveries to contacts, erasure |
+| `lib/newsletter/blocks/` | the block library, presets, document, renderer, templates |
+| `lib/newsletter/lists.ts` | reading a CSV into contacts |
+| `admin/newsletter/[id]/_designer.tsx` | the block designer |
+| `admin/newsletter/templates/`, `lists/`, `settings/` | saved templates, custom lists, the sender |
 | `lib/email.ts` | `headers` on a send; `sendEmailBatch` |
 | `app/api/cron/newsletter-send/` | the minute cron |
 | `app/api/newsletter/unsubscribe/` | one-click unsubscribe |

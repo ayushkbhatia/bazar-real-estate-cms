@@ -12,6 +12,7 @@ import {
   Copy,
   Languages,
   Loader2,
+  LayoutTemplate,
   Save,
   Send,
   Trash2,
@@ -35,9 +36,15 @@ import {
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../../content-assets/emails/_body-editor";
 import type { FeatureTarget } from "../../content-assets/emails/_feature-types";
-import { translateNewsletter } from "../_translate";
+import { translateDesign, translateNewsletter } from "../_translate";
+import { textSlots, withArabic } from "@/lib/newsletter/blocks/document";
+import type { Design } from "@/lib/newsletter/blocks/types";
+import { BlockDesigner } from "./_designer";
+import { SaveTemplateDialog } from "./_save-template";
 import { EmailFrame, InboxHeader, ViewportToggle, type EmailViewport } from "../../content-assets/emails/_email-frame";
+import type { ListOption } from "../_data";
 import {
+  audienceSize,
   deleteCampaign,
   previewCampaign,
   saveCampaign,
@@ -78,6 +85,7 @@ export function Composer({
   replyTo,
   records,
   canTranslate,
+  lists = [],
 }: {
   id: string;
   status: CampaignStatus;
@@ -94,6 +102,8 @@ export function Composer({
   records: FeatureTarget[];
   /** A model key is configured, so "Translate from English" can run. */
   canTranslate: boolean;
+  /** Custom lists the audience step offers (0176). */
+  lists?: ListOption[];
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<CampaignDraft>(initial);
@@ -122,10 +132,31 @@ export function Composer({
   const request = useRef(0);
 
   const tokens = useMemo(() => TOKENS.filter((t) => NEWSLETTER_TOKENS.includes(t.name)), []);
+  const blocks = draft.format === "blocks" && draft.design !== null;
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const locked = !canWrite;
   const arabicReady = hasArabicEdition(draft);
-  const recipients = audienceCounts[draft.audience];
+  // The exact reach — subscribers and list contacts, each address once, less
+  // anyone suppressed — asked of the database as the audience changes.
+  const [reach, setReach] = useState<number | null>(null);
+  const audienceKey = `${draft.audience}|${draft.list_ids.join(",")}`;
+  useEffect(() => {
+    let live = true;
+    audienceSize(draft.audience, draft.list_ids).then((n) => live && setReach(n));
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the audience alone
+  }, [audienceKey]);
+  const recipients = reach ?? audienceCounts[draft.audience] + lists.filter((l) => draft.list_ids.includes(l.id)).reduce((n, l) => n + l.active, 0);
+  const chosenLists = lists.filter((l) => draft.list_ids.includes(l.id));
+  const audienceSummary = [
+    draft.audience === "none" ? null : AUDIENCE_LABELS[draft.audience],
+    chosenLists.length ? `${chosenLists.length === 1 ? "list" : "lists"}: ${chosenLists.map((l) => l.name).join(", ")}` : null,
+  ]
+    .filter(Boolean)
+    .join(" + ") || "Nobody chosen";
   const allProblems = { ...problems, ...errors };
   const blocking = Object.values(allProblems).filter(Boolean);
 
@@ -193,7 +224,7 @@ export function Composer({
   function sendNow() {
     if (
       !window.confirm(
-        `Send "${draft.subject}" to ${recipients} subscriber${recipients === 1 ? "" : "s"} (${AUDIENCE_LABELS[draft.audience].toLowerCase()}) now? This can't be undone.`,
+        `Send "${draft.subject}" to ${recipients} ${recipients === 1 ? "person" : "people"} (${audienceSummary.toLowerCase()}) now? This can't be undone.`,
       )
     )
       return;
@@ -238,9 +269,11 @@ export function Composer({
     });
   }
 
-  const arabicStarted = Boolean(draft.subject_ar.trim()) || !isBlankBody(draft.body_ar);
+  const arabicStarted =
+    Boolean(draft.subject_ar.trim()) ||
+    (blocks ? textSlots(draft.design as Design).some((slot) => slot.ar) : !isBlankBody(draft.body_ar));
 
-  function fillArabic(fields: Pick<CampaignDraft, "subject_ar" | "preheader_ar" | "body_ar">) {
+  function fillArabic(fields: Partial<Pick<CampaignDraft, "subject_ar" | "preheader_ar" | "body_ar" | "design">>) {
     setDraft((d) => ({ ...d, ...fields }));
     setErrors((e) => ({ ...e, subject_ar: "", body_ar: "", preheader_ar: "" }));
     setEditorVersion((v) => v + 1);
@@ -250,13 +283,32 @@ export function Composer({
     if (arabicStarted && !window.confirm("Replace the Arabic edition with a copy of the English?")) return;
     // The body and preview line only: an English subject in the Arabic field
     // would make the edition "complete" before a word of it is Arabic.
-    fillArabic({ subject_ar: "", preheader_ar: draft.preheader, body_ar: toArabicLinks(draft.body) });
+    if (blocks) {
+      const design = draft.design as Design;
+      const slots = textSlots(design);
+      fillArabic({ subject_ar: "", preheader_ar: draft.preheader, design: withArabic(design, new Map(slots.map((slot) => [slot, slot.en]))) });
+    } else {
+      fillArabic({ subject_ar: "", preheader_ar: draft.preheader, body_ar: toArabicLinks(draft.body) });
+    }
     setTranslateNotes([]);
     toast.success("English copied into the Arabic edition — translate it, then write the Arabic subject.");
   }
 
   function translate() {
     if (arabicStarted && !window.confirm("Replace the Arabic edition with a fresh translation of the English?")) return;
+    if (blocks) {
+      startTranslate(async () => {
+        const r = await translateDesign(id, { subject: draft.subject, preheader: draft.preheader, design: draft.design });
+        if (r.status === "error") {
+          toast.error(r.message);
+          return;
+        }
+        fillArabic({ subject_ar: r.subject_ar, preheader_ar: r.preheader_ar, design: r.design });
+        setTranslateNotes(r.notes);
+        toast.success("Arabic drafted from the English. Read it through before you save and send.");
+      });
+      return;
+    }
     startTranslate(async () => {
       const r = await translateNewsletter(id, {
         subject: draft.subject,
@@ -363,7 +415,9 @@ export function Composer({
             </div>
             <p className="text-[12px] text-bz-muted max-w-[70ch] -mt-2">
               {lang === "ar"
-                ? "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead. Featured listings, projects and articles appear in Arabic by themselves."
+                ? blocks
+                  ? "Arabic subscribers receive this edition once it has an Arabic subject; then every block's words need their Arabic. Leave the Arabic subject empty and they receive the English. Featured listings, projects and articles appear in Arabic by themselves."
+                  : "Arabic subscribers receive this edition. Leave both the Arabic subject and newsletter empty and they receive the English instead. Featured listings, projects and articles appear in Arabic by themselves."
                 : "Everyone receives this edition, unless you write an Arabic one for Arabic subscribers."}
             </p>
 
@@ -441,8 +495,19 @@ export function Composer({
             </label>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-bz-ink-2">Newsletter</span>
-              {locked ? (
+              <span className="text-[12px] font-medium text-bz-ink-2">{blocks ? "Blocks" : "Newsletter"}</span>
+              {blocks ? (
+                <BlockDesigner
+                  key={`blocks-${editorVersion}`}
+                  design={draft.design as Design}
+                  onChange={(design) => set("design", design)}
+                  lang={lang}
+                  locked={locked}
+                  media={media}
+                  onMediaUploaded={(m) => setMedia((list) => [m, ...list])}
+                  records={records}
+                />
+              ) : locked ? (
                 <div
                   className="rounded border border-bz-border bg-bz-bg p-3 text-[13px] [&_p]:mb-2 [&_a]:underline"
                   dir={lang === "ar" ? "rtl" : "ltr"}
@@ -463,6 +528,11 @@ export function Composer({
               )}
               {allProblems[bodyKey] ? (
                 <span className={FIELD_ERROR}>{allProblems[bodyKey]}</span>
+              ) : blocks ? (
+                <span className="text-[11.5px] text-bz-muted">
+                  Every block&apos;s words, pictures, links and colours are yours to change; the preview is the real
+                  email. Every newsletter ends with the subscriber&apos;s own unsubscribe link.
+                </span>
               ) : (
                 <span className="text-[11.5px] text-bz-muted">
                   Headings, lists, links, buttons, images — and <strong>Feature</strong> for listings, projects,
@@ -488,7 +558,7 @@ export function Composer({
               </p>
             ) : null}
 
-            {lang === "ar" && draft.body ? (
+            {lang === "ar" && draft.body && !blocks ? (
               <details className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2">
                 <summary className="cursor-pointer text-[12px] text-bz-ink-2">The English, to translate from</summary>
                 <p className="mt-2 text-[12px] text-bz-muted">{draft.subject || "No subject"}</p>
@@ -502,45 +572,96 @@ export function Composer({
         ) : null}
 
         {step === "audience" ? (
-          <section className="rounded-lg border border-bz-border bg-bz-surface p-5 flex flex-col gap-3">
-            <Eyebrow>Who receives it</Eyebrow>
-            <p className="text-[12.5px] text-bz-muted -mt-1">
-              Only confirmed subscribers — people who clicked the link in their confirmation email. The list is taken
-              the moment it sends, and anyone who unsubscribes before their copy goes out is skipped.
-            </p>
-            <div className="flex flex-col gap-2" role="radiogroup" aria-label="Audience">
-              {(["all", "en", "ar"] as const).map((a) => (
-                <label
-                  key={a}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer",
-                    draft.audience === a ? "border-bz-navy bg-bz-surface-2" : "border-bz-border",
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="audience"
-                    checked={draft.audience === a}
-                    onChange={() => set("audience", a)}
-                    disabled={locked}
-                    className="accent-bz-navy"
-                  />
-                  <span className="text-[13px]">{AUDIENCE_LABELS[a]}</span>
-                  <span className="ms-auto mono text-[12px] text-bz-muted">{audienceCounts[a]}</span>
-                </label>
-              ))}
-            </div>
-            {allProblems.audience ? <span className={FIELD_ERROR}>{allProblems.audience}</span> : null}
-            {draft.audience !== "en" && audienceCounts.ar > 0 ? (
-              <p className="text-[12px] text-bz-muted">
-                {arabicReady
-                  ? `${audienceCounts.ar} Arabic subscriber${audienceCounts.ar === 1 ? "" : "s"} will get the Arabic edition.`
-                  : `No Arabic edition yet: ${audienceCounts.ar} Arabic subscriber${audienceCounts.ar === 1 ? "" : "s"} will get the English.`}
+          <section className="rounded-lg border border-bz-border bg-bz-surface p-5 flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <Eyebrow>Subscribers</Eyebrow>
+              <p className="text-[12.5px] text-bz-muted -mt-1">
+                Only confirmed subscribers — people who clicked the link in their confirmation email. The list is taken
+                the moment it sends, and anyone who unsubscribes before their copy goes out is skipped.
               </p>
-            ) : null}
-            <Link href="/admin/newsletter/subscribers" className="text-[12px] underline text-bz-ink-2 w-fit">
-              See the subscribers
-            </Link>
+              <div className="flex flex-col gap-2" role="radiogroup" aria-label="Subscribers">
+                {(["all", "en", "ar", "none"] as const).map((a) => (
+                  <label
+                    key={a}
+                    className={cn(
+                      "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer",
+                      draft.audience === a ? "border-bz-navy bg-bz-surface-2" : "border-bz-border",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="audience"
+                      checked={draft.audience === a}
+                      onChange={() => set("audience", a)}
+                      disabled={locked}
+                      className="accent-bz-navy"
+                    />
+                    <span className="text-[13px]">{AUDIENCE_LABELS[a]}</span>
+                    {a !== "none" ? <span className="ms-auto mono text-[12px] text-bz-muted">{audienceCounts[a]}</span> : null}
+                  </label>
+                ))}
+              </div>
+              {draft.audience !== "en" && draft.audience !== "none" && audienceCounts.ar > 0 ? (
+                <p className="text-[12px] text-bz-muted">
+                  {arabicReady
+                    ? `${audienceCounts.ar} Arabic subscriber${audienceCounts.ar === 1 ? "" : "s"} will get the Arabic edition.`
+                    : `No Arabic edition yet: ${audienceCounts.ar} Arabic subscriber${audienceCounts.ar === 1 ? "" : "s"} will get the English.`}
+                </p>
+              ) : null}
+              <Link href="/admin/newsletter/subscribers" className="text-[12px] underline text-bz-ink-2 w-fit">
+                See the subscribers
+              </Link>
+            </div>
+
+            <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
+              <Eyebrow>Custom lists</Eyebrow>
+              <p className="text-[12.5px] text-bz-muted -mt-1">
+                Lists your team uploaded. Someone on a list who is also a subscriber, or on two lists, gets one copy;
+                anyone who ever unsubscribed or bounced is left out. List contacts get the edition in the language
+                their row says.
+              </p>
+              {lists.length === 0 ? (
+                <p className="text-[12.5px] text-bz-muted">
+                  No lists yet.{" "}
+                  <Link href="/admin/newsletter/lists" className="underline">
+                    Upload one
+                  </Link>
+                  .
+                </p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {lists.map((l) => {
+                    const on = draft.list_ids.includes(l.id);
+                    return (
+                      <label
+                        key={l.id}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md border px-3 py-2.5 cursor-pointer",
+                          on ? "border-bz-navy bg-bz-surface-2" : "border-bz-border",
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={on}
+                          disabled={locked}
+                          onChange={() =>
+                            set("list_ids", on ? draft.list_ids.filter((x) => x !== l.id) : [...draft.list_ids, l.id])
+                          }
+                          className="accent-bz-navy"
+                        />
+                        <span className="text-[13px]">{l.name}</span>
+                        <span className="ms-auto mono text-[12px] text-bz-muted">{l.active}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <p className="rounded-md bg-bz-surface-2 px-3 py-2 text-[12.5px] text-bz-ink-2">
+              Reaches <strong className="mono">{recipients}</strong> {recipients === 1 ? "person" : "people"}, each once.
+            </p>
+            {allProblems.audience ? <span className={FIELD_ERROR}>{allProblems.audience}</span> : null}
           </section>
         ) : null}
 
@@ -556,7 +677,7 @@ export function Composer({
               </dd>
               <dt className="text-bz-muted">Audience</dt>
               <dd>
-                {AUDIENCE_LABELS[draft.audience]} · <span className="mono">{recipients}</span>
+                {audienceSummary} · <span className="mono">{recipients}</span>
               </dd>
               <dt className="text-bz-muted">From</dt>
               <dd className="break-all">{from}</dd>
@@ -583,10 +704,10 @@ export function Composer({
                 <div className="flex flex-wrap items-center gap-3">
                   <Button onClick={sendNow} disabled={busy || blocking.length > 0 || recipients === 0}>
                     {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} strokeWidth={1.8} />}
-                    Send now to {recipients} subscriber{recipients === 1 ? "" : "s"}
+                    Send now to {recipients} {recipients === 1 ? "person" : "people"}
                   </Button>
                   {recipients === 0 ? (
-                    <span className="text-[12px] text-bz-muted">Nobody confirmed in this audience yet.</span>
+                    <span className="text-[12px] text-bz-muted">Nobody in this audience yet.</span>
                   ) : null}
                 </div>
                 <div className="flex flex-wrap items-end gap-3">
@@ -631,6 +752,12 @@ export function Composer({
               Next <ChevronRight size={14} />
             </Button>
           ) : null}
+          {canWrite && blocks ? (
+            <Button variant="outline" onClick={() => setSavingTemplate(true)} disabled={busy}>
+              <LayoutTemplate size={14} strokeWidth={1.8} />
+              Save as template
+            </Button>
+          ) : null}
           {canWrite && status === "draft" ? (
             <button
               type="button"
@@ -642,6 +769,7 @@ export function Composer({
             </button>
           ) : null}
         </div>
+        {blocks ? <SaveTemplateDialog open={savingTemplate} draft={draft} onClose={() => setSavingTemplate(false)} /> : null}
         <p className="text-[11.5px] text-bz-muted -mt-3">
           {dirty
             ? "You have unsaved changes."

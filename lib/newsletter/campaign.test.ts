@@ -11,6 +11,8 @@ import {
 } from "./campaign";
 
 const draft = (over: Partial<CampaignDraft> = {}): CampaignDraft => ({
+  format: "rich",
+  design: null,
   subject: "October in Abu Dhabi",
   preheader: "Three new launches on Saadiyat",
   body: "<p>Hello from Bazar.</p>",
@@ -18,6 +20,7 @@ const draft = (over: Partial<CampaignDraft> = {}): CampaignDraft => ({
   preheader_ar: "",
   body_ar: "",
   audience: "all",
+  list_ids: [],
   ...over,
 });
 

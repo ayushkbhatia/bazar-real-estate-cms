@@ -41,6 +41,10 @@ export type DataExportPayload = {
   newsletter_subscription: Record<string, unknown> | null;
   /** Fast Pre-Approval and Mortgage Consultancy requests (docs/mortgage). */
   mortgage_requests: Array<Record<string, unknown>>;
+  /** Rows on the newsletter's custom recipient lists (0176). */
+  newsletter_lists: Array<Record<string, unknown>>;
+  /** Whether the address is on the do-not-mail list, and why. */
+  newsletter_suppressed: Record<string, unknown> | null;
   notes: string[];
 };
 
@@ -65,6 +69,8 @@ export function buildDataExport(input: {
    */
   shared_with_crm?: boolean;
   mortgage_requests?: Array<Record<string, unknown>>;
+  newsletter_lists?: Array<Record<string, unknown>>;
+  newsletter_suppressed?: Record<string, unknown> | null;
   now?: () => Date;
 }): DataExportPayload {
   const now = (input.now ?? (() => new Date()))().toISOString();
@@ -78,6 +84,8 @@ export function buildDataExport(input: {
     messages: input.messages ?? [],
     newsletter_subscription: input.newsletter_subscription ?? null,
     mortgage_requests: input.mortgage_requests ?? [],
+    newsletter_lists: input.newsletter_lists ?? [],
+    newsletter_suppressed: input.newsletter_suppressed ?? null,
     notes: [
       "This archive contains every personal-data field Bazar holds about your account at the moment of generation.",
       "The `messages` section includes the full conversation thread with your advisor — `author_kind` identifies whether each message was sent by you (`user`), Bazar (`agent`), or the system (`system`). Advisor replies are included so you have the context of your conversation; if you only want your own messages, filter by `author_kind === 'user'`.",
@@ -91,6 +99,16 @@ export function buildDataExport(input: {
                   "With your consent, Bazar's mortgage team may have shared your request with its partner banks. Those banks hold their own copies, which Bazar can't recall or erase; ask us which banks, or contact them directly.",
                 ]
               : []),
+          ]
+        : []),
+      ...(input.newsletter_lists?.length
+        ? [
+            "The `newsletter_lists` section lists the mailing lists Bazar's marketing team added your address to (for example an event's guests), with the language and status of each.",
+          ]
+        : []),
+      ...(input.newsletter_suppressed
+        ? [
+            "`newsletter_suppressed` records that your address must not be sent marketing email again. On erasure Bazar keeps only a one-way fingerprint of the address for this purpose, so that the request is honoured.",
           ]
         : []),
       ...(input.shared_with_crm
