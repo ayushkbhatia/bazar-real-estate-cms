@@ -15,6 +15,9 @@ import {
 import { featureDrawer, newsletterFeatures, type NewsletterFeatures } from "./features";
 import { unresolvedFeatures } from "./feature-render";
 import { featureBlocksIn } from "@/lib/content-assets/email-feature";
+import { designFeatureHtml, normaliseDesign } from "./blocks/document";
+import { readNewsletterSender } from "./sender-read";
+import type { NewsletterSender } from "./sender";
 
 /**
  * The newsletter sender: start a campaign, drain its deliveries in Resend
@@ -61,10 +64,19 @@ export type DrainReport = { batches: number; sent: number; skipped: number; fail
 type Delivery = {
   id: string;
   campaign_id: string;
-  subscriber_id: string;
+  /** Exactly one of the two (0176): a subscriber, or a contact on a custom list. */
+  subscriber_id: string | null;
+  contact_id?: string | null;
   locale: string;
   attempts: number;
 };
+
+/** What `newsletter_suppressions` is keyed by: SHA-256 of the lower-cased address (0176). */
+export function emailHash(email: string): string {
+  return createHash("sha256").update(email.trim().toLowerCase()).digest("hex");
+}
+
+type Recipient = { email: string; token: string; kind: "subscriber" | "list" };
 
 async function updateEach(
   client: Db,
@@ -94,36 +106,74 @@ export async function sendClaimed(
   client: Db,
   claimed: Delivery[],
   brand: EmailBrand,
+  /** The newsletter's own From and Reply-To (0174); the env's when omitted. */
+  sender?: NewsletterSender,
 ): Promise<Omit<DrainReport, "batches">> {
   const report = { sent: 0, skipped: 0, failed: 0, retried: 0 };
   if (claimed.length === 0) return report;
 
   const campaignIds = [...new Set(claimed.map((d) => d.campaign_id))];
-  const subscriberIds = [...new Set(claimed.map((d) => d.subscriber_id))];
-  const [{ data: campaigns, error: cErr }, { data: subscribers, error: sErr }] = await Promise.all([
+  const subscriberIds = [...new Set(claimed.map((d) => d.subscriber_id).filter((id): id is string => Boolean(id)))];
+  const contactIds = [...new Set(claimed.map((d) => d.contact_id).filter((id): id is string => Boolean(id)))];
+  const [{ data: campaigns, error: cErr }, { data: subscribers, error: sErr }, { data: contacts, error: lErr }] = await Promise.all([
     client
       .from("newsletter_campaigns")
-      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar")
+      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar, format, design")
       .in("id", campaignIds),
     client
       .from("newsletter_subscribers")
       .select("id, email, status, unsubscribe_token")
       .in("id", subscriberIds),
+    contactIds.length
+      ? client.from("newsletter_list_contacts").select("id, email, status, unsubscribe_token").in("id", contactIds)
+      : Promise.resolve({ data: [] as { id: string; email: string; status: string; unsubscribe_token: string }[], error: null }),
   ]);
-  if (cErr || sErr) throw new Error(`load batch: ${(cErr ?? sErr)!.message}`);
+  if (cErr || sErr || lErr) throw new Error(`load batch: ${(cErr ?? sErr ?? lErr)!.message}`);
 
-  const campaignById = new Map((campaigns ?? []).map((c) => [c.id, c as Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar">]));
+  type Loaded = Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar" | "format" | "design">;
+  // A block design is normalised once per batch, and its featured blocks read
+  // as the same tags a rich-text body carries — one lookup path for both.
+  const campaignById = new Map(
+    ((campaigns ?? []) as Loaded[]).map((c) => {
+      const design = c.format === "blocks" ? normaliseDesign(c.design) : null;
+      const featureHtml = design ? designFeatureHtml(design) : null;
+      return [c.id, { ...c, design, featureHtml }];
+    }),
+  );
   const subscriberById = new Map((subscribers ?? []).map((s) => [s.id, s]));
+  const contactById = new Map((contacts ?? []).map((c) => [c.id, c]));
+
+  // Who each delivery is for, if they may still be mailed: a confirmed
+  // subscriber or an active list contact.
+  const recipientOf = (d: Delivery): Recipient | null => {
+    if (d.subscriber_id) {
+      const s = subscriberById.get(d.subscriber_id);
+      return s && s.status === "confirmed" ? { email: s.email, token: s.unsubscribe_token, kind: "subscriber" } : null;
+    }
+    const c = d.contact_id ? contactById.get(d.contact_id) : undefined;
+    return c && c.status === "active" ? { email: c.email, token: c.unsubscribe_token, kind: "list" } : null;
+  };
+  // Suppressed since the snapshot — unsubscribed or bounced anywhere — is
+  // checked again here, one query per batch.
+  const hashes = [...new Set(claimed.map(recipientOf).filter((r): r is Recipient => r !== null).map((r) => emailHash(r.email)))];
+  const { data: suppressedRows, error: xErr } = hashes.length
+    ? await client.from("newsletter_suppressions").select("email_hash").in("email_hash", hashes)
+    : { data: [] as { email_hash: string }[], error: null };
+  if (xErr) throw new Error(`load suppressions: ${xErr.message}`);
+  const suppressed = new Set((suppressedRows ?? []).map((r) => r.email_hash));
 
   // Featured records, looked up once per campaign and edition for the whole
   // batch — never per recipient. A batch is at most one minute's worth of a
   // send, so every reader of it sees the same prices.
   const features = new Map<string, Promise<NewsletterFeatures>>();
-  const featuresFor = (campaign: { id: string; body: string; body_ar: string | null }, edition: EmailLocale) => {
+  const featuresFor = (
+    campaign: { id: string; body: string; body_ar: string | null; featureHtml: string | null },
+    edition: EmailLocale,
+  ) => {
     const key = `${campaign.id}:${edition}`;
     let hit = features.get(key);
     if (!hit) {
-      hit = newsletterFeatures([edition === "ar" ? campaign.body_ar : campaign.body], edition);
+      hit = newsletterFeatures([campaign.featureHtml ?? (edition === "ar" ? campaign.body_ar : campaign.body)], edition);
       features.set(key, hit);
     }
     return hit;
@@ -137,15 +187,17 @@ export async function sendClaimed(
   const deferred: { id: string; patch: Record<string, unknown> }[] = [];
   for (const delivery of claimed) {
     const campaign = campaignById.get(delivery.campaign_id);
-    const subscriber = subscriberById.get(delivery.subscriber_id);
+    const recipient = recipientOf(delivery);
     // Unsubscribed (or bounced) since the snapshot: their choice wins.
-    if (!campaign || !subscriber || subscriber.status !== "confirmed") {
+    if (!campaign || !recipient || suppressed.has(emailHash(recipient.email))) {
       skipped.push({ id: delivery.id, patch: { status: "skipped", error: "no longer subscribed" } });
       continue;
     }
     const locale: EmailLocale = delivery.locale === "ar" ? "ar" : "en";
-    const links = unsubscribeLinks(subscriber.unsubscribe_token, locale);
+    const links = unsubscribeLinks(recipient.token, locale);
     const draft = {
+      format: campaign.format,
+      design: campaign.design,
       subject: campaign.subject,
       preheader: campaign.preheader,
       body: campaign.body,
@@ -155,7 +207,8 @@ export async function sendClaimed(
     };
     const edition = editionLocale(draft, locale);
     const found = await featuresFor(campaign, edition);
-    if (unresolvedFeatures(featureBlocksIn(edition === "ar" ? draft.body_ar : draft.body), found.lookup) > 0) {
+    const blocks = featureBlocksIn(campaign.featureHtml ?? (edition === "ar" ? draft.body_ar : draft.body));
+    if (unresolvedFeatures(blocks, found.lookup) > 0) {
       const final = delivery.attempts >= MAX_ATTEMPTS;
       if (final) report.failed += 1;
       else report.retried += 1;
@@ -170,15 +223,17 @@ export async function sendClaimed(
       locale,
       unsubscribeUrl: links.page,
       features: (l) => featureDrawer(found, brand, l),
+      recipient: recipient.kind,
     });
     toSend.push({
       delivery,
       input: {
-        to: subscriber.email,
+        to: recipient.email,
         subject: email.subject,
         text: email.text,
         html: email.html,
-        headers: unsubscribeHeaders(subscriber.unsubscribe_token, locale),
+        headers: unsubscribeHeaders(recipient.token, locale),
+        ...(sender ? { from: sender.from, replyTo: sender.replyTo } : {}),
       },
     });
   }
@@ -236,6 +291,7 @@ export async function drainNewsletterQueue(
   const deadline = Date.now() + (opts.deadlineMs ?? 45_000);
   const report: DrainReport = { batches: 0, sent: 0, skipped: 0, failed: 0, retried: 0 };
   let brand: EmailBrand | null = null;
+  let sender: NewsletterSender | null = null;
 
   while (report.batches < maxBatches && Date.now() < deadline) {
     const { data, error } = await client.rpc("newsletter_claim_deliveries", { p_limit: EMAIL_BATCH_LIMIT });
@@ -243,7 +299,8 @@ export async function drainNewsletterQueue(
     const claimed = (data ?? []) as Delivery[];
     if (claimed.length === 0) break;
     brand ??= await readEmailBrand();
-    const r = await sendClaimed(client, claimed, brand);
+    sender ??= await readNewsletterSender();
+    const r = await sendClaimed(client, claimed, brand, sender);
     report.batches += 1;
     report.sent += r.sent;
     report.skipped += r.skipped;

@@ -6,7 +6,7 @@ import { getStaffRole, requireRole } from "@/lib/auth";
 import { STAFF_ROLES } from "@/lib/schemas/staff";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
-import { emailSender } from "@/lib/email";
+import { readNewsletterSender } from "@/lib/newsletter/sender-read";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { emailSiteUrl } from "@/lib/email-templates";
@@ -15,12 +15,15 @@ import {
   NEWSLETTER_WRITE_ROLES,
   hasArabicEdition,
   renderNewsletter,
+  type Audience,
   type CampaignRow,
 } from "@/lib/newsletter/campaign";
+import { listOptions } from "../_data";
 import { deliveryCounts, EMPTY_DELIVERY_COUNTS } from "@/lib/newsletter/send";
 import { featureDrawer, newsletterFeatures } from "@/lib/newsletter/features";
 import { isAnthropicConfigured } from "@/lib/concierge/env";
 import { listFeatureTargets } from "../_feature-targets";
+import { designFeatureHtml, normaliseDesign } from "@/lib/newsletter/blocks/document";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { subscriberCounts } from "../_data";
 import { CampaignStatusPill } from "../_shared";
@@ -57,7 +60,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
   const [role, counts] = await Promise.all([getStaffRole(), subscriberCounts()]);
   const canWrite = role !== null && (NEWSLETTER_WRITE_ROLES as readonly string[]).includes(role);
   const canSend = role !== null && (NEWSLETTER_SEND_ROLES as readonly string[]).includes(role);
-  const sender = emailSender();
+  const sender = await readNewsletterSender();
   const title = campaign.subject.trim() || "Untitled draft";
 
   const crumbs = (
@@ -72,7 +75,10 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
 
   if (campaign.status === "sending" || campaign.status === "sent" || campaign.status === "cancelled") {
     const brand = await readEmailBrand();
+    const design = campaign.format === "blocks" ? normaliseDesign(campaign.design) : null;
     const draft = {
+      format: campaign.format,
+      design,
       subject: campaign.subject,
       preheader: campaign.preheader,
       body: campaign.body,
@@ -81,13 +87,21 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
       body_ar: campaign.body_ar ?? "",
     };
     const unsubscribe = `${emailSiteUrl()}/newsletter/unsubscribe/preview`;
+    const { data: lists } = campaign.list_ids?.length
+      ? await supabase.from("newsletter_lists").select("name").in("id", campaign.list_ids)
+      : { data: [] as { name: string }[] };
+    // A list deleted since is still counted, by the number it went to.
+    const listNames = [
+      ...(lists ?? []).map((l) => l.name),
+      ...Array(Math.max(0, (campaign.list_ids?.length ?? 0) - (lists?.length ?? 0))).fill("a deleted list"),
+    ];
     const admin = createAdminClient();
     // Featured cards as they would draw today — the records are live, so a
     // listing repriced since the send shows its new price here.
     const arabicEdition = hasArabicEdition(draft);
     const [enFeatures, arFeatures] = await Promise.all([
-      newsletterFeatures([draft.body], "en"),
-      arabicEdition ? newsletterFeatures([draft.body_ar], "ar") : null,
+      newsletterFeatures([design ? designFeatureHtml(design) : draft.body], "en"),
+      arabicEdition ? newsletterFeatures([design ? designFeatureHtml(design) : draft.body_ar], "ar") : null,
     ]);
     return (
       <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
@@ -113,12 +127,13 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           from={sender.from}
           replyTo={sender.replyTo}
           canWrite={canWrite}
+          listNames={listNames}
         />
       </CmsShell>
     );
   }
 
-  const [media, records] = await Promise.all([fetchImages(supabase), listFeatureTargets()]);
+  const [media, records, lists] = await Promise.all([fetchImages(supabase), listFeatureTargets(), listOptions()]);
   return (
     <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
       <Composer
@@ -127,15 +142,19 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         scheduledAt={campaign.scheduled_at}
         updatedAt={campaign.updated_at}
         initial={{
+          format: campaign.format === "blocks" ? "blocks" : "rich",
+          design: campaign.format === "blocks" ? normaliseDesign(campaign.design) : null,
           subject: campaign.subject,
           preheader: campaign.preheader,
           body: campaign.body,
           subject_ar: campaign.subject_ar ?? "",
           preheader_ar: campaign.preheader_ar ?? "",
           body_ar: campaign.body_ar ?? "",
-          audience: (["all", "en", "ar"].includes(campaign.audience) ? campaign.audience : "all") as "all" | "en" | "ar",
+          audience: (["all", "en", "ar", "none"].includes(campaign.audience) ? campaign.audience : "all") as Audience,
+          list_ids: campaign.list_ids ?? [],
         }}
-        audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr }}
+        audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr, none: 0 }}
+        lists={lists}
         media={media}
         records={records}
         canTranslate={isAnthropicConfigured}

@@ -117,7 +117,15 @@ export async function getSubscriberByUnsubscribeToken(
     .select("email, status")
     .eq("confirmation_token", token)
     .maybeSingle();
-  return byConfirmation ?? null;
+  if (byConfirmation) return byConfirmation;
+  // A contact on a custom list (0176): same page, same choice.
+  const { data: contact } = await admin
+    .from("newsletter_list_contacts")
+    .select("email, status")
+    .eq("unsubscribe_token", token)
+    .maybeSingle();
+  if (!contact) return null;
+  return { email: contact.email, status: contact.status === "active" ? "confirmed" : (contact.status as NewsletterStatus) };
 }
 
 /** Service-role helper for status mutations from confirm/unsubscribe. */

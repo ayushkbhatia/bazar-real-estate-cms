@@ -10,7 +10,8 @@ import {
   type CampaignStatus,
 } from "@/lib/newsletter/campaign";
 import { NewNewsletterButton } from "./_new-newsletter";
-import { subscriberCounts } from "./_data";
+import { savedTemplates, subscriberCounts } from "./_data";
+import { launchableProjects } from "@/lib/newsletter/blocks/template-data";
 import { CampaignStatusPill, NewsletterTabs, formatDubai } from "./_shared";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ type ListRow = {
   subject: string;
   status: CampaignStatus;
   audience: string;
+  list_ids: string[];
   subject_ar: string | null;
   recipient_count: number;
   scheduled_at: string | null;
@@ -30,13 +32,15 @@ type ListRow = {
 
 export default async function NewsletterPage() {
   const { supabase } = await requireRole(STAFF_ROLES);
-  const [role, counts, { data }] = await Promise.all([
+  const [role, counts, templates, projects, { data }] = await Promise.all([
     getStaffRole(),
     subscriberCounts(),
+    savedTemplates(),
+    isSupabaseConfigured ? launchableProjects() : Promise.resolve([]),
     isSupabaseConfigured
       ? supabase
           .from("newsletter_campaigns")
-          .select("id, subject, status, audience, subject_ar, recipient_count, scheduled_at, sent_at, started_at, updated_at")
+          .select("id, subject, status, audience, list_ids, subject_ar, recipient_count, scheduled_at, sent_at, started_at, updated_at")
           .order("created_at", { ascending: false })
           .limit(200)
       : Promise.resolve({ data: [] as ListRow[] }),
@@ -49,11 +53,16 @@ export default async function NewsletterPage() {
       title="Newsletter"
       breadcrumbs="Content · Newsletter"
       primary={
-        canWrite ? <NewNewsletterButton /> : undefined
+        canWrite ? (
+          <NewNewsletterButton
+            templates={templates.map((t) => ({ id: t.id, name: t.name, description: t.description }))}
+            projects={projects}
+          />
+        ) : undefined
       }
     >
       <div className="flex flex-col gap-6">
-        <NewsletterTabs active="campaigns" counts={{ campaigns: rows.length, confirmed: counts.confirmed }} />
+        <NewsletterTabs active="campaigns" counts={{ campaigns: rows.length, confirmed: counts.confirmed, templates: templates.length }} />
 
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
@@ -105,7 +114,14 @@ export default async function NewsletterPage() {
                     <td className="px-4 py-3">
                       <CampaignStatusPill status={r.status} />
                     </td>
-                    <td className="px-4 py-3 text-bz-ink-2">{AUDIENCE_LABELS[r.audience as Audience] ?? r.audience}</td>
+                    <td className="px-4 py-3 text-bz-ink-2">
+                      {[
+                        r.audience === "none" ? null : (AUDIENCE_LABELS[r.audience as Audience] ?? r.audience),
+                        r.list_ids?.length ? `${r.list_ids.length} custom list${r.list_ids.length === 1 ? "" : "s"}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" + ")}
+                    </td>
                     <td className="px-4 py-3 text-end mono">{r.status === "sending" || r.status === "sent" ? r.recipient_count : "—"}</td>
                     <td className="px-4 py-3 text-bz-ink-2 whitespace-nowrap">
                       {r.status === "sent"

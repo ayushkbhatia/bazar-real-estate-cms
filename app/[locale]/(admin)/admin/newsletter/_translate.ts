@@ -8,6 +8,8 @@ import { translateField } from "@/lib/i18n/mt/translate";
 import { mtClientFromEnv } from "@/lib/i18n/mt/hf-client";
 import { fromSlots, markIssues, normaliseModelEntities, toSlots } from "@/lib/i18n/mt/html";
 import { NEWSLETTER_WRITE_ROLES, isBlankBody, toArabicLinks } from "@/lib/newsletter/campaign";
+import { normaliseDesign, textSlots, withArabic } from "@/lib/newsletter/blocks/document";
+import type { Design } from "@/lib/newsletter/blocks/types";
 
 /**
  * "Translate from English" — a machine first draft of the Arabic edition,
@@ -123,4 +125,66 @@ export async function translateNewsletter(campaignId: string, input: {
   });
 
   return { status: "ok", subject_ar: subjectAr, preheader_ar: preheaderAr, body_ar: bodyAr, notes };
+}
+
+export type DesignTranslation =
+  | { status: "ok"; subject_ar: string; preheader_ar: string; design: Design; notes: string[] }
+  | { status: "error"; message: string };
+
+/**
+ * "Translate from English" for a block-built newsletter: every block's words
+ * through the same pipeline, one field at a time, each written into its
+ * Arabic twin. A field whose translation fails the checks is left blank —
+ * the composer then names it as missing, rather than sending English in an
+ * Arabic email. Nothing is saved here.
+ */
+export async function translateDesign(
+  campaignId: string,
+  input: { subject: string; preheader: string; design: unknown },
+): Promise<DesignTranslation> {
+  await requireRole(NEWSLETTER_WRITE_ROLES);
+  if (!isAnthropicConfigured) {
+    return {
+      status: "error",
+      message: "Machine translation isn't set up here (no ANTHROPIC_API_KEY). Use “Copy the English” and translate it by hand.",
+    };
+  }
+  const design = normaliseDesign(input.design);
+  const slots = textSlots(design);
+  if (slots.length === 0 && !input.subject.trim()) {
+    return { status: "error", message: "Write the English edition first — there's nothing to translate yet." };
+  }
+  let mt: Awaited<ReturnType<typeof mtClientFromEnv>>;
+  try {
+    mt = await mtClientFromEnv();
+  } catch (error) {
+    return { status: "error", message: error instanceof Error ? error.message : "Machine translation isn't set up here." };
+  }
+  const client = mt.client;
+  const model = mt.provider === "huggingface" ? mt.proseModel : undefined;
+  const one = async (text: string, kind: "title" | "summary" | "body", maxLength?: number) => {
+    if (!text.trim()) return "";
+    const result = await translateField({ client, text, kind, maxLength, model });
+    return result.ok ? normaliseModelEntities(result.text) : "";
+  };
+
+  const [subjectAr, preheaderAr, ...values] = await Promise.all([
+    one(input.subject.trim().slice(0, MAX_SUBJECT), "title", MAX_SUBJECT),
+    one(input.preheader.trim().slice(0, MAX_SUBJECT), "summary", MAX_SUBJECT),
+    ...slots.map((slot) => one(slot.en, slot.kind === "textarea" ? "body" : "title")),
+  ]);
+  const filled = new Map(slots.map((slot, i) => [slot, values[i] ?? ""] as const));
+  const kept = [...filled.values()].filter((v) => !v).length;
+  const notes = kept
+    ? [`${kept} of ${slots.length} texts didn't pass the checks and were left blank — the composer lists them; write those by hand.`]
+    : [];
+  if (!subjectAr) notes.push("The subject kept its English — write the Arabic subject by hand.");
+
+  await logAudit({
+    action: "newsletter.translate",
+    target_kind: "newsletter_campaign",
+    target_id: campaignId,
+    after: { format: "blocks", texts: slots.length, kept_blank: kept },
+  });
+  return { status: "ok", subject_ar: subjectAr, preheader_ar: preheaderAr, design: withArabic(design, filled), notes };
 }
