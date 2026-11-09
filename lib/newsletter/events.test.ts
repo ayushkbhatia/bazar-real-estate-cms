@@ -1,7 +1,10 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
+  isOwnSender,
+  ownSenderDomains,
   parseEmailEvent,
+  SENDER_DOMAINS,
   SIGNATURE_TOLERANCE_S,
   verifyResendSignature,
 } from "./events";
@@ -115,7 +118,11 @@ describe("verifyResendSignature", () => {
 describe("parseEmailEvent", () => {
   const base = {
     created_at: "2026-10-19T12:00:01.000Z",
-    data: { email_id: "re_1", to: ["a@example.com"] },
+    data: {
+      email_id: "re_1",
+      from: "Bazar Real Estate <hello@bazarrealestate.com>",
+      to: ["a@example.com"],
+    },
   };
 
   it("maps the three events it acts on", () => {
@@ -125,6 +132,7 @@ describe("parseEmailEvent", () => {
       recipients: ["a@example.com"],
       permanent: false,
       at: "2026-10-19T12:00:01.000Z",
+      senderDomain: "bazarrealestate.com",
     });
     expect(parseEmailEvent({ ...base, type: "email.complained" })?.type).toBe(
       "complained",
@@ -148,5 +156,68 @@ describe("parseEmailEvent", () => {
     expect(parseEmailEvent({ ...base, type: "domain.updated" })).toBeNull();
     expect(parseEmailEvent({ type: "email.delivered", data: {} })).toBeNull();
     expect(parseEmailEvent(null)).toBeNull();
+  });
+});
+
+describe("the sender's domain", () => {
+  const event = (from: unknown) =>
+    parseEmailEvent({
+      type: "email.bounced",
+      created_at: "2026-11-09T12:00:00.000Z",
+      data: { email_id: "re_1", from, to: ["a@example.com"] },
+    })?.senderDomain;
+
+  it("reads a bare From and a display-name From, lower-cased", () => {
+    expect(event("hello@bazarrealestate.com")).toBe("bazarrealestate.com");
+    expect(event("Marketing at Bazar <Marketing@BazarRealEstate.COM>")).toBe(
+      "bazarrealestate.com",
+    );
+    expect(event('"Indus, Hydraulics" <newsletter@news.indushydraulics.com>')).toBe(
+      "news.indushydraulics.com",
+    );
+  });
+
+  it("is null when there is no readable From", () => {
+    expect(event(undefined)).toBeNull();
+    expect(event("")).toBeNull();
+    expect(event("Bazar Real Estate")).toBeNull();
+    expect(event(42)).toBeNull();
+  });
+});
+
+describe("isOwnSender", () => {
+  it("matches the apex and its subdomains", () => {
+    expect(isOwnSender("example.com", "example.com")).toBe(true);
+    expect(isOwnSender("news.example.com", "example.com")).toBe(true);
+    expect(isOwnSender("NEWS.Example.com", "example.com")).toBe(true);
+  });
+
+  it("refuses a look-alike and another site", () => {
+    expect(isOwnSender("evilexample.com", "example.com")).toBe(false);
+    expect(isOwnSender("example.com.evil.net", "example.com")).toBe(false);
+    expect(isOwnSender("indushydraulics.com", SENDER_DOMAINS)).toBe(false);
+    expect(isOwnSender("news.indushydraulics.com", SENDER_DOMAINS)).toBe(false);
+  });
+
+  it("counts a missing From as ours", () => {
+    expect(isOwnSender(null, "example.com")).toBe(true);
+    expect(isOwnSender(null, SENDER_DOMAINS)).toBe(true);
+  });
+
+  it("accepts every domain Bazar sends from", () => {
+    expect(isOwnSender("bazarrealestate.com", SENDER_DOMAINS)).toBe(true);
+    expect(isOwnSender("bazarrealestate.ae", SENDER_DOMAINS)).toBe(true);
+    expect(isOwnSender("mail.bazarrealestate.com", SENDER_DOMAINS)).toBe(true);
+  });
+
+  it("adds the configured From's domain to the list", () => {
+    expect(ownSenderDomains("Bazar <hello@bazar.ae>")).toEqual([
+      ...SENDER_DOMAINS,
+      "bazar.ae",
+    ]);
+    expect(ownSenderDomains("hello@bazarrealestate.com")).toEqual([
+      ...SENDER_DOMAINS,
+    ]);
+    expect(ownSenderDomains(undefined)).toEqual([...SENDER_DOMAINS]);
   });
 });

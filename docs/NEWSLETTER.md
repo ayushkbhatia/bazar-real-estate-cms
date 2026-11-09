@@ -266,6 +266,15 @@ site sends:
 - The route checks the Svix signature (`svix-id`, `svix-timestamp`,
   `svix-signature`, five minutes' tolerance) against `RESEND_WEBHOOK_SECRET`.
   Without the secret it refuses everything.
+- The webhook belongs to the Resend **account**, and the account also sends
+  for other sites (Indus Hydraulics, including its newsletter on
+  news.indushydraulics.com since 2026-11-09), so their events arrive here
+  too. An event whose From domain is not Bazar's — `SENDER_DOMAINS` in
+  `lib/newsletter/events.ts` (bazarrealestate.com, bazarrealestate.ae, any
+  subdomain) plus the domain of `RESEND_FROM_ADDRESS` — is answered
+  `200 { ignored: "other-sender" }` and writes nothing. An event with no From
+  is treated as ours. Moving the newsletter's From to a new domain means
+  adding it to that list.
 - Each event goes to `newsletter_record_email_event()` (0164, service role
   only). It stamps `delivered_at` / `bounced_at` + `bounce_type` /
   `complained_at` on the newsletter delivery whose `resend_id` matches, which
