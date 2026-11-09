@@ -7,7 +7,6 @@ import type { PropertyFaqItem } from "@/lib/queries/property-page";
 
 type Props = {
   locale: Locale;
-  reference: string;
   title: string;
   areaName: string | null;
   /**
@@ -54,7 +53,6 @@ type Props = {
  */
 export async function PropertyFaq({
   locale,
-  reference,
   title,
   areaName,
   propertyType,
@@ -72,7 +70,6 @@ export async function PropertyFaq({
   const iso = (value: string) => isolateForLocale(value, locale);
 
   const place = iso(areaName ?? t("fallbackCity"));
-  const ref = iso(reference);
   const type = iso(propertyType);
 
   const tenureNote =
@@ -95,17 +92,17 @@ export async function PropertyFaq({
               type,
               place,
               baths: t("faq.bathroomCount", { count: baths }),
-              reference: ref,
+              title: iso(title),
             }),
           },
         ]
       : []),
     {
-      q: t("faq.locationQ", { reference: ref }),
+      q: t("faq.locationQ", { title: iso(title) }),
       a: t("faq.locationA", { title: iso(title), place }),
     },
     {
-      q: t("faq.nonResidentQ", { reference: ref }),
+      q: t("faq.nonResidentQ", { title: iso(title) }),
       a: tenureNote,
     },
     ...shared,

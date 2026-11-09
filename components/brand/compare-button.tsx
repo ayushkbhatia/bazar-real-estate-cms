@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Scale, Check } from "lucide-react";
+import { Star } from "lucide-react";
 import {
   COMPARE_STORAGE_KEY,
   SHORTLIST_CAP,
@@ -120,11 +120,13 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
             : "size-8 rounded-full bg-white/92 text-bz-ink-2 hover:text-bz-ink flex items-center justify-center transition-colors"
         }
       >
-        {active ? (
-          <Check size={15} strokeWidth={2} />
-        ) : (
-          <Scale size={15} strokeWidth={1.7} />
-        )}
+        {/* A star, filled once saved (client, Nov 2026 — it was a balance
+            scale, which read as "compare" rather than "save"). */}
+        <Star
+          size={15}
+          strokeWidth={1.7}
+          fill={active ? "currentColor" : "none"}
+        />
       </span>
     </button>
   );

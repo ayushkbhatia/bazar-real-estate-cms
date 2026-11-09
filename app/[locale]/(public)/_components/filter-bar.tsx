@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PICKABLE_PROPERTY_TYPES } from "@/lib/schemas/property";
-import { filterParsers } from "@/lib/filters/property";
+import { BATHS_CAP, BEDS_CAP, filterParsers } from "@/lib/filters/property";
 import {
   currencySymbol,
   inputToPriceParam,
@@ -27,13 +27,21 @@ import {
 import { cn } from "@/lib/utils";
 import type { SearchSurface } from "@/lib/master-pages/search-headers";
 
-// T2-A — beds/baths chips. Studio (0) anchors the left side; "+" caps stay
-// at 5 (beds) and 4 (baths) to match the `lib/queries/properties.ts` `>=`
-// semantics (that file is locked, so we don't push the cap upward here).
-// Lifting the cap to 6/5 is a follow-up that needs the query to teach
-// `beds=6 → gte 6` distinct from `beds=5 → gte 5`.
-const BED_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
-const BATH_OPTIONS = [1, 2, 3, 4] as const;
+// T2-A — beds/baths chips. Studio (0) anchors the left side; the last chip
+// is the cap (`BEDS_CAP` / `BATHS_CAP`), which the query reads as "or more".
+// Several can be ticked at once (client, Nov 2026): `?beds=1,2` shows one-
+// and two-bedroom homes together.
+const BED_OPTIONS = [0, 1, 2, 3, 4, BEDS_CAP] as const;
+const BATH_OPTIONS = [1, 2, 3, BATHS_CAP] as const;
+
+/** `list` with `n` added or taken out, sorted; null once empty, so the
+ *  parameter leaves the URL instead of lingering as `beds=`. */
+function toggleCount(list: readonly number[] | null, n: number): number[] | null {
+  const set = new Set(list ?? []);
+  if (set.has(n)) set.delete(n);
+  else set.add(n);
+  return set.size > 0 ? [...set].sort((a, b) => a - b) : null;
+}
 
 /*
  * Numerals only. "Studio" used to live here; it is copy, so it moved to
@@ -41,12 +49,12 @@ const BATH_OPTIONS = [1, 2, 3, 4] as const;
  * is in scope. What is left — "5+", "4+" — is a bound, not a sentence.
  */
 function bedLabel(n: number): string {
-  if (n === 5) return "5+";
+  if (n === BEDS_CAP) return `${BEDS_CAP}+`;
   return String(n);
 }
 
 function bathLabel(n: number): string {
-  if (n === 4) return "4+";
+  if (n === BATHS_CAP) return `${BATHS_CAP}+`;
   return String(n);
 }
 const UNSET = "__unset__";
@@ -106,7 +114,11 @@ export function FilterBar({ areas, leading, trailing }: Props) {
   }
 
   const activeCount = [q, beds, baths, type, price_min, price_max, area].filter(
-    (v) => v !== null && v !== undefined && v !== "",
+    (v) =>
+      v !== null &&
+      v !== undefined &&
+      v !== "" &&
+      !(Array.isArray(v) && v.length === 0),
   ).length;
 
   function commit(patch: Parameters<typeof setState>[0]) {
@@ -142,13 +154,13 @@ export function FilterBar({ areas, leading, trailing }: Props) {
           {tr("filters.beds")}
         </span>
         {BED_OPTIONS.map((n) => {
-          const active = beds === n;
+          const active = beds?.includes(n) ?? false;
           const label = n === 0 ? tr("filters.studio") : bedLabel(n);
           return (
             <button
               key={n}
               type="button"
-              onClick={() => commit({ beds: active ? null : n })}
+              onClick={() => commit({ beds: toggleCount(beds, n) })}
               className={cn(
                 "h-9 px-2.5 rounded text-[12.5px] font-medium border transition-colors",
                 n === 0 ? "min-w-[58px]" : "min-w-[40px]",
@@ -171,13 +183,13 @@ export function FilterBar({ areas, leading, trailing }: Props) {
           {tr("filters.baths")}
         </span>
         {BATH_OPTIONS.map((n) => {
-          const active = baths === n;
+          const active = baths?.includes(n) ?? false;
           const label = bathLabel(n);
           return (
             <button
               key={n}
               type="button"
-              onClick={() => commit({ baths: active ? null : n })}
+              onClick={() => commit({ baths: toggleCount(baths, n) })}
               className={cn(
                 "h-9 min-w-[40px] px-2 rounded text-[12.5px] font-medium border transition-colors",
                 active

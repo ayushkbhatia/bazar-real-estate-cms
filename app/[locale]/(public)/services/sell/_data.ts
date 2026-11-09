@@ -25,7 +25,11 @@ import {
  */
 export type SellHeroStat = { value: string; labelKey: SellHeroStatKey };
 
-export type SellHeroStatKey = "statListings" | "statAreas" | "statAdvisors";
+/**
+ * No advisor count (client, Nov 2026): a small desk read as "1 ADREC-registered
+ * advisors on the desk", which undersold it.
+ */
+export type SellHeroStatKey = "statListings" | "statAreas";
 
 /** The area the transactions card samples — Bazar's core sales patch. */
 const SPARK_AREA_SLUG = "saadiyat-island";
@@ -35,7 +39,7 @@ export async function getSellHeroStats(): Promise<SellHeroStat[]> {
   if (!isSupabaseConfigured) return [];
   try {
     const supabase = createSupabasePublicClient();
-    const [listings, areas, advisors] = await Promise.all([
+    const [listings, areas] = await Promise.all([
       supabase
         .from("properties")
         .select("id", { count: "exact", head: true })
@@ -44,11 +48,6 @@ export async function getSellHeroStats(): Promise<SellHeroStat[]> {
         .from("areas")
         .select("id", { count: "exact", head: true })
         .in("kind", ["area", "sub_community"]),
-      supabase
-        .from("staff")
-        .select("user_id", { count: "exact", head: true })
-        .eq("role", "agent")
-        .eq("status", "active"),
     ]);
 
     const stats: SellHeroStat[] = [];
@@ -61,11 +60,6 @@ export async function getSellHeroStats(): Promise<SellHeroStat[]> {
       stats.push({
         value: String(areas.count),
         labelKey: "statAreas",
-      });
-    if (advisors.count)
-      stats.push({
-        value: String(advisors.count),
-        labelKey: "statAdvisors",
       });
     return stats;
   } catch {

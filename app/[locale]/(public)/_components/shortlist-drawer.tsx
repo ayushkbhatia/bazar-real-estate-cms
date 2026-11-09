@@ -64,7 +64,7 @@ import {
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "@/components/i18n/link";
-import { ArrowRight, Mail, Scale, Send, Trash2 } from "lucide-react";
+import { ArrowRight, Mail, Scale, Send, Star, Trash2 } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -459,7 +459,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
           // opposite the desktop CTA column at bottom-right.
           className="fixed start-3 md:start-4 bottom-[calc(var(--bz-bar-safe)+64px)] md:bottom-6 z-40 inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-accent text-bz-accent-fg shadow-lg hover:bg-bz-accent-hover text-[13px]"
         >
-          <Scale size={14} strokeWidth={1.8} />
+          <Star size={14} strokeWidth={1.8} />
           <span>
             {copy.trigger_label} · {activeIds.length}
           </span>

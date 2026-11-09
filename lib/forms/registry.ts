@@ -731,7 +731,7 @@ export const FORM_DEFS: FormDef[] = [
     enquirySource: "property_page",
     copy: copy({
       ...ENQUIRY_SUCCESS,
-      message_prefill: "I'd like to know more about {reference}.",
+      message_prefill: "I'd like to know more about {title}.",
       submit_label: "Send enquiry",
     }),
     fields: enquiryFields({

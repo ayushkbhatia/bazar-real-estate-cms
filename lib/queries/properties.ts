@@ -2,7 +2,11 @@ import { readFailed } from "@/lib/queries/read-failure";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import type { PropertyFilters } from "@/lib/filters/property";
+import {
+  BATHS_CAP,
+  BEDS_CAP,
+  type PropertyFilters,
+} from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 import type { PropertyMode } from "@/lib/schemas/property";
 import { currentLocale } from "@/lib/i18n/current";
@@ -242,15 +246,12 @@ export async function listPublishedProperties(opts: {
     // control, on a site whose catalogue is almost entirely residential and
     // where nobody would think to look.
     if (filters.segment) query = query.eq("segment", filters.segment);
-    if (filters.beds != null) {
-      // 5+ buckets — treat the value as a minimum once it hits the cap.
-      if (filters.beds >= 5) query = query.gte("beds", 5);
-      else query = query.eq("beds", filters.beds);
-    }
-    if (filters.baths != null) {
-      if (filters.baths >= 4) query = query.gte("baths", 4);
-      else query = query.eq("baths", filters.baths);
-    }
+    // Any of the ticked counts; the top option ("5+", "4+") is a minimum.
+    // Two `or` filters (with the commercial one above) AND together.
+    const beds = countFilter("beds", filters.beds, BEDS_CAP);
+    if (beds) query = query.or(beds);
+    const baths = countFilter("baths", filters.baths, BATHS_CAP);
+    if (baths) query = query.or(baths);
     if (filters.price_min != null)
       query = query.gte("price_aed", filters.price_min);
     if (filters.price_max != null)
@@ -620,3 +621,20 @@ export {
   propertyUrl,
   extractReferenceFromSlug,
 } from "./property-utils";
+
+/**
+ * A PostgREST `or` filter matching any of `counts` on `column`, the cap meaning
+ * "the cap or more": `[1, 2, 5]` on beds is `beds.in.(1,2),beds.gte.5`. Null
+ * when nothing is ticked. Exported for its test.
+ */
+export function countFilter(
+  column: "beds" | "baths",
+  counts: readonly number[],
+  cap: number,
+): string | null {
+  const exact = counts.filter((n) => Number.isInteger(n) && n >= 0 && n < cap);
+  const parts: string[] = [];
+  if (exact.length > 0) parts.push(`${column}.in.(${exact.join(",")})`);
+  if (counts.some((n) => n >= cap)) parts.push(`${column}.gte.${cap}`);
+  return parts.length > 0 ? parts.join(",") : null;
+}

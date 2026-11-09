@@ -541,7 +541,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         ]
       : []),
     {
-      name: property.reference,
+      name: property.title,
       url: `${siteUrl}${canonical}`,
     },
   ]);
@@ -581,7 +581,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           </>
         ) : null}
         <ChevronRight size={12} className="rtl:-scale-x-100" />
-        <span className="mono text-bz-navy">{property.reference}</span>
+        <span className="text-bz-navy">{property.title}</span>
       </div>
 
       {/* Action row */}
@@ -901,6 +901,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               // see the same line in `enquiry-dialog.tsx`.
               tokens={{
                 reference: isolateForLocale(property.reference, locale),
+                title: isolateForLocale(property.title, locale),
               }}
               context={{
                 propertyId: property.id,
@@ -924,7 +925,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         eyebrow={copy.text("faq", "eyebrow")}
         heading={copy.text("faq", "heading")}
         shared={copy.faq}
-        reference={property.reference}
         title={property.title}
         areaName={property.areas?.name ?? null}
         propertyType={typeLabel}

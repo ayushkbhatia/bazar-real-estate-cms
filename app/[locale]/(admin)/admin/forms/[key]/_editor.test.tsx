@@ -183,7 +183,7 @@ describe("the pre-filled message", () => {
     mountForm("property_enquiry");
     expect(screen.getByText("Pre-filled message")).toBeInTheDocument();
     expect(
-      screen.getByDisplayValue("I'd like to know more about {reference}."),
+      screen.getByDisplayValue("I'd like to know more about {title}."),
     ).toBeInTheDocument();
   });
 
@@ -192,7 +192,7 @@ describe("the pre-filled message", () => {
     const user = userEvent.setup();
     mountForm("property_enquiry");
     const box = screen.getByDisplayValue(
-      "I'd like to know more about {reference}.",
+      "I'd like to know more about {title}.",
     );
     await user.clear(box);
     await user.type(box, "Is {{reference} still available?");

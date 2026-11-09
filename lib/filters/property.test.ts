@@ -11,8 +11,8 @@ describe("parseFilters", () => {
     const f = parseFilters({});
     expect(f).toEqual({
       q: null,
-      beds: null,
-      baths: null,
+      beds: [],
+      baths: [],
       type: null,
       segment: null,
       form: null,
@@ -46,8 +46,8 @@ describe("parseFilters", () => {
     });
     expect(f).toEqual({
       q: "Saadiyat sea view",
-      beds: 3,
-      baths: 2,
+      beds: [3],
+      baths: [2],
       type: "apartment",
       segment: null,
       form: null,
@@ -111,12 +111,12 @@ describe("parseFilters", () => {
   });
 
   it("clamps beds/baths into a sane range", () => {
-    expect(parseFilters({ beds: "999" }).beds).toBe(50);
-    expect(parseFilters({ baths: "-3" }).baths).toBeNull();
+    expect(parseFilters({ beds: "999" }).beds).toEqual([5]);
+    expect(parseFilters({ baths: "-3" }).baths).toEqual([]);
   });
 
   it("ignores non-numeric noise on numeric fields", () => {
-    expect(parseFilters({ beds: "nope" }).beds).toBeNull();
+    expect(parseFilters({ beds: "nope" }).beds).toEqual([]);
     expect(parseFilters({ price_min: "abc" }).price_min).toBeNull();
   });
 
@@ -130,8 +130,8 @@ describe("parseFilters", () => {
 // only have to set the fields a given case cares about.
 const EMPTY = {
   q: null,
-  beds: null,
-  baths: null,
+  beds: [] as number[],
+  baths: [] as number[],
   type: null,
   segment: null,
   form: null,
@@ -152,12 +152,39 @@ const EMPTY = {
   page: null,
 } as const;
 
+describe("bedroom and bathroom sets", () => {
+  it("parses a comma list, sorted and de-duplicated", () => {
+    expect(parseFilters({ beds: "2,1,2" }).beds).toEqual([1, 2]);
+    expect(parseFilters({ baths: ["3", "1"] }).baths).toEqual([1, 3]);
+  });
+
+  it("keeps a lone count — the hero search and old links — as a set of one", () => {
+    expect(parseFilters({ beds: "2" }).beds).toEqual([2]);
+    expect(parseFilters({ beds: 0 }).beds).toEqual([0]);
+  });
+
+  it("folds anything at or over the cap into the cap, and drops junk", () => {
+    expect(parseFilters({ beds: "7,5,x,-1" }).beds).toEqual([5]);
+    expect(parseFilters({ baths: "9" }).baths).toEqual([4]);
+    expect(parseFilters({ beds: "" }).beds).toEqual([]);
+  });
+
+  it("summarises every ticked count, the cap with a plus", () => {
+    expect(describeFilters({ ...EMPTY, beds: [0, 2, 5] })).toBe(
+      "Studio, 2 beds, 5+ beds",
+    );
+    expect(describeFilters({ ...EMPTY, baths: [1, 4] })).toBe(
+      "1 bath, 4+ baths",
+    );
+  });
+});
+
 describe("countActiveFilters", () => {
   it("counts only non-null fields", () => {
     expect(
       countActiveFilters({
         ...EMPTY,
-        beds: 3,
+        beds: [3],
         type: "apartment",
         price_max: 5_000_000,
         area: "saadiyat-island",
@@ -179,7 +206,7 @@ describe("describeFilters", () => {
     const text = describeFilters(
       {
         ...EMPTY,
-        beds: 3,
+        beds: [3],
         type: "apartment",
         price_min: 2_000_000,
         price_max: 5_000_000,
@@ -187,7 +214,7 @@ describe("describeFilters", () => {
       },
       "Saadiyat Island",
     );
-    expect(text).toContain("3+ beds");
+    expect(text).toContain("3 beds");
     expect(text).toContain("Apartments");
     expect(text).toContain("in Saadiyat Island");
     expect(text).toContain("AED 2.0M–5.0M");

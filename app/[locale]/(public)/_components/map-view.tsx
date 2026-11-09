@@ -18,6 +18,8 @@ export type MapPin = {
   reference: string;
   slug: string;
   title: string;
+  /** The property type in the visitor's language, when the catalogue has it. */
+  typeLabel?: string | null;
   price_aed: number;
   geo: { lat: number; lng: number };
 };
@@ -164,7 +166,7 @@ export function MapView({ pins, className }: Props) {
       const popup = new Popup({ offset: 16, closeButton: false }).setHTML(
         `<a href="${propertyUrl(pin)}" dir="${rtl ? "rtl" : "ltr"}" style="display:block;text-decoration:none;color:inherit;font-family:inherit;font-size:13px">
           <div style="font-weight:500;margin-bottom:2px">${escapeHtml(pin.title)}</div>
-          <div style="font-size:11px;color:#666">${escapeHtml(pin.reference)} · ${escapeHtml(label)}</div>
+          <div style="font-size:11px;color:#666">${[pin.typeLabel, label].filter(Boolean).map((v) => escapeHtml(v as string)).join(" · ")}</div>
         </a>`,
       );
 

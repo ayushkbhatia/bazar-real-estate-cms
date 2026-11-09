@@ -236,14 +236,14 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
       eyebrowField(),
       text("enquire_label", "Enquiry button", {
         max: 80,
-        help: TOKEN_HELP.reference,
+        help: TOKEN_HELP.title,
       }),
     ],
     {
       eyebrow: "Lead advisor",
       eyebrow_ar: "المستشار المسؤول",
-      enquire_label: `Enquire about ${REFERENCE}`,
-      enquire_label_ar: `استفسر عن العقار ${REFERENCE}`,
+      enquire_label: `Enquire about ${TITLE}`,
+      enquire_label_ar: `استفسر عن ${TITLE}`,
     },
     {
       dataNote:
@@ -257,7 +257,7 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
     "The words around the enquiry form — in the sidebar card, and in the dialog “Send to advisor” opens.",
     [
       eyebrowField(),
-      headingField(TOKEN_HELP.reference),
+      headingField(TOKEN_HELP.title),
       text("dialog_title", "Dialog heading", {
         max: 160,
         help: TOKEN_HELP.title,
@@ -276,8 +276,8 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
     {
       eyebrow: "Enquire about this property",
       eyebrow_ar: "استفسر عن هذا العقار",
-      heading: `Ask anything about ${REFERENCE}.`,
-      heading_ar: `اسأل عن أي تفاصيل تخص العقار ${REFERENCE}.`,
+      heading: `Ask anything about ${TITLE}.`,
+      heading_ar: `اسأل عن أي تفاصيل تخص ${TITLE}.`,
       dialog_title: `Enquire about ${TITLE}`,
       dialog_title_ar: `استفسر عن ${TITLE}`,
       dialog_note: `Reference ${REFERENCE} · goes straight to ${ADVISOR}, the advisor on this listing.`,
@@ -325,8 +325,8 @@ export const PROPERTY_PAGE_COPY_SECTIONS: SectionDef[] = [
           a_ar: "تُحدَّد رسوم الخدمات لكل مجتمع، ويُصدر فواتيرها المطوّر الرئيسي أو جمعية ملاك المبنى. ويختلف المبلغ الدقيق بالدرهم لكل قدم مربعة من برج لآخر — وسيشاركك مستشارك في بازار الجدول الحالي وسجلّ السنوات الخمس الماضية وما تشمله الرسوم قبل أن تقدّم عرضك.",
         },
         {
-          q: `Is ${REFERENCE} mortgageable?`,
-          q_ar: `هل يمكن شراء العقار ${REFERENCE} بتمويل عقاري؟`,
+          q: `Is ${TITLE} mortgageable?`,
+          q_ar: `هل يمكن شراء ${TITLE} بتمويل عقاري؟`,
           // The Central Bank's caps on a first home, as the mortgage application
           // and the calculator use them (docs/mortgage DECISIONS D23).
           a: "On a first home under AED 5 million, Abu Dhabi banks lend on freehold residential property at up to 85% of its value for UAE nationals and 80% for residents; most lend non-residents up to 50%. Bazar's mortgage desk can run a pre-approval before viewings so you know your envelope.",

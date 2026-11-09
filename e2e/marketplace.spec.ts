@@ -203,8 +203,16 @@ test("filter bar narrows the result set via URL state", async ({ page }) => {
   // URL should reflect the filter
   await expect(page).toHaveURL(/[?&]beds=3\b/);
 
-  // Result count shows the active filter summary
-  await expect(page.getByText(/3\+ beds/i)).toBeVisible();
+  // Result count shows the active filter summary — an exact count now that
+  // several can be ticked; only the top option reads "5+".
+  await expect(page.getByText(/· 3 beds/i)).toBeVisible();
+
+  // A second count joins the first rather than replacing it.
+  await page.getByRole("button", { name: "2 beds" }).click();
+  await expect(page).toHaveURL(/[?&]beds=2(,|%2C)3\b/);
+  await expect(page.getByText(/· 2 beds, 3 beds/i)).toBeVisible();
+  await page.getByRole("button", { name: "2 beds" }).click();
+  await expect(page).toHaveURL(/[?&]beds=3\b/);
 
   // Whether anything survives a 3-bed filter is the client's inventory, not
   // this test's business — it asserts that the filter drives URL state and

@@ -47,7 +47,7 @@
  * ## The Arabic
  *
  * Hand-declared in `defaults` beside its English sibling, for the reason
- * `search-headers.ts` sets out: `أدرج عقارك` is the curated string lifted
+ * `search-headers.ts` sets out: `اعرض عقارك` is the curated string lifted
  * verbatim from `nav.listProperty` in `messages/ar/nav.json`. Storing it here
  * and there both would make "where does this string's Arabic live" a question
  * with two answers.
@@ -123,7 +123,7 @@ export const HEADER_CTA_SECTION: SectionDef = {
    */
   defaults: {
     label: "List Your Property",
-    label_ar: "أدرج عقارك",
+    label_ar: "اعرض عقارك",
     href: HEADER_CTA_FALLBACK_HREF,
   },
 };
