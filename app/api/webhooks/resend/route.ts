@@ -3,6 +3,8 @@ import { env } from "@/lib/env";
 import { reportError } from "@/lib/observability";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
+  isOwnSender,
+  ownSenderDomains,
   parseEmailEvent,
   verifyResendSignature,
 } from "@/lib/newsletter/events";
@@ -16,6 +18,12 @@ export const dynamic = "force-dynamic";
  * to `newsletter_record_email_event()` (0164), which stamps the newsletter
  * delivery it belongs to, marks a hard-bounced address `bounced` and
  * unsubscribes someone who reported a newsletter as spam.
+ *
+ * The webhook belongs to the Resend ACCOUNT, which also sends for other sites
+ * (Indus Hydraulics), so their events arrive here too. An event whose From
+ * is not one of ours (`isOwnSender`) is answered 200 and nothing is written:
+ * another site's hard bounce must not mark a Bazar subscriber bounced, and a
+ * 4xx would only make Resend retry an event that will never become ours.
  *
  * The signature is the only authorisation: without `RESEND_WEBHOOK_SECRET`
  * nothing is trusted. Answers are 2xx for anything that should not be retried
@@ -55,6 +63,9 @@ export async function POST(req: NextRequest) {
   }
   const event = parseEmailEvent(payload);
   if (!event) return NextResponse.json({ ok: true, matched: "ignored" });
+  if (!isOwnSender(event.senderDomain, ownSenderDomains(env.RESEND_FROM_ADDRESS))) {
+    return NextResponse.json({ ok: true, ignored: "other-sender" });
+  }
 
   const admin = createAdminClient();
   if (!admin) {

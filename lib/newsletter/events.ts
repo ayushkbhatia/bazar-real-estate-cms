@@ -67,7 +67,78 @@ export type EmailEvent = {
   /** Bounces only: Resend's `bounce.type` was "Permanent". */
   permanent: boolean;
   at: string;
+  /**
+   * The domain the message was sent from, lower-cased (`data.from`), or null
+   * when the payload carries no readable From. See `isOwnSender`.
+   */
+  senderDomain: string | null;
 };
+
+/**
+ * The domains this site sends from. Resend's webhooks belong to the ACCOUNT,
+ * not to a domain, and the account Bazar sends through also sends for other
+ * sites (Indus Hydraulics, since 2026-11-09 a newsletter of its own on
+ * news.indushydraulics.com), so this endpoint receives their delivered,
+ * bounced and complained events too. A permanent bounce is acted on by
+ * address — it marks a matching subscriber bounced and suppresses the
+ * address — so another site's bounce must never reach the database.
+ *
+ * bazarrealestate.com is the domain verified in Resend today: the env's
+ * transactional sender and the newsletter's From (`newsletter_settings`) are
+ * both on it, and the newsletter settings only accept a verified domain.
+ * bazarrealestate.ae is the site's own domain, listed so that verifying it
+ * later doesn't silently drop its bounces. Subdomains of either match.
+ * The route also accepts the domain of `RESEND_FROM_ADDRESS`, so a handover
+ * that moves the sender to a new domain keeps working (`ownSenderDomains`).
+ */
+export const SENDER_DOMAINS: readonly string[] = [
+  "bazarrealestate.com",
+  "bazarrealestate.ae",
+];
+
+/**
+ * `Name <a@x.com>` or `a@x.com` → `x.com`, lower-cased; null for anything
+ * without an address in it.
+ */
+export function senderDomainOf(from: unknown): string | null {
+  if (typeof from !== "string") return null;
+  const bracketed = from.match(/<([^>]*)>\s*$/);
+  const address = (bracketed ? bracketed[1] : from).trim();
+  const at = address.lastIndexOf("@");
+  if (at < 0) return null;
+  const domain = address.slice(at + 1).trim().toLowerCase();
+  return domain || null;
+}
+
+/** `SENDER_DOMAINS` plus the domain of the configured From, if it adds one. */
+export function ownSenderDomains(fromAddress?: string | null): string[] {
+  const domains = [...SENDER_DOMAINS];
+  const extra = senderDomainOf(fromAddress);
+  if (extra && !domains.includes(extra)) domains.push(extra);
+  return domains;
+}
+
+/**
+ * Whether an event's message was sent by this site: its From domain is one
+ * of `siteDomains` or a subdomain of one (`news.example.com` matches
+ * `example.com`; `evilexample.com` does not).
+ *
+ * A null From counts as ours. Resend always sends one, so a missing From is
+ * a malformed payload, and dropping a real hard bounce (and mailing a dead
+ * address again) costs more than acting on it.
+ */
+export function isOwnSender(
+  senderDomain: string | null,
+  siteDomains: string | readonly string[],
+): boolean {
+  if (senderDomain === null) return true;
+  const domain = senderDomain.toLowerCase();
+  const sites = typeof siteDomains === "string" ? [siteDomains] : siteDomains;
+  return sites.some((site) => {
+    const s = site.toLowerCase();
+    return s !== "" && (domain === s || domain.endsWith(`.${s}`));
+  });
+}
 
 const HANDLED = {
   "email.delivered": "delivered",
@@ -87,6 +158,7 @@ export function parseEmailEvent(payload: unknown): EmailEvent | null {
     created_at?: unknown;
     data?: {
       email_id?: unknown;
+      from?: unknown;
       to?: unknown;
       created_at?: unknown;
       bounce?: { type?: unknown };
@@ -114,5 +186,6 @@ export function parseEmailEvent(payload: unknown): EmailEvent | null {
       typeof data.bounce?.type === "string" &&
       data.bounce.type.toLowerCase() === "permanent",
     at,
+    senderDomain: senderDomainOf(data.from),
   };
 }
