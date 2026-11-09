@@ -19,7 +19,7 @@
     "onThisPage": "On this page",
     "breadcrumb": "Breadcrumb",
     "readMinutes": "{count, plural, one {{minutes} min read} other {{minutes} min read}}",
-    "readMinutesShort": "{count, plural, one {{minutes} min} other {{minutes} min}}"
+    "readMinutesShort": "{count, plural, one {{minutes} min read} other {{minutes} min read}}"
   },
   "report": {
     "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",

@@ -60,14 +60,11 @@ export function PropertyActionRow({
 
   return (
     <div className="px-4 md:px-12 pt-6 flex items-center justify-between gap-4 flex-wrap">
-      {/* `.mono-en` on the row: mono in English, and on /ar the label in the
-          site's Arabic face, in the page's direction (`.mono` is LTR there,
-          which put the label on the wrong side of its reference). The
-          reference keeps the mono face and its own isolate, so it still reads
-          `BAZ-AD-09790`. */}
-      <div className="mono-en text-[11px] uppercase tracking-wider text-bz-muted">
-        {t("actions.reference")} ·{" "}
-        <bdi className="font-mono text-bz-ink">{reference}</bdi>
+      {/* The listing's title, not its reference: a buyer knows the building
+          by name, and the reference is still on the header band below the
+          title for anyone quoting it. `<bdi>`: an English title on /ar. */}
+      <div className="text-[13px] text-bz-ink-2 min-w-0 truncate">
+        <bdi>{title}</bdi>
       </div>
       <div className="flex items-center gap-2">
         <CompareButton propertyId={propertyId} />

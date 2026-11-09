@@ -100,7 +100,11 @@ export function PropertyEnquiryDialog({
                no span to hang `.mono` on: the pre-filled message puts the
                reference inside an Arabic sentence, and unisolated it reads
                `09790-BAZ-AD`. Identity under English. */
-            tokens={{ reference: isolateForLocale(propertyReference, locale) }}
+            tokens={{
+              reference: isolateForLocale(propertyReference, locale),
+              // The pre-filled message names the listing by its title.
+              title: copy.tokens.title,
+            }}
             context={{ propertyId, propertyReference }}
             successStyle="soft"
             allowAnother

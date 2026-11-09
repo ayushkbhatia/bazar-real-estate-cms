@@ -3,7 +3,7 @@
     "reference": "REF",
     "share": "Share",
     "copied": "Copied",
-    "sendToAdvisor": "Send to advisor",
+    "sendToAdvisor": "Property Enquiry",
     "mortgagePreApproval": "Get mortgage pre-approval"
   },
   "agent": {
@@ -21,13 +21,13 @@
   "fallbackCity": "Abu Dhabi",
   "fallbackRegion": "the UAE",
   "faq": {
-    "locationQ": "Where is {reference} located?",
+    "locationQ": "Where is {title} located?",
     "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",
-    "nonResidentQ": "Can a non-resident buy {reference}?",
+    "nonResidentQ": "Can a non-resident buy {title}?",
     "verifyQ": "Where can I verify this listing?",
     "verifyA": "Permit number {permit} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.",
     "includesQ": "What does a {bedrooms} {type} in {place} typically include?",
-    "includesA": "A {bedrooms} {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {reference} on request.",
+    "includesA": "A {bedrooms} {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {title} on request.",
     "bedroomCount": "{count, plural, =0 {studio} one {#-bed} other {#-bed}}",
     "bathroomCount": "{count, plural, one {# bathroom} other {# bathrooms}}",
     "tenureFreehold": "Yes — this is a freehold title. Non-resident buyers can take ownership in their own name.",
@@ -91,7 +91,7 @@
     "type": "Type",
     "plotSize": "Plot size",
     "tenure": "Tenure",
-    "yearBuilt": "Year built"
+    "yearBuilt": "Handover Year"
   },
   "tenure": {
     "freehold": "Freehold"

@@ -16,6 +16,8 @@ import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import { lifestyleTagLabel } from "@/lib/lifestyle-tags";
 import {
   countActiveFilters,
+  BATHS_CAP,
+  BEDS_CAP,
   describeFilters,
   PAGE_SIZE,
   type FilterSummaryLabels,
@@ -254,14 +256,45 @@ export async function SearchList({
   const priceLabels = { currency: prefs.currency, labels: unitLabels };
 
   /*
+   * The map's pins, shared by the map view and the desktop side map. Each
+   * popup names the listing by its title, type and price — not its
+   * reference, which means nothing to a buyer scanning a map.
+   */
+  const mapPins: MapPin[] = rows
+    .filter(
+      (r): r is typeof r & { geo: { lat: number; lng: number } } =>
+        r.geo !== null &&
+        typeof r.geo.lat === "number" &&
+        typeof r.geo.lng === "number",
+    )
+    .map((r) => ({
+      id: r.id,
+      reference: r.reference,
+      slug: r.slug,
+      title: r.title,
+      typeLabel: t.has(`type.${r.type}`)
+        ? t(`type.${r.type}` as "type.apartment")
+        : null,
+      price_aed: r.price_aed,
+      geo: r.geo,
+    }));
+
+  /*
    * The filter chips under the result count. `describeFilters` is shared with
    * `lib/queries/*` and with tests that have no request scope, so it takes the
    * words rather than a translator — see `FilterSummaryLabels`.
    */
   const summaryLocale = await currentLocale();
   const summaryLabels: FilterSummaryLabels = {
-    beds: (count) => t("summary.beds", { count }),
-    baths: (count) => t("summary.baths", { count }),
+    // An exact count reads "2 beds"; only the top option is "5+ beds".
+    beds: (count) =>
+      count >= BEDS_CAP
+        ? t("summary.beds", { count })
+        : t("filters.bedsFilter", { count }),
+    baths: (count) =>
+      count >= BATHS_CAP
+        ? t("summary.baths", { count })
+        : t("filters.bathsFilter", { count }),
     type: (type) => t(`typePlural.${type}`),
     segment: (segment) => t(`segment.${segment}`),
     form: (form) => t(`formOption.${form}`),
@@ -390,21 +423,7 @@ export async function SearchList({
         ) : view === "map" ? (
           <div className="rounded-lg overflow-hidden border border-bz-border h-[calc(70vh/var(--bz-zoom,1))] md:h-[640px]">
             <MapViewClient
-              pins={rows
-                .filter(
-                  (r): r is typeof r & { geo: { lat: number; lng: number } } =>
-                    r.geo !== null &&
-                    typeof r.geo.lat === "number" &&
-                    typeof r.geo.lng === "number",
-                )
-                .map((r): MapPin => ({
-                  id: r.id,
-                  reference: r.reference,
-                  slug: r.slug,
-                  title: r.title,
-                  price_aed: r.price_aed,
-                  geo: r.geo,
-                }))}
+              pins={mapPins}
               className="w-full h-full"
             />
           </div>
@@ -547,25 +566,7 @@ export async function SearchList({
                 }
               >
                 <MapViewClient
-                  pins={rows
-                    .filter(
-                      (
-                        r,
-                      ): r is typeof r & {
-                        geo: { lat: number; lng: number };
-                      } =>
-                        r.geo !== null &&
-                        typeof r.geo.lat === "number" &&
-                        typeof r.geo.lng === "number",
-                    )
-                    .map((r): MapPin => ({
-                      id: r.id,
-                      reference: r.reference,
-                      slug: r.slug,
-                      title: r.title,
-                      price_aed: r.price_aed,
-                      geo: r.geo,
-                    }))}
+                  pins={mapPins}
                   className="w-full h-full"
                 />
               </LgOnly>

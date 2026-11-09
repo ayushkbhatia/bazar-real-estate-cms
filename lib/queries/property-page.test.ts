@@ -42,8 +42,9 @@ describe("the listing page's shared wording", () => {
     expect(copy.text("specification", "heading")).toBe("The full detail.");
     expect(copy.text("advisor-note", "eyebrow")).toBe("Advisor's note");
     expect(copy.text("advisor", "eyebrow")).toBe("Lead advisor");
+    // The listing's title, not its reference (client, Nov 2026).
     expect(copy.text("advisor", "enquire_label")).toBe(
-      "Enquire about BAZ-AD-09790",
+      "Enquire about Al Ghadeer Gardens",
     );
     expect(copy.text("enquiry", "dialog_title")).toBe(
       "Enquire about Al Ghadeer Gardens",
@@ -63,7 +64,7 @@ describe("the listing page's shared wording", () => {
     expect(faq.map((f) => f.q)).toEqual([
       "What does the transfer process look like?",
       "What are the service charges?",
-      "Is BAZ-AD-09790 mortgageable?",
+      "Is Al Ghadeer Gardens mortgageable?",
     ]);
     expect(faq[0]!.a).toMatch(/^DLD-registered villa transfers follow/);
   });
@@ -99,15 +100,15 @@ describe("the listing page's shared wording", () => {
     }
   });
 
-  it("isolates the reference inside an Arabic sentence", async () => {
+  it("isolates a token inside an Arabic sentence", async () => {
     // Unisolated, the bidi algorithm renders `BAZ-AD-09790` as
-    // `09790-BAZ-AD` between Arabic words.
+    // `09790-BAZ-AD` between Arabic words — and a Latin title the same way.
     const copy = await getPropertyPageCopy(AR, "ar");
     expect(copy.text("advisor", "enquire_label")).toContain(
-      `${FSI}BAZ-AD-09790${PDI}`,
+      `${FSI}الغدير جاردنز${PDI}`,
     );
-    const mortgage = copy.faq.find((f) => f.q.includes("BAZ-AD-09790"))!;
-    expect(mortgage.q).toContain(`${FSI}BAZ-AD-09790${PDI}`);
+    const mortgage = copy.faq.find((f) => f.q.includes("الغدير جاردنز"))!;
+    expect(mortgage.q).toContain(`${FSI}الغدير جاردنز${PDI}`);
   });
 
   it("puts the Arabic type into the shared transfer answer", async () => {
@@ -126,7 +127,7 @@ describe("the listing page's shared wording", () => {
   it("leaves the reference token in place for the templates drawn as elements", async () => {
     const copy = await getPropertyPageCopy(EN, "en");
     expect(copy.template("enquiry", "heading")).toBe(
-      "Ask anything about {reference}.",
+      "Ask anything about {title}.",
     );
     expect(copy.template("enquiry", "dialog_note")).toBe(
       "Reference {reference} · goes straight to {advisor}, the advisor on this listing.",

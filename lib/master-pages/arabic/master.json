@@ -8836,8 +8836,8 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
-  "I'd like to know more about {reference}.": {
-    "ar": "أرغب في معرفة المزيد عن العقار {reference}.",
+  "I'd like to know more about {title}.": {
+    "ar": "أرغب في معرفة المزيد عن {title}.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-09-15T11:47:59.012Z"
@@ -9785,10 +9785,9 @@
     "at": "2026-08-21"
   },
   "List Your Property": {
-    "ar": "أدرج عقارك",
-    "by": "reviewed",
-    "model": "claude-opus-5",
-    "at": "2026-08-16T12:44:34.154Z"
+    "ar": "اعرض عقارك",
+    "by": "human",
+    "at": "2026-11-09T00:00:00.000Z"
   },
   "List Your Property in Abu Dhabi | Bazar Real Estate": {
     "ar": "اعرض عقارك في أبوظبي | بازار للعقارات",
@@ -9797,10 +9796,9 @@
     "at": "2026-08-16T17:03:51.667Z"
   },
   "List your property": {
-    "ar": "ااعرض عقارك",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-08-16T10:54:35.558Z"
+    "ar": "اعرض عقارك",
+    "by": "human",
+    "at": "2026-11-09T00:00:00.000Z"
   },
   "List your property in Abu Dhabi with Bazar Real Estate and connect with qualified buyers and tenants through professional marketing and support.": {
     "ar": "اعرض عقارك في أبوظبي مع بازار العقارية وتواصل مع مشترين ومستأجرين جادين من خلال تسويق ودعم احترافيين.",

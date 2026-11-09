@@ -66,10 +66,10 @@ describe("the segment filter", () => {
     const f: PropertyFilters = {
       ...EMPTY,
       segment: "commercial",
-      beds: 2,
+      beds: [2],
       type: "apartment",
     };
-    expect(describeFilters(f)).toBe("2+ beds · Apartments · Commercial");
+    expect(describeFilters(f)).toBe("2 beds · Apartments · Commercial");
   });
 
   it("composes with the completion form rather than replacing it", () => {

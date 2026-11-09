@@ -589,7 +589,7 @@ function ContentTab({
         <>
           <Area
             label="Pre-filled message"
-            help="Already typed into the message box when the form opens, so the visitor only has to add to it. `{reference}` and `{project}` are filled in from the page. Leave blank for an empty box."
+            help="Already typed into the message box when the form opens, so the visitor only has to add to it. `{title}` and `{reference}` (on a listing) and `{project}` are filled in from the page. Leave blank for an empty box."
             value={copy.message_prefill ?? ""}
             onChange={(v) => onChange({ message_prefill: v || null })}
           />

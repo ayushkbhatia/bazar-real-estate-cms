@@ -107,8 +107,7 @@
   },
   "sell": {
     "statListings": "Live listings marketed by Bazar",
-    "statAreas": "Abu Dhabi communities covered",
-    "statAdvisors": "ADREC-registered advisors on the desk"
+    "statAreas": "Abu Dhabi communities covered"
   },
   "service": {
     "allServices": "All services",

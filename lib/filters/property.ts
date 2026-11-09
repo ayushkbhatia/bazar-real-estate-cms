@@ -1,5 +1,6 @@
 import {
   createSearchParamsCache,
+  parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
@@ -35,8 +36,11 @@ export const SORT_OPTIONS = [
  */
 export const filterParsers = {
   q: parseAsString,
-  beds: parseAsInteger,
-  baths: parseAsInteger,
+  /** Any number of counts, comma-separated (`beds=1,2,5`); a listing matching
+   *  any one of them is shown. A lone `beds=2` — what the hero search and every
+   *  old link writes — still parses, as a set of one. */
+  beds: parseAsArrayOf(parseAsInteger),
+  baths: parseAsArrayOf(parseAsInteger),
   type: parseAsStringEnum([...PROPERTY_TYPES]),
   /** Residential / commercial — the segmented control above the results.
    *  Absent means both, which is what an unfiltered search should show. */
@@ -72,8 +76,11 @@ export type SortOption = (typeof SORT_OPTIONS)[number];
 
 export type PropertyFilters = {
   q: string | null;
-  beds: number | null;
-  baths: number | null;
+  /** Bedroom counts to match, any of them; empty means no filter. The top
+   *  option (`BEDS_CAP`) means that many or more. */
+  beds: number[];
+  /** Bathroom counts, as `beds`; the top option is `BATHS_CAP` or more. */
+  baths: number[];
   type: (typeof PROPERTY_TYPES)[number] | null;
   segment: (typeof PROPERTY_SEGMENTS)[number] | null;
   form: (typeof PROPERTY_FORMS)[number] | null;
@@ -96,8 +103,8 @@ export type PropertyFilters = {
 
 const EMPTY: PropertyFilters = {
   q: null,
-  beds: null,
-  baths: null,
+  beds: [],
+  baths: [],
   type: null,
   segment: null,
   form: null,
@@ -120,20 +127,49 @@ const EMPTY: PropertyFilters = {
 
 export const PAGE_SIZE = 24;
 
+/**
+ * The top bedroom and bathroom options, which mean "this many or more" — the
+ * filter bar's "5+" and "4+". Every other option is an exact count.
+ */
+export const BEDS_CAP = 5;
+export const BATHS_CAP = 4;
+
+/**
+ * A count set from the URL: `"1,2"`, `["1","2"]` or a lone `2`. Anything at or
+ * above the cap folds into the cap, junk is dropped, and the result is sorted
+ * and de-duplicated so `beds=2,1,2` and `beds=1,2` are the same search.
+ */
+function toCounts(v: unknown, cap: number): number[] {
+  const raw: unknown[] = Array.isArray(v)
+    ? v
+    : typeof v === "string"
+      ? v.split(",")
+      : [v];
+  const out = new Set<number>();
+  for (const item of raw) {
+    const n = toInt(item);
+    if (n != null && n >= 0) out.add(Math.min(n, cap));
+  }
+  return [...out].sort((a, b) => a - b);
+}
+
 /** Coerce an unknown record (typically searchParams) to PropertyFilters. */
 export function parseFilters(input: Record<string, unknown>): PropertyFilters {
-  const out: PropertyFilters = { ...EMPTY, amenities: [], lifestyle: [] };
+  const out: PropertyFilters = {
+    ...EMPTY,
+    beds: [],
+    baths: [],
+    amenities: [],
+    lifestyle: [],
+  };
 
   if (typeof input.q === "string") {
     const trimmed = input.q.trim();
     if (trimmed !== "") out.q = trimmed.slice(0, 200);
   }
 
-  const beds = toInt(input.beds);
-  if (beds != null && beds >= 0) out.beds = clamp(beds, 0, 50);
-
-  const baths = toInt(input.baths);
-  if (baths != null && baths >= 0) out.baths = clamp(baths, 0, 50);
+  out.beds = toCounts(input.beds, BEDS_CAP);
+  out.baths = toCounts(input.baths, BATHS_CAP);
 
   if (typeof input.type === "string" && (PROPERTY_TYPES as readonly string[]).includes(input.type)) {
     out.type = input.type as PropertyFilters["type"];
@@ -267,8 +303,11 @@ export type FilterSummaryLabels = {
 };
 
 export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
-  beds: (n) => `${n}+ ${n === 1 ? "bed" : "beds"}`,
-  baths: (n) => `${n}+ ${n === 1 ? "bath" : "baths"}`,
+  beds: (n) =>
+    n === 0
+      ? "Studio"
+      : `${n}${n >= BEDS_CAP ? "+" : ""} ${n === 1 ? "bed" : "beds"}`,
+  baths: (n) => `${n}${n >= BATHS_CAP ? "+" : ""} ${n === 1 ? "bath" : "baths"}`,
   type: humanType,
   segment: humanSegment,
   form: humanForm,
@@ -289,8 +328,8 @@ export function describeFilters(
 ): string {
   const parts: string[] = [];
   if (f.q) parts.push(`"${f.q}"`);
-  if (f.beds != null) parts.push(labels.beds(f.beds));
-  if (f.baths != null) parts.push(labels.baths(f.baths));
+  if (f.beds.length > 0) parts.push(f.beds.map(labels.beds).join(", "));
+  if (f.baths.length > 0) parts.push(f.baths.map(labels.baths).join(", "));
   if (f.type) parts.push(labels.type(f.type));
   if (f.segment) parts.push(labels.segment(f.segment));
   if (f.form) parts.push(labels.form(f.form));
@@ -346,8 +385,4 @@ function toInt(v: unknown): number | null {
     return Number.isFinite(n) ? Math.trunc(n) : null;
   }
   return null;
-}
-
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
 }

@@ -34,7 +34,7 @@ export const FORM_COPY_KEYS = [
   { key: "consent_note", optional: true, max: 300 },
   /*
    * What the message box already says when the visitor opens the form —
-   * "I'd like to know more about {reference}." Visitor-facing, which is why it
+   * "I'd like to know more about {title}." Visitor-facing, which is why it
    * is copy and not a registry constant: it used to be `FormDef.messagePrefill`,
    * a literal no editor could reach and no Arabic could replace, so an Arabic
    * visitor on a listing opened a form that had already started their message

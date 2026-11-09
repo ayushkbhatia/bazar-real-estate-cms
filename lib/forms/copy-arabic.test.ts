@@ -121,7 +121,7 @@ describe("the pre-filled message is copy, with Arabic", () => {
    */
   it("ships on the two forms that had one, and folds to Arabic", () => {
     for (const [key, token] of [
-      ["property_enquiry", "{reference}"],
+      ["property_enquiry", "{title}"],
       ["development_interest", "{project}"],
     ] as const) {
       const form = defaultForm(key)!;
