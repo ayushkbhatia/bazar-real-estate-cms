@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useRef, useState, useEffect, useCallback } from "react";
 
 /**
@@ -95,6 +97,7 @@ export function DualRangeSlider({
   format: (n: number) => string;
   onChange: (range: { min: number | null; max: number | null }) => void;
 }) {
+  const t = useTranslations("common.aria");
   const [lo, setLo] = useState<number>(initial.min ?? min);
   const [hi, setHi] = useState<number>(initial.max ?? max);
   const onChangeRef = useRef(onChange);
@@ -159,7 +162,7 @@ export function DualRangeSlider({
         />
         <input
           type="range"
-          aria-label="Minimum"
+          aria-label={t("minimum")}
           min={min}
           max={max}
           step={step}
@@ -169,7 +172,7 @@ export function DualRangeSlider({
         />
         <input
           type="range"
-          aria-label="Maximum"
+          aria-label={t("maximum")}
           min={min}
           max={max}
           step={step}

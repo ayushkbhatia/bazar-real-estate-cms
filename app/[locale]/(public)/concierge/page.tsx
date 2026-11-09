@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
+import { asLocale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { isAnthropicConfigured } from "@/lib/concierge/env";
 import { ConciergeChat } from "./_chat";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "The Concierge · your brief, in plain English",
   description:
     "Bazar's AI concierge — a natural-language interface to our Abu Dhabi catalogue. Curated matches, deterministic scoring, and one-click hand-off to a human advisor.",
   alternates: { canonical: "/concierge" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 // Nothing on this route is per-request: the chat is a client component and
 // `isAnthropicConfigured` is a build-time env boolean, so the page can be

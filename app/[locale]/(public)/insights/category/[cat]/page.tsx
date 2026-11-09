@@ -103,7 +103,7 @@ export default async function InsightsCategoryPage({
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All insights
+          {t("article.allInsights")}
         </Link>
       </div>
 
@@ -130,7 +130,7 @@ export default async function InsightsCategoryPage({
               pieces yet.
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link href="/insights">View all categories</Link>
+              <Link href="/insights">{t("article.viewAllCategories")}</Link>
             </Button>
           </div>
         ) : (

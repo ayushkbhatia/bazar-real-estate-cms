@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { GoldenVisaChecker } from "./_checker";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "UAE Golden Visa via property — 2026 guide",
   description:
     "A plain-English walk-through of the 10-year UAE Golden Visa for property buyers: thresholds, qualifying assets, dependants, the application timeline, and what Bazar's visa desk handles end-to-end.",
   alternates: { canonical: "/guides/golden-visa" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Body blocks, in order, each naming its own message subtree.

@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { pickClientMessages } from "@/lib/i18n/namespaces";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import { DirectionProvider } from "./_direction-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -100,14 +101,21 @@ export async function generateMetadata({
   // what it was before this field existed.
   const searchIcon = resolveSearchIcon(branding, SITE_URL);
 
+  const inLocale = (english: string) =>
+    locale === DEFAULT_LOCALE ? english : (arabicFor(english) ?? english);
+
   return {
     metadataBase: new URL(SITE_URL),
+    // On /ar the suffix every page title carries, and the defaults, were
+    // English — "عقارات حصرية · Bazar" (Nov 2026). The brand's Arabic is
+    // `common.brand`; the defaults come from the site's Arabic store.
     title: {
-      default: "Bazar Real Estate — Abu Dhabi, properly understood",
-      template: "%s · Bazar",
+      default: inLocale("Bazar Real Estate — Abu Dhabi, properly understood"),
+      template: locale === "ar" ? "%s · بازار" : "%s · Bazar",
     },
-    description:
+    description: inLocale(
       "Bespoke real estate advisory and a curated marketplace for buyers, sellers, and investors across the United Arab Emirates.",
+    ),
     openGraph: {
       type: "website",
       locale: locale === "ar" ? "ar_AE" : "en_AE",

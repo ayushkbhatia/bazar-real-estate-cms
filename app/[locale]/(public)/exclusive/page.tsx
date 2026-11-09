@@ -1,26 +1,36 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { listExclusiveProperties } from "@/lib/queries/curated-listings";
 import { CuratedGrid } from "../_components/curated-grid";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Exclusive listings",
-  description:
-    "Off-portal listings represented solely by Bazar — properties you won't see on Property Finder, Bayut, or other agencies.",
-  alternates: { canonical: "/exclusive" },
-};
+type Params = { params: Promise<{ locale: string }> };
 
-export default async function ExclusivePage() {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "pages.curated" });
+  return {
+    title: t("exclusive.metaTitle"),
+    description: t("exclusive.metaDescription"),
+    alternates: { canonical: "/exclusive" },
+  };
+}
+
+export default async function ExclusivePage({ params }: Params) {
+  const locale = asLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "pages.curated" });
   const rows = await listExclusiveProperties({ limit: 24 });
   return (
     <CuratedGrid
-      eyebrow="Exclusive · Bazar only"
-      title="Listings nobody else has."
-      intro="When a seller wants their property represented quietly — by a single firm, off-portal, with a known buyer pool — they come to us. Below: every Bazar-exclusive listing currently active."
+      eyebrow={t("exclusive.eyebrow")}
+      title={t("exclusive.title")}
+      intro={t("exclusive.intro")}
       rows={rows}
       browseAllHref="/buy/search"
-      browseAllLabel="Browse all listings"
+      browseAllLabel={t("browseAll")}
+      fallbackArea={t("fallbackArea")}
     />
   );
 }

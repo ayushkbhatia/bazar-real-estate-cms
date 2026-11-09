@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
+import { asLocale } from "@/lib/i18n/locales";
 import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Sitemap",
   description:
     "Every public surface on bazar.ae — listings, market reports, guides, services, communities, developers, and editorial.",
   alternates: { canonical: "/sitemap" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * T1.5 quick win: human-readable sitemap.  Complements the auto-generated

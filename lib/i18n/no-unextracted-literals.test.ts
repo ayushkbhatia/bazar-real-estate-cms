@@ -69,10 +69,7 @@ const REPO_ROOT = join(import.meta.dirname, "..", "..");
  * is extracted" means.
  */
 const REMAINING: Readonly<Record<string, number>> = {
-  "app/[locale]/(public)/_components/area-map/area-chips.tsx": 1,
   "app/[locale]/(public)/_components/curated-grid.tsx": 1,
-  "app/[locale]/(public)/_components/dual-range-slider.tsx": 2,
-  "app/[locale]/(public)/_components/footer-trust.tsx": 1,
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
@@ -81,31 +78,23 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/data-deleted/page.tsx": 4,
   "app/[locale]/(public)/developments/[slug]/_components/brochure-gate.tsx": 2,
   "app/[locale]/(public)/developments/[slug]/_payment-plan.tsx": 1,
-  "app/[locale]/(public)/developments/page.tsx": 2,
-  "app/[locale]/(public)/exclusive/page.tsx": 2,
   "app/[locale]/(public)/forgot-password/_form.tsx": 4,
-  "app/[locale]/(public)/insights/[slug]/page.tsx": 4,
-  "app/[locale]/(public)/insights/author/[slug]/page.tsx": 3,
-  "app/[locale]/(public)/insights/category/[cat]/page.tsx": 2,
-  "app/[locale]/(public)/market-reports/[area]/[type]/[quarter]/page.tsx": 4,
+  "app/[locale]/(public)/market-reports/[area]/[type]/[quarter]/page.tsx": 3,
   "app/[locale]/(public)/market-reports/_components/comparables-table.tsx": 4,
   "app/[locale]/(public)/market-reports/_components/live-listings-rail.tsx": 1,
   "app/[locale]/(public)/market-reports/_components/report-download.tsx": 1,
   "app/[locale]/(public)/market-reports/_components/report-hero.tsx": 4,
   "app/[locale]/(public)/market-reports/_components/trend-chart.tsx": 1,
   "app/[locale]/(public)/market-reports/_components/velocity-strip.tsx": 1,
-  "app/[locale]/(public)/market-reports/page.tsx": 2,
-  "app/[locale]/(public)/new-this-week/page.tsx": 2,
   "app/[locale]/(public)/p/[slug]/opengraph-image.tsx": 2,
   "app/[locale]/(public)/press/page.tsx": 2,
-  "app/[locale]/(public)/price-drops/page.tsx": 2,
   "app/[locale]/(public)/qr/page.tsx": 1,
   "app/[locale]/(public)/sitemap/page.tsx": 2,
   "app/[locale]/(public)/status/page.tsx": 9,
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 82;
+const TOTAL_CEILING = 58;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

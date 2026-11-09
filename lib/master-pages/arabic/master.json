@@ -20088,5 +20088,251 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-10-27T12:00:00Z"
+  },
+  "Careers": {
+    "ar": "الوظائف",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Open advisor and operations roles at Bazar Real Estate. We hire slowly and by exception.": {
+    "ar": "وظائف شاغرة للمستشارين وفريق العمليات لدى بازار للعقارات. نوظّف بتأنٍّ وباستثناء.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The Concierge · your brief, in plain English": {
+    "ar": "الكونسيرج · طلبك بلغة واضحة",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Bazar's AI concierge — a natural-language interface to our Abu Dhabi catalogue. Curated matches, deterministic scoring, and one-click hand-off to a human advisor.": {
+    "ar": "كونسيرج بازار بالذكاء الاصطناعي — واجهة بلغة طبيعية لعقاراتنا في أبوظبي. ترشيحات منتقاة، وتقييم ثابت المعايير، وتحويل بنقرة واحدة إلى مستشار من فريقنا.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Account deleted": {
+    "ar": "تم حذف الحساب",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Your Bazar account has been deleted.": {
+    "ar": "تم حذف حسابك لدى بازار.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Reset your password": {
+    "ar": "إعادة تعيين كلمة المرور",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Request a sign-in link for your Bazar staff account.": {
+    "ar": "اطلب رابط تسجيل الدخول لحساب موظفي بازار الخاص بك.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Guides · UAE residency, tax, and KYC for buyers": {
+    "ar": "الأدلة · الإقامة والضرائب ومتطلبات اعرف عميلك للمشترين في الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Plain-English walk-throughs of the Golden Visa, 2-year property-linked residency, UAE Tax Residency Certificate, and KYC paperwork for non-resident property buyers.": {
+    "ar": "شروحات واضحة للتأشيرة الذهبية، والإقامة المرتبطة بالعقار لمدة سنتين، وشهادة الإقامة الضريبية في الإمارات، ومستندات اعرف عميلك للمشترين غير المقيمين.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Guides for Landlords · Renting Out in Abu Dhabi": {
+    "ar": "أدلة الملاك · تأجير العقارات في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Owning a rental in Abu Dhabi is a strong long-term investment when managed properly. These guides cover professional property management and how to rent out your property.": {
+    "ar": "امتلاك عقار مؤجَّر في أبوظبي استثمار قوي طويل الأجل حين يُدار جيداً. تتناول هذه الأدلة إدارة العقارات الاحترافية وكيفية تأجير عقارك.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Guides for Tenants · Renting in Abu Dhabi": {
+    "ar": "أدلة المستأجرين · الاستئجار في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Renting in Abu Dhabi is straightforward when you know the steps — the move-in process, the documents to prepare, and the full rental journey from budget to renewal.": {
+    "ar": "الاستئجار في أبوظبي سهل حين تعرف الخطوات — إجراءات الانتقال، والمستندات التي تُعدّها، ورحلة الإيجار كاملة من الميزانية إلى التجديد.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "UAE Golden Visa via property — 2026 guide": {
+    "ar": "التأشيرة الذهبية الإماراتية عبر العقار — دليل 2026",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "A plain-English walk-through of the 10-year UAE Golden Visa for property buyers: thresholds, qualifying assets, dependants, the application timeline, and what Bazar's visa desk handles end-to-end.": {
+    "ar": "شرح واضح للتأشيرة الذهبية الإماراتية لمدة 10 سنوات لمشتري العقارات: الحد الأدنى للقيمة، والعقارات المؤهلة، والمعالون، والجدول الزمني للطلب، وما يتولاه مكتب التأشيرات لدى بازار من البداية إلى النهاية.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "How to Rent Out Your Property in Abu Dhabi": {
+    "ar": "كيفية تأجير عقارك في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Prepare, price, list, screen tenants, agree terms, sign, register Tawtheeq, and hand over — the complete Abu Dhabi landlord journey.": {
+    "ar": "التجهيز والتسعير والعرض واختيار المستأجرين والاتفاق على الشروط والتوقيع والتسجيل في توثيق والتسليم — رحلة المالك كاملة في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "KYC for non-resident property buyers in the UAE": {
+    "ar": "متطلبات اعرف عميلك لمشتري العقارات غير المقيمين في الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The KYC and AML documentation non-resident buyers should expect when acquiring UAE property — source of funds, banking, and the DLD transfer process.": {
+    "ar": "مستندات اعرف عميلك ومكافحة غسل الأموال التي يتوقعها المشترون غير المقيمون عند شراء عقار في الإمارات — مصدر الأموال، والتعاملات المصرفية، وإجراءات نقل الملكية لدى دائرة الأراضي والأملاك.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Property-linked UAE residency — 2-year visa guide": {
+    "ar": "الإقامة الإماراتية المرتبطة بالعقار — دليل التأشيرة لمدة سنتين",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The AED 750K+ property route to a 2-year renewable UAE residency. Who qualifies, what the asset has to look like, and the realistic timeline.": {
+    "ar": "مسار العقار بقيمة 750 ألف درهم فأكثر إلى إقامة إماراتية قابلة للتجديد لمدة سنتين: من يستوفي الشروط، وما المطلوب في العقار، والجدول الزمني الواقعي.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "What property management covers, why it matters in Abu Dhabi's regulated market, and how it protects your income and your property.": {
+    "ar": "ما تشمله إدارة العقارات، ولماذا تهمّ في سوق أبوظبي المنظَّم، وكيف تحمي دخلك وعقارك.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The Abu Dhabi Rental Process, Step by Step": {
+    "ar": "خطوة بخطوة: عملية الإيجار في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "From searching for the right home to signing the contract, registering Tawtheeq, and moving in — the complete Abu Dhabi tenant journey explained.": {
+    "ar": "من البحث عن المسكن المناسب إلى توقيع العقد والتسجيل في توثيق والانتقال — رحلة المستأجر كاملة في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Required Documents for Renting in Abu Dhabi": {
+    "ar": "المستندات المطلوبة للاستئجار في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The identification, Tawtheeq, utility, and building-approval documents every Abu Dhabi tenant should prepare before signing and moving in.": {
+    "ar": "مستندات الهوية وتوثيق والمرافق وموافقات المبنى التي ينبغي لكل مستأجر في أبوظبي إعدادها قبل التوقيع والانتقال.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "UAE Tax Residency Certificate — 2026 eligibility": {
+    "ar": "شهادة الإقامة الضريبية في الإمارات — شروط الأهلية 2026",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "The criteria for obtaining a UAE Tax Residency Certificate — physical-presence test, primary-residence rules, and what the certificate actually does (and doesn't) cover.": {
+    "ar": "معايير الحصول على شهادة الإقامة الضريبية في الإمارات — اختبار الوجود الفعلي، وقواعد السكن الرئيسي، وما تغطيه الشهادة فعلاً وما لا تغطيه.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Abu Dhabi Tenant Move-In Guide": {
+    "ar": "دليل انتقال المستأجر في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "From signing your tenancy contract to setting up utilities and completing your move-in checklist — prepare for a smooth move into your Abu Dhabi rental.": {
+    "ar": "من توقيع عقد الإيجار إلى تفعيل المرافق وإكمال قائمة الانتقال — استعد لانتقال سلس إلى مسكنك المستأجَر في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Confirm subscription — Bazar": {
+    "ar": "تأكيد الاشتراك — بازار",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Unsubscribe — Bazar": {
+    "ar": "إلغاء الاشتراك — بازار",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Press": {
+    "ar": "الصحافة",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Bazar Real Estate in the press — coverage, interviews, awards.": {
+    "ar": "بازار للعقارات في الصحافة — تغطيات ومقابلات وجوائز.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Sitemap": {
+    "ar": "خريطة الموقع",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Every public surface on bazar.ae — listings, market reports, guides, services, communities, developers, and editorial.": {
+    "ar": "كل صفحات bazar.ae العامة — العقارات وتقارير السوق والأدلة والخدمات والمناطق والمطوّرون والمقالات.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Status": {
+    "ar": "حالة الخدمة",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Live operational status of the Bazar marketplace.": {
+    "ar": "الحالة التشغيلية المباشرة لمنصة بازار.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "Get a valuation": {
+    "ar": "احصل على تقييم",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
+  },
+  "An instant data-backed range from our model, then a senior advisor reviews and sends you a refined valuation within 24 hours. Free, no obligation.": {
+    "ar": "نطاق سعري فوري مبني على البيانات من نموذجنا، ثم يراجعه مستشار أول ويرسل إليك تقييماً دقيقاً خلال 24 ساعة. مجاناً ودون أي التزام.",
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "at": "2026-11-09T00:00:00.000Z"
   }
 }

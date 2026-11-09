@@ -1,3 +1,6 @@
+import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/lib/i18n/locales";
+
 /**
  * T1.5 quick win: single-line trust strip above the global footer.
  *
@@ -9,8 +12,16 @@
  * read `footer_settings.legal_line`, so the two cannot disagree and the client
  * edits the licence number and the year in one place (/admin/footer).
  */
-export function FooterTrust({ legalLine }: { legalLine: string | null }) {
+export async function FooterTrust({
+  legalLine,
+  locale,
+}: {
+  legalLine: string | null;
+  /** Threaded from the layout, never ambient — see the layout's note. */
+  locale: Locale;
+}) {
   if (!legalLine) return null;
+  const t = await getTranslations({ locale, namespace: "common.aria" });
   return (
     /*
       `px-12` is 96px of a 390px viewport, and this strip renders on every
@@ -24,7 +35,7 @@ export function FooterTrust({ legalLine }: { legalLine: string | null }) {
       0113) — the one piece of copy a buyer is meant to be able to read back.
     */
     <section
-      aria-label="Legal"
+      aria-label={t("legal")}
       className="px-4 md:px-12 py-5 border-t border-bz-border bg-bz-surface-2 flex items-center justify-center gap-6 flex-wrap"
     >
       <div className="text-[13px] md:text-[11.5px] text-bz-ink-2 text-center">

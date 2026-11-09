@@ -39,7 +39,8 @@
     "groupUnitTypes": "Unit types",
     "groupUnits": "Available units",
     "pickPrice": "Pick a price to plan against",
-    "noPricing": "No pricing published yet"
+    "noPricing": "No pricing published yet",
+    "priceLabel": "Price"
   },
   "units": {
     "type": "Type",
