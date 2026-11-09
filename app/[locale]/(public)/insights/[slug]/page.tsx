@@ -68,7 +68,10 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug, locale } = await params;
   const article = await getPublishedArticleBySlug(slug);
-  if (!article) return { title: "Not found · The Bazar Brief" };
+  // The publication's name on /ar is the brand's Arabic, as in the root
+  // layout's title template.
+  const brief = locale === "ar" ? "بازار" : "The Bazar Brief";
+  if (!article) return { title: locale === "ar" ? `غير موجود · ${brief}` : `Not found · ${brief}` };
   /*
    * The article's Search appearance, folded to the route's locale.
    *
@@ -97,7 +100,7 @@ export async function generateMetadata({
      * published article without a Search appearance has been shipping.
      */
     title: {
-      absolute: seo.meta_title ?? `${metaTitle} · The Bazar Brief`,
+      absolute: seo.meta_title ?? `${metaTitle} · ${brief}`,
     },
     description: metaDescription,
     openGraph: {
@@ -173,8 +176,8 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     heroSrc,
   );
   const ldBreadcrumb = breadcrumbListJsonLd([
-    { name: "Home", url: `${siteUrl}/` },
-    { name: "Insights", url: `${siteUrl}/insights` },
+    { name: t("article.crumbHome"), url: `${siteUrl}/` },
+    { name: t("article.crumbInsights"), url: `${siteUrl}/insights` },
     {
       name: categoryLabel,
       url: `${siteUrl}/insights/category/${categoryToUrlSlug(article.category)}`,
@@ -195,15 +198,15 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
       {/* Breadcrumb */}
       <nav
-        aria-label="Breadcrumb"
+        aria-label={t("article.breadcrumb")}
         className="px-4 md:px-12 pt-8 max-w-[760px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
       >
         <Link href="/" className="text-bz-teal hover:text-bz-navy">
-          Home
+          {t("article.crumbHome")}
         </Link>
         <ChevronRight size={12} />
         <Link href="/insights" className="text-bz-teal hover:text-bz-navy">
-          Insights
+          {t("article.crumbInsights")}
         </Link>
         <ChevronRight size={12} />
         <Link
@@ -321,7 +324,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             className="serif text-[28px]"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Keep reading
+            {t("article.keepReading")}
           </h3>
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {related.map((row) => (
@@ -352,14 +355,16 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   {row.title}
                 </h4>
                 <div className="mt-2 text-[11.5px] text-bz-muted">
-                  By {row.author?.display_name ?? "Bazar"}
+                  {t("article.byAuthor", {
+                    name: row.author?.display_name ?? t("article.fallbackAuthor"),
+                  })}
                 </div>
               </Link>
             ))}
           </div>
           <div className="mt-10">
             <Button asChild variant="outline">
-              <Link href="/insights">Back to all insights</Link>
+              <Link href="/insights">{t("article.backToAll")}</Link>
             </Button>
           </div>
         </section>

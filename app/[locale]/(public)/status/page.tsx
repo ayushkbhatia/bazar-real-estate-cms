@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -9,11 +10,20 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Status",
   description: "Live operational status of the Bazar marketplace.",
   robots: { index: true, follow: true },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 const STATUS_COPY = {
   ok: {

@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "How to Rent Out Your Property in Abu Dhabi",
   description:
     "Prepare, price, list, screen tenants, agree terms, sign, register Tawtheeq, and hand over — the complete Abu Dhabi landlord journey.",
   alternates: { canonical: "/guides/how-to-rent-out" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /** Step order. The key names the message; the array is the page. */
 const STEPS = [

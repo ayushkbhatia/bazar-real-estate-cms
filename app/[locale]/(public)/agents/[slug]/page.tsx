@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { DEFAULT_LOCALE, asLocale, type Locale } from "@/lib/i18n/locales";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { setRequestLocale } from "next-intl/server";
@@ -150,9 +151,10 @@ export default async function AgentProfilePage({
     photo_url: agent.photo_url,
     languages: agent.languages,
   });
+  const tc = await getTranslations({ locale, namespace: "common.breadcrumb" });
   const breadcrumbsLd = breadcrumbListJsonLd([
-    { name: "Home", url: siteBase },
-    { name: "Our team", url: `${siteBase}/agents` },
+    { name: tc("home"), url: siteBase },
+    { name: tc("team"), url: `${siteBase}/agents` },
     { name: agent.display_name, url: `${siteBase}/agents/${agent.slug}` },
   ]);
 

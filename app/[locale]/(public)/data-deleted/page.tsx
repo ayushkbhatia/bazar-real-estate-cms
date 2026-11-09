@@ -1,16 +1,27 @@
 import Link from "@/components/i18n/link";
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
+import { asLocale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 
 // searchParams.reason needs to be readable per-request.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Account deleted",
   description: "Your Bazar account has been deleted.",
   robots: { index: false, follow: false },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 type PageProps = {
   searchParams: Promise<{ reason?: string }>;

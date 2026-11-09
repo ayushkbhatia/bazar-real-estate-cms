@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations } from "next-intl/server";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { asLocale } from "@/lib/i18n/locales";
@@ -7,11 +8,20 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { SEED_CAREERS } from "@/lib/seeds/careers";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Careers",
   description:
     "Open advisor and operations roles at Bazar Real Estate. We hire slowly and by exception.",
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 export default async function CareersPage({
   params,

@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { PropertyResidencyChecker } from "./_checker";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Property-linked UAE residency — 2-year visa guide",
   description:
     "The AED 750K+ property route to a 2-year renewable UAE residency. Who qualifies, what the asset has to look like, and the realistic timeline.",
   alternates: { canonical: "/guides/property-linked-residency" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Body blocks, in order, each naming its own message subtree.

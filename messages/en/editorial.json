@@ -19,7 +19,18 @@
     "onThisPage": "On this page",
     "breadcrumb": "Breadcrumb",
     "readMinutes": "{count, plural, one {{minutes} min read} other {{minutes} min read}}",
-    "readMinutesShort": "{count, plural, one {{minutes} min read} other {{minutes} min read}}"
+    "readMinutesShort": "{count, plural, one {{minutes} min read} other {{minutes} min read}}",
+    "crumbHome": "Home",
+    "crumbInsights": "Insights",
+    "keepReading": "Keep reading",
+    "byAuthor": "By {name}",
+    "fallbackAuthor": "Bazar",
+    "backToAll": "Back to all insights",
+    "allInsights": "All insights",
+    "authorEmpty": "{name} hasn't published any articles yet.",
+    "viewAdvisorProfile": "View advisor profile",
+    "browseAllInsights": "Browse all insights",
+    "viewAllCategories": "View all categories"
   },
   "report": {
     "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",

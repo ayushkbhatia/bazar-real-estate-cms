@@ -31,8 +31,11 @@ export type SearchFilterSettings = {
  */
 export const getSearchFilterSettings = cache(
   async (locale: Locale): Promise<SearchFilterSettings> => {
-    const [content, taxonomy] = await Promise.all([
+    const [content, bilingual, taxonomy] = await Promise.all([
       getLibrarySectionContent("search_filters", locale),
+      // The copy overrides read their own language's field only — see
+      // `searchFilterOverrides`.
+      getLibrarySectionContent("search_filters", "bilingual"),
       listAmenitiesTaxonomy(),
     ]);
     const values = content.section.values;
@@ -58,7 +61,7 @@ export const getSearchFilterSettings = cache(
       amenitiesLabel:
         (typeof values.amenities_label === "string" && values.amenities_label.trim()) ||
         (locale === "ar" ? "المرافق" : "Amenities"),
-      overrides: searchFilterOverrides(values),
+      overrides: searchFilterOverrides(bilingual.section.values, locale),
       // Alphabetical by the name the visitor reads — English A–Z on the
       // English site, Arabic collation on /ar (client, Oct 2026). The editor
       // decides which amenities are offered, not their order.

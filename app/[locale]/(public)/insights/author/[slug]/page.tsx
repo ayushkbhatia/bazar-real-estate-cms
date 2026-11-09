@@ -106,7 +106,7 @@ export default async function InsightsAuthorPage({
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All insights
+          {t("article.allInsights")}
         </Link>
       </div>
 
@@ -133,7 +133,7 @@ export default async function InsightsAuthorPage({
             {isAdvisor ? (
               <div className="mt-6">
                 <Button asChild variant="outline">
-                  <Link href={`/agents/${slug}`}>View advisor profile</Link>
+                  <Link href={`/agents/${slug}`}>{t("article.viewAdvisorProfile")}</Link>
                 </Button>
               </div>
             ) : null}
@@ -148,18 +148,18 @@ export default async function InsightsAuthorPage({
           className="serif text-[32px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.015em" }}
         >
-          By {display_name.split(" ")[0]}.
+          {t("article.byAuthor", { name: display_name.split(" ")[0] ?? "" })}.
         </h2>
 
         {rows.length === 0 ? (
           <div className="mt-10 py-12 text-center max-w-[52ch] mx-auto border border-dashed border-bz-border rounded-md">
             <p className="text-[14.5px] text-bz-ink-2">
               {dbStaff
-                ? `${display_name} hasn't published any articles yet.`
+                ? t("article.authorEmpty", { name: display_name })
                 : "Author-filtered article archives wire in Sprint 9 once the public staff view lands."}
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link href="/insights">Browse all insights</Link>
+              <Link href="/insights">{t("article.browseAllInsights")}</Link>
             </Button>
           </div>
         ) : (

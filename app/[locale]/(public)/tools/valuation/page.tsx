@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getForm } from "@/lib/queries/forms";
 import { Check } from "lucide-react";
@@ -8,11 +9,20 @@ import { asLocale } from "@/lib/i18n/locales";
 import { ValuationWizard } from "./valuation-wizard";
 import { ValuationLeadGate } from "./_components/lead-gate";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Get a valuation",
   description:
     "An instant data-backed range from our model, then a senior advisor reviews and sends you a refined valuation within 24 hours. Free, no obligation.",
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * The wizard and the lead gate are both client components, and the only

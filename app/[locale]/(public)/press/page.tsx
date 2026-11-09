@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { ExternalLink } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { SEED_PRESS } from "@/lib/seeds/press";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Press",
   description: "Bazar Real Estate in the press — coverage, interviews, awards.",
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /** Month written out in full, unlike the editorial byline's short form. */
 function formatDate(iso: string, locale: Locale): string {

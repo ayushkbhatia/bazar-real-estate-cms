@@ -115,6 +115,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
   const locale = asLocale(rawLocale);
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "editorial" });
+  const tp = await getTranslations({ locale, namespace: "pages.marketReports" });
   if (!isValidType(type)) notFound();
   const quarter = quarterFromSlug(qSlug);
   if (!quarter) notFound();
@@ -174,7 +175,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
           href="/market-reports"
           className="text-bz-teal hover:text-bz-navy"
         >
-          Market reports
+          {tp("crumb")}
         </Link>
         <span>›</span>
         <Link

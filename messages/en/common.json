@@ -102,7 +102,11 @@
     "emailSubject": "My Bazar shortlist",
     "emailIntro": "{count, plural, one {Here is the property I'm tracking on bazar.ae:} other {Here are the # properties I'm tracking on bazar.ae:}}",
     "emailSignoff": "— Sent from Bazar Real Estate",
-    "whatsappIntro": "{count, plural, one {Hi — I'd like to talk about this listing on bazar.ae:} other {Hi — I'd like to talk about these # on bazar.ae:}}"
+    "whatsappIntro": "{count, plural, one {Hi — I'd like to talk about this listing on bazar.ae:} other {Hi — I'd like to talk about these # on bazar.ae:}}",
+    "save": "Save to shortlist",
+    "remove": "Remove from shortlist",
+    "saveCount": "Save to shortlist ({count}/{max})",
+    "removeCount": "Remove from shortlist ({count}/{max})"
   },
   "tagline": "Abu Dhabi",
   "testimonials": {
@@ -126,5 +130,17 @@
     "ctrlScroll": "Use Ctrl + scroll to zoom the map",
     "cmdScroll": "Use ⌘ + scroll to zoom the map",
     "twoFingers": "Use two fingers to move the map"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "areas": "Areas",
+    "team": "Our team"
+  },
+  "aria": {
+    "legal": "Legal",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "areas": "Areas",
+    "mainNav": "Main"
   }
 }

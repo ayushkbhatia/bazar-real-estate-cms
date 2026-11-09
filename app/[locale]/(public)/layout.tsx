@@ -222,7 +222,7 @@ export default async function PublicLayout({
         {/* T1.5 quick win: single-line trust signal above the global footer.
           Reads the same `footer_settings.legal_line` the footer's own bottom
           bar does, so the two can no longer drift apart. */}
-        <FooterTrust legalLine={footer.settings.legal_line} />
+        <FooterTrust legalLine={footer.settings.legal_line} locale={active} />
         <PublicFooter data={footer} logo={footerLogo} />
       </FloatingCtaProvider>
     </UnitLabelsProvider>

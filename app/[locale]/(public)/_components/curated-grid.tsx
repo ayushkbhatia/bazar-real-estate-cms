@@ -17,6 +17,8 @@ type Props = {
   /** Caller passes the deeper-browse link when the curation isn't infinite. */
   browseAllHref: string;
   browseAllLabel: string;
+  /** A card's location when the listing has no area, in the page's language. */
+  fallbackArea: string;
 };
 
 /**
@@ -30,6 +32,7 @@ export async function CuratedGrid({
   rows,
   browseAllHref,
   browseAllLabel,
+  fallbackArea,
 }: Props) {
   const cardLabels = await getCardLabelResolver();
   return (
@@ -83,7 +86,7 @@ export async function CuratedGrid({
                   <ListingCardPriced
                     priceAed={row.price_aed}
                     title={row.title}
-                    location={row.areas?.name ?? "United Arab Emirates"}
+                    location={row.areas?.name ?? fallbackArea}
                     {...cardFactProps(row)}
                     badges={badges}
                     imgLabel={row.reference}

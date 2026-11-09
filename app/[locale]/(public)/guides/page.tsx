@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Guides · UAE residency, tax, and KYC for buyers",
   description:
     "Plain-English walk-throughs of the Golden Visa, 2-year property-linked residency, UAE Tax Residency Certificate, and KYC paperwork for non-resident property buyers.",
   alternates: { canonical: "/guides" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Card order. The slug is both the href and the message key, so a card cannot

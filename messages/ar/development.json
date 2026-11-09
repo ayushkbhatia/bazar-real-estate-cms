@@ -39,7 +39,8 @@
     "groupUnitTypes": "أنواع الوحدات",
     "groupUnits": "الوحدات المتاحة",
     "pickPrice": "اختر سعرًا لحساب الخطة",
-    "noPricing": "لم تُنشر الأسعار بعد"
+    "noPricing": "لم تُنشر الأسعار بعد",
+    "priceLabel": "السعر"
   },
   "units": {
     "type": "النوع",

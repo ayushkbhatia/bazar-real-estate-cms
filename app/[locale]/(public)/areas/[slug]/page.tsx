@@ -211,9 +211,10 @@ export default async function CommunityProfilePage({
     name: profile.name,
     intro_md: profile.intro || null,
   });
+  const tc = await getTranslations({ locale, namespace: "common.breadcrumb" });
   const breadcrumbsLd = breadcrumbListJsonLd([
-    { name: "Home", url: siteBase },
-    { name: "Areas", url: `${siteBase}/areas` },
+    { name: tc("home"), url: siteBase },
+    { name: tc("areas"), url: `${siteBase}/areas` },
     { name: profile.name, url: `${siteBase}/areas/${profile.slug}` },
   ]);
 

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -6,46 +8,54 @@ import {
   PROPERTY_TYPES,
   currentReportQuarter,
   listReportableAreas,
-  propertyTypeLabel,
   quarterLabel,
   reportPath,
 } from "@/lib/queries/market-reports";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Market reports · Abu Dhabi quarterly",
-  description:
-    "Per-area quarterly resale market reports for Abu Dhabi residential property. Median prices, AED/ft², YoY change, and recent closed transactions.",
-  alternates: { canonical: "/market-reports" },
-};
+type Params = { params: Promise<{ locale: string }> };
 
-export default async function MarketReportsIndexPage() {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "pages.marketReports" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/market-reports" },
+  };
+}
+
+export default async function MarketReportsIndexPage({ params }: Params) {
+  // Explicit locale — an ambient lookup reads `headers()` and takes the page
+  // off prerendering.
+  const locale = asLocale((await params).locale);
+  const [t, ts] = await Promise.all([
+    getTranslations({ locale, namespace: "pages.marketReports" }),
+    getTranslations({ locale, namespace: "search" }),
+  ]);
   const quarter = currentReportQuarter();
   const areas = await listReportableAreas({ quarter });
 
   return (
     <article className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-24 pb-12 border-b border-bz-border">
-        <Eyebrow>Market reports · {quarterLabel(quarter)}</Eyebrow>
+        <Eyebrow>{t("eyebrow", { quarter: quarterLabel(quarter) })}</Eyebrow>
         <h1
           className="serif text-[38px] md:text-[72px] mt-3 leading-[1.0]"
           style={{ letterSpacing: "-0.028em" }}
         >
-          Abu Dhabi, by community
+          {t("heading")}
         </h1>
         <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[52ch]">
-          Closed-book residential resale, distilled per community and asset
-          type. Sourced from DLD open-data records — published one quarter in
-          arrears so every number is final.
+          {t("intro")}
         </p>
       </section>
 
       <section className="px-4 md:px-12 py-16">
         {areas.length === 0 ? (
           <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-muted">
-            No closed transactions surfaced for {quarterLabel(quarter)} yet. The
-            dataset refreshes weekly — check back shortly.
+            {t("empty", { quarter: quarterLabel(quarter) })}
           </div>
         ) : (
           <div className="space-y-12">
@@ -62,24 +72,24 @@ export default async function MarketReportsIndexPage() {
                     href={`/areas/${a.slug}`}
                     className="text-[12.5px] text-bz-muted hover:text-bz-ink"
                   >
-                    Community guide →
+                    {t("communityGuide")}
                   </Link>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {PROPERTY_TYPES.map((t) => {
+                  {PROPERTY_TYPES.map((type) => {
                     const href = reportPath({
                       area_slug: a.slug,
-                      property_type: t,
+                      property_type: type,
                       quarter,
                     });
                     return (
                       <Link
-                        key={t}
+                        key={type}
                         href={href}
                         className="group flex items-center justify-between gap-2 px-4 py-3 rounded-md border border-bz-border bg-bz-surface hover:bg-bz-surface-2 transition-colors"
                       >
                         <span className="text-[14px] text-bz-ink">
-                          {propertyTypeLabel(t)}s
+                          {ts(`typePlural.${type}`)}
                         </span>
                         <ArrowRight
                           size={14}

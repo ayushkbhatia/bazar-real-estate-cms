@@ -75,16 +75,23 @@ export function searchFilterCopyFields(): FieldDef[] {
 }
 
 /**
- * The saved document (already folded to one language) as a patch over the
- * `search` catalogue: `{ filters: { beds: "Bedrooms" }, sort: { … } }`.
- * Blank fields are left out, so they keep the catalogue's words.
+ * The saved document as a patch over the `search` catalogue:
+ * `{ filters: { beds: "Bedrooms" }, sort: { … } }`. Blank fields are left
+ * out, so they keep the catalogue's words.
+ *
+ * Takes the BILINGUAL values and reads only the page language's own field —
+ * `copy_area` for English, `copy_area_ar` for Arabic. Folding first would
+ * hand /ar the editor's English wherever the Arabic twin is blank, and the
+ * catalogue already has Arabic for every one of these: an editor who retyped
+ * "Area" in English put "Area" on every Arabic search page (Nov 2026).
  */
 export function searchFilterOverrides(
   values: SectionValues,
+  locale: "en" | "ar" = "en",
 ): Record<string, Record<string, string>> {
   const out: Record<string, Record<string, string>> = {};
   for (const [key, , path] of SEARCH_FILTER_COPY) {
-    const v = values[key];
+    const v = values[locale === "ar" ? `${key}_ar` : key];
     if (typeof v !== "string" || !v.trim()) continue;
     const [group, leaf] = path.split(".") as [string, string];
     (out[group] ??= {})[leaf] = v.trim();

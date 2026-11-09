@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Required Documents for Renting in Abu Dhabi",
   description:
     "The identification, Tawtheeq, utility, and building-approval documents every Abu Dhabi tenant should prepare before signing and moving in.",
   alternates: { canonical: "/guides/required-documents" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Body blocks, in order, each naming its own message subtree.

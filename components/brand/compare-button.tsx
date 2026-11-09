@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import {
   COMPARE_STORAGE_KEY,
@@ -23,6 +24,8 @@ import {
  * the localStorage set into it for cross-device persistence.
  */
 export function CompareButton({ propertyId }: { propertyId: string }) {
+  // `common` ships to the browser (CLIENT_NAMESPACES).
+  const t = useTranslations("common.shortlist");
   const [active, setActive] = useState(false);
   const [count, setCount] = useState(0);
 
@@ -102,12 +105,11 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
     <button
       type="button"
       onClick={toggle}
-      aria-label={active ? "Remove from shortlist" : "Save to shortlist"}
-      title={
-        active
-          ? `Remove from shortlist (${count}/${SHORTLIST_CAP})`
-          : `Save to shortlist (${count}/${SHORTLIST_CAP})`
-      }
+      aria-label={active ? t("remove") : t("save")}
+      title={t(active ? "removeCount" : "saveCount", {
+        count,
+        max: SHORTLIST_CAP,
+      })}
       /* `rounded-full` on the outer box too, with nothing painted on it: the
          UA focus ring follows border-radius, and without it keyboard focus
          would draw a square around a circle that used to get a round one. */

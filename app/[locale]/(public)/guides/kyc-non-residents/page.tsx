@@ -1,14 +1,24 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "KYC for non-resident property buyers in the UAE",
   description:
     "The KYC and AML documentation non-resident buyers should expect when acquiring UAE property — source of funds, banking, and the DLD transfer process.",
   alternates: { canonical: "/guides/kyc-non-residents" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Body blocks, in order, each naming its own message subtree.

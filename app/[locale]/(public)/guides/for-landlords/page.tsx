@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
@@ -7,12 +8,21 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../../_components/marketing/fluid";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Guides for Landlords · Renting Out in Abu Dhabi",
   description:
     "Owning a rental in Abu Dhabi is a strong long-term investment when managed properly. These guides cover professional property management and how to rent out your property.",
   alternates: { canonical: "/guides/for-landlords" },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Card order. The slug is both the href and the message key, so a card

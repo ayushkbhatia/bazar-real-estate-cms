@@ -28,12 +28,19 @@ const DEV_LABEL_STYLES: Record<ResolvedCardLabel["kind"], string> = {
   danger: "bg-[oklch(0.96_0.04_28)] text-[oklch(0.45_0.13_28)]",
 };
 
-export const metadata: Metadata = {
-  title: "Developments · Off-plan in Abu Dhabi",
-  description:
-    "Pre-launch and on-sale developments by Aldar, Reportage, IMKAN, and Abu Dhabi's leading developers — curated by Bazar.",
-  alternates: { canonical: "/developments" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "pages.developments" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/developments" },
+  };
+}
 
 export const revalidate = 120;
 
@@ -59,12 +66,10 @@ export default async function DevelopmentsIndexPage({
           className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          New launches in Abu Dhabi
+          {t("heading")}
         </h1>
         <p className="mt-5 text-[16px] text-bz-muted max-w-[60ch] leading-[1.6]">
-          Developments we&apos;ve closely diligenced — payment plans, escrow
-          terms, and unit pricing. Many include Bazar-only pre-launch inventory
-          weeks before public release.
+          {t("intro")}
         </p>
       </section>
 
@@ -73,7 +78,7 @@ export default async function DevelopmentsIndexPage({
           <div className="py-24 text-center">
             <Eyebrow>{t("empty")}</Eyebrow>
             <p className="mt-3 text-[15px] text-bz-muted">
-              No published developments yet. Sign in to /admin to add one.
+              {t("emptyBody")}
             </p>
           </div>
         ) : (

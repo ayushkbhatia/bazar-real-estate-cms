@@ -473,7 +473,7 @@ export function PaymentPlanSection({
           className="lg:hidden mt-2"
           items={[
             {
-              key: "Price",
+              key: t("payment.priceLabel"),
               value: (
                 <span className="serif text-[16px] whitespace-nowrap">
                   {price > 0 ? formatPrice(price, prefs) : "—"}

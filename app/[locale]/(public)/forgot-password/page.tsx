@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
+import { localiseMetadata } from "@/lib/i18n/localise-metadata";
+import { asLocale } from "@/lib/i18n/locales";
 import { ForgotPasswordForm } from "./_form";
 
-export const metadata: Metadata = {
+const METADATA: Metadata = {
   title: "Reset your password",
   description: "Request a sign-in link for your Bazar staff account.",
   // Same reasoning as /admin/login — never index a staff door.
   robots: { index: false, follow: false },
 };
+
+/** English as written above; Arabic from the site's store on /ar. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return localiseMetadata(METADATA, asLocale((await params).locale));
+}
 
 /**
  * Staff password recovery.

@@ -34,4 +34,19 @@ describe("search filter copy", () => {
       sort: { recent: "Newest first" },
     });
   });
+
+  it("never puts the editor's English on /ar when the Arabic twin is blank", () => {
+    const saved = {
+      copy_area: "Area",
+      copy_area_ar: null,
+      copy_beds: "Bedrooms",
+      copy_beds_ar: "غرف",
+    };
+    expect(searchFilterOverrides(saved, "ar")).toEqual({
+      filters: { beds: "غرف" },
+    });
+    expect(searchFilterOverrides(saved, "en")).toEqual({
+      filters: { area: "Area", beds: "Bedrooms" },
+    });
+  });
 });

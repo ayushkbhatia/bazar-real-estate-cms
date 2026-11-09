@@ -126,6 +126,7 @@ export function PublicMegaNav({
 }: Props) {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const tc = useTranslations("common.aria");
   const [mobileOpen, setMobileOpen] = useState(false);
   // Controlled Radix value — we only need "is a panel open", but the
   // header's opacity depends on it, so the state has to live up here.
@@ -233,6 +234,8 @@ export function PublicMegaNav({
         <div className="hidden desk:flex flex-1 justify-center">
           <NavigationMenu
             viewport={false}
+            /* Radix labels the nav "Main" in English unless told otherwise. */
+            aria-label={tc("mainNav")}
             value={openTab}
             onValueChange={setOpenTab}
           >

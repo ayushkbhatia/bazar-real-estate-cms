@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 /**
  * Keyboard-accessible area chips — the non-canvas path to every area.
  * MapLibre pins live in a <canvas> and aren't tab-reachable, so these
@@ -17,9 +19,10 @@ export function AreaChips({
   activeSlug: string | null;
   onSelect: (slug: string) => void;
 }) {
+  const t = useTranslations("common.aria");
   if (areas.length === 0) return null;
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Areas">
+    <div className="flex flex-wrap gap-2" role="group" aria-label={t("areas")}>
       {areas.map((a) => {
         const active = a.slug === activeSlug;
         return (
