@@ -80,6 +80,26 @@ export function href(raw: unknown, ctx: Pick<Ctx, "values" | "siteUrl" | "locale
   return null;
 }
 
+/** Whether an image field holds a media-library key the email image route can work on. */
+function isKeyed(v: unknown): boolean {
+  const key = v && typeof v === "object" ? (v as ImageValue).key : null;
+  return typeof key === "string" && isMediaKey(key) && !!mediaPublicUrl(key);
+}
+
+/**
+ * A photo behind `content` in Outlook for Windows, which draws no CSS
+ * background: a VML rectangle filled with the image, the content in its
+ * text box, grown to fit (`mso-fit-shape-to-text`). Every other client
+ * ignores the conditional comment and uses the cell's CSS background.
+ */
+function outlookBackground(src: string, fallback: string, content: string, minHeight: number): string {
+  return (
+    `<!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:${COLUMN}px;height:${minHeight}px"><v:fill type="frame" src="${esc(src)}" color="${fallback}" /><v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0"><![endif]-->` +
+    `<div>${content}</div>` +
+    `<!--[if gte mso 9]></v:textbox></v:rect><![endif]-->`
+  );
+}
+
 /**
  * An image field's address. With a size, a media-library image goes through
  * the email image route — resized, re-encoded, cropped or tinted as asked
@@ -268,15 +288,25 @@ type Drawer = (props: Props, ctx: Ctx) => string;
 
 const DRAW: Record<string, Drawer> = {
   hero(p, ctx) {
-    const src = imageUrl(p.image, ctx, { width: COLUMN });
     const overlay = color(p.overlayColor, "#003452");
     const strength = Number(p.overlayOpacity ?? 35) / 100;
+    /*
+     * The overlay is BAKED INTO THE PHOTO by the email image route. Painted
+     * in CSS (a linear-gradient over the image) it reached almost no inbox:
+     * Gmail drops gradient backgrounds and Outlook desktop draws no CSS
+     * background at all (client, Nov 2026). An image with no media key can't
+     * be baked and keeps the gradient, which the browser preview still draws.
+     */
+    const baked = isKeyed(p.image);
+    const src = imageUrl(p.image, ctx, { width: COLUMN, tint: overlay, opacity: strength * 100 });
     const ink = color(p.textColor, "#FFFFFF");
     const align = alignOf(p.align, ctx);
     const pad = { s: 48, m: 88, l: 140 }[String(p.height)] ?? 88;
-    const bg = src
-      ? `background-color:${overlay};background-image:url('${esc(src)}');background-image:linear-gradient(${rgba(overlay, strength)},${rgba(overlay, strength)}),url('${esc(src)}');background-size:cover;background-position:center;`
-      : `background:${overlay};`;
+    const bg = !src
+      ? `background:${overlay};`
+      : baked
+        ? `background-color:${overlay};background-image:url('${esc(src)}');background-size:cover;background-position:center;`
+        : `background-color:${overlay};background-image:url('${esc(src)}');background-image:linear-gradient(${rgba(overlay, strength)},${rgba(overlay, strength)}),url('${esc(src)}');background-size:cover;background-position:center;`;
     const logo = heroLogo(p, ctx, align);
     const cta = blockButton(p, ctx, align);
     const body = [
@@ -292,7 +322,8 @@ const DRAW: Record<string, Drawer> = {
         ? `<p style="margin:28px 0 0 0;${bodyStyle(ctx, ink, align, 11)};opacity:0.85">${inline(localText(p, "note", ctx.locale), ctx, ink)}</p>`
         : "",
     ].join("");
-    return `<tr><td class="px" ${dirAttr(ctx)} align="${align}" valign="middle"${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:${pad}px ${GUTTER}px;text-align:${align}">${body}</td></tr>`;
+    const inner = `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td class="px" ${dirAttr(ctx)} align="${align}" valign="middle" style="padding:${pad}px ${GUTTER}px;text-align:${align}">${body}</td></tr></table>`;
+    return `<tr><td ${dirAttr(ctx)} valign="middle"${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0">${src ? outlookBackground(src, overlay, inner, pad * 2 + 120) : inner}</td></tr>`;
   },
 
   logo(p, ctx) {
@@ -800,7 +831,8 @@ export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): 
   const fonts = ctx.rtl
     ? '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">'
     : '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">';
-  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(opts.subject)}</title>${fonts}<style>${STYLE}</style></head>
+  // The VML namespaces and 96 dpi let Outlook for Windows draw the hero's photo.
+  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(opts.subject)}</title>${fonts}<style>${STYLE}</style></head>
 <body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir}">
 <table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="background:${s.pageBackground}"><tr><td align="center" style="padding:24px 0">
 <table ${TABLE} dir="${dir}" class="wrap" width="${COLUMN}" bgcolor="${s.contentBackground}" style="width:${COLUMN}px;max-width:${COLUMN}px;background:${s.contentBackground};direction:${dir};text-align:${ctx.rtl ? "right" : "left"}">
