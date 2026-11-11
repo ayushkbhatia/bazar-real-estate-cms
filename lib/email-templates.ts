@@ -12,6 +12,7 @@
 
 import { env } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
+import { brandArabicFont } from "@/lib/content-assets/email-arabic-font";
 import {
   DEFAULT_EMAIL_BRAND,
   type EmailBrand,
@@ -67,12 +68,10 @@ export function brandCopy(
 }
 
 /**
- * Arabic inboxes are the one place a webfont cannot be relied on: Gmail and
- * Outlook both ignore @font-face, so the stack has to name faces that are
- * already on the machine. Tahoma is the one Windows has had since XP.
+ * Arabic: the site's own face first, then faces already on the machine —
+ * Gmail and Outlook for Windows ignore @font-face, so the stack behind it
+ * still matters (content-assets/email-arabic-font.ts).
  */
-const AR_FONT =
-  "'IBM Plex Sans Arabic','Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif";
 const EN_FONT =
   "'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif";
 
@@ -91,11 +90,11 @@ function header(brand: EmailBrand, locale: EmailLocale = "en"): string {
   // wordmark is set in the body face at a larger size instead.
   const wordmarkFont =
     locale === "ar"
-      ? `font-family:${AR_FONT};font-size:24px;font-weight:600`
+      ? `font-family:${brandArabicFont(brand).heading};font-size:24px;font-weight:600`
       : "font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em";
   return `<div style="${wordmarkFont};margin-bottom:24px;color:${brand.textColor};text-align:${align}">${escape(copy.wordmark)}${
     copy.tagline
-      ? ` <span style="font-family:${locale === "ar" ? AR_FONT : "'Geist',sans-serif"};font-style:normal;font-size:12px;letter-spacing:0.05em;color:${brand.mutedColor}">${escape(copy.tagline)}</span>`
+      ? ` <span style="font-family:${locale === "ar" ? brandArabicFont(brand).body : "'Geist',sans-serif"};font-style:normal;font-size:12px;letter-spacing:0.05em;color:${brand.mutedColor}">${escape(copy.tagline)}</span>`
       : ""
   }</div>`;
 }
@@ -136,8 +135,11 @@ function shell(
 ): string {
   const rtl = locale === "ar";
   const dir = rtl ? "rtl" : "ltr";
-  return `<!doctype html><html dir="${dir}" lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body dir="${dir}" style="margin:0;padding:0;background:${brand.backgroundColor};color:${brand.textColor};font-family:${rtl ? AR_FONT : EN_FONT};font-size:15px;line-height:${rtl ? "1.75" : "1.55"};direction:${dir};text-align:${rtl ? "right" : "left"}">
+  // Arabic: the site's own face (Settings → Arabic type) with the built-in
+  // stack behind it — see content-assets/email-arabic-font.ts.
+  const ar = brandArabicFont(brand);
+  return `<!doctype html><html dir="${dir}" lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">${rtl ? ar.head : ""}</head>
+<body dir="${dir}" style="margin:0;padding:0;background:${brand.backgroundColor};color:${brand.textColor};font-family:${rtl ? ar.body : EN_FONT};font-size:15px;line-height:${rtl ? "1.75" : "1.55"};direction:${dir};text-align:${rtl ? "right" : "left"}">
   <table role="presentation" dir="${dir}" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px;direction:${dir};text-align:${rtl ? "right" : "left"}">
     <tr><td>
       ${header(brand, locale)}
