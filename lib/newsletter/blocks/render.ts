@@ -253,8 +253,11 @@ function blockButton(props: Props, ctx: Ctx, align: string, prefix = "button"): 
   );
 }
 
-function img(v: unknown, alt: string, width: number, ctx: Ctx, o: { rounded?: boolean; link?: unknown; cls?: string } = {}): string {
-  const src = imageUrl(v, ctx, { width });
+/** An image block's Shape, as width ÷ height; null keeps the upload's own. */
+const IMAGE_RATIO: Record<string, number> = { wide: 16 / 9, panorama: 2, strip: 3 };
+
+function img(v: unknown, alt: string, width: number, ctx: Ctx, o: { rounded?: boolean; link?: unknown; cls?: string; ratio?: number | null } = {}): string {
+  const src = imageUrl(v, ctx, { width, ratio: o.ratio ?? null });
   if (!src) return "";
   const tag = `<img src="${esc(src)}" alt="${esc(alt)}" width="${width}"${o.cls ? ` class="${o.cls}"` : ""} style="display:block;width:100%;max-width:${width}px;height:auto;border:0;outline:none;text-decoration:none${o.rounded ? ";border-radius:8px" : ""}">`;
   const to = href(o.link, ctx);
@@ -298,18 +301,25 @@ const DRAW: Record<string, Drawer> = {
      * be baked and keeps the gradient, which the browser preview still draws.
      */
     const baked = isKeyed(p.image);
-    const src = imageUrl(p.image, ctx, { width: COLUMN, tint: overlay, opacity: strength * 100 });
+    // "Wide" is a 2:1 band — the shape of a launch mailer's header — rather
+    // than a box as tall as its text and padding make it.
+    const wide = p.shape === "wide";
+    const src = imageUrl(p.image, ctx, { width: COLUMN, tint: overlay, opacity: strength * 100, ratio: wide ? 2 : null });
     const ink = color(p.textColor, "#FFFFFF");
     const align = alignOf(p.align, ctx);
-    const pad = { s: 48, m: 88, l: 140 }[String(p.height)] ?? 88;
+    const pad = wide ? 28 : ({ s: 48, m: 88, l: 140 }[String(p.height)] ?? 88);
+    const bottomLogo = p.logoPosition === "bottom";
     const bg = !src
       ? `background:${overlay};`
       : baked
         ? `background-color:${overlay};background-image:url('${esc(src)}');background-size:cover;background-position:center;`
         : `background-color:${overlay};background-image:url('${esc(src)}');background-image:linear-gradient(${rgba(overlay, strength)},${rgba(overlay, strength)}),url('${esc(src)}');background-size:cover;background-position:center;`;
-    const logo = heroLogo(p, ctx, align);
+    const logo = bottomLogo ? "" : heroLogo(p, ctx, align);
     const cta = blockButton(p, ctx, align);
+    const projectLogo = projectLogoImg(p, ctx, align);
+    const note = localText(p, "note", ctx.locale);
     const body = [
+      projectLogo,
       logo,
       eyebrow(localText(p, "eyebrow", ctx.locale), ctx, align, ink),
       headingHtml(localText(p, "heading", ctx.locale), ctx, { size: "xl", align, ink, cls: "hero-h", level: 1 }),
@@ -318,12 +328,14 @@ const DRAW: Record<string, Drawer> = {
         ? (ctx.text.push(plain(localText(p, "text", ctx.locale), ctx)), paragraphs(localText(p, "text", ctx.locale), ctx, bodyStyle(ctx, ink, align, 16), ink))
         : "",
       cta ? `<div style="height:22px;line-height:22px">&nbsp;</div>${cta}` : "",
-      localText(p, "note", ctx.locale)
-        ? `<p style="margin:28px 0 0 0;${bodyStyle(ctx, ink, align, 11)};opacity:0.85">${inline(localText(p, "note", ctx.locale), ctx, ink)}</p>`
+      note && !bottomLogo
+        ? `<p style="margin:28px 0 0 0;${bodyStyle(ctx, ink, align, 11)};opacity:0.85">${inline(note, ctx, ink)}</p>`
         : "",
+      bottomLogo ? heroFooter(p, ctx, note, ink) : "",
     ].join("");
     const inner = `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td class="px" ${dirAttr(ctx)} align="${align}" valign="middle" style="padding:${pad}px ${GUTTER}px;text-align:${align}">${body}</td></tr></table>`;
-    return `<tr><td ${dirAttr(ctx)} valign="middle"${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0">${src ? outlookBackground(src, overlay, inner, pad * 2 + 120) : inner}</td></tr>`;
+    const minHeight = wide ? COLUMN / 2 : pad * 2 + 120;
+    return `<tr><td ${dirAttr(ctx)} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
   },
 
   logo(p, ctx) {
@@ -405,7 +417,13 @@ const DRAW: Record<string, Drawer> = {
 
   image(p, ctx) {
     const bleed = p.fullBleed === true;
-    const html = img(p.image, localText(p, "alt", ctx.locale), bleed ? COLUMN : INNER, ctx, { rounded: p.rounded === true, link: p.link, cls: "stack-img" });
+    const html = img(p.image, localText(p, "alt", ctx.locale), bleed ? COLUMN : INNER, ctx, {
+      rounded: p.rounded === true,
+      link: p.link,
+      cls: "stack-img",
+      // Cropped by the email image route, so the strip is that shape in every inbox.
+      ratio: IMAGE_RATIO[String(p.shape)] ?? null,
+    });
     if (!html) return "";
     const caption = localText(p, "caption", ctx.locale);
     if (caption) ctx.text.push(plain(caption, ctx));
@@ -790,6 +808,30 @@ function logoImg(p: Props, ctx: Ctx, align: string): string {
   const width = Number(p.logoWidth ?? 110);
   const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
   return `<img src="${esc(logo.src)}" alt="${esc(logo.alt)}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`;
+}
+
+/** The development's own logo, at the top of a hero. */
+function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
+  const width = Number(p.projectLogoWidth ?? 220);
+  const src = imageUrl(p.projectLogo, ctx, { width });
+  if (!src) return "";
+  const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
+  return `<div style="margin:0 0 22px 0"><img src="${esc(src)}" alt="${esc(localText(p, "subheading", ctx.locale) || "")}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
+}
+
+/**
+ * A hero's bottom line when its logo sits in the corner: the logo at the
+ * start, the small print centred, an equal empty cell at the end so the print
+ * is centred on the column rather than on what is left of it.
+ */
+function heroFooter(p: Props, ctx: Ctx, note: string, ink: string): string {
+  const start = ctx.rtl ? "right" : "left";
+  const logo = logoImg(p, ctx, start);
+  const width = Number(p.logoWidth ?? 110);
+  if (!logo && !note) return "";
+  return `<table ${TABLE} ${dirAttr(ctx)} width="100%" style="margin-top:24px"><tr><td width="${width}" valign="bottom" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" style="text-align:center">${
+    note ? `<p style="margin:0;${bodyStyle(ctx, ink, "center", 10)};opacity:0.85">${inline(note, ctx, ink)}</p>` : ""
+  }</td><td width="${width}" style="width:${width}px">&nbsp;</td></tr></table>`;
 }
 
 function heroLogo(p: Props, ctx: Ctx, align: string): string {
