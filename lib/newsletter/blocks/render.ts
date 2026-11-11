@@ -19,6 +19,7 @@
 
 import { emailLogoUrl, escapeEmailHtml as esc } from "@/lib/email-templates";
 import { mediaPublicUrl } from "@/lib/media";
+import { emailImageUrl, isMediaKey, type EmailImageOptions } from "@/lib/newsletter/email-image";
 import type { EmailBrand } from "@/lib/content-assets/email-brand";
 import type { EmailFeatureBlock } from "@/lib/content-assets/email-feature";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
@@ -79,9 +80,18 @@ export function href(raw: unknown, ctx: Pick<Ctx, "values" | "siteUrl" | "locale
   return null;
 }
 
-function imageUrl(v: unknown): string {
+/**
+ * An image field's address. With a size, a media-library image goes through
+ * the email image route — resized, re-encoded, cropped or tinted as asked
+ * (lib/newsletter/email-image.ts); without one, or with no key, the stored
+ * original.
+ */
+function imageUrl(v: unknown, ctx?: Pick<Ctx, "siteUrl">, size?: EmailImageOptions): string {
   if (!v || typeof v !== "object") return "";
   const img = v as ImageValue;
+  if (img.key && ctx && size && isMediaKey(img.key) && mediaPublicUrl(img.key)) {
+    return emailImageUrl(ctx.siteUrl, img.key, size);
+  }
   return (img.key ? mediaPublicUrl(img.key) : "") || img.url || "";
 }
 
@@ -224,7 +234,7 @@ function blockButton(props: Props, ctx: Ctx, align: string, prefix = "button"): 
 }
 
 function img(v: unknown, alt: string, width: number, ctx: Ctx, o: { rounded?: boolean; link?: unknown; cls?: string } = {}): string {
-  const src = imageUrl(v);
+  const src = imageUrl(v, ctx, { width });
   if (!src) return "";
   const tag = `<img src="${esc(src)}" alt="${esc(alt)}" width="${width}"${o.cls ? ` class="${o.cls}"` : ""} style="display:block;width:100%;max-width:${width}px;height:auto;border:0;outline:none;text-decoration:none${o.rounded ? ";border-radius:8px" : ""}">`;
   const to = href(o.link, ctx);
@@ -258,7 +268,7 @@ type Drawer = (props: Props, ctx: Ctx) => string;
 
 const DRAW: Record<string, Drawer> = {
   hero(p, ctx) {
-    const src = imageUrl(p.image);
+    const src = imageUrl(p.image, ctx, { width: COLUMN });
     const overlay = color(p.overlayColor, "#003452");
     const strength = Number(p.overlayOpacity ?? 35) / 100;
     const ink = color(p.textColor, "#FFFFFF");
@@ -346,7 +356,7 @@ const DRAW: Record<string, Drawer> = {
     const open = ctx.rtl ? "&laquo;" : "&ldquo;";
     const close = ctx.rtl ? "&raquo;" : "&rdquo;";
     ctx.text.push(`“${plain(quote, ctx)}”`);
-    const portrait = imageUrl(p.portrait);
+    const portrait = imageUrl(p.portrait, ctx, { width: 56, ratio: 1 });
     const who = [localText(p, "author", ctx.locale), localText(p, "role", ctx.locale)].filter(Boolean);
     if (who.length) ctx.text.push(`— ${who.join(", ")}`);
     return row(
@@ -563,7 +573,7 @@ const DRAW: Record<string, Drawer> = {
   person(p, ctx) {
     const ink = color(p.textColor, ctx.settings.textColor);
     const align = alignOf("start", ctx);
-    const photo = imageUrl(p.photo);
+    const photo = imageUrl(p.photo, ctx, { width: 96, ratio: 1 });
     const name = localText(p, "name", ctx.locale);
     const role = localText(p, "role", ctx.locale);
     const said = localText(p, "text", ctx.locale);
@@ -734,7 +744,7 @@ const DRAW: Record<string, Drawer> = {
 function logoSrc(p: Props, ctx: Ctx): { src: string; alt: string } | null {
   if (p.logo === "none") return null;
   if (p.logo === "custom") {
-    const src = imageUrl(p.logoImage);
+    const src = imageUrl(p.logoImage, ctx, { width: Number(p.logoWidth ?? 110) });
     return src ? { src, alt: ctx.brand.logoAlt } : null;
   }
   if (p.logo === "white") return { src: `${ctx.siteUrl}/email/bazar-logo-white.png`, alt: ctx.brand.logoAlt };
