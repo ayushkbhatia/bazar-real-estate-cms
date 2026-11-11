@@ -78,7 +78,7 @@ export function SenderForm({
         </p>
       </div>
 
-      {field("from_name", "From name", "The name inboxes show beside the subject.", "Marketing at Bazar Real Estate")}
+      {field("from_name", "From name", "The name inboxes show beside the subject.", "Marketing at Bazar")}
       {field(
         "from_address",
         "From address",
