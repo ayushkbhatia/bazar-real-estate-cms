@@ -1,5 +1,7 @@
 import "server-only";
 
+import { emailArabicFont, type EmailArabicFont } from "./email-arabic-font";
+import { parseArabicFonts } from "@/lib/schemas/arabic-fonts";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { EmailContext } from "./email-html";
@@ -201,13 +203,19 @@ export async function readEmailBrand(): Promise<EmailBrand> {
     const { data, error } = await withDeadline((signal) =>
       supabase
         .from("site_settings")
-        .select("email_branding")
+        .select("email_branding, arabic_fonts")
         .eq("id", 1)
         .abortSignal(signal)
         .maybeSingle(),
     );
     if (error) throw error;
-    return resolveEmailBrand(data?.email_branding ?? null);
+    // The site's Arabic face rides along, so an Arabic email reads in it
+    // (read back with `brandArabicFont`; not part of the stored design).
+    const brand: EmailBrand & { arabicFont: EmailArabicFont } = {
+      ...resolveEmailBrand(data?.email_branding ?? null),
+      arabicFont: emailArabicFont(parseArabicFonts(data?.arabic_fonts ?? null)),
+    };
+    return brand;
   } catch (error) {
     console.error("[emailBrand]", error);
     return DEFAULT_EMAIL_BRAND;

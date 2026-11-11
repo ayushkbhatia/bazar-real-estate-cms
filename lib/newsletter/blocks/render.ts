@@ -19,6 +19,7 @@
 
 import { emailLogoUrl, escapeEmailHtml as esc } from "@/lib/email-templates";
 import { mediaPublicUrl } from "@/lib/media";
+import { brandArabicFont } from "@/lib/content-assets/email-arabic-font";
 import { emailImageUrl, isMediaKey, type EmailImageOptions } from "@/lib/newsletter/email-image";
 import type { EmailBrand } from "@/lib/content-assets/email-brand";
 import type { EmailFeatureBlock } from "@/lib/content-assets/email-feature";
@@ -47,7 +48,6 @@ const COLUMN = 600;
 const GUTTER = 40;
 const INNER = COLUMN - GUTTER * 2;
 
-const AR_FONT = "'IBM Plex Sans Arabic','Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif";
 const FONTS = {
   serif: "'Instrument Serif',Georgia,'Times New Roman',serif",
   sans: "Geist,'Helvetica Neue',Helvetica,Arial,sans-serif",
@@ -151,8 +151,13 @@ function paragraphs(raw: string, ctx: Ctx, style: string, linkColor: string): st
     .join("");
 }
 
+/** The site's Arabic face (Settings → Arabic type), or the built-in stack. */
+function arabic(ctx: Pick<Ctx, "brand">) {
+  return brandArabicFont(ctx.brand);
+}
+
 function font(ctx: Ctx, which: "heading" | "body" | "serif" | "sans"): string {
-  if (ctx.rtl) return AR_FONT;
+  if (ctx.rtl) return which === "heading" || which === "serif" ? arabic(ctx).heading : arabic(ctx).body;
   const choice = which === "heading" ? ctx.settings.headingFont : which === "body" ? ctx.settings.bodyFont : which;
   return FONTS[choice];
 }
@@ -195,7 +200,7 @@ function eyebrow(text: string, ctx: Ctx, align: string, ink: string): string {
   if (!text) return "";
   ctx.text.push(text.toUpperCase());
   const style = ctx.rtl
-    ? `font-family:${AR_FONT};font-size:13px;font-weight:600`
+    ? `font-family:${arabic(ctx).body};font-size:13px;font-weight:600`
     : `font-family:${FONTS.sans};font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase`;
   return `<p style="margin:0 0 10px 0;${style};color:${ink};text-align:${align}">${inline(text, ctx, ink)}</p>`;
 }
@@ -207,7 +212,7 @@ function headingHtml(text: string, ctx: Ctx, o: { size: unknown; align: string; 
   const which = o.font === "serif" || o.font === "sans" ? o.font : "heading";
   const family = font(ctx, which);
   const serif = !ctx.rtl && family === FONTS.serif;
-  const weight = ctx.rtl ? 700 : serif ? 400 : 600;
+  const weight = ctx.rtl ? arabic(ctx).headingWeight : serif ? 400 : 600;
   const size = ctx.rtl ? Math.round(px * 0.82) : px;
   const tag = o.level === 1 ? "h1" : "h2";
   return `<${tag}${o.cls ? ` class="${o.cls}"` : ""} style="margin:0 0 12px 0;font-family:${family};font-size:${size}px;line-height:1.2;font-weight:${weight};color:${o.ink};text-align:${o.align}${serif ? ";letter-spacing:-0.01em" : ""}">${inline(text, ctx, o.ink)}</${tag}>`;
@@ -233,7 +238,7 @@ function button(b: ButtonSpec, ctx: Ctx): string {
   const bg = outline ? "transparent" : b.fill;
   const ink = outline ? b.fill : b.ink;
   const type = ctx.rtl
-    ? `font-family:${AR_FONT};font-size:14px;font-weight:600`
+    ? `font-family:${arabic(ctx).body};font-size:14px;font-weight:600`
     : `font-family:${FONTS.sans};font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase`;
   const width = b.fullWidth ? ' width="100%"' : "";
   return `<table ${TABLE} ${dirAttr(ctx)} align="${b.align}"${width} style="margin:${b.align === "center" ? "0 auto" : "0"}"><tr><td align="center"${outline ? "" : ` bgcolor="${bg}"`} style="background:${bg};border-radius:${radius}px;border:1px solid ${b.fill}"><a href="${esc(to)}" style="display:${b.fullWidth ? "block" : "inline-block"};padding:14px 30px;${type};line-height:1.2;color:${ink};text-decoration:none;border-radius:${radius}px">${label}</a></td></tr></table>`;
@@ -871,7 +876,7 @@ export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): 
     `<tr><td class="px" ${dirAttr(ctx)} style="padding:20px ${GUTTER}px 28px;border-top:1px solid ${rgba(s.mutedColor, 0.25)};font-family:${font(ctx, "sans")};font-size:11px;line-height:1.6;color:${s.mutedColor};text-align:center">${opts.footer.html.replace(/<a /g, `<a style="color:${s.mutedColor};text-decoration:underline" `)}</td></tr>`,
   );
   const fonts = ctx.rtl
-    ? '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">'
+    ? arabic(ctx).head
     : '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">';
   // The VML namespaces and 96 dpi let Outlook for Windows draw the hero's photo.
   const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(opts.subject)}</title>${fonts}<style>${STYLE}</style></head>
