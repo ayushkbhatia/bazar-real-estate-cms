@@ -3,11 +3,10 @@ import { env } from "@/lib/env";
 import { reportError } from "@/lib/observability";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
-  isOwnSender,
-  ownSenderDomains,
   parseEmailEvent,
   verifyResendSignature,
 } from "@/lib/newsletter/events";
+import { isOwnSender, ownSenderDomains } from "@/lib/newsletter/sender";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

@@ -5,7 +5,14 @@ import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { resendSendingDomains } from "@/lib/email";
 import { NEWSLETTER_SEND_ROLES } from "@/lib/newsletter/campaign";
-import { domainOf, senderSettingsSchema } from "@/lib/newsletter/sender";
+import { env } from "@/lib/env";
+import {
+  domainOf,
+  isOwnSender,
+  ownSenderDomains,
+  ownVerifiedDomains,
+  senderSettingsSchema,
+} from "@/lib/newsletter/sender";
 
 export type SenderActionResult =
   | { status: "ok"; message: string }
@@ -33,8 +40,26 @@ export async function saveSenderSettings(raw: unknown): Promise<SenderActionResu
   }
   const next = parsed.data;
 
-  const domains = await resendSendingDomains();
   const domain = domainOf(next.from_address);
+  // The Resend account also sends for other sites, and the delivery webhook
+  // ignores their events: a newsletter from one of their domains would never
+  // learn of a bounce. Checked even when Resend can't be asked.
+  const own = ownSenderDomains(env.RESEND_FROM_ADDRESS);
+  if (!isOwnSender(domain, own)) {
+    return {
+      status: "error",
+      message: `${domain} isn't one of Bazar's sending domains.`,
+      fieldErrors: {
+        from_address: `Newsletters must come from ${own.join(" or ")} (or a subdomain). The Resend account sends for other sites too, and their domains can't be used here.`,
+      },
+    };
+  }
+
+  const resend = await resendSendingDomains();
+  const domains =
+    resend.status === "ok"
+      ? { status: "ok" as const, domains: ownVerifiedDomains(resend.domains, env.RESEND_FROM_ADDRESS) }
+      : resend;
   if (domains.status === "ok" && !domains.domains.includes(domain)) {
     const list = domains.domains.length ? domains.domains.join(", ") : "none yet";
     return {

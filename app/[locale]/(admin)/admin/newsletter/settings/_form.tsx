@@ -7,7 +7,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { cn } from "@/lib/utils";
-import { domainOf, formatFrom, type NewsletterSender, type NewsletterSenderSettings } from "@/lib/newsletter/sender";
+import {
+  domainOf,
+  formatFrom,
+  isOwnSender,
+  type NewsletterSender,
+  type NewsletterSenderSettings,
+} from "@/lib/newsletter/sender";
 import { saveSenderSettings } from "./_actions";
 
 const INPUT = "w-full border rounded p-2 text-[13px] bg-bz-bg outline-none focus:border-bz-accent disabled:opacity-60";
@@ -18,14 +24,20 @@ export function SenderForm({
   effective,
   canEdit,
   domains,
+  ownDomains,
   domainsUnavailable,
 }: {
   initial: NewsletterSenderSettings;
   /** What a newsletter carries right now, env fallbacks included. */
   effective: NewsletterSender;
   canEdit: boolean;
-  /** Resend's verified sending domains, or null when Resend can't be asked here. */
+  /**
+   * Resend's verified sending domains that are this site's own (the account
+   * also holds other sites'), or null when Resend can't be asked here.
+   */
   domains: string[] | null;
+  /** The domains a newsletter may come from at all (`ownSenderDomains`). */
+  ownDomains: string[];
   domainsUnavailable: string | null;
 }) {
   const router = useRouter();
@@ -34,7 +46,8 @@ export function SenderForm({
   const [busy, start] = useTransition();
   const dirty = JSON.stringify(values) !== JSON.stringify(initial);
   const domain = values.from_address.includes("@") ? domainOf(values.from_address) : "";
-  const unverified = Boolean(domains && domain && !domains.includes(domain));
+  const foreign = Boolean(domain) && !isOwnSender(domain, ownDomains);
+  const unverified = !foreign && Boolean(domains && domain && !domains.includes(domain));
 
   function set<K extends keyof NewsletterSenderSettings>(key: K, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -87,6 +100,12 @@ export function SenderForm({
           : "Must be on a domain verified in Resend.",
         "marketing@bazarrealestate.com",
       )}
+      {foreign && !errors.from_address ? (
+        <p className="-mt-2 rounded border border-[oklch(0.85_0.08_70)] bg-[oklch(0.97_0.03_80)] px-3 py-2 text-[12px] text-[oklch(0.4_0.08_60)]">
+          {`${domain} isn't one of Bazar's domains, so it can't be saved.`} The Resend account sends for other sites
+          too; newsletters must come from {ownDomains.join(" or ")} (or a subdomain).
+        </p>
+      ) : null}
       {unverified && !errors.from_address ? (
         <p className="-mt-2 rounded border border-[oklch(0.85_0.08_70)] bg-[oklch(0.97_0.03_80)] px-3 py-2 text-[12px] text-[oklch(0.4_0.08_60)]">
           {`${domain} isn't verified in Resend, so it can't be saved:`} Resend would refuse every newsletter from
@@ -114,7 +133,7 @@ export function SenderForm({
       </div>
 
       {canEdit ? (
-        <Button onClick={save} disabled={busy || !dirty || unverified} className="self-start">
+        <Button onClick={save} disabled={busy || !dirty || unverified || foreign} className="self-start">
           {busy ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} strokeWidth={1.8} />}
           Save sender
         </Button>
