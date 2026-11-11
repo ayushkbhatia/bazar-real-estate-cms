@@ -1,13 +1,11 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
-  isOwnSender,
-  ownSenderDomains,
   parseEmailEvent,
-  SENDER_DOMAINS,
   SIGNATURE_TOLERANCE_S,
   verifyResendSignature,
 } from "./events";
+import { isOwnSender, ownSenderDomains, SENDER_DOMAINS } from "./sender";
 
 const KEY = Buffer.from("a-test-signing-key-of-some-length");
 const SECRET = `whsec_${KEY.toString("base64")}`;

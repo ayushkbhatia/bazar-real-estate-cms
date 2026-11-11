@@ -1,7 +1,9 @@
 import { CmsShell } from "@/components/brand/cms-shell";
 import { getStaffRole, requireRole } from "@/lib/auth";
 import { STAFF_ROLES } from "@/lib/schemas/staff";
+import { env } from "@/lib/env";
 import { emailSender, resendSendingDomains } from "@/lib/email";
+import { ownSenderDomains, ownVerifiedDomains } from "@/lib/newsletter/sender";
 import { NEWSLETTER_SEND_ROLES } from "@/lib/newsletter/campaign";
 import { readNewsletterSender, readNewsletterSenderSettings } from "@/lib/newsletter/sender-read";
 import { campaignCount, subscriberCounts } from "../_data";
@@ -35,7 +37,8 @@ export default async function NewsletterSettingsPage() {
           }}
           effective={effective}
           canEdit={canEdit}
-          domains={domains.status === "ok" ? domains.domains : null}
+          domains={domains.status === "ok" ? ownVerifiedDomains(domains.domains, env.RESEND_FROM_ADDRESS) : null}
+          ownDomains={ownSenderDomains(env.RESEND_FROM_ADDRESS)}
           domainsUnavailable={domains.status === "unavailable" ? domains.reason : null}
         />
         <section className="rounded-lg border border-bz-border bg-bz-surface p-5 text-[12.5px] text-bz-ink-2 flex flex-col gap-1.5">

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { domainOf, formatFrom, resolveNewsletterSender, senderSettingsSchema } from "./sender";
+import {
+  domainOf,
+  formatFrom,
+  ownVerifiedDomains,
+  resolveNewsletterSender,
+  senderSettingsSchema,
+} from "./sender";
 
 const env = { from: "hello@bazarrealestate.com", replyTo: "someone@example.com" };
 
@@ -35,5 +41,30 @@ describe("newsletter sender", () => {
     ).toBe(false);
     expect(senderSettingsSchema.safeParse({ from_name: "", from_address: "nope", reply_to: "a@b.com" }).success).toBe(false);
     expect(domainOf("marketing@BazarRealEstate.ae")).toBe("bazarrealestate.ae");
+  });
+});
+
+describe("ownVerifiedDomains", () => {
+  const verified = [
+    "news.indushydraulics.com",
+    "untiltime.day",
+    "businesslistings.me",
+    "indushydraulics.com",
+    "bazarrealestate.com",
+  ];
+
+  it("keeps only this site's domains from the shared account's list", () => {
+    expect(ownVerifiedDomains(verified)).toEqual(["bazarrealestate.com"]);
+    expect(ownVerifiedDomains([...verified, "mail.bazarrealestate.ae"])).toEqual([
+      "bazarrealestate.com",
+      "mail.bazarrealestate.ae",
+    ]);
+  });
+
+  it("adds the configured sender's own domain", () => {
+    expect(ownVerifiedDomains([...verified, "bazar.ae"], "Bazar <hello@bazar.ae>")).toEqual([
+      "bazarrealestate.com",
+      "bazar.ae",
+    ]);
   });
 });
