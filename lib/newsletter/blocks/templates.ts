@@ -163,6 +163,13 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       note_ar: "تقدمه بازار العقارية",
       height: "l",
       overlayOpacity: 35,
+      // A wide 2:1 band, the project's logo on top (added in the editor) and
+      // Bazar's in the bottom corner — the launch-mailer shape the client
+      // pointed to (Nov 2026).
+      shape: "wide",
+      logoPosition: "bottom",
+      logoWidth: 72,
+      projectLogo: null,
     }),
     b("section", {
       heading: "An iconic address. An exceptional lifestyle.",
@@ -175,7 +182,7 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       buttonColor: BAZAR.taupeDeep,
     }),
   ];
-  if (band1) blocks.push(b("image", { image: band1, alt: p.name, alt_ar: p.name_ar, fullBleed: true }));
+  if (band1) blocks.push(b("image", { image: band1, alt: p.name, alt_ar: p.name_ar, fullBleed: true, shape: "strip" }));
   if (feats.length >= 2) {
     blocks.push(
       b("features", {
@@ -186,7 +193,7 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       }),
     );
   }
-  if (band2) blocks.push(b("image", { image: band2, alt: p.name, alt_ar: p.name_ar, fullBleed: true }));
+  if (band2) blocks.push(b("image", { image: band2, alt: p.name, alt_ar: p.name_ar, fullBleed: true, shape: "strip" }));
   if (p.bedrooms) {
     blocks.push(
       b("chips", {
@@ -198,7 +205,7 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       }),
     );
   }
-  if (band3) blocks.push(b("image", { image: band3, alt: p.name, alt_ar: p.name_ar, fullBleed: true }));
+  if (band3) blocks.push(b("image", { image: band3, alt: p.name, alt_ar: p.name_ar, fullBleed: true, shape: "strip" }));
   if (amenities.length) {
     blocks.push(
       b("list", {
@@ -210,7 +217,7 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       }),
     );
   }
-  if (band4) blocks.push(b("image", { image: band4, alt: p.name, alt_ar: p.name_ar, fullBleed: true }));
+  if (band4) blocks.push(b("image", { image: band4, alt: p.name, alt_ar: p.name_ar, fullBleed: true, shape: "strip" }));
   const glance = [
     ["Developer", "المطوّر", p.developer, p.developer_ar],
     ["Location", "الموقع", where, whereAr],
@@ -225,7 +232,7 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       background: BAZAR.cream,
     }),
   );
-  if (p.hero && p.hero !== band1) blocks.push(b("image", { image: p.hero, alt: p.name, alt_ar: p.name_ar, fullBleed: true }));
+  if (p.hero && p.hero !== band1) blocks.push(b("image", { image: p.hero, alt: p.name, alt_ar: p.name_ar, fullBleed: true, shape: "strip" }));
   blocks.push(
     b("cta_band", {
       heading: `Your opportunity to own at ${p.name}`,
