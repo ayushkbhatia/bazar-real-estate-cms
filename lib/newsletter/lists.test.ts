@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { contactsToCsv, isValidEmail, localeOf, parseContacts, parseCsv } from "./lists";
+import { contactsToCsv, isValidEmail, localeOf, parseContacts, parseCsv, SUPPRESSION_LOOKUP_CHUNK } from "./lists";
+import { emailHash } from "./send";
 
 describe("parseCsv", () => {
   it("reads quoted fields with delimiters, quotes and line breaks, and a BOM", () => {
@@ -52,5 +53,16 @@ describe("contactsToCsv", () => {
   it("quotes commas and defuses spreadsheet formulas", () => {
     const csv = contactsToCsv([{ email: "a@b.com", name: "=HYPERLINK(1), x", locale: "en", status: "active", created_at: "2026-11-03T10:00:00Z" }]);
     expect(csv.split("\n")[1]).toBe(`"'=HYPERLINK(1), x",a@b.com,en,active,2026-11-03`);
+  });
+});
+
+describe("SUPPRESSION_LOOKUP_CHUNK", () => {
+  // The import's suppression lookup is a GET with the hashes in the URL.
+  // Supabase's gateway returned "400 Bad Request" at 400 hashes (~26 KB);
+  // keep one chunk's filter well under that.
+  it("keeps one lookup's URL filter under 8 KB", () => {
+    const hashes = Array.from({ length: SUPPRESSION_LOOKUP_CHUNK }, (_, i) => emailHash(`person${i}@example.com`));
+    const filter = `email_hash=in.(${hashes.join(",")})`;
+    expect(filter.length).toBeLessThan(8 * 1024);
   });
 });

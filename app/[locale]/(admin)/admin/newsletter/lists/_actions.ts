@@ -6,7 +6,14 @@ import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { NEWSLETTER_SEND_ROLES } from "@/lib/newsletter/campaign";
-import { contactsToCsv, isValidEmail, localeOf, normaliseEmail, parseContacts } from "@/lib/newsletter/lists";
+import {
+  contactsToCsv,
+  isValidEmail,
+  localeOf,
+  normaliseEmail,
+  parseContacts,
+  SUPPRESSION_LOOKUP_CHUNK,
+} from "@/lib/newsletter/lists";
 import { emailHash } from "@/lib/newsletter/send";
 
 /**
@@ -118,11 +125,15 @@ export async function importContacts(
     return { status: "error", message: "No email addresses found. The file needs a column of addresses — headed “email”, or on its own." };
   }
 
-  // Suppressed addresses, looked up by hash, 500 at a time.
+  // Suppressed addresses, looked up by hash. The hashes travel in the URL of
+  // a GET, so the chunk is small — see SUPPRESSION_LOOKUP_CHUNK.
   const suppressed = new Set<string>();
   const hashes = parsed.contacts.map((c) => emailHash(c.email));
-  for (let i = 0; i < hashes.length; i += 500) {
-    const { data, error } = await supabase.from("newsletter_suppressions").select("email_hash").in("email_hash", hashes.slice(i, i + 500));
+  for (let i = 0; i < hashes.length; i += SUPPRESSION_LOOKUP_CHUNK) {
+    const { data, error } = await supabase
+      .from("newsletter_suppressions")
+      .select("email_hash")
+      .in("email_hash", hashes.slice(i, i + SUPPRESSION_LOOKUP_CHUNK));
     if (error) return { status: "error", message: error.message };
     for (const r of data ?? []) suppressed.add(r.email_hash);
   }
