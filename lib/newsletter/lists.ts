@@ -11,6 +11,14 @@
 
 export const LIST_IMPORT_MAX = 20_000;
 
+/**
+ * How many suppression hashes one lookup sends. `.in()` puts them in the
+ * request URL, and Supabase's gateway answers a URL much past ~20 KB with a
+ * bare "400 Bad Request" — 400 SHA-256 hashes (~26 KB) already fail, which
+ * is what broke every upload of more than a few hundred people. 100 is ~6.5 KB.
+ */
+export const SUPPRESSION_LOOKUP_CHUNK = 100;
+
 export type ContactInput = { email: string; name: string; locale: "en" | "ar" };
 
 export type ParsedContacts = {
