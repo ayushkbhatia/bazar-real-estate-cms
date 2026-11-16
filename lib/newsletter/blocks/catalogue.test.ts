@@ -160,7 +160,7 @@ describe("renderDesign", () => {
     const hero = (props: Record<string, unknown>) =>
       renderDesign({ ...emptyDesign(), blocks: [newBlock("hero", { image: img(0), projectLogo: img(1), heading: "NEW LAUNCH", ...props })] }, ctx()).html;
     const wide = hero({ shape: "wide" });
-    expect(wide).toMatch(/valign="top"[^>]*>.*<\/td><\/tr><tr><td[^>]*valign="bottom"[^>]*>.*NEW LAUNCH/s);
+    expect(wide).toMatch(/valign="top"[^>]*>[\s\S]*<\/td><\/tr><tr><td[^>]*valign="bottom"[^>]*>[\s\S]*NEW LAUNCH/);
     expect(wide).toContain('height="450"');
     expect(hero({ shape: "wide", textPosition: "middle" })).toContain('height="300"');
     expect(hero({})).not.toContain('valign="bottom"');
