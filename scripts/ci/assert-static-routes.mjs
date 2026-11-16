@@ -68,7 +68,14 @@ function normaliseRoute(srcRoute) {
  * empty param list IS the regression: a `generateStaticParams` that quietly
  * returns [] loses every prebuilt page, and this guard is what catches it.
  */
-const MAY_PRERENDER_NOTHING = new Set(["/lp/[slug]"]);
+const MAY_PRERENDER_NOTHING = new Set([
+  "/lp/[slug]",
+  // Prerenders nothing by design: a project's sign-up page is rendered on its
+  // first visit and cached, not built per project on every push (see the
+  // page's own generateStaticParams). What this guards is that it stays an ISR
+  // pattern rather than going dynamic.
+  "/developments/[slug]/register",
+]);
 
 function readManifest() {
   if (!existsSync(MANIFEST)) {

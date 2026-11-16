@@ -8,6 +8,7 @@
  * `newsletter_templates` (0175), listed beside these.
  */
 
+import { developmentRegisterUrl } from "@/lib/queries/development-utils";
 import { newBlock, emptyDesign } from "./document";
 import { BAZAR } from "./palette";
 import type { Block, Design, ImageValue, RecordsValue } from "./types";
@@ -139,7 +140,10 @@ function records(kind: RecordsValue["kind"], ids: string[], layout: RecordsValue
 
 /** The launch mailer, from a project's own record. */
 export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraft {
-  const url = `/developments/${p.slug}`;
+  // Both asks land on the project's sign-up page — its hero and the register
+  // form, nothing else — not the long project page, where the form is a
+  // dialog behind a button at the top of fifteen bands (client, Nov 2026).
+  const url = developmentRegisterUrl(p);
   const photos = p.features.map((f) => f.image).filter((i): i is ImageValue => Boolean(i));
   const [band1, band2, band3, band4] = [photos[0] ?? p.hero, photos[1] ?? null, photos[2] ?? null, photos[3] ?? null];
   const feats = p.features.slice(0, 3);

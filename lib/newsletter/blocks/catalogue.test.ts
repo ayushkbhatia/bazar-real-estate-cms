@@ -185,10 +185,20 @@ describe("built-in templates", () => {
       expect.arrayContaining(["hero", "section", "image", "features", "chips", "list", "key_values", "cta_band", "social", "contact"]),
     );
     const html = renderDesign(design, ctx()).html;
-    expect(html).toContain("/developments/jw-marriott-residences");
     expect(html).toContain("/email/bazar-logo-white.png");
     expect(html).toContain("Feature 1");
     expect(html).not.toMatch(/PSI|Property Shop|Marriott International/);
+  });
+
+  it("sends both of the launch mailer's asks to the project's sign-up page, in each language's own site", () => {
+    const { design } = launchTemplate(project, site);
+    const asks = design.blocks.flatMap((b) => [b.props.buttonUrl, b.props.primaryUrl]).filter(Boolean);
+    expect(asks).toEqual(["/developments/jw-marriott-residences/register", "/developments/jw-marriott-residences/register"]);
+    const en = renderDesign(design, ctx()).html;
+    const ar = renderDesign(design, ctx("ar")).html;
+    expect(en).toContain('href="https://www.bazarrealestate.ae/developments/jw-marriott-residences/register"');
+    expect(ar).toContain('href="https://www.bazarrealestate.ae/ar/developments/jw-marriott-residences/register"');
+    expect(en).not.toMatch(/href="[^"]*\/developments\/jw-marriott-residences"/);
   });
 });
 

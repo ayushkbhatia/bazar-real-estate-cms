@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
   developmentUrl,
+  developmentRegisterUrl,
   getDevelopmentForAdmin,
 } from "@/lib/queries/developments";
 import {
@@ -130,6 +131,18 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
               className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
             >
               View on site
+              <ExternalLink size={12} />
+            </Link>
+          ) : null}
+          {isPublished ? (
+            <Link
+              href={developmentRegisterUrl(development)}
+              target="_blank"
+              rel="noreferrer"
+              title="The hero and the register form only — where a newsletter's call to action sends readers. Built for every published project."
+              className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+            >
+              Sign-up page
               <ExternalLink size={12} />
             </Link>
           ) : null}

@@ -616,12 +616,13 @@ export const FORM_DEFS: FormDef[] = [
     surface: "Project page",
     path: "/developments",
     description:
-      "The dialog behind the hero button on every off-plan project page. The lead is stamped with the project it came from.",
+      "The dialog behind the hero button on every off-plan project page, and the form on each project's sign-up page (/developments/<slug>/register), where a newsletter's call to action lands. The lead is stamped with the project it came from; its page says which of the two.",
     group: "sub",
     handler: "enquiry",
     control: "full",
     variant: "compact",
     enquirySource: "development_interest",
+    alsoOn: ["Every project's sign-up page"],
     copy: copy({
       ...ENQUIRY_SUCCESS,
       message_prefill: "I'd like to register my interest in {project}.",

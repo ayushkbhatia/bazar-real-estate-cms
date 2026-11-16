@@ -82,6 +82,21 @@ with two buttons, social icons and a contact footer.
   blocks (titles, copy and photos, with their Arabic), bedrooms, handover,
   developer and area. Every template's footer reads the footer CMS
   (/admin/footer): socials, phone, WhatsApp, email, address, licence line.
+- **Project sign-up pages.** A launch mailer's two asks ("Register for
+  exclusive access", "Register for priority access") link to the project's
+  **sign-up page**, `/developments/<slug>/register` (`/ar/…` in the Arabic
+  edition), not to the project page: the project's hero and the *Register your
+  interest* form, nothing else, so a reader who clicked to register lands on
+  the form. Every published project has one — it is the project's record and
+  its page's Hero section read a second way, so nothing is stored or built per
+  project, and publishing a project publishes it (`developmentRegisterUrl`,
+  `lib/queries/development-utils.ts`). The form is `development_interest`
+  (/admin/forms), the same as the project page's dialog, so a sign-up becomes
+  an enquiry against the project and a Salesforce lead exactly as before; its
+  source path is the sign-up page, which is how the desk tells a newsletter
+  sign-up from a project-page one. The page is not indexed and not in the
+  sitemap. A link field pointing at `/developments/<slug>` offers the sign-up
+  page under it; the project editors link to it beside *View page*.
 - **Saved templates** (`newsletter_templates`): **Save as template** in the
   composer keeps every block, both languages, the subject and preview line.
   **Newsletter → Templates** shows each as its email, to use, rename or

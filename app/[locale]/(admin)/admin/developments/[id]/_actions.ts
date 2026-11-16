@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
+import { revalidateDevelopmentPages } from "@/lib/developments/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -9,7 +10,6 @@ import {
   evaluateDevelopmentHeroFacts,
   normaliseDevelopmentInput,
 } from "@/lib/schemas/development";
-import { developmentUrl } from "@/lib/queries/developments";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
 
@@ -19,7 +19,11 @@ export type SaveResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
-async function revalidateDevelopmentPaths(developmentId: string) {
+async function revalidateDevelopmentPaths(
+  developmentId: string,
+  /** The slug before this write, when it may have changed: its pages go too. */
+  previousSlug?: string | null,
+) {
   revalidatePath("/admin/pages/sub/development");
   revalidatePath(`/admin/developments/${developmentId}`);
   const supabase = await createSupabaseServerClient();
@@ -32,10 +36,13 @@ async function revalidateDevelopmentPaths(developmentId: string) {
   // otherwise publishing from there leaves the card showing "draft".
   if (data?.slug)
     revalidatePath(`/admin/pages/sub/development/${data.slug}`);
-  if (data?.published_at) {
-    revalidateLocalised(developmentUrl(data));
-    revalidateLocalised("/developments");
-  }
+  // Whether or not it is published now: an unpublish has to take the project
+  // page and its sign-up page down at once rather than when their caches run
+  // out, and a renamed project's old pages have to stop answering.
+  if (data?.slug) revalidateDevelopmentPages(data.slug);
+  if (previousSlug && previousSlug !== data?.slug)
+    revalidateDevelopmentPages(previousSlug);
+  revalidateLocalised("/developments");
 }
 
 export async function updateDevelopment(
@@ -111,7 +118,7 @@ export async function updateDevelopment(
     }
   }
 
-  await revalidateDevelopmentPaths(id);
+  await revalidateDevelopmentPaths(id, before?.slug ?? null);
   return { status: "ok", message: "Saved." };
 }
 

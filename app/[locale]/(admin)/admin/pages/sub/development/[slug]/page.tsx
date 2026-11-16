@@ -300,6 +300,18 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
               <ExternalLink size={12} />
             </Link>
           ) : null}
+          {development.published_at ? (
+            <Link
+              href={`/developments/${development.slug}/register`}
+              target="_blank"
+              rel="noreferrer"
+              title="The hero and the register form only — where a newsletter's call to action sends readers. Built for every published project."
+              className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+            >
+              Sign-up page
+              <ExternalLink size={12} />
+            </Link>
+          ) : null}
         </span>
       }
     >

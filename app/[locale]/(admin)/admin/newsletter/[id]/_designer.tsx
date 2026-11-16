@@ -38,6 +38,7 @@ import {
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { uploadToLibrary } from "../../media/_upload-client";
 import { mediaPublicUrl } from "@/lib/media";
+import { registerUrlForProjectLink } from "@/lib/queries/development-utils";
 import { FeatureDialog, type FeatureRequest } from "../../content-assets/emails/_feature-dialog";
 import { FEATURE_KIND_META, type FeatureTarget } from "../../content-assets/emails/_feature-types";
 
@@ -439,13 +440,31 @@ function ScalarField({ field: f, props, onChange, lang, locked, media, onMediaUp
         </label>
       );
     }
-    case "url":
+    case "url": {
+      const link = typeof value === "string" ? value : "";
+      // A button aimed at a project's long page is offered its sign-up page —
+      // the hero and the register form — which is where a newsletter's ask
+      // belongs (client, Nov 2026). An offer, not a rewrite: a link to the
+      // project page itself is sometimes what's meant.
+      const signup = registerUrlForProjectLink(link);
       return (
-        <label className="flex flex-col gap-1">
-          <span className={LABEL}>{f.label}</span>
-          <input value={typeof value === "string" ? value : ""} disabled={locked} placeholder={f.placeholder} onChange={(e) => set(e.target.value)} className={INPUT} dir="ltr" />
-        </label>
+        <div className="flex flex-col gap-1">
+          <label className="flex flex-col gap-1">
+            <span className={LABEL}>{f.label}</span>
+            <input value={link} disabled={locked} placeholder={f.placeholder} onChange={(e) => set(e.target.value)} className={INPUT} dir="ltr" />
+          </label>
+          {signup && !locked ? (
+            <p className="text-[11px] text-bz-muted leading-snug">
+              This opens the full project page.{" "}
+              <button type="button" onClick={() => set(signup)} className="text-bz-teal underline underline-offset-2 hover:text-bz-ink">
+                Link to its sign-up page
+              </button>{" "}
+              instead — the photo and the register form, nothing else.
+            </p>
+          ) : null}
+        </div>
       );
+    }
     case "color":
       return <ColorInput label={f.label} value={typeof value === "string" ? value : ""} allowBlank={f.allowBlank !== false} locked={locked} onChange={set} />;
     case "image":
