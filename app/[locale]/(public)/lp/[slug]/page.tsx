@@ -14,6 +14,7 @@ import {
 import { loadLandingData } from "@/lib/page-builder/data";
 import { LandingRenderer } from "./_render";
 import { authoredTitle } from "@/lib/queries/search-appearance";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import {
   localiseSearchAppearance,
   readSearchAppearance,
@@ -58,18 +59,17 @@ export async function generateMetadata({
   if (!page) return {};
   // Shared parser and fold, so a campaign page publishes its Search appearance
   // card exactly as previewed — and reaches `/ar` with the twin behind it.
-  const seo = localiseSearchAppearance(
-    readSearchAppearance(page.seo),
-    isEnabledLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE,
-  );
+  const locale: Locale = isEnabledLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const seo = localiseSearchAppearance(readSearchAppearance(page.seo), locale);
   const title = seo.meta_title ?? page.title;
   const description = seo.meta_description ?? undefined;
+  const alternates = localeAlternates(`/lp/${page.slug}`, locale);
   return {
     title: authoredTitle(seo.meta_title, title),
     description,
-    alternates: { canonical: `/lp/${page.slug}` },
+    alternates,
     robots: page.noindex ? { index: false, follow: false } : undefined,
-    openGraph: { title, description, url: `/lp/${page.slug}`, type: "website" },
+    openGraph: { title, description, url: alternates.canonical, type: "website" },
   };
 }
 

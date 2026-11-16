@@ -36,6 +36,7 @@ import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
 import { testimonialLimitOf } from "@/lib/master-pages/library";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { cardFactProps } from "@/lib/properties/type-rules";
 import { mortgageTeaserControls } from "@/lib/master-pages/mortgage-teaser";
 
@@ -53,7 +54,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return masterPageMetadata("home", asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("home", locale, {
+    alternates: localeAlternates("/", locale),
+  });
 }
 
 const VALID_VARIANTS: HeroVariant[] = [

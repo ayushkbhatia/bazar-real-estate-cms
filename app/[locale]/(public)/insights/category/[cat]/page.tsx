@@ -1,4 +1,5 @@
-import type { Locale } from "@/lib/i18n/locales";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
@@ -41,9 +42,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ cat: string }>;
+  params: Promise<{ cat: string; locale: string }>;
 }): Promise<Metadata> {
-  const { cat } = await params;
+  const { cat, locale } = await params;
   const category = await resolveArticleCategoryByUrlSlug(cat);
   if (!category) return { title: "Category not found" };
   return {
@@ -51,6 +52,10 @@ export async function generateMetadata({
     description:
       category.description ??
       `Bazar's ${category.label.toLowerCase()} pieces on Abu Dhabi real estate.`,
+    alternates: localeAlternates(
+      `/insights/category/${categoryToUrlSlug(category.slug)}`,
+      asLocale(locale),
+    ),
   };
 }
 

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import type { Locale } from "@/lib/i18n/locales";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import Image from "next/image";
@@ -130,9 +131,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const profile = await getAreaProfile(slug);
   if (!profile) return { title: "Area not found" };
   return {
@@ -144,7 +145,7 @@ export async function generateMetadata({
       `${profile.name} — Bazar community guide`,
     ),
     description: profile.metaDescription ?? profile.intro ?? undefined,
-    alternates: { canonical: `/areas/${profile.slug}` },
+    alternates: localeAlternates(`/areas/${profile.slug}`, asLocale(locale)),
   };
 }
 

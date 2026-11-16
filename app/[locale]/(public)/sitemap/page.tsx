@@ -3,12 +3,12 @@ import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { asLocale } from "@/lib/i18n/locales";
 import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 const METADATA: Metadata = {
   title: "Sitemap",
   description:
     "Every public surface on bazar.ae — listings, market reports, guides, services, communities, developers, and editorial.",
-  alternates: { canonical: "/sitemap" },
 };
 
 /** English as written above; Arabic from the site's store on /ar. */
@@ -17,7 +17,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/sitemap", locale),
+  };
 }
 
 /**

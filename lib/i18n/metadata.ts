@@ -1,7 +1,10 @@
 import { LOCALES, localeUrl, type Locale } from "./locales";
 import { env } from "@/lib/env";
 
-const SITE_URL = env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae";
+// Trailing slash stripped, as the sitemap does, so "/buy" never becomes "//buy".
+const SITE_URL = (
+  env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
+).replace(/\/+$/, "");
 
 /** BCP-47 tags. The region matters: this is a UAE site, not generic Arabic. */
 const HREFLANG: Record<Locale, string> = {

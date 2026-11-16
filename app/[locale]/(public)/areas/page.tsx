@@ -25,6 +25,7 @@ import { chipLines, headlineParts } from "@/lib/master-pages/text";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import { isLifestyleTag, lifestyleSearchHref } from "@/lib/lifestyle-tags";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -34,9 +35,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("areas", asLocale((await params).locale),
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("areas", locale,
   {
-    alternates: { canonical: "/areas" },
+    alternates: localeAlternates("/areas", locale),
   });
 }
 

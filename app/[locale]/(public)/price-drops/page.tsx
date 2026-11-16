@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { listPriceDrops } from "@/lib/queries/curated-listings";
 import { CuratedGrid } from "../_components/curated-grid";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export const revalidate = 60;
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: t("priceDrops.metaTitle"),
     description: t("priceDrops.metaDescription"),
-    alternates: { canonical: "/price-drops" },
+    alternates: localeAlternates("/price-drops", locale),
   };
 }
 

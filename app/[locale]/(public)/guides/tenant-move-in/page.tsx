@@ -3,12 +3,12 @@ import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 const METADATA: Metadata = {
   title: "Abu Dhabi Tenant Move-In Guide",
   description:
     "From signing your tenancy contract to setting up utilities and completing your move-in checklist — prepare for a smooth move into your Abu Dhabi rental.",
-  alternates: { canonical: "/guides/tenant-move-in" },
 };
 
 /** English as written above; Arabic from the site's store on /ar. */
@@ -17,7 +17,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/guides/tenant-move-in", locale),
+  };
 }
 
 /**

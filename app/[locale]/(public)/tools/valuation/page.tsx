@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listAreaOptions } from "@/lib/queries/areas";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { ValuationWizard } from "./valuation-wizard";
 import { ValuationLeadGate } from "./_components/lead-gate";
 
@@ -21,7 +22,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/tools/valuation", locale),
+  };
 }
 
 /**

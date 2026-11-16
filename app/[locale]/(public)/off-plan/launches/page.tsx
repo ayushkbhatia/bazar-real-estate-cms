@@ -17,6 +17,7 @@ import {
 } from "@/lib/developments/launch-order";
 import { asLocale } from "@/lib/i18n/locales";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /**
  * /off-plan/launches — every published project, and nothing else.
@@ -34,8 +35,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   // Title and description are CMS-owned: Pages & blocks → All launches →
   // Search appearance. Unedited, they fall back to MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("launches", asLocale((await params).locale), {
-    alternates: { canonical: LAUNCHES_PATH },
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("launches", locale, {
+    alternates: localeAlternates(LAUNCHES_PATH, locale),
   });
 }
 

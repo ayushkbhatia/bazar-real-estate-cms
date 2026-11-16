@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { Check, X, Plus } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -55,6 +56,7 @@ export async function generateMetadata({
   return {
     title: authoredTitle(copy.meta_title, undefined),
     description: copy.meta_description,
+    alternates: localeAlternates("/tools/compare", locale),
   };
 }
 

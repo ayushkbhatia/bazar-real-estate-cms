@@ -3,12 +3,12 @@ import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 const METADATA: Metadata = {
   title: "Abu Dhabi Landlord Guide: Property Management",
   description:
     "What property management covers, why it matters in Abu Dhabi's regulated market, and how it protects your income and your property.",
-  alternates: { canonical: "/guides/property-management" },
 };
 
 /** English as written above; Arabic from the site's store on /ar. */
@@ -17,7 +17,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/guides/property-management", locale),
+  };
 }
 
 /**

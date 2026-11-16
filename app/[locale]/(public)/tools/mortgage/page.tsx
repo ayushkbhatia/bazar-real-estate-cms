@@ -9,6 +9,7 @@ import {
   toMortgageAssumptions,
 } from "@/lib/queries/site-settings";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import type { SectionValues } from "@/lib/master-pages";
 import { MortgageCalculator } from "./mortgage-calculator";
 import {
@@ -30,7 +31,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("mortgage", asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("mortgage", locale, {
+    alternates: localeAlternates("/tools/mortgage", locale),
+  });
 }
 
 /** The three fields every output section carries. */

@@ -2,8 +2,9 @@ import { getTranslations } from "next-intl/server";
 
 import { arabicFor } from "@/lib/i18n/arabic-store";
 import { localeDateTag } from "@/lib/i18n/dates";
-import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { DEFAULT_LOCALE, asLocale } from "@/lib/i18n/locales";
 import type { Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
@@ -245,7 +246,7 @@ export async function generateMetadata({
     property.short_description ??
     `${formatPriceAED(property.price_aed)} · ${typeRules(property.type).rooms ? `${property.beds}-bed ` : ""}${property.type} in ${property.areas?.name ?? "the UAE"}`;
 
-  const canonical = propertyUrl(property);
+  const alternates = localeAlternates(propertyUrl(property), asLocale(locale));
   const ogImage = property.hero
     ? [{ url: mediaPublicUrl(property.hero.storage_key), alt: property.title }]
     : undefined;
@@ -253,12 +254,12 @@ export async function generateMetadata({
   return {
     title: authoredTitle(seo.meta_title, property.title),
     description,
-    alternates: { canonical },
+    alternates,
     openGraph: {
       type: "website",
       title: property.title,
       description,
-      url: canonical,
+      url: alternates.canonical,
       images: ogImage,
       siteName: "Bazar Real Estate",
       locale: "en_AE",

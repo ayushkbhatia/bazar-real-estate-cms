@@ -17,6 +17,7 @@ import { mediaPublicUrl } from "@/lib/media";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import type { ResolvedCardLabel } from "@/lib/card-labels";
 import { cn } from "@/lib/utils";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 /** Mirrors the five chip styles the listing card draws — see the note beside
  *  the copy of this map in _components/marketing/development-card.tsx. */
@@ -38,7 +39,7 @@ export async function generateMetadata({
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
-    alternates: { canonical: "/developments" },
+    alternates: localeAlternates("/developments", locale),
   };
 }
 

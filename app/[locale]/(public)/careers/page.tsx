@@ -3,6 +3,7 @@ import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { getTranslations } from "next-intl/server";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { MapPin } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/careers", locale),
+  };
 }
 
 export default async function CareersPage({

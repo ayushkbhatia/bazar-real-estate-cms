@@ -4,12 +4,12 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { TaxResidencyChecker } from "./_checker";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 const METADATA: Metadata = {
   title: "UAE Tax Residency Certificate — 2026 eligibility",
   description:
     "The criteria for obtaining a UAE Tax Residency Certificate — physical-presence test, primary-residence rules, and what the certificate actually does (and doesn't) cover.",
-  alternates: { canonical: "/guides/tax-residency" },
 };
 
 /** English as written above; Arabic from the site's store on /ar. */
@@ -18,7 +18,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/guides/tax-residency", locale),
+  };
 }
 
 /**

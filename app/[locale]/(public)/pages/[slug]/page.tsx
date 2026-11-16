@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import type { Locale } from "@/lib/i18n/locales";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { authoredTitle } from "@/lib/queries/search-appearance";
 import {
   localiseSearchAppearance,
@@ -33,7 +34,7 @@ export async function generateMetadata({
   return {
     title: authoredTitle(seo.meta_title, metaTitle),
     description: metaDescription,
-    alternates: { canonical: `/pages/${slug}` },
+    alternates: localeAlternates(`/pages/${slug}`, asLocale(locale)),
     openGraph: {
       title: metaTitle,
       description: metaDescription ?? undefined,

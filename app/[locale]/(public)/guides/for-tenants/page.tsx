@@ -7,12 +7,12 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../../_components/marketing/fluid";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 const METADATA: Metadata = {
   title: "Guides for Tenants · Renting in Abu Dhabi",
   description:
     "Renting in Abu Dhabi is straightforward when you know the steps — the move-in process, the documents to prepare, and the full rental journey from budget to renewal.",
-  alternates: { canonical: "/guides/for-tenants" },
 };
 
 /** English as written above; Arabic from the site's store on /ar. */
@@ -21,7 +21,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/guides/for-tenants", locale),
+  };
 }
 
 /**

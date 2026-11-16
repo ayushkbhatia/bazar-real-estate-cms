@@ -15,6 +15,7 @@ import { fillTokens } from "@/lib/master-pages/agent-page";
 import { isolateForLocale } from "@/lib/i18n/bidi";
 import { DESK_ORDER, groupByDesk, type Desk } from "@/lib/agents/desk";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 // T1.5 quick win: WhatsApp deep-link on every advisor card. The number is
 // the advisor's own `staff.whatsapp`; it used to be matched out of the seed
@@ -73,8 +74,9 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → Agents → Search
   // appearance. Unedited, they fall back to the strings that used to be this
   // route's literal `export const metadata`, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("agents", asLocale((await params).locale), {
-    alternates: { canonical: "/agents" },
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("agents", locale, {
+    alternates: localeAlternates("/agents", locale),
   });
 }
 

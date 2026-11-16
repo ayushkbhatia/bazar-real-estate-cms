@@ -4,6 +4,7 @@ import { asLocale } from "@/lib/i18n/locales";
 import { searchHeaderMetadata } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 // A search route: it reads `searchParams`, which makes the whole route
 // dynamic, so a `revalidate` here would be silently discarded. Saying
@@ -26,7 +27,7 @@ export async function generateMetadata({
   // is not: a canonical is routing, not copy, and stays with the route.
   return {
     ...(await searchHeaderMetadata("buy", "ready_new", locale)),
-    alternates: { canonical: "/buy/ready" },
+    alternates: localeAlternates("/buy/ready", locale),
   };
 }
 
