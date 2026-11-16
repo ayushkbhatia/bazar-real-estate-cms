@@ -165,6 +165,16 @@ describe("renderDesign", () => {
     expect(hero({ shape: "wide", textPosition: "middle" })).toContain('height="300"');
     expect(hero({})).not.toContain('valign="bottom"');
   });
+
+  it("sets the headline beside a bottom-corner logo, level with it", () => {
+    const html = renderDesign(
+      { ...emptyDesign(), blocks: [newBlock("hero", { image: img(0), shape: "wide", logo: "white", logoPosition: "bottom", logoWidth: 70, heading: "NEW LAUNCH", note: "" })] },
+      ctx(),
+    ).html;
+    // One row: the logo's cell, then the words' cell, then the balancing spacer.
+    expect(html).toMatch(/<td width="70" valign="bottom"[^>]*><img[^>]*><\/td><td valign="bottom" align="center"[^>]*>[\s\S]*NEW LAUNCH[\s\S]*?<\/td><td width="70"/);
+    expect(launchTemplate(project, site).design.blocks[0].props.note).toBe("");
+  });
 });
 
 describe("built-in templates", () => {

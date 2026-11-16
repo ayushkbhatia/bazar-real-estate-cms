@@ -333,7 +333,7 @@ const DRAW: Record<string, Drawer> = {
     const cta = blockButton(p, ctx, align);
     const projectLogo = projectLogoImg(p, ctx, align);
     const note = localText(p, "note", ctx.locale);
-    const words = [
+    const copy = [
       eyebrow(localText(p, "eyebrow", ctx.locale), ctx, align, ink),
       headingHtml(localText(p, "heading", ctx.locale), ctx, { size: "xl", align, ink, cls: "hero-h", level: 1 }),
       headingHtml(localText(p, "subheading", ctx.locale), ctx, { size: "m", align, ink }),
@@ -341,11 +341,18 @@ const DRAW: Record<string, Drawer> = {
         ? (ctx.text.push(plain(localText(p, "text", ctx.locale), ctx)), paragraphs(localText(p, "text", ctx.locale), ctx, bodyStyle(ctx, ink, align, 16), ink))
         : "",
       cta ? `<div style="height:22px;line-height:22px">&nbsp;</div>${cta}` : "",
-      note && !bottomLogo
-        ? `<p style="margin:28px 0 0 0;${bodyStyle(ctx, ink, align, 11)};opacity:0.85">${inline(note, ctx, ink)}</p>`
+      note
+        ? bottomLogo
+          ? `<p style="margin:20px 0 0 0;${bodyStyle(ctx, ink, align, 10)};opacity:0.85">${inline(note, ctx, ink)}</p>`
+          : `<p style="margin:28px 0 0 0;${bodyStyle(ctx, ink, align, 11)};opacity:0.85">${inline(note, ctx, ink)}</p>`
         : "",
-      bottomLogo ? heroFooter(p, ctx, note, ink) : "",
     ].join("");
+    /*
+     * With Bazar's logo in the bottom corner the words sit beside it, on the
+     * same line, rather than stacked above it: the headline lands at the foot
+     * of the photo, level with the logo (client, Nov 2026).
+     */
+    const words = bottomLogo ? heroFooter(p, ctx, copy, align) : copy;
     const minHeight = ratio ? Math.round(COLUMN / ratio) : pad * 2 + 120;
     // At the bottom: two rows in a table of the band's height, the top one
     // valign=top and the bottom one valign=bottom, so the spare height falls
@@ -842,18 +849,17 @@ function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
 }
 
 /**
- * A hero's bottom line when its logo sits in the corner: the logo at the
- * start, the small print centred, an equal empty cell at the end so the print
- * is centred on the column rather than on what is left of it.
+ * A hero's bottom row when its logo sits in the corner: the logo at the
+ * start, the words in the middle, an equal empty cell at the end so the words
+ * are centred on the column rather than on what is left of it. All three sit
+ * on the bottom edge, so the headline's last line is level with the logo.
  */
-function heroFooter(p: Props, ctx: Ctx, note: string, ink: string): string {
+function heroFooter(p: Props, ctx: Ctx, words: string, align: string): string {
   const start = ctx.rtl ? "right" : "left";
   const logo = logoImg(p, ctx, start);
+  if (!logo) return words;
   const width = Number(p.logoWidth ?? 110);
-  if (!logo && !note) return "";
-  return `<table ${TABLE} ${dirAttr(ctx)} width="100%" style="margin-top:24px"><tr><td width="${width}" valign="bottom" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" style="text-align:center">${
-    note ? `<p style="margin:0;${bodyStyle(ctx, ink, "center", 10)};opacity:0.85">${inline(note, ctx, ink)}</p>` : ""
-  }</td><td width="${width}" style="width:${width}px">&nbsp;</td></tr></table>`;
+  return `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td width="${width}" valign="bottom" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" align="${align}" style="text-align:${align};padding:0 12px">${words}</td><td width="${width}" style="width:${width}px">&nbsp;</td></tr></table>`;
 }
 
 function heroLogo(p: Props, ctx: Ctx, align: string): string {

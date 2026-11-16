@@ -163,8 +163,9 @@ export function launchTemplate(p: LaunchProject, site: SiteFooter): TemplateDraf
       subheading_ar: p.name_ar,
       text: p.tagline || where,
       text_ar: p.tagline_ar || whereAr,
-      note: "Presented by Bazar Real Estate",
-      note_ar: "تقدمه بازار العقارية",
+      // No small print: the logo in the corner already says who sent it, and
+      // the footer carries the legal line (client, Nov 2026).
+      note: "",
       height: "l",
       overlayOpacity: 35,
       // A wide 2:1 band, the project's logo on top (added in the editor) and
