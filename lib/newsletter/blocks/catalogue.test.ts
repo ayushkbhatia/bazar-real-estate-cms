@@ -149,6 +149,22 @@ describe("renderDesign", () => {
     const out = renderDesign(emptyDesign(), ctx());
     expect(out.html).toContain("Unsubscribe");
   });
+
+  it("runs an opening hero to the top edge, with no band of page colour above it", () => {
+    const opener = (type: string) => renderDesign({ ...emptyDesign(), blocks: [newBlock(type)] }, ctx()).html;
+    expect(opener("hero")).toContain('style="padding:0px 0 24px"');
+    expect(opener("text")).toContain('style="padding:24px 0 24px"');
+  });
+
+  it("puts a wide hero's headline at the bottom of the photo, the logos at the top", () => {
+    const hero = (props: Record<string, unknown>) =>
+      renderDesign({ ...emptyDesign(), blocks: [newBlock("hero", { image: img(0), projectLogo: img(1), heading: "NEW LAUNCH", ...props })] }, ctx()).html;
+    const wide = hero({ shape: "wide" });
+    expect(wide).toMatch(/valign="top"[^>]*>[\s\S]*<\/td><\/tr><tr><td[^>]*valign="bottom"[^>]*>[\s\S]*NEW LAUNCH/);
+    expect(wide).toContain('height="450"');
+    expect(hero({ shape: "wide", textPosition: "middle" })).toContain('height="300"');
+    expect(hero({})).not.toContain('valign="bottom"');
+  });
 });
 
 describe("built-in templates", () => {

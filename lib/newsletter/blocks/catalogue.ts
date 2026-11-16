@@ -131,6 +131,11 @@ export const BLOCKS: BlockDef[] = [
         ["auto", "Fit the text"],
         ["wide", "Wide (2:1)"],
       ]),
+      select("textPosition", "Headline position", [
+        ["auto", "Automatic: bottom on a wide hero"],
+        ["middle", "Middle"],
+        ["bottom", "Bottom of the photo"],
+      ]),
     ],
     defaults: {
       image: null,
@@ -143,6 +148,7 @@ export const BLOCKS: BlockDef[] = [
       projectLogo: null,
       projectLogoWidth: 220,
       shape: "auto",
+      textPosition: "auto",
       eyebrow: "",
       heading: "New launch",
       subheading: "",
