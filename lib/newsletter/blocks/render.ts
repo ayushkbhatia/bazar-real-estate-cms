@@ -309,7 +309,17 @@ const DRAW: Record<string, Drawer> = {
     // "Wide" is a 2:1 band — the shape of a launch mailer's header — rather
     // than a box as tall as its text and padding make it.
     const wide = p.shape === "wide";
-    const src = imageUrl(p.image, ctx, { width: COLUMN, tint: overlay, opacity: strength * 100, ratio: wide ? 2 : null });
+    /*
+     * "Bottom" puts the headline on the lower edge of the photo, where it
+     * reads against the ground and water rather than the sky, and leaves the
+     * logos at the top (client, Nov 2026). "Auto" is bottom on a wide band,
+     * middle otherwise. A wide band with its words at the bottom is 4:3: at
+     * 2:1 a project logo, headline and footer already fill it, leaving no
+     * room between them to push the headline down into.
+     */
+    const position = p.textPosition === "bottom" || p.textPosition === "middle" ? p.textPosition : wide ? "bottom" : "middle";
+    const ratio = wide ? (position === "bottom" ? 4 / 3 : 2) : null;
+    const src = imageUrl(p.image, ctx, { width: COLUMN, tint: overlay, opacity: strength * 100, ratio });
     const ink = color(p.textColor, "#FFFFFF");
     const align = alignOf(p.align, ctx);
     const pad = wide ? 28 : ({ s: 48, m: 88, l: 140 }[String(p.height)] ?? 88);
@@ -323,9 +333,7 @@ const DRAW: Record<string, Drawer> = {
     const cta = blockButton(p, ctx, align);
     const projectLogo = projectLogoImg(p, ctx, align);
     const note = localText(p, "note", ctx.locale);
-    const body = [
-      projectLogo,
-      logo,
+    const words = [
       eyebrow(localText(p, "eyebrow", ctx.locale), ctx, align, ink),
       headingHtml(localText(p, "heading", ctx.locale), ctx, { size: "xl", align, ink, cls: "hero-h", level: 1 }),
       headingHtml(localText(p, "subheading", ctx.locale), ctx, { size: "m", align, ink }),
@@ -338,8 +346,17 @@ const DRAW: Record<string, Drawer> = {
         : "",
       bottomLogo ? heroFooter(p, ctx, note, ink) : "",
     ].join("");
-    const inner = `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td class="px" ${dirAttr(ctx)} align="${align}" valign="middle" style="padding:${pad}px ${GUTTER}px;text-align:${align}">${body}</td></tr></table>`;
-    const minHeight = wide ? COLUMN / 2 : pad * 2 + 120;
+    const minHeight = ratio ? Math.round(COLUMN / ratio) : pad * 2 + 120;
+    // At the bottom: two rows in a table of the band's height, the top one
+    // valign=top and the bottom one valign=bottom, so the spare height falls
+    // between them in every client, Outlook's VML text box included.
+    const cell = (content: string, valign: string, padding: string) =>
+      `<td class="px" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
+    const top = projectLogo + logo;
+    const inner =
+      position === "bottom" && top
+        ? `<table ${TABLE} ${dirAttr(ctx)} width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`)}</tr></table>`
+        : `<table ${TABLE} ${dirAttr(ctx)} width="100%"${position === "bottom" ? ` height="${minHeight}" style="height:${minHeight}px"` : ""}><tr>${cell(top + words, position === "bottom" ? "bottom" : "middle", `${pad}px ${GUTTER}px`)}</tr></table>`;
     return `<tr><td ${dirAttr(ctx)} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
   },
 
@@ -875,13 +892,16 @@ export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): 
   rows.push(
     `<tr><td class="px" ${dirAttr(ctx)} style="padding:20px ${GUTTER}px 28px;border-top:1px solid ${rgba(s.mutedColor, 0.25)};font-family:${font(ctx, "sans")};font-size:11px;line-height:1.6;color:${s.mutedColor};text-align:center">${opts.footer.html.replace(/<a /g, `<a style="color:${s.mutedColor};text-decoration:underline" `)}</td></tr>`,
   );
+  // A photograph opening the email runs to its top edge: the page colour above
+  // it read as a stray band over the hero (client, Nov 2026).
+  const heroFirst = design.blocks.find((b) => DRAW[b.type])?.type === "hero";
   const fonts = ctx.rtl
     ? arabic(ctx).head
     : '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">';
   // The VML namespaces and 96 dpi let Outlook for Windows draw the hero's photo.
   const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(opts.subject)}</title>${fonts}<style>${STYLE}</style></head>
 <body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir}">
-<table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="background:${s.pageBackground}"><tr><td align="center" style="padding:24px 0">
+<table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="background:${s.pageBackground}"><tr><td align="center" style="padding:${heroFirst ? 0 : 24}px 0 24px">
 <table ${TABLE} dir="${dir}" class="wrap" width="${COLUMN}" bgcolor="${s.contentBackground}" style="width:${COLUMN}px;max-width:${COLUMN}px;background:${s.contentBackground};direction:${dir};text-align:${ctx.rtl ? "right" : "left"}">
 ${rows.join("\n")}
 </table>
