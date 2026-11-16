@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
+import { revalidateDevelopmentPages } from "@/lib/developments/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -95,7 +96,7 @@ async function persist(
     after: { development: record.slug, sections: sections.length },
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub");
   return { status: "ok", message: "Saved." };
@@ -185,7 +186,7 @@ export async function setDevelopmentImages(
     after: images,
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub");
   return { status: "ok", message: "Images saved." };
@@ -263,7 +264,7 @@ export async function saveDevelopmentFacts(
     after: parsed.data,
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub/development");
   revalidateLocalised("/developments");
@@ -480,7 +481,7 @@ export async function saveDevelopmentContent(
     },
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Saved." };
 }
@@ -628,7 +629,7 @@ export async function saveDevelopmentSeo(
     after: parsed.data,
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Search appearance saved." };
 }
@@ -696,6 +697,6 @@ export async function setDevelopmentCardLabels(
   // The card is drawn on /developments, /off-plan, every area page and the
   // developer profile — so "layout", not this development's own page.
   revalidateLocalised("/", "layout");
-  revalidateLocalised(`/developments/${slug}`);
+  revalidateDevelopmentPages(slug);
   return { status: "ok" };
 }

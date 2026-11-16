@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { revalidateLocalised } from "@/lib/i18n/revalidate";
+import { revalidateDevelopmentPages } from "@/lib/developments/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -187,7 +187,7 @@ export async function saveDevelopmentUnits(
     },
   });
 
-  revalidateLocalised(`/developments/${record.slug}`);
+  revalidateDevelopmentPages(record.slug);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Inventory saved." };
 }

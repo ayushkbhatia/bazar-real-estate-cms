@@ -61,6 +61,9 @@
     "/developments/[slug]": {
       "revalidate": 60
     },
+    "/developments/[slug]/register": {
+      "revalidate": 300
+    },
     "/exclusive": {
       "revalidate": 60
     },

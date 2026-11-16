@@ -128,5 +128,13 @@
     "viewFull": "{label} — view at full size",
     "drag": "Drag to pan · ",
     "original": "Open the original"
+  },
+  "register": {
+    "metaTitle": "Register your interest · {name}",
+    "metaDescription": "Register your interest in {name} for floor plans, prices and first access from Bazar's advisors.",
+    "fullProject": "Explore the full project",
+    "closedTitle": "Speak to an advisor about {name}",
+    "closedBody": "Registration through this page isn't open right now. Our advisors will gladly answer your questions.",
+    "closedCta": "Contact us"
   }
 }

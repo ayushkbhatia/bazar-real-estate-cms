@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
+import { revalidateDevelopmentPages } from "@/lib/developments/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -271,7 +272,7 @@ export async function releaseMatchingOverrides(
       before: null,
       after: { card: card.key, project: target.slug, fields: target.fields },
     });
-    revalidateLocalised(`/developments/${target.slug}`);
+    revalidateDevelopmentPages(target.slug);
     revalidateLocalised(`/off-plan/${target.slug}`);
     revalidatePath(`/admin/pages/sub/development/${target.slug}`);
     released += 1;

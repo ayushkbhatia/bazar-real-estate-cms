@@ -84,3 +84,28 @@ export function countUnitsByFilter(
 export function developmentUrl(row: { slug: string }): string {
   return `/developments/${row.slug}`;
 }
+
+/**
+ * A development's sign-up page: its hero and the register-your-interest form,
+ * nothing else. Where a newsletter's call to action sends a reader. Exists for
+ * every published project — see app/[locale]/(public)/developments/[slug]/register.
+ */
+export function developmentRegisterUrl(row: { slug: string }): string {
+  return `${developmentUrl(row)}/register`;
+}
+
+/**
+ * The sign-up page for a link that points at a development's own page —
+ * `/developments/<slug>`, `/ar` or not, with or without a trailing slash,
+ * query or #anchor — or null for any other link. The newsletter editor offers
+ * it when a button points at the long page. `/off-plan/<slug>` serves the same page but is left alone: that
+ * segment also holds /off-plan/search and /off-plan/launches.
+ */
+export function registerUrlForProjectLink(link: string): string | null {
+  const m =
+    /^(\/ar)?\/developments\/([a-z0-9][a-z0-9-]*)\/?(?:[?#].*)?$/i.exec(
+      link.trim(),
+    );
+  if (!m) return null;
+  return `${m[1] ?? ""}${developmentRegisterUrl({ slug: m[2]!.toLowerCase() })}`;
+}
