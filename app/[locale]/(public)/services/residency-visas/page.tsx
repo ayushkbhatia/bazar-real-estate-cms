@@ -1,4 +1,5 @@
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -7,13 +8,18 @@ import { getSeedServiceBySlug } from "@/lib/seeds/services";
 
 const slug = "residency-visas" as const;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
   const s = getSeedServiceBySlug(slug);
   if (!s) return { title: "Service not found" };
   return {
     title: s.name,
     description: s.one_liner,
-    alternates: { canonical: `/services/${slug}` },
+    alternates: localeAlternates(`/services/${slug}`, locale),
   };
 }
 

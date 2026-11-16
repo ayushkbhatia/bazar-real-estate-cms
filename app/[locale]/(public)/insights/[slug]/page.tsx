@@ -33,6 +33,7 @@ import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { ARTICLE_COVER_SIZES } from "../_components/article-hero";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getStatusPills } from "@/lib/queries/card-labels";
 
 export const revalidate = 300;
@@ -85,6 +86,7 @@ export async function generateMetadata({
   );
   const metaTitle = seo.meta_title ?? article.title;
   const metaDescription = seo.meta_description ?? article.excerpt ?? undefined;
+  const alternates = localeAlternates(`/insights/${article.slug}`, asLocale(locale));
   return {
     /*
      * Absolute either way, and the reason is the same reason twice.
@@ -103,9 +105,11 @@ export async function generateMetadata({
       absolute: seo.meta_title ?? `${metaTitle} · ${brief}`,
     },
     description: metaDescription,
+    alternates,
     openGraph: {
       title: metaTitle,
       description: metaDescription ?? undefined,
+      url: alternates.canonical,
       type: "article",
       publishedTime: article.published_at ?? undefined,
       authors: article.author ? [article.author.display_name] : undefined,

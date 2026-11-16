@@ -11,6 +11,7 @@ import {
   quarterLabel,
   reportPath,
 } from "@/lib/queries/market-reports";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export const revalidate = 3600;
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
-    alternates: { canonical: "/market-reports" },
+    alternates: localeAlternates("/market-reports", locale),
   };
 }
 

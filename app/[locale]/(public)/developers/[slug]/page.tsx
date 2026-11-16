@@ -1,4 +1,5 @@
-import type { Locale } from "@/lib/i18n/locales";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getTranslations } from "next-intl/server";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import Link from "@/components/i18n/link";
@@ -65,7 +66,10 @@ export async function generateMetadata({
     // A developer the catalogue also carries is reachable at two slugs — the
     // shipped `modon` and the row's `modon-properties`. The grid links to the
     // row, and only the row's page has the projects, so that is the canonical.
-    alternates: { canonical: `/developers/${entry?.slug ?? slug}` },
+    alternates: localeAlternates(
+      `/developers/${entry?.slug ?? slug}`,
+      asLocale(locale),
+    ),
   };
 }
 

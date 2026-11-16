@@ -18,6 +18,7 @@ import type {
 } from "@/lib/partners/directory-data";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -27,8 +28,9 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page → Search
   // appearance. Unedited, they fall back to the strings that used to be the
   // literal `export const metadata` here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("partners", asLocale((await params).locale), {
-    alternates: { canonical: "/partners" },
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("partners", locale, {
+    alternates: localeAlternates("/partners", locale),
   });
 }
 

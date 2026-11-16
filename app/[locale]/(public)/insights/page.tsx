@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { NewsletterSignup } from "../_components/newsletter-signup";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
 import { ArticleGrid } from "./_components/article-grid";
@@ -39,7 +40,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("insights", asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("insights", locale, {
+    alternates: localeAlternates("/insights", locale),
+  });
 }
 
 

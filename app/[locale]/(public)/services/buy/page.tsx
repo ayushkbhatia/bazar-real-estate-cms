@@ -1,4 +1,5 @@
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -7,10 +8,18 @@ import { ServicePage } from "../_components/service-page";
 
 const service = getSeedServiceBySlug("buy");
 
-export const metadata: Metadata = {
-  title: service ? service.name : "Buy with Bazar",
-  description: service?.one_liner,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  return {
+    title: service ? service.name : "Buy with Bazar",
+    description: service?.one_liner,
+    alternates: localeAlternates("/services/buy", locale),
+  };
+}
 
 export default async function ServicesBuyPage({
   params,

@@ -12,6 +12,7 @@ import { SectionHead } from "../_components/marketing/section-head";
 import { entryLogo, initials, listDirectory } from "./_directory";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -21,8 +22,9 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("developers", asLocale((await params).locale), {
-    alternates: { canonical: "/developers" },
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("developers", locale, {
+    alternates: localeAlternates("/developers", locale),
   });
 }
 

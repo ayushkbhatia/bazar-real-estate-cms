@@ -15,6 +15,7 @@ import { faqPairs, list, statPairs, str } from "@/lib/master-pages";
 import { chipLines } from "@/lib/master-pages/text";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -24,9 +25,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("services", asLocale((await params).locale),
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("services", locale,
   {
-    alternates: { canonical: "/services" },
+    alternates: localeAlternates("/services", locale),
   });
 }
 

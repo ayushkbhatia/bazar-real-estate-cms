@@ -1,4 +1,5 @@
-import type { Locale } from "@/lib/i18n/locales";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
@@ -35,14 +36,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const staff = await getStaffByPublicSlug(slug);
   if (!staff) return { title: "Author not found" };
   return {
     title: `${staff.display_name} on the Bazar Brief`,
     description: `${staff.display_name}'s articles for the Bazar Brief.`,
+    alternates: localeAlternates(`/insights/author/${slug}`, asLocale(locale)),
   };
 }
 

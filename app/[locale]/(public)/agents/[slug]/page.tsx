@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { DEFAULT_LOCALE, asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
@@ -54,6 +55,7 @@ export async function generateMetadata({
   return {
     title: `${agent.display_name} — ${agent.title ?? copy("hero", "title_fallback")}`,
     description: agent.bio ?? undefined,
+    alternates: localeAlternates(`/agents/${agent.slug}`, locale),
   };
 }
 

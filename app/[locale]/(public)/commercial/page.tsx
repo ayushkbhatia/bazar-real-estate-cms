@@ -12,6 +12,7 @@ import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export const revalidate = 300;
 
@@ -23,9 +24,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("commercial", asLocale((await params).locale),
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("commercial", locale,
   {
-    alternates: { canonical: "/commercial" },
+    alternates: localeAlternates("/commercial", locale),
   });
 }
 

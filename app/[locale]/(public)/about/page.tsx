@@ -23,6 +23,7 @@ import { getPartners } from "@/lib/queries/content-sections";
 import { img, list, str, type ImageValue } from "@/lib/master-pages";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 
 export async function generateMetadata({
   params,
@@ -32,9 +33,10 @@ export async function generateMetadata({
   // Title and description are CMS-owned: Pages & blocks → this page →
   // Search appearance. Unedited, they fall back to the strings that used
   // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
-  return masterPageMetadata("about", asLocale((await params).locale),
+  const locale = asLocale((await params).locale);
+  return masterPageMetadata("about", locale,
   {
-    alternates: { canonical: "/about" },
+    alternates: localeAlternates("/about", locale),
   });
 }
 

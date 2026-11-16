@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { localiseMetadata } from "@/lib/i18n/localise-metadata";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { fmtMs, type HealthReport } from "@/lib/health";
 import { buildHealthReport } from "@/lib/health-probes";
@@ -22,7 +23,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  return localiseMetadata(METADATA, asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  return {
+    ...localiseMetadata(METADATA, locale),
+    alternates: localeAlternates("/status", locale),
+  };
 }
 
 const STATUS_COPY = {

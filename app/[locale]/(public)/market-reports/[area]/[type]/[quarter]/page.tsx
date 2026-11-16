@@ -1,4 +1,5 @@
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import Link from "@/components/i18n/link";
@@ -81,7 +82,7 @@ function isValidType(s: string): s is PropertyTypeSlug {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { area, type, quarter: q } = await params;
+  const { area, type, quarter: q, locale } = await params;
   if (!isValidType(type)) return { title: "Market report" };
   const quarter = quarterFromSlug(q);
   if (!quarter) return { title: "Market report" };
@@ -95,9 +96,10 @@ export async function generateMetadata({
   return {
     title,
     description: `Median price, AED/ft², and closed transactions for ${snapshot.area_name} ${propertyTypeLabel(type).toLowerCase()}s in ${quarterLabel(quarter)}.`,
-    alternates: {
-      canonical: reportPath({ area_slug: area, property_type: type, quarter }),
-    },
+    alternates: localeAlternates(
+      reportPath({ area_slug: area, property_type: type, quarter }),
+      asLocale(locale),
+    ),
     robots: { index: true, follow: true },
   };
 }

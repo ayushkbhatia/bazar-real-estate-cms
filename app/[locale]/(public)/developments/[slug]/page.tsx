@@ -59,6 +59,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { HERO_SIZES } from "../../_components/hero-sizes";
 import { isSupabaseConfigured } from "@/lib/env";
 import { asLocale } from "@/lib/i18n/locales";
+import { localeAlternates } from "@/lib/i18n/metadata";
 import { getStatusPills } from "@/lib/queries/card-labels";
 
 export const revalidate = 60;
@@ -94,7 +95,7 @@ type PageProps = { params: Promise<{ slug: string; locale: Locale }> };
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const d = await getPublishedDevelopmentBySlug(slug);
   if (!d) return { title: "Development not found" };
 
@@ -109,7 +110,7 @@ export async function generateMetadata({
     d.description ??
     `${d.name} by ${d.developer?.name ?? "Bazar"} — handover ${quarterLabel(d.handover_date)}`;
 
-  const canonical = developmentUrl(d);
+  const alternates = localeAlternates(developmentUrl(d), asLocale(locale));
   const ogImage = d.hero
     ? [{ url: mediaPublicUrl(d.hero.storage_key), alt: d.name }]
     : undefined;
@@ -121,12 +122,12 @@ export async function generateMetadata({
       ? { absolute: meta_title }
       : `${d.name} · ${d.developer?.name ?? "Off-plan"}`,
     description,
-    alternates: { canonical },
+    alternates,
     openGraph: {
       type: "website",
       title: d.name,
       description,
-      url: canonical,
+      url: alternates.canonical,
       images: ogImage,
       siteName: "Bazar Real Estate",
       locale: "en_AE",
