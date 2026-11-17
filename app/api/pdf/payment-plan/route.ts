@@ -8,12 +8,10 @@
  * trusted from the caller, so the document can't disagree with the page.
  */
 
-import React from "react";
 import { NextResponse, type NextRequest } from "next/server";
-import { renderToStream } from "@react-pdf/renderer";
 import { z } from "zod";
 import { paymentPlanSchema } from "@/lib/schemas/development";
-import { PaymentPlanPdf } from "@/lib/pdf/payment-plan-pdf";
+import { renderPaymentPlanPdf } from "@/lib/pdf/payment-plan-pdf";
 import { letterheadImage } from "@/lib/pdf/letterhead";
 
 export const runtime = "nodejs";
@@ -58,9 +56,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // @react-pdf renderToStream expects a Document-rooted element; our
-  // Shell wrapper provides that, but TS can't see through the FC.
-  const element = React.createElement(PaymentPlanPdf, {
+  const pdf = await renderPaymentPlanPdf({
     developmentName: parsed.data.developmentName,
     unitLabel: parsed.data.unitLabel ?? null,
     priceAed: parsed.data.priceAed,
@@ -69,35 +65,13 @@ export async function POST(req: NextRequest) {
     unit: parsed.data.unit ?? undefined,
     letterhead: letterheadImage(),
   });
-  const stream = await renderToStream(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    element as any,
-  );
 
-  const webStream = nodeStreamToWebReadable(stream);
-
-  return new Response(webStream, {
+  return new Response(new Uint8Array(pdf), {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="bazar-payment-plan.pdf"',
       "Cache-Control": "no-store",
-    },
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function nodeStreamToWebReadable(nodeStream: any): ReadableStream<Uint8Array> {
-  return new ReadableStream({
-    start(controller) {
-      nodeStream.on("data", (chunk: Buffer) => {
-        controller.enqueue(new Uint8Array(chunk));
-      });
-      nodeStream.on("end", () => controller.close());
-      nodeStream.on("error", (err: Error) => controller.error(err));
-    },
-    cancel() {
-      nodeStream.destroy?.();
     },
   });
 }

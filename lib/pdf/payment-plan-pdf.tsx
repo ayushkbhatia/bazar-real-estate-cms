@@ -13,6 +13,7 @@
 
 import React from "react";
 import {
+  renderToBuffer,
   Document,
   Image,
   Page,
@@ -170,6 +171,7 @@ const s = StyleSheet.create({
     backgroundColor: c.sand,
     paddingVertical: 6,
     alignItems: "center",
+    flexGrow: 1,
   },
   sumValueText: { fontFamily: "Helvetica-Bold", fontSize: 9.5, color: c.ink },
   sumNote: { fontSize: 7.5, color: c.muted, marginTop: 2 },
@@ -177,6 +179,11 @@ const s = StyleSheet.create({
   sumCol: { flex: 1 },
   sumColGap: { marginLeft: 1 },
 
+  // Denser drawings for a plan that would not fit one page (see `density`).
+  tdTight: { paddingVertical: 1.5 },
+  tdCompact: { paddingVertical: 1, fontSize: 7, lineHeight: 1.15 },
+  gapTight: { marginTop: 10 },
+  bandTight: { paddingVertical: 6 },
   note: { fontSize: 7, color: c.muted, marginTop: 10, lineHeight: 1.45 },
 });
 
@@ -226,6 +233,13 @@ export type PaymentPlanPdfProps = {
   /** The letterhead image; null draws the page without it (tests). */
   letterhead: Buffer | null;
   issuedAt?: Date;
+  /**
+   * How tightly to draw: 0 as designed, 1 tighter rows and gaps, 2 smaller
+   * rows still and no greeting, 3 (only extreme text: every field at its
+   * limit) also without the unit-details grid. Unset, a plan of more than eight milestones
+   * starts at 1. The route steps up until the document is one page.
+   */
+  density?: 0 | 1 | 2 | 3;
 };
 
 function Cell({
@@ -253,12 +267,17 @@ export function PaymentPlanPdf({
   unit,
   letterhead,
   issuedAt = new Date(),
+  density,
 }: PaymentPlanPdfProps): React.ReactElement {
   const split = splitPaymentPlan(plan);
   const breakdown = computePaymentBreakdown(plan, priceAed);
   const hasPrice = priceAed > 0;
   const dash = "—";
   const starting = unit?.kind === "starting";
+  const level = density ?? (plan.milestones.length > 8 ? 1 : 0);
+  const tight = level >= 1;
+  const td =
+    level >= 2 ? [s.td, s.tdCompact] : tight ? [s.td, s.tdTight] : [s.td];
   const totalPct = plan.milestones.reduce((sum, m) => sum + m.percent, 0);
 
   const what = starting
@@ -326,6 +345,13 @@ export function PaymentPlanPdf({
       author="Bazar Real Estate"
       creator="Bazar Real Estate"
     >
+      {/*
+        One page, always (client, Nov 2026): the plan is one sheet an
+        advisor hands over. A long plan is drawn tighter (`density`), and
+        the route redraws it denser still if it ever runs to a second page.
+        (Not `wrap={false}` on the page: that shrinks the page to its
+        content instead of keeping A4.)
+      */}
       <Page size="A4" style={s.page}>
         {letterhead ? (
           // A PDF image has no alt text; the letterhead is the page itself.
@@ -353,12 +379,16 @@ export function PaymentPlanPdf({
           </Text>
         </View>
 
-        <View style={s.greeting}>
-          <Text style={s.greetingHead}>Dear Customer,</Text>
-          <Text style={s.greetingBody}>{intro}</Text>
-        </View>
+        {level < 2 ? (
+          <View style={s.greeting}>
+            <Text style={s.greetingHead}>Dear Customer,</Text>
+            <Text style={s.greetingBody}>{intro}</Text>
+          </View>
+        ) : (
+          <View style={s.gapTight} />
+        )}
 
-        <View style={s.band} wrap={false}>
+        <View style={tight ? [s.band, s.bandTight] : s.band}>
           {band.map((b, i) => (
             <View
               key={b.label}
@@ -370,40 +400,44 @@ export function PaymentPlanPdf({
           ))}
         </View>
 
-        <View style={s.grid} wrap={false}>
-          <View style={s.gridRow}>
-            <Cell
-              label="Unit Type"
-              value={starting ? "Starting price" : unit?.type || dash}
-            />
-            <Cell
-              rule
-              label="Bedrooms"
-              value={unit?.beds ? String(unit.beds) : dash}
-            />
-            <Cell
-              rule
-              label={
-                unit?.kind === "unitType" ? "Size from (ft²)" : "Size (ft²)"
-              }
-              value={
-                unit?.areaFt2
-                  ? Math.round(unit.areaFt2).toLocaleString("en-AE")
-                  : dash
-              }
-            />
+        {level < 3 ? (
+          <View style={s.grid} wrap={false}>
+            <View style={s.gridRow}>
+              <Cell
+                label="Unit Type"
+                value={starting ? "Starting price" : unit?.type || dash}
+              />
+              <Cell
+                rule
+                label="Bedrooms"
+                value={unit?.beds ? String(unit.beds) : dash}
+              />
+              <Cell
+                rule
+                label={
+                  unit?.kind === "unitType" ? "Size from (ft²)" : "Size (ft²)"
+                }
+                value={
+                  unit?.areaFt2
+                    ? Math.round(unit.areaFt2).toLocaleString("en-AE")
+                    : dash
+                }
+              />
+            </View>
+            <View style={[s.gridRow, s.gridRowRule]}>
+              <Cell label="Developer" value={project?.developer || dash} />
+              <Cell
+                rule
+                label="Instalments"
+                value={String(plan.milestones.length)}
+              />
+            </View>
           </View>
-          <View style={[s.gridRow, s.gridRowRule]}>
-            <Cell label="Developer" value={project?.developer || dash} />
-            <Cell
-              rule
-              label="Instalments"
-              value={String(plan.milestones.length)}
-            />
-          </View>
-        </View>
+        ) : null}
 
-        <Text style={s.sectionHead}>PAYMENT PLAN</Text>
+        <Text style={tight ? [s.sectionHead, s.gapTight] : s.sectionHead}>
+          PAYMENT PLAN
+        </Text>
         <Text style={s.sectionSub}>{plan.name}</Text>
 
         <View style={s.thead} fixed={false}>
@@ -420,33 +454,33 @@ export function PaymentPlanPdf({
         </View>
         {plan.milestones.map((m, i) => (
           <View key={`${m.label}-${i}`} style={s.tr} wrap={false}>
-            <Text style={[s.td, COLS[0]]}>{i + 1}</Text>
-            <Text style={[s.td, s.tdRule, COLS[1], { textAlign: "left" }]}>
+            <Text style={[...td, COLS[0]]}>{i + 1}</Text>
+            <Text style={[...td, s.tdRule, COLS[1], { textAlign: "left" }]}>
               {m.label}
             </Text>
-            <Text style={[s.td, s.tdRule, COLS[2]]}>
+            <Text style={[...td, s.tdRule, COLS[2]]}>
               {m.percent.toFixed(2)} %
             </Text>
-            <Text style={[s.td, s.tdRule, COLS[3]]}>{m.timing || dash}</Text>
-            <Text style={[s.td, s.tdRule, COLS[4]]}>
+            <Text style={[...td, s.tdRule, COLS[3]]}>{m.timing || dash}</Text>
+            <Text style={[...td, s.tdRule, COLS[4]]}>
               {hasPrice ? aed(priceAed * (m.percent / 100)) : dash}
             </Text>
           </View>
         ))}
         <View style={[s.tr, s.totalRow]} wrap={false}>
-          <Text style={[s.td, COLS[0]]}> </Text>
-          <Text style={[s.td, s.bold, COLS[1], { textAlign: "left" }]}>
+          <Text style={[...td, COLS[0]]}> </Text>
+          <Text style={[...td, s.bold, COLS[1], { textAlign: "left" }]}>
             Total
           </Text>
-          <Text style={[s.td, s.bold, COLS[2]]}>{totalPct.toFixed(2)} %</Text>
-          <Text style={[s.td, COLS[3]]}> </Text>
-          <Text style={[s.td, s.bold, COLS[4]]}>
+          <Text style={[...td, s.bold, COLS[2]]}>{totalPct.toFixed(2)} %</Text>
+          <Text style={[...td, COLS[3]]}> </Text>
+          <Text style={[...td, s.bold, COLS[4]]}>
             {hasPrice ? aed(priceAed * (totalPct / 100)) : dash}
           </Text>
         </View>
 
-        {/* The totals and the small print move together: never the note alone on a page. */}
-        <View style={s.summary} wrap={false}>
+        {/* The totals and the small print stay together. */}
+        <View style={tight ? [s.summary, s.gapTight] : s.summary} wrap={false}>
           <View style={s.sumRow}>
             {buckets.map((b, i) => (
               <View
@@ -477,4 +511,32 @@ export function PaymentPlanPdf({
       </Page>
     </Document>
   );
+}
+
+/** Pages in a PDF @react-pdf wrote: one `/Type /Page` object each. */
+export function pdfPageCount(pdf: Buffer): number {
+  return pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0;
+}
+
+/**
+ * The PDF, on one page. Drawn as designed first; if it runs to a second page
+ * (a twelve-milestone plan with long labels) it is redrawn denser until it
+ * fits, and the densest drawing goes out regardless.
+ */
+export async function renderPaymentPlanPdf(
+  props: Omit<PaymentPlanPdfProps, "density">,
+): Promise<Buffer> {
+  const first = props.plan.milestones.length > 8 ? 1 : 0;
+  let pdf: Buffer = Buffer.alloc(0);
+  for (const density of ([0, 1, 2, 3] as const).filter((d) => d >= first)) {
+    // @react-pdf wants a Document-rooted element, which this is; TS can't see through the component.
+    pdf = await renderToBuffer(
+      React.createElement(PaymentPlanPdf, {
+        ...props,
+        density,
+      }) as unknown as Parameters<typeof renderToBuffer>[0],
+    );
+    if (pdfPageCount(pdf) <= 1) break;
+  }
+  return pdf;
 }
