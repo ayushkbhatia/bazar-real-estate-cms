@@ -42,6 +42,12 @@ const nextConfig: NextConfig = {
   // (lib/mortgage-requests/server/verify.ts) and loads its worker module at
   // runtime; left unbundled, Node resolves it the way the tests do.
   serverExternalPackages: ["pdfjs-dist"],
+  // The payment-plan PDF is drawn on Bazar's letterhead, read from disk at
+  // request time (lib/pdf/letterhead.ts); a read the tracer can't see would
+  // leave the file out of the function on Vercel.
+  outputFileTracingIncludes: {
+    "/api/pdf/payment-plan": ["./lib/pdf/assets/letterhead-a4.jpg"],
+  },
   images: {
     remotePatterns: supabaseHost
       ? [

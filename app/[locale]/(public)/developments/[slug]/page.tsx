@@ -532,6 +532,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         }
         intro={sv("payment-plan", "intro")}
         developmentName={development.name}
+        projectFacts={{
+          area: development.area?.name ?? null,
+          developer: development.developer?.name ?? null,
+          handover: development.handover_date ? quarterLabel(development.handover_date) : null,
+        }}
         units={calculatorUnits}
       />
     ) : null,

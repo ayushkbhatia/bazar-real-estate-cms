@@ -132,6 +132,7 @@ export function PaymentPlanSection({
   heading,
   intro,
   developmentName,
+  projectFacts,
   units,
 }: {
   id: string;
@@ -142,6 +143,8 @@ export function PaymentPlanSection({
   /** Sub-page override. Blank leaves the section without a standfirst. */
   intro?: string | null;
   developmentName: string;
+  /** Printed in the PDF's summary band and unit details, in English. */
+  projectFacts?: { area: string | null; developer: string | null; handover: string | null };
   units: CalculatorUnit[];
 }) {
   const t = useTranslations("development");
@@ -189,6 +192,15 @@ export function PaymentPlanSection({
             : null,
           priceAed: price,
           plan,
+          project: projectFacts ?? null,
+          unit: selected
+            ? {
+                kind: selected.kind,
+                type: selected.unitType,
+                beds: selected.beds,
+                areaFt2: selected.builtUpFt2,
+              }
+            : null,
         }),
       });
       if (!res.ok) throw new Error(String(res.status));
