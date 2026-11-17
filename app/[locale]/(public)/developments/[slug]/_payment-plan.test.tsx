@@ -8,9 +8,9 @@ import type { PaymentPlan } from "@/lib/schemas/development";
 import { PaymentPlanSection } from "./_payment-plan";
 
 /**
- * The calculator's "Pricing for" dropdown: it opens on the project's starting
- * price, offers every priced unit type and unit on sale beside it, and
- * re-prices the schedule against whichever the visitor picks.
+ * The calculator's "Pricing for" dropdown: it opens on the first priced unit
+ * type, offers every unit on sale and the project's starting price after it,
+ * and re-prices the schedule against whichever the visitor picks.
  */
 
 const PLAN: PaymentPlan = {
@@ -50,15 +50,15 @@ function draw(units = OPTIONS, locale: Locale = "en" as Locale) {
 const select = () => screen.getByRole("combobox") as HTMLSelectElement;
 
 describe("PaymentPlanSection · pricing dropdown", () => {
-  it("opens on the starting price, then unit types, then units on sale", () => {
+  it("opens on a unit type, then units on sale, then the starting price", () => {
     draw();
-    expect(select().value).toBe("starting-price");
+    expect(select().value).toBe("type-t2");
     const labels = [...select().options].map((o) => o.textContent);
-    expect(labels[0]).toMatch(/^Starting price · /);
-    expect(labels[1]).toMatch(/^2 Bedroom · .* · from /);
-    expect(labels[2]).toMatch(/^Villa · 4-bed · /);
+    expect(labels[0]).toMatch(/^2 Bedroom · .* · from /);
+    expect(labels[1]).toMatch(/^Villa · 4-bed · /);
+    expect(labels[2]).toMatch(/^Starting price · /);
     // Types and inventory together get headed groups; the starting price
-    // stays alone on top.
+    // stays alone at the bottom.
     const groups = [...select().querySelectorAll("optgroup")].map((g) =>
       g.getAttribute("label"),
     );
@@ -72,11 +72,13 @@ describe("PaymentPlanSection · pricing dropdown", () => {
         selector: ".mono-en",
       });
     const before = figures().map((n) => n.textContent);
-    fireEvent.change(select(), { target: { value: "type-t2" } });
+    // 50% of AED 2M, the default 2 Bedroom, however preferences write it.
+    expect(before[0]).toMatch(/1(\.0+)?\s*M|1,000,000/);
+    fireEvent.change(select(), { target: { value: "unit-u1" } });
     const after = figures().map((n) => n.textContent);
     expect(after).not.toEqual(before);
-    // 50% of AED 2M, however the visitor's preferences write it.
-    expect(after[0]).toMatch(/1(\.0+)?\s*M|1,000,000/);
+    // 50% of AED 4M.
+    expect(after[0]).toMatch(/2(\.0+)?\s*M|2,000,000/);
   });
 
   it("lists a single kind flat, with no group headings", () => {
@@ -96,8 +98,8 @@ describe("PaymentPlanSection · pricing dropdown", () => {
   it("writes the options in Arabic on /ar", () => {
     draw(OPTIONS, "ar" as Locale);
     const labels = [...select().options].map((o) => o.textContent ?? "");
-    expect(labels[0]).toContain("سعر البداية");
-    expect(labels[1]).toContain("ابتداءً من");
+    expect(labels[0]).toContain("ابتداءً من");
+    expect(labels[2]).toContain("سعر البداية");
     expect(labels.join(" ")).not.toMatch(/Starting price|from |-bed/);
   });
 });
