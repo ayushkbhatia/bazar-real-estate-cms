@@ -2,7 +2,8 @@
  * Cash-flow timeline PDF endpoint — the "Custom plan as PDF" button in the
  * payment-plan section of a project page.
  *
- * POST { developmentName, unitLabel?, priceAed, plan } → application/pdf.
+ * POST { developmentName, unitLabel?, priceAed, plan, project?, unit? } →
+ * application/pdf, drawn on Bazar's letterhead.
  * The plan is re-validated and the buckets are recomputed here rather than
  * trusted from the caller, so the document can't disagree with the page.
  */
@@ -13,6 +14,7 @@ import { renderToStream } from "@react-pdf/renderer";
 import { z } from "zod";
 import { paymentPlanSchema } from "@/lib/schemas/development";
 import { PaymentPlanPdf } from "@/lib/pdf/payment-plan-pdf";
+import { letterheadImage } from "@/lib/pdf/letterhead";
 
 export const runtime = "nodejs";
 
@@ -21,6 +23,21 @@ const InputSchema = z.object({
   unitLabel: z.string().max(160).nullish(),
   priceAed: z.number().min(0).max(1_000_000_000),
   plan: paymentPlanSchema,
+  project: z
+    .object({
+      area: z.string().max(120).nullish(),
+      developer: z.string().max(120).nullish(),
+      handover: z.string().max(40).nullish(),
+    })
+    .nullish(),
+  unit: z
+    .object({
+      kind: z.enum(["starting", "unitType", "unit"]).nullish(),
+      type: z.string().max(120).nullish(),
+      beds: z.number().int().min(0).max(50).nullish(),
+      areaFt2: z.number().min(0).max(10_000_000).nullish(),
+    })
+    .nullish(),
 });
 
 export async function POST(req: NextRequest) {
@@ -48,6 +65,9 @@ export async function POST(req: NextRequest) {
     unitLabel: parsed.data.unitLabel ?? null,
     priceAed: parsed.data.priceAed,
     plan: parsed.data.plan,
+    project: parsed.data.project ?? undefined,
+    unit: parsed.data.unit ?? undefined,
+    letterhead: letterheadImage(),
   });
   const stream = await renderToStream(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
