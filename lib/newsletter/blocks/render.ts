@@ -2,9 +2,10 @@
  * A block design → the email: HTML an inbox can draw, and its plain text.
  *
  * Email HTML is its own dialect. Everything here is tables and inline styles;
- * the one <style> element only stacks columns on a phone (clients that drop
- * it show the desktop layout, which still reads). The column is 600px wide,
- * each block a full-width row with its own background, so a band of colour
+ * the <style> elements only scale the whole email down on a phone and keep
+ * its colours in dark mode (clients that drop them show the desktop sizes in
+ * a fluid column, which still reads). The column is up to 600px wide, each
+ * block a full-width row with its own background, so a band of colour
  * runs edge to edge of the email the way a launch mailer's does.
  *
  * Arabic: the whole document is `dir="rtl"`, on <html>, <body> and every
@@ -59,34 +60,7 @@ type Ctx = DesignRenderContext & {
   settings: DesignSettings;
   rtl: boolean;
   text: string[];
-  /** Phone-width overrides this edition uses, class → declarations. */
-  phone: Map<string, string>;
 };
-
-/*
- * On a phone the email keeps its desktop layout — columns stay side by side,
- * the hero keeps its shape and its logo in the corner — and is drawn smaller,
- * the way a desktop page zoomed out would look (client, Nov 2026). Stacking
- * columns into one long strip read as a different email. What shrinks is
- * what a 600px design can't fit into ~380px: headings, the hero's height and
- * padding, its logos, the side gutters. Body copy keeps its size so it stays
- * readable. Each size is a class registered here and written into the one
- * <style> media query, so an inbox without media queries simply shows the
- * desktop sizes in a fluid column.
- */
-const PHONE = 390;
-/** The widest screen the phone sizes apply to. */
-const PHONE_MAX = 620;
-
-function phone(ctx: Ctx, cls: string, css: string): string {
-  ctx.phone.set(cls, css);
-  return cls;
-}
-
-/** A desktop pixel size on a phone: scaled to the phone column, never below `min`. */
-function onPhone(px: number, min: number, scale = 0.72): number {
-  return Math.max(min, Math.round(px * scale));
-}
 
 // ── Small helpers ───────────────────────────────────────────────
 
@@ -242,9 +216,7 @@ function headingHtml(text: string, ctx: Ctx, o: { size: unknown; align: string; 
   const weight = ctx.rtl ? arabic(ctx).headingWeight : serif ? 400 : 600;
   const size = ctx.rtl ? Math.round(px * 0.82) : px;
   const tag = o.level === 1 ? "h1" : "h2";
-  const small = onPhone(size, 16);
-  const cls = [o.cls, small < size ? phone(ctx, `p-fs${small}`, `font-size:${small}px!important`) : ""].filter(Boolean).join(" ");
-  return `<${tag}${cls ? ` class="${cls}"` : ""} style="margin:0 0 12px 0;font-family:${family};font-size:${size}px;line-height:1.2;font-weight:${weight};color:${o.ink};text-align:${o.align}${serif ? ";letter-spacing:-0.01em" : ""}">${inline(text, ctx, o.ink)}</${tag}>`;
+  return `<${tag}${o.cls ? ` class="${o.cls}"` : ""} style="margin:0 0 12px 0;font-family:${family};font-size:${size}px;line-height:1.2;font-weight:${weight};color:${o.ink};text-align:${o.align}${serif ? ";letter-spacing:-0.01em" : ""}">${inline(text, ctx, o.ink)}</${tag}>`;
 }
 
 function bodyStyle(ctx: Ctx, ink: string, align: string, size = 15): string {
@@ -383,24 +355,17 @@ const DRAW: Record<string, Drawer> = {
      */
     const words = bottomLogo ? heroFooter(p, ctx, copy, align) : copy;
     const minHeight = ratio ? Math.round(COLUMN / ratio) : pad * 2 + 120;
-    // On a phone the band keeps its shape at the phone's width, and its
-    // padding shrinks with it (see PHONE).
-    const phoneHeight = ratio ? Math.round(PHONE / ratio) : onPhone(minHeight, 160, 0.6);
-    const tall = phone(ctx, `p-h${phoneHeight}`, `height:${phoneHeight}px!important`);
-    const phonePad = onPhone(pad, 20, 0.6);
-    const padTop = phone(ctx, `p-pt${phonePad}`, `padding-top:${phonePad}px!important`);
-    const padBottom = phone(ctx, `p-pb${phonePad}`, `padding-bottom:${phonePad}px!important`);
     // At the bottom: two rows in a table of the band's height, the top one
     // valign=top and the bottom one valign=bottom, so the spare height falls
     // between them in every client, Outlook's VML text box included.
-    const cell = (content: string, valign: string, padding: string, cls: string) =>
-      `<td class="px ${cls}" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
+    const cell = (content: string, valign: string, padding: string) =>
+      `<td class="px" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
     const top = projectLogo + logo;
     const inner =
       position === "bottom" && top
-        ? `<table ${TABLE} ${dirAttr(ctx)} class="${tall}" width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`, padTop)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`, padBottom)}</tr></table>`
-        : `<table ${TABLE} ${dirAttr(ctx)} width="100%"${position === "bottom" ? ` class="${tall}" height="${minHeight}" style="height:${minHeight}px"` : ""}><tr>${cell(top + words, position === "bottom" ? "bottom" : "middle", `${pad}px ${GUTTER}px`, `${padTop} ${padBottom}`)}</tr></table>`;
-    return `<tr><td ${dirAttr(ctx)}${wide ? ` class="${tall}"` : ""} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
+        ? `<table ${TABLE} ${dirAttr(ctx)} width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`)}</tr></table>`
+        : `<table ${TABLE} ${dirAttr(ctx)} width="100%"${position === "bottom" ? ` height="${minHeight}" style="height:${minHeight}px"` : ""}><tr>${cell(top + words, position === "bottom" ? "bottom" : "middle", `${pad}px ${GUTTER}px`)}</tr></table>`;
+    return `<tr><td ${dirAttr(ctx)} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
   },
 
   logo(p, ctx) {
@@ -866,12 +831,12 @@ function logoSrc(p: Props, ctx: Ctx): { src: string; alt: string } | null {
   return { src: brandLogo || `${ctx.siteUrl}/email/bazar-logo.png`, alt: ctx.brand.logoAlt };
 }
 
-function logoImg(p: Props, ctx: Ctx, align: string, cls = ""): string {
+function logoImg(p: Props, ctx: Ctx, align: string): string {
   const logo = logoSrc(p, ctx);
   if (!logo) return "";
   const width = Number(p.logoWidth ?? 110);
   const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
-  return `<img${cls ? ` class="${cls}"` : ""} src="${esc(logo.src)}" alt="${esc(logo.alt)}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`;
+  return `<img src="${esc(logo.src)}" alt="${esc(logo.alt)}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`;
 }
 
 /** The development's own logo, at the top of a hero. */
@@ -880,7 +845,7 @@ function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
   const src = imageUrl(p.projectLogo, ctx, { width });
   if (!src) return "";
   const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
-  return `<div style="margin:0 0 22px 0"><img class="${phoneWidth(ctx, width)}" src="${esc(src)}" alt="${esc(localText(p, "subheading", ctx.locale) || "")}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
+  return `<div style="margin:0 0 22px 0"><img src="${esc(src)}" alt="${esc(localText(p, "subheading", ctx.locale) || "")}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
 }
 
 /**
@@ -891,21 +856,14 @@ function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
  */
 function heroFooter(p: Props, ctx: Ctx, words: string, align: string): string {
   const start = ctx.rtl ? "right" : "left";
-  const width = Number(p.logoWidth ?? 110);
-  const narrow = phoneWidth(ctx, width);
-  const logo = logoImg(p, ctx, start, narrow);
+  const logo = logoImg(p, ctx, start);
   if (!logo) return words;
-  return `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td width="${width}" valign="bottom" class="${narrow}" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" align="${align}" style="text-align:${align};padding:0 12px">${words}</td><td width="${width}" class="${narrow}" style="width:${width}px">&nbsp;</td></tr></table>`;
-}
-
-/** A logo's width on a phone, as a class. */
-function phoneWidth(ctx: Ctx, width: number): string {
-  const small = onPhone(width, 56, 0.65);
-  return phone(ctx, `p-w${small}`, `width:${small}px!important`);
+  const width = Number(p.logoWidth ?? 110);
+  return `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td width="${width}" valign="bottom" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" align="${align}" style="text-align:${align};padding:0 12px">${words}</td><td width="${width}" style="width:${width}px">&nbsp;</td></tr></table>`;
 }
 
 function heroLogo(p: Props, ctx: Ctx, align: string): string {
-  const logo = logoImg(p, ctx, align, phoneWidth(ctx, Number(p.logoWidth ?? 110)));
+  const logo = logoImg(p, ctx, align);
   return logo ? `<div style="margin:0 0 36px 0">${logo}</div>` : "";
 }
 
@@ -924,18 +882,84 @@ export function renderBlock(block: Block, ctx: Ctx): string {
 const BASE_STYLE = `body{margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic}table{border-collapse:collapse}a{text-decoration:none}`;
 
 /**
- * The <style> elements: the resets and this edition's phone sizes, then the
- * colour locks on their own. Two elements, because Gmail drops a whole
- * <style> element over one rule it can't parse, and the locks use selectors
- * it doesn't support — in one element they would cost Gmail the phone sizes.
+ * The <style> elements: the resets and the phone sizes, then the colour
+ * locks on their own. Two elements, because Gmail drops a whole <style>
+ * element over one rule it can't parse, and the locks use selectors it
+ * doesn't support — in one element they would cost Gmail the phone sizes.
  */
-function styleSheets(ctx: Ctx, locks: string): string {
-  const sized = [...ctx.phone.entries()]
-    .sort(([x], [y]) => x.localeCompare(y))
-    .map(([cls, css]) => `.${cls}{${css}}`)
-    .join("");
-  return `<style>${BASE_STYLE}
-@media only screen and (max-width:${PHONE_MAX}px){.px{padding-left:20px!important;padding-right:20px!important}${sized}}</style><style>:root{color-scheme:light only;supported-color-schemes:light only}${locks}</style>`;
+function styleSheets(phone: string, locks: string): string {
+  return `<style>${BASE_STYLE}${phone}</style><style>:root{color-scheme:light only;supported-color-schemes:light only}${locks}</style>`;
+}
+
+/** Adds classes to a start tag's attributes, keeping any it already has. */
+function withClasses(attrs: string, add: string[]): string {
+  return /\sclass="([^"]*)"/i.test(attrs)
+    ? attrs.replace(/\sclass="([^"]*)"/i, (_m, cls: string) => ` class="${`${cls} ${add.join(" ")}`.trim()}"`)
+    : `${attrs} class="${add.join(" ")}"`;
+}
+
+const START_TAG = /<([a-z][a-z0-9]*)(\s[^<>]*?)(\/?)>/gi;
+
+/*
+ * On a phone the email is the desktop email, smaller (client, Nov 2026): a
+ * line that fits on one line at 600px fits on one line on the phone, so no
+ * title or sentence breaks in a new place and no block grows taller. Letting
+ * the text keep its size and reflow broke one-line titles into two and left
+ * gaps the desktop design doesn't have.
+ *
+ * So every pixel size in the email — type, line heights, padding, margins,
+ * fixed widths and heights, corner radii — is scaled by the same factor, the
+ * phone's width over 600. Email has no reliable `vw` or `zoom` (Gmail drops
+ * both), so the factor comes in steps: one media query per common phone
+ * width, each scaling by that width's lower bound, so the text is never
+ * proportionally wider than on the desktop and never wraps more. The column
+ * itself stays 100% wide, so the email fills the screen. Each distinct
+ * property and value gets one short class, and one rule per step.
+ *
+ * An inbox without media queries shows the desktop sizes in a fluid column.
+ */
+const PHONE_STEPS: readonly [maxWidth: number, factor: number][] = [
+  [599, 540 / 600],
+  [539, 480 / 600],
+  [479, 428 / 600],
+  [427, 414 / 600],
+  [413, 390 / 600],
+  [389, 375 / 600],
+  [374, 360 / 600],
+  [359, 320 / 600],
+];
+
+const SCALED = /(?:^|;)\s*(font-size|line-height|letter-spacing|padding(?:-top|-right|-bottom|-left)?|margin(?:-top|-right|-bottom|-left)?|width|height|min-height|border-radius)\s*:\s*([^;]*\dpx[^;]*)/gi;
+
+function scalePx(value: string, factor: number): string {
+  return value.replace(/(\d*\.?\d+)px/g, (_m, n: string) => `${Math.round(Number(n) * factor * 10) / 10}px`);
+}
+
+export function scaleForPhones(html: string): { html: string; css: string } {
+  const ids = new Map<string, { cls: string; prop: string; value: string }>();
+  const out = html.replace(START_TAG, (tag, name: string, attrs: string, slash: string) => {
+    const style = /\sstyle="([^"]*)"/i.exec(attrs)?.[1];
+    if (!style) return tag;
+    const add: string[] = [];
+    for (const [, rawProp, rawValue] of style.matchAll(SCALED)) {
+      const prop = rawProp!.toLowerCase();
+      const value = rawValue!.trim();
+      const key = `${prop}:${value}`;
+      let entry = ids.get(key);
+      if (!entry) {
+        entry = { cls: `z${ids.size.toString(36)}`, prop, value };
+        ids.set(key, entry);
+      }
+      if (!add.includes(entry.cls)) add.push(entry.cls);
+    }
+    return add.length ? `<${name}${withClasses(attrs, add)}${slash}>` : tag;
+  });
+  if (!ids.size) return { html: out, css: "" };
+  const css = PHONE_STEPS.map(
+    ([max, factor]) =>
+      `@media only screen and (max-width:${max}px){${[...ids.values()].map((e) => `.${e.cls}{${e.prop}:${scalePx(e.value, factor)}!important}`).join("")}}`,
+  ).join("\n");
+  return { html: out, css: `\n${css}` };
 }
 
 /*
@@ -960,7 +984,7 @@ function styleSheets(ctx: Ctx, locks: string): string {
 export function lockColours(html: string): { html: string; css: string } {
   const inks = new Set<string>();
   const fills = new Set<string>();
-  const out = html.replace(/<([a-z][a-z0-9]*)(\s[^<>]*?)(\/?)>/gi, (tag, name: string, attrs: string, slash: string) => {
+  const out = html.replace(START_TAG, (tag, name: string, attrs: string, slash: string) => {
     const style = /\sstyle="([^"]*)"/i.exec(attrs)?.[1] ?? "";
     const ink = /(?:^|;)\s*color:\s*(#[0-9a-f]{6})\b/i.exec(style)?.[1];
     const fill = /(?:^|;)\s*background(?:-color)?:\s*(#[0-9a-f]{6})\b/i.exec(style)?.[1] ?? /\sbgcolor="(#[0-9a-f]{6})"/i.exec(attrs)?.[1];
@@ -976,10 +1000,7 @@ export function lockColours(html: string): { html: string; css: string } {
       fills.add(hex);
       add.push(`dk-b${hex}`);
     }
-    const withClass = /\sclass="([^"]*)"/i.test(attrs)
-      ? attrs.replace(/\sclass="([^"]*)"/i, (_m, cls: string) => ` class="${`${cls} ${add.join(" ")}`.trim()}"`)
-      : `${attrs} class="${add.join(" ")}"`;
-    return `<${name}${withClass}${slash}>`;
+    return `<${name}${withClasses(attrs, add)}${slash}>`;
   });
   const inkRules = [...inks].sort().map((h) => [`.dk-c${h}`, `color:#${h}!important`] as const);
   const fillRules = [...fills].sort().map((h) => [`.dk-b${h}`, `background-color:#${h}!important`] as const);
@@ -994,7 +1015,7 @@ export function lockColours(html: string): { html: string; css: string } {
 /** The whole email for one edition. */
 export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): RenderedDesign {
   const design = normaliseDesign(raw);
-  const ctx: Ctx = { ...opts, settings: design.settings, rtl: opts.locale === "ar", text: [], phone: new Map() };
+  const ctx: Ctx = { ...opts, settings: design.settings, rtl: opts.locale === "ar", text: [] };
   const s = design.settings;
   const dir = ctx.rtl ? "rtl" : "ltr";
   const rows: string[] = [];
@@ -1021,7 +1042,7 @@ export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): 
    * to fit and left a white margin round it (client, Nov 2026). Outlook for
    * Windows can't do max-width, so it gets a fixed 600px table of its own.
    */
-  const body = lockColours(`<body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir};width:100%">
+  const drawn = scaleForPhones(`<body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir};width:100%">
 <table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="width:100%;background:${s.pageBackground}"><tr><td align="center" style="padding:${heroFirst ? 0 : 24}px 0 24px">
 <!--[if mso]><table ${TABLE} width="${COLUMN}" align="center"><tr><td><![endif]-->
 <table ${TABLE} dir="${dir}" align="center" width="100%" bgcolor="${s.contentBackground}" style="width:100%;max-width:${COLUMN}px;margin:0 auto;background:${s.contentBackground};direction:${dir};text-align:${ctx.rtl ? "right" : "left"}">
@@ -1030,7 +1051,8 @@ ${rows.join("\n")}
 <!--[if mso]></td></tr></table><![endif]-->
 </td></tr></table>
 </body>`);
-  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(opts.subject)}</title>${fonts}${styleSheets(ctx, body.css)}</head>
+  const body = lockColours(drawn.html);
+  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(opts.subject)}</title>${fonts}${styleSheets(drawn.css, body.css)}</head>
 ${body.html}</html>`;
   const text = [...ctx.text, opts.footer.text]
     .join("\n")
