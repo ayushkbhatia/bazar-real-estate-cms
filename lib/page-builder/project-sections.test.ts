@@ -119,7 +119,7 @@ describe("project facts", () => {
 });
 
 describe("the payment-plan calculator", () => {
-  it("opens on the starting price, then priced unit types, then units on sale", () => {
+  it("opens on priced unit types, then units on sale, then the starting price", () => {
     const units = adapt.calculatorUnitsFor(
       project({
         unitTypePrices: [
@@ -133,12 +133,12 @@ describe("the payment-plan calculator", () => {
       }),
     );
     expect(units.map((u) => [u.id, u.kind, u.price_aed])).toEqual([
-      ["starting-price", "starting", 7_900_000],
       ["type-t4", "unitType", 8_200_000],
       ["type-t5", "unitType", 9_500_000],
       ["unit-u1", "unit", 8_000_000],
       // A unit with no price is priced at the floor rather than at zero.
       ["unit-u2", "unit", 7_900_000],
+      ["starting-price", "starting", 7_900_000],
     ]);
   });
 

@@ -90,18 +90,13 @@ function unitLabel(
 /**
  * The options split by kind. Headed groups only when the list mixes unit types
  * and inventory — a list of one kind reads fine flat, and the starting price
- * always sits alone on top.
+ * always sits alone at the bottom.
  */
 function optionGroups(units: CalculatorUnit[]) {
   const types = units.filter((u) => u.kind === "unitType");
   const stock = units.filter((u) => u.kind === "unit");
   const headed = types.length > 0 && stock.length > 0;
   return [
-    {
-      kind: "starting",
-      label: null,
-      units: units.filter((u) => u.kind === "starting"),
-    },
     {
       kind: "unitType",
       label: headed ? ("payment.groupUnitTypes" as const) : null,
@@ -112,12 +107,19 @@ function optionGroups(units: CalculatorUnit[]) {
       label: headed ? ("payment.groupUnits" as const) : null,
       units: stock,
     },
+    {
+      kind: "starting",
+      label: null,
+      units: units.filter((u) => u.kind === "starting"),
+    },
   ].filter((g) => g.units.length > 0);
 }
 
 /**
- * The payment-plan section of a project page — header, cash-flow timeline and
- * the plan calculator, per the off-plan design handoff.
+ * The payment-plan section of a project page — header, the plan calculator,
+ * then the cash-flow timeline it prices. The calculator leads so the unit
+ * being priced is named before the instalments it produces (client, Nov
+ * 2026; the design handoff had it below).
  *
  * The timeline is one schedule rendered two ways: a horizontal run of columns
  * from `xl` up, and the vertical spine below it. The handoff is explicit that
@@ -156,8 +158,9 @@ export function PaymentPlanSection({
     fromPrice: (price) => t("payment.fromPrice", { price }),
     beds: (beds) => t("payment.beds", { beds }),
   };
-  // The starting price, when the project publishes one — `calculatorOptions`
-  // always lists it first.
+  // The first priced layout — `calculatorOptions` lists unit types first and
+  // the starting price last — so the default schedule, and the PDF downloaded
+  // without touching the dropdown, are for a unit the visitor can buy.
   const [selectedId, setSelectedId] = useState(units[0]?.id ?? "");
   const [downloading, setDownloading] = useState(false);
 
@@ -324,100 +327,8 @@ export function PaymentPlanSection({
         </Button>
       </div>
 
-      {/* ── Timeline, wide: a column per milestone above a baseline rule ──
-          The track is `w-max min-w-full` so it stretches to fill the section
-          at seven milestones or fewer and grows past it at twelve, taking the
-          rule with it — anchoring the rule to the viewport-width scroll port
-          instead left it stopping short of the last few columns. */}
-      <div className="hidden xl:block overflow-x-auto pt-10 pb-4">
-        <div className="relative w-max min-w-full">
-          <div
-            aria-hidden
-            className="absolute start-0 end-0 top-6 h-0.5 bg-bz-border-strong"
-          />
-          <ol className="grid grid-flow-col auto-cols-[minmax(150px,1fr)] w-full list-none">
-            {plan.milestones.map((m, i) => {
-              const amount = amountFor(m.percent);
-              return (
-                <li
-                  key={`${m.label}-${i}`}
-                  className="flex flex-col items-center text-center px-1"
-                >
-                  <span
-                    className={cn(
-                      "w-[18px] h-[18px] rounded-full border-2 border-bz-ink z-[1] mb-7",
-                      i === 0 ? "bg-bz-ink" : "bg-bz-surface",
-                    )}
-                  />
-                  <span
-                    className="serif text-[32px] leading-none"
-                    style={{ letterSpacing: "-0.02em" }}
-                  >
-                    {m.percent}%
-                  </span>
-                  <span className="text-[12.5px] text-bz-ink-2 mt-1 leading-tight">
-                    {milestoneText(m.label_ar, m.label)}
-                  </span>
-                  {m.timing ? (
-                    <span className="text-[11px] text-bz-muted mt-0.5">
-                      {milestoneText(m.timing_ar, m.timing)}
-                    </span>
-                  ) : null}
-                  {amount ? (
-                    <span className="mono-en text-[11.5px] text-bz-ink mt-2 px-2 py-[3px] bg-bz-surface rounded-[3px]">
-                      {amount}
-                    </span>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      </div>
-
-      {/* ── Timeline, narrow: the same schedule down a vertical spine ── */}
-      <ol className="xl:hidden mt-5 ms-2 pb-1 border-s-2 border-bz-border-strong flex flex-col gap-[18px] list-none">
-        {plan.milestones.map((m, i) => {
-          const amount = amountFor(m.percent);
-          return (
-            <li
-              key={`${m.label}-${i}`}
-              className="relative ps-[18px] flex gap-3.5 items-start"
-            >
-              <span
-                className={cn(
-                  "absolute -start-2 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-bz-ink",
-                  i === 0 ? "bg-bz-ink" : "bg-bz-surface",
-                )}
-              />
-              <span
-                className="serif text-[24px] w-14 shrink-0 leading-tight"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                {m.percent}%
-              </span>
-              <span className="flex-1 min-w-0">
-                <span className="block text-[13.5px] text-bz-ink">
-                  {milestoneText(m.label_ar, m.label)}
-                </span>
-                {m.timing ? (
-                  <span className="block text-[11.5px] text-bz-muted mt-0.5">
-                    {milestoneText(m.timing_ar, m.timing)}
-                  </span>
-                ) : null}
-              </span>
-              {amount ? (
-                <span className="mono-en text-[12px] self-center whitespace-nowrap px-2 py-[3px] bg-bz-surface rounded-[3px]">
-                  {amount}
-                </span>
-              ) : null}
-            </li>
-          );
-        })}
-      </ol>
-
       {/* ── Calculator ─────────────────────────────────────────────── */}
-      <div className="mt-6 md:mt-8 rounded-xl border border-bz-border bg-bz-surface p-[18px] md:p-6">
+      <div className="rounded-xl border border-bz-border bg-bz-surface p-[18px] md:p-6">
         <div
           className={cn(
             "grid gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2",
@@ -503,6 +414,98 @@ export function PaymentPlanSection({
           ]}
         />
       </div>
+
+      {/* ── Timeline, wide: a column per milestone above a baseline rule ──
+          The track is `w-max min-w-full` so it stretches to fill the section
+          at seven milestones or fewer and grows past it at twelve, taking the
+          rule with it — anchoring the rule to the viewport-width scroll port
+          instead left it stopping short of the last few columns. */}
+      <div className="hidden xl:block overflow-x-auto pt-12 pb-4">
+        <div className="relative w-max min-w-full">
+          <div
+            aria-hidden
+            className="absolute start-0 end-0 top-6 h-0.5 bg-bz-border-strong"
+          />
+          <ol className="grid grid-flow-col auto-cols-[minmax(150px,1fr)] w-full list-none">
+            {plan.milestones.map((m, i) => {
+              const amount = amountFor(m.percent);
+              return (
+                <li
+                  key={`${m.label}-${i}`}
+                  className="flex flex-col items-center text-center px-1"
+                >
+                  <span
+                    className={cn(
+                      "w-[18px] h-[18px] rounded-full border-2 border-bz-ink z-[1] mb-7",
+                      i === 0 ? "bg-bz-ink" : "bg-bz-surface",
+                    )}
+                  />
+                  <span
+                    className="serif text-[32px] leading-none"
+                    style={{ letterSpacing: "-0.02em" }}
+                  >
+                    {m.percent}%
+                  </span>
+                  <span className="text-[12.5px] text-bz-ink-2 mt-1 leading-tight">
+                    {milestoneText(m.label_ar, m.label)}
+                  </span>
+                  {m.timing ? (
+                    <span className="text-[11px] text-bz-muted mt-0.5">
+                      {milestoneText(m.timing_ar, m.timing)}
+                    </span>
+                  ) : null}
+                  {amount ? (
+                    <span className="mono-en text-[11.5px] text-bz-ink mt-2 px-2 py-[3px] bg-bz-surface rounded-[3px]">
+                      {amount}
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+
+      {/* ── Timeline, narrow: the same schedule down a vertical spine ── */}
+      <ol className="xl:hidden mt-8 ms-2 pb-1 border-s-2 border-bz-border-strong flex flex-col gap-[18px] list-none">
+        {plan.milestones.map((m, i) => {
+          const amount = amountFor(m.percent);
+          return (
+            <li
+              key={`${m.label}-${i}`}
+              className="relative ps-[18px] flex gap-3.5 items-start"
+            >
+              <span
+                className={cn(
+                  "absolute -start-2 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-bz-ink",
+                  i === 0 ? "bg-bz-ink" : "bg-bz-surface",
+                )}
+              />
+              <span
+                className="serif text-[24px] w-14 shrink-0 leading-tight"
+                style={{ letterSpacing: "-0.02em" }}
+              >
+                {m.percent}%
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[13.5px] text-bz-ink">
+                  {milestoneText(m.label_ar, m.label)}
+                </span>
+                {m.timing ? (
+                  <span className="block text-[11.5px] text-bz-muted mt-0.5">
+                    {milestoneText(m.timing_ar, m.timing)}
+                  </span>
+                ) : null}
+              </span>
+              {amount ? (
+                <span className="mono-en text-[12px] self-center whitespace-nowrap px-2 py-[3px] bg-bz-surface rounded-[3px]">
+                  {amount}
+                </span>
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
     </section>
   );
 }

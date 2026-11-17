@@ -2,13 +2,14 @@
  * What the payment-plan calculator can price, in the order its dropdown lists
  * them.
  *
- * The project's starting price comes first and is the default: it is the
- * number every project publishes, and the one the hero and cards already
- * quote. After it, every unit type an editor has priced in the project's
- * "Units & layouts" card ("2 Bedroom · from AED 2.1M"), then each unit still
- * on sale in the inventory table. A visitor opening the section sees the
- * figure they came from, and can re-price the whole schedule against the
- * layout they actually want.
+ * Every unit type an editor has priced in the project's "Units & layouts"
+ * card comes first ("2 Bedroom · from AED 2.1M"), then each unit still on
+ * sale in the inventory table, then the project's starting price. The first
+ * is the default: a visitor opening the section, or downloading its PDF
+ * without touching the dropdown, gets the schedule for a layout they can
+ * actually buy rather than for a headline figure no single unit carries
+ * (client, Nov 2026). The starting price leads only when nothing else is
+ * priced.
  *
  * Pure, and shared by the project page and the page builder's payment-plan
  * section, so a campaign page prices exactly what the project page does.
@@ -57,17 +58,6 @@ export function calculatorOptions({
   const floor = startingPrice && startingPrice > 0 ? startingPrice : null;
   const out: CalculatorUnit[] = [];
 
-  if (floor) {
-    out.push({
-      id: "starting-price",
-      kind: "starting",
-      price_aed: floor,
-      unitType: null,
-      beds: null,
-      builtUpFt2: null,
-    });
-  }
-
   for (const t of unitTypes) {
     if (!t.priceFromAed || t.priceFromAed <= 0) continue;
     out.push({
@@ -94,6 +84,17 @@ export function calculatorOptions({
       unitType: u.unitType,
       beds: u.beds,
       builtUpFt2: u.builtUpFt2,
+    });
+  }
+
+  if (floor) {
+    out.push({
+      id: "starting-price",
+      kind: "starting",
+      price_aed: floor,
+      unitType: null,
+      beds: null,
+      builtUpFt2: null,
     });
   }
 
