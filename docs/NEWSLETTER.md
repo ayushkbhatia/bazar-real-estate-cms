@@ -71,10 +71,11 @@ with two buttons, social icons and a contact footer.
 - **Rendering** (`render.ts`): email-safe tables and inline styles in a fluid
   column, 100% wide up to 600px (a fixed 600px made Gmail apps on non-Google
   accounts shrink the email and leave a white margin; Outlook for Windows
-  gets a fixed 600px table of its own). On a phone the email keeps its
-  desktop layout — columns stay side by side, the hero its shape and corner
-  logo — with headings, the hero's height and padding, its logos and the
-  gutters scaled down by one media query; body copy keeps its size.
+  gets a fixed 600px table of its own). On a phone the email is the
+  desktop email, smaller: every pixel size (type, padding, margins, fixed
+  widths and heights) is scaled by the phone's width over 600, in eight
+  media-query steps (`scaleForPhones`), so every line breaks where it does
+  on the desktop. Gmail has no `vw` or `zoom`, hence the steps.
   **Dark mode**: `color-scheme: light only` (Apple Mail, iOS Mail), every
   coloured element locked to its colour under Outlook's `data-ogsc` /
   `data-ogsb` attributes (Outlook.com, Outlook apps) and under

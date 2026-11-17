@@ -13,7 +13,7 @@ import {
   withArabic,
   withoutArabic,
 } from "./document";
-import { href, renderDesign, type DesignRenderContext } from "./render";
+import { href, renderDesign, scaleForPhones, type DesignRenderContext } from "./render";
 import { BUILT_IN_TEMPLATES, launchTemplate, staticTemplate, type LaunchProject, type SiteFooter } from "./templates";
 
 const site: SiteFooter = {
@@ -176,14 +176,26 @@ describe("renderDesign", () => {
     expect(launchTemplate(project, site).design.blocks[0].props.note).toBe("");
   });
 
-  it("keeps the desktop layout on a phone: columns side by side, the hero its shape, headings smaller", () => {
+  it("draws the desktop email smaller on a phone: every pixel size scaled by the phone's width over 600", () => {
     const html = renderDesign(launchTemplate(project, site).design, ctx()).html;
-    const phone = /@media only screen and \(max-width:620px\)\{([\s\S]*?)\}<\/style>/.exec(html)?.[1] ?? "";
-    expect(phone).not.toContain("display:block");
-    // A 4:3 band at a 390px phone, a 42px headline at 30px.
-    expect(phone).toContain(".p-h293{height:293px!important}");
-    expect(phone).toContain(".p-fs30{font-size:30px!important}");
-    expect(html).toMatch(/<h1 class="[^"]*\bp-fs30\b/);
+    // No stacking: nothing is turned into a block on a phone.
+    expect(html).not.toMatch(/@media[^{]*max-width[^{]*\{[^@]*display:block/);
+    const step = (max: number) => new RegExp(`@media only screen and \\(max-width:${max}px\\)\\{([^\\n]*)\\}`).exec(html)?.[1] ?? "";
+    // The hero's 42px headline: 42 × 390/600 = 27.3 at a 390–413px phone, × 320/600 = 22.4 at the smallest.
+    const h1 = /<h1 [^>]*class="([^"]*)"/.exec(html)?.[1].split(" ") ?? [];
+    const sized = (css: string, px: string) => new RegExp(`\\.(z[0-9a-z]+)\\{font-size:${px}px!important\\}`).exec(css)?.[1];
+    expect(h1).toContain(sized(step(413), "27.3"));
+    expect(h1).toContain(sized(step(359), "22.4"));
+    // A 4:3 band, 450px tall, keeps its shape: 292.5px at 390.
+    expect(step(413)).toContain("{height:292.5px!important}");
+  });
+
+  it("scales padding shorthands value by value and leaves percentages and max-widths alone", () => {
+    const { html, css } = scaleForPhones('<td style="padding:28px 40px 0;width:100%;max-width:600px;font-size:15px;line-height:1.6">x</td>');
+    expect(html).toBe('<td style="padding:28px 40px 0;width:100%;max-width:600px;font-size:15px;line-height:1.6" class="z0 z1">x</td>');
+    expect(css).toContain("@media only screen and (max-width:389px){.z0{padding:17.5px 25px 0!important}.z1{font-size:9.4px!important}}");
+    expect(css).not.toMatch(/\{max-width:/);
+    expect(css.match(/@media/g)).toHaveLength(8);
   });
 
   it("is a fluid column — 100% up to 600px — with a fixed 600px table only for Outlook for Windows", () => {
@@ -197,8 +209,8 @@ describe("renderDesign", () => {
     const design = { ...emptyDesign(), blocks: [newBlock("text", { text: "Hello", textColor: "#003452", background: "#F0E1D2" })] };
     const html = renderDesign(design, ctx()).html;
     expect(html).toContain('<meta name="color-scheme" content="light only">');
-    expect(html).toMatch(/<td class="px dk-bf0e1d2"[^>]*bgcolor="#F0E1D2"/);
-    expect(html).toMatch(/<p style="[^"]*color:#003452[^"]*" class="dk-c003452">/);
+    expect(html).toMatch(/<td class="px[^"]*\bdk-bf0e1d2"[^>]*bgcolor="#F0E1D2"/);
+    expect(html).toMatch(/<p style="[^"]*color:#003452[^"]*" class="[^"]*\bdk-c003452">/);
     const [, base, locks] = /<style>([\s\S]*?)<\/style><style>([\s\S]*?)<\/style>/.exec(html) ?? [];
     expect(base).not.toContain("data-og");
     expect(locks).toContain(":root{color-scheme:light only");
