@@ -175,6 +175,37 @@ describe("renderDesign", () => {
     expect(html).toMatch(/<td width="70" valign="bottom"[^>]*><img[^>]*><\/td><td valign="bottom" align="center"[^>]*>[\s\S]*NEW LAUNCH[\s\S]*?<\/td><td width="70"/);
     expect(launchTemplate(project, site).design.blocks[0].props.note).toBe("");
   });
+
+  it("keeps the desktop layout on a phone: columns side by side, the hero its shape, headings smaller", () => {
+    const html = renderDesign(launchTemplate(project, site).design, ctx()).html;
+    const phone = /@media only screen and \(max-width:620px\)\{([\s\S]*?)\}<\/style>/.exec(html)?.[1] ?? "";
+    expect(phone).not.toContain("display:block");
+    // A 4:3 band at a 390px phone, a 42px headline at 30px.
+    expect(phone).toContain(".p-h293{height:293px!important}");
+    expect(phone).toContain(".p-fs30{font-size:30px!important}");
+    expect(html).toMatch(/<h1 class="[^"]*\bp-fs30\b/);
+  });
+
+  it("is a fluid column — 100% up to 600px — with a fixed 600px table only for Outlook for Windows", () => {
+    const html = renderDesign(emptyDesign(), ctx()).html;
+    expect(html).toContain("width:100%;max-width:600px");
+    expect(html).not.toMatch(/style="width:600px/);
+    expect(html).toContain('<!--[if mso]><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600"');
+  });
+
+  it("locks its colours against dark mode, in a <style> element of their own", () => {
+    const design = { ...emptyDesign(), blocks: [newBlock("text", { text: "Hello", textColor: "#003452", background: "#F0E1D2" })] };
+    const html = renderDesign(design, ctx()).html;
+    expect(html).toContain('<meta name="color-scheme" content="light only">');
+    expect(html).toMatch(/<td class="px dk-bf0e1d2"[^>]*bgcolor="#F0E1D2"/);
+    expect(html).toMatch(/<p style="[^"]*color:#003452[^"]*" class="dk-c003452">/);
+    const [, base, locks] = /<style>([\s\S]*?)<\/style><style>([\s\S]*?)<\/style>/.exec(html) ?? [];
+    expect(base).not.toContain("data-og");
+    expect(locks).toContain(":root{color-scheme:light only");
+    expect(locks).toContain("[data-ogsc] .dk-c003452,.dk-c003452[data-ogsc]{color:#003452!important}");
+    expect(locks).toContain("[data-ogsb] .dk-bf0e1d2,.dk-bf0e1d2[data-ogsb]{background-color:#f0e1d2!important}");
+    expect(locks).toContain("@media (prefers-color-scheme:dark){");
+  });
 });
 
 describe("built-in templates", () => {

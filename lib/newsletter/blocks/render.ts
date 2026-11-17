@@ -59,7 +59,34 @@ type Ctx = DesignRenderContext & {
   settings: DesignSettings;
   rtl: boolean;
   text: string[];
+  /** Phone-width overrides this edition uses, class → declarations. */
+  phone: Map<string, string>;
 };
+
+/*
+ * On a phone the email keeps its desktop layout — columns stay side by side,
+ * the hero keeps its shape and its logo in the corner — and is drawn smaller,
+ * the way a desktop page zoomed out would look (client, Nov 2026). Stacking
+ * columns into one long strip read as a different email. What shrinks is
+ * what a 600px design can't fit into ~380px: headings, the hero's height and
+ * padding, its logos, the side gutters. Body copy keeps its size so it stays
+ * readable. Each size is a class registered here and written into the one
+ * <style> media query, so an inbox without media queries simply shows the
+ * desktop sizes in a fluid column.
+ */
+const PHONE = 390;
+/** The widest screen the phone sizes apply to. */
+const PHONE_MAX = 620;
+
+function phone(ctx: Ctx, cls: string, css: string): string {
+  ctx.phone.set(cls, css);
+  return cls;
+}
+
+/** A desktop pixel size on a phone: scaled to the phone column, never below `min`. */
+function onPhone(px: number, min: number, scale = 0.72): number {
+  return Math.max(min, Math.round(px * scale));
+}
 
 // ── Small helpers ───────────────────────────────────────────────
 
@@ -215,7 +242,9 @@ function headingHtml(text: string, ctx: Ctx, o: { size: unknown; align: string; 
   const weight = ctx.rtl ? arabic(ctx).headingWeight : serif ? 400 : 600;
   const size = ctx.rtl ? Math.round(px * 0.82) : px;
   const tag = o.level === 1 ? "h1" : "h2";
-  return `<${tag}${o.cls ? ` class="${o.cls}"` : ""} style="margin:0 0 12px 0;font-family:${family};font-size:${size}px;line-height:1.2;font-weight:${weight};color:${o.ink};text-align:${o.align}${serif ? ";letter-spacing:-0.01em" : ""}">${inline(text, ctx, o.ink)}</${tag}>`;
+  const small = onPhone(size, 16);
+  const cls = [o.cls, small < size ? phone(ctx, `p-fs${small}`, `font-size:${small}px!important`) : ""].filter(Boolean).join(" ");
+  return `<${tag}${cls ? ` class="${cls}"` : ""} style="margin:0 0 12px 0;font-family:${family};font-size:${size}px;line-height:1.2;font-weight:${weight};color:${o.ink};text-align:${o.align}${serif ? ";letter-spacing:-0.01em" : ""}">${inline(text, ctx, o.ink)}</${tag}>`;
 }
 
 function bodyStyle(ctx: Ctx, ink: string, align: string, size = 15): string {
@@ -269,7 +298,7 @@ function img(v: unknown, alt: string, width: number, ctx: Ctx, o: { rounded?: bo
   return to ? `<a href="${esc(to)}" style="text-decoration:none">${tag}</a>` : tag;
 }
 
-/** Columns that sit side by side on a desktop and stack on a phone. */
+/** Columns side by side — on a phone too, where they narrow rather than stack. */
 function columns(cells: string[], ctx: Ctx, o: { gap?: number; dividers?: string; valign?: string } = {}): string {
   const gap = o.gap ?? 20;
   const width = Math.floor(100 / cells.length);
@@ -280,7 +309,7 @@ function columns(cells: string[], ctx: Ctx, o: { gap?: number; dividers?: string
       const divider = o.dividers && i > 0 ? `border-${start}:1px solid ${o.dividers};` : "";
       // Half the gap on each inner edge; the outer edges sit on the block's own margin.
       const pad = `padding-${start}:${i === 0 ? 0 : gap / 2}px;padding-${end}:${i === cells.length - 1 ? 0 : gap / 2}px`;
-      return `<td class="col col-gap" width="${width}%" valign="${o.valign ?? "top"}" ${dirAttr(ctx)} style="${divider}${pad};width:${width}%">${cell}</td>`;
+      return `<td width="${width}%" valign="${o.valign ?? "top"}" ${dirAttr(ctx)} style="${divider}${pad};width:${width}%">${cell}</td>`;
     })
     .join("");
   return `<table ${TABLE} ${dirAttr(ctx)} width="100%" style="table-layout:fixed;width:100%"><tr>${tds}</tr></table>`;
@@ -354,17 +383,24 @@ const DRAW: Record<string, Drawer> = {
      */
     const words = bottomLogo ? heroFooter(p, ctx, copy, align) : copy;
     const minHeight = ratio ? Math.round(COLUMN / ratio) : pad * 2 + 120;
+    // On a phone the band keeps its shape at the phone's width, and its
+    // padding shrinks with it (see PHONE).
+    const phoneHeight = ratio ? Math.round(PHONE / ratio) : onPhone(minHeight, 160, 0.6);
+    const tall = phone(ctx, `p-h${phoneHeight}`, `height:${phoneHeight}px!important`);
+    const phonePad = onPhone(pad, 20, 0.6);
+    const padTop = phone(ctx, `p-pt${phonePad}`, `padding-top:${phonePad}px!important`);
+    const padBottom = phone(ctx, `p-pb${phonePad}`, `padding-bottom:${phonePad}px!important`);
     // At the bottom: two rows in a table of the band's height, the top one
     // valign=top and the bottom one valign=bottom, so the spare height falls
     // between them in every client, Outlook's VML text box included.
-    const cell = (content: string, valign: string, padding: string) =>
-      `<td class="px" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
+    const cell = (content: string, valign: string, padding: string, cls: string) =>
+      `<td class="px ${cls}" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
     const top = projectLogo + logo;
     const inner =
       position === "bottom" && top
-        ? `<table ${TABLE} ${dirAttr(ctx)} width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`)}</tr></table>`
-        : `<table ${TABLE} ${dirAttr(ctx)} width="100%"${position === "bottom" ? ` height="${minHeight}" style="height:${minHeight}px"` : ""}><tr>${cell(top + words, position === "bottom" ? "bottom" : "middle", `${pad}px ${GUTTER}px`)}</tr></table>`;
-    return `<tr><td ${dirAttr(ctx)} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
+        ? `<table ${TABLE} ${dirAttr(ctx)} class="${tall}" width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`, padTop)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`, padBottom)}</tr></table>`
+        : `<table ${TABLE} ${dirAttr(ctx)} width="100%"${position === "bottom" ? ` class="${tall}" height="${minHeight}" style="height:${minHeight}px"` : ""}><tr>${cell(top + words, position === "bottom" ? "bottom" : "middle", `${pad}px ${GUTTER}px`, `${padTop} ${padBottom}`)}</tr></table>`;
+    return `<tr><td ${dirAttr(ctx)}${wide ? ` class="${tall}"` : ""} valign="middle"${wide ? ` height="${minHeight}"` : ""}${src ? ` background="${esc(src)}"` : ""} bgcolor="${overlay}" style="${bg}padding:0${wide ? `;height:${minHeight}px` : ""}">${src ? outlookBackground(src, overlay, inner, minHeight) : inner}</td></tr>`;
   },
 
   logo(p, ctx) {
@@ -449,7 +485,6 @@ const DRAW: Record<string, Drawer> = {
     const html = img(p.image, localText(p, "alt", ctx.locale), bleed ? COLUMN : INNER, ctx, {
       rounded: p.rounded === true,
       link: p.link,
-      cls: "stack-img",
       // Cropped by the email image route, so the strip is that shape in every inbox.
       ratio: IMAGE_RATIO[String(p.shape)] ?? null,
     });
@@ -465,7 +500,7 @@ const DRAW: Record<string, Drawer> = {
   image_text(p, ctx) {
     const align = alignOf("start", ctx);
     const ink = color(p.textColor, ctx.settings.textColor);
-    const picture = img(p.image, localText(p, "alt", ctx.locale), 250, ctx, { cls: "stack-img" });
+    const picture = img(p.image, localText(p, "alt", ctx.locale), 250, ctx);
     const value = localText(p, "text", ctx.locale);
     const head =
       eyebrow(localText(p, "eyebrow", ctx.locale), ctx, align, ctx.settings.mutedColor) +
@@ -488,7 +523,7 @@ const DRAW: Record<string, Drawer> = {
       const caption = localText(i, "caption", ctx.locale);
       if (caption) ctx.text.push(plain(caption, ctx));
       return (
-        img(i.image, localText(i, "alt", ctx.locale), width, ctx, { rounded: p.rounded === true, link: i.link, cls: "stack-img" }) +
+        img(i.image, localText(i, "alt", ctx.locale), width, ctx, { rounded: p.rounded === true, link: i.link }) +
         (caption ? `<p style="margin:8px 0 0 0;${bodyStyle(ctx, ctx.settings.mutedColor, alignOf("start", ctx), 12)}">${inline(caption, ctx, ctx.settings.linkColor)}</p>` : "")
       );
     });
@@ -537,7 +572,7 @@ const DRAW: Record<string, Drawer> = {
         { label: localText(i, "linkLabel", ctx.locale), url: i.url, fill: ctx.settings.linkColor, ink, style: "link", align },
         ctx,
       );
-      return `<table ${TABLE} ${dirAttr(ctx)} width="100%" bgcolor="${card}" style="background:${card}"><tr><td>${img(i.image, title, width, ctx, { link: i.url, cls: "stack-img" })}</td></tr><tr><td style="padding:16px 18px 18px">${
+      return `<table ${TABLE} ${dirAttr(ctx)} width="100%" bgcolor="${card}" style="background:${card}"><tr><td>${img(i.image, title, width, ctx, { link: i.url })}</td></tr><tr><td style="padding:16px 18px 18px">${
         title ? `<p style="margin:0 0 6px 0;font-family:${font(ctx, "heading")};font-size:${ctx.rtl ? 17 : 19}px;line-height:1.25;color:${color(p.textColor, ctx.settings.headingColor)};text-align:${align}">${inline(title, ctx, ink)}</p>` : ""
       }${body ? `<p style="margin:0 0 12px 0;${bodyStyle(ctx, ink, align, 13)}">${inline(body, ctx, ctx.settings.linkColor)}</p>` : ""}${link}</td></tr></table>`;
     });
@@ -831,12 +866,12 @@ function logoSrc(p: Props, ctx: Ctx): { src: string; alt: string } | null {
   return { src: brandLogo || `${ctx.siteUrl}/email/bazar-logo.png`, alt: ctx.brand.logoAlt };
 }
 
-function logoImg(p: Props, ctx: Ctx, align: string): string {
+function logoImg(p: Props, ctx: Ctx, align: string, cls = ""): string {
   const logo = logoSrc(p, ctx);
   if (!logo) return "";
   const width = Number(p.logoWidth ?? 110);
   const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
-  return `<img src="${esc(logo.src)}" alt="${esc(logo.alt)}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`;
+  return `<img${cls ? ` class="${cls}"` : ""} src="${esc(logo.src)}" alt="${esc(logo.alt)}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`;
 }
 
 /** The development's own logo, at the top of a hero. */
@@ -845,7 +880,7 @@ function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
   const src = imageUrl(p.projectLogo, ctx, { width });
   if (!src) return "";
   const margin = align === "center" ? "0 auto" : align === "right" ? "0 0 0 auto" : "0";
-  return `<div style="margin:0 0 22px 0"><img src="${esc(src)}" alt="${esc(localText(p, "subheading", ctx.locale) || "")}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
+  return `<div style="margin:0 0 22px 0"><img class="${phoneWidth(ctx, width)}" src="${esc(src)}" alt="${esc(localText(p, "subheading", ctx.locale) || "")}" width="${width}" style="display:block;margin:${margin};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
 }
 
 /**
@@ -856,14 +891,21 @@ function projectLogoImg(p: Props, ctx: Ctx, align: string): string {
  */
 function heroFooter(p: Props, ctx: Ctx, words: string, align: string): string {
   const start = ctx.rtl ? "right" : "left";
-  const logo = logoImg(p, ctx, start);
-  if (!logo) return words;
   const width = Number(p.logoWidth ?? 110);
-  return `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td width="${width}" valign="bottom" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" align="${align}" style="text-align:${align};padding:0 12px">${words}</td><td width="${width}" style="width:${width}px">&nbsp;</td></tr></table>`;
+  const narrow = phoneWidth(ctx, width);
+  const logo = logoImg(p, ctx, start, narrow);
+  if (!logo) return words;
+  return `<table ${TABLE} ${dirAttr(ctx)} width="100%"><tr><td width="${width}" valign="bottom" class="${narrow}" style="width:${width}px;text-align:${start}">${logo}</td><td valign="bottom" align="${align}" style="text-align:${align};padding:0 12px">${words}</td><td width="${width}" class="${narrow}" style="width:${width}px">&nbsp;</td></tr></table>`;
+}
+
+/** A logo's width on a phone, as a class. */
+function phoneWidth(ctx: Ctx, width: number): string {
+  const small = onPhone(width, 56, 0.65);
+  return phone(ctx, `p-w${small}`, `width:${small}px!important`);
 }
 
 function heroLogo(p: Props, ctx: Ctx, align: string): string {
-  const logo = logoImg(p, ctx, align);
+  const logo = logoImg(p, ctx, align, phoneWidth(ctx, Number(p.logoWidth ?? 110)));
   return logo ? `<div style="margin:0 0 36px 0">${logo}</div>` : "";
 }
 
@@ -879,13 +921,80 @@ export function renderBlock(block: Block, ctx: Ctx): string {
   }
 }
 
-const STYLE = `body{margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic}table{border-collapse:collapse}a{text-decoration:none}
-@media only screen and (max-width:620px){.wrap{width:100%!important;max-width:100%!important}.px{padding-left:20px!important;padding-right:20px!important}.col{display:block!important;width:100%!important;max-width:100%!important;box-sizing:border-box}.col-gap{padding:0 0 22px 0!important;border:0!important}.hero-h{font-size:32px!important;line-height:1.15!important}.stack-img{width:100%!important;max-width:100%!important;height:auto!important}}`;
+const BASE_STYLE = `body{margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic}table{border-collapse:collapse}a{text-decoration:none}`;
+
+/**
+ * The <style> elements: the resets and this edition's phone sizes, then the
+ * colour locks on their own. Two elements, because Gmail drops a whole
+ * <style> element over one rule it can't parse, and the locks use selectors
+ * it doesn't support — in one element they would cost Gmail the phone sizes.
+ */
+function styleSheets(ctx: Ctx, locks: string): string {
+  const sized = [...ctx.phone.entries()]
+    .sort(([x], [y]) => x.localeCompare(y))
+    .map(([cls, css]) => `.${cls}{${css}}`)
+    .join("");
+  return `<style>${BASE_STYLE}
+@media only screen and (max-width:${PHONE_MAX}px){.px{padding-left:20px!important;padding-right:20px!important}${sized}}</style><style>:root{color-scheme:light only;supported-color-schemes:light only}${locks}</style>`;
+}
+
+/*
+ * Dark mode. The email is designed in its own colours, and a phone in dark
+ * mode should not repaint it (client, Nov 2026). Three layers, because each
+ * client listens to a different one:
+ *
+ * - `color-scheme: light only` (the meta tags and :root) — Apple Mail and
+ *   iOS Mail leave the email as designed.
+ * - Outlook.com and Outlook's apps rewrite every colour and record the
+ *   original in `data-ogsc` (text) / `data-ogsb` (background). Every element
+ *   with a colour gets a class naming it, and a rule under those attributes
+ *   puts the original back.
+ * - Clients that honour `prefers-color-scheme` (Outlook for Mac, some
+ *   Android mail apps) get the same rules in a dark-scheme media query, so
+ *   the "dark version" they ask for is the light one.
+ *
+ * Gmail's apps can't be told: they ignore all three and invert by their own
+ * rules. Photographs — the hero, the image strips — are never inverted
+ * anywhere, which is why the hero survives every client.
+ */
+export function lockColours(html: string): { html: string; css: string } {
+  const inks = new Set<string>();
+  const fills = new Set<string>();
+  const out = html.replace(/<([a-z][a-z0-9]*)(\s[^<>]*?)(\/?)>/gi, (tag, name: string, attrs: string, slash: string) => {
+    const style = /\sstyle="([^"]*)"/i.exec(attrs)?.[1] ?? "";
+    const ink = /(?:^|;)\s*color:\s*(#[0-9a-f]{6})\b/i.exec(style)?.[1];
+    const fill = /(?:^|;)\s*background(?:-color)?:\s*(#[0-9a-f]{6})\b/i.exec(style)?.[1] ?? /\sbgcolor="(#[0-9a-f]{6})"/i.exec(attrs)?.[1];
+    if (!ink && !fill) return tag;
+    const add: string[] = [];
+    if (ink) {
+      const hex = ink.slice(1).toLowerCase();
+      inks.add(hex);
+      add.push(`dk-c${hex}`);
+    }
+    if (fill) {
+      const hex = fill.slice(1).toLowerCase();
+      fills.add(hex);
+      add.push(`dk-b${hex}`);
+    }
+    const withClass = /\sclass="([^"]*)"/i.test(attrs)
+      ? attrs.replace(/\sclass="([^"]*)"/i, (_m, cls: string) => ` class="${`${cls} ${add.join(" ")}`.trim()}"`)
+      : `${attrs} class="${add.join(" ")}"`;
+    return `<${name}${withClass}${slash}>`;
+  });
+  const inkRules = [...inks].sort().map((h) => [`.dk-c${h}`, `color:#${h}!important`] as const);
+  const fillRules = [...fills].sort().map((h) => [`.dk-b${h}`, `background-color:#${h}!important`] as const);
+  const outlook = [
+    ...inkRules.map(([sel, css]) => `[data-ogsc] ${sel},${sel}[data-ogsc]{${css}}`),
+    ...fillRules.map(([sel, css]) => `[data-ogsb] ${sel},${sel}[data-ogsb]{${css}}`),
+  ].join("");
+  const scheme = [...inkRules, ...fillRules].map(([sel, css]) => `${sel}{${css}}`).join("");
+  return { html: out, css: outlook + (scheme ? `@media (prefers-color-scheme:dark){${scheme}}` : "") };
+}
 
 /** The whole email for one edition. */
 export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): RenderedDesign {
   const design = normaliseDesign(raw);
-  const ctx: Ctx = { ...opts, settings: design.settings, rtl: opts.locale === "ar", text: [] };
+  const ctx: Ctx = { ...opts, settings: design.settings, rtl: opts.locale === "ar", text: [], phone: new Map() };
   const s = design.settings;
   const dir = ctx.rtl ? "rtl" : "ltr";
   const rows: string[] = [];
@@ -905,14 +1014,24 @@ export function renderDesign(raw: Design | unknown, opts: DesignRenderContext): 
     ? arabic(ctx).head
     : '<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">';
   // The VML namespaces and 96 dpi let Outlook for Windows draw the hero's photo.
-  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><title>${esc(opts.subject)}</title>${fonts}<style>${STYLE}</style></head>
-<body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir}">
-<table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="background:${s.pageBackground}"><tr><td align="center" style="padding:${heroFirst ? 0 : 24}px 0 24px">
-<table ${TABLE} dir="${dir}" class="wrap" width="${COLUMN}" bgcolor="${s.contentBackground}" style="width:${COLUMN}px;max-width:${COLUMN}px;background:${s.contentBackground};direction:${dir};text-align:${ctx.rtl ? "right" : "left"}">
+  /*
+   * The column is fluid — 100% wide up to 600px — rather than a fixed 600px
+   * that a media query narrows. A Gmail app reading a non-Google account
+   * ignores media queries; handed a fixed 600px it shrank the whole email
+   * to fit and left a white margin round it (client, Nov 2026). Outlook for
+   * Windows can't do max-width, so it gets a fixed 600px table of its own.
+   */
+  const body = lockColours(`<body dir="${dir}" style="margin:0;padding:0;background:${s.pageBackground};color:${s.textColor};direction:${dir};width:100%">
+<table ${TABLE} dir="${dir}" width="100%" bgcolor="${s.pageBackground}" style="width:100%;background:${s.pageBackground}"><tr><td align="center" style="padding:${heroFirst ? 0 : 24}px 0 24px">
+<!--[if mso]><table ${TABLE} width="${COLUMN}" align="center"><tr><td><![endif]-->
+<table ${TABLE} dir="${dir}" align="center" width="100%" bgcolor="${s.contentBackground}" style="width:100%;max-width:${COLUMN}px;margin:0 auto;background:${s.contentBackground};direction:${dir};text-align:${ctx.rtl ? "right" : "left"}">
 ${rows.join("\n")}
 </table>
+<!--[if mso]></td></tr></table><![endif]-->
 </td></tr></table>
-</body></html>`;
+</body>`);
+  const html = `<!doctype html><html dir="${dir}" lang="${opts.locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(opts.subject)}</title>${fonts}${styleSheets(ctx, body.css)}</head>
+${body.html}</html>`;
   const text = [...ctx.text, opts.footer.text]
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")

@@ -68,8 +68,20 @@ with two buttons, social icons and a contact footer.
   time through lib/i18n/mt) and **Copy the English** fill them. The Arabic
   email is drawn right to left, in fonts the reader has, never letter-spaced,
   and its site links go to `/ar` pages.
-- **Rendering** (`render.ts`): 600px email-safe tables and inline styles; one
-  `<style>` that stacks columns on a phone. The hero's photo is a CSS
+- **Rendering** (`render.ts`): email-safe tables and inline styles in a fluid
+  column, 100% wide up to 600px (a fixed 600px made Gmail apps on non-Google
+  accounts shrink the email and leave a white margin; Outlook for Windows
+  gets a fixed 600px table of its own). On a phone the email keeps its
+  desktop layout — columns stay side by side, the hero its shape and corner
+  logo — with headings, the hero's height and padding, its logos and the
+  gutters scaled down by one media query; body copy keeps its size.
+  **Dark mode**: `color-scheme: light only` (Apple Mail, iOS Mail), every
+  coloured element locked to its colour under Outlook's `data-ogsc` /
+  `data-ogsb` attributes (Outlook.com, Outlook apps) and under
+  `prefers-color-scheme: dark`, in a second `<style>` so Gmail, which drops
+  a whole `<style>` over one selector it can't parse, keeps the phone sizes.
+  Gmail's apps recolour by their own rules and can't be told otherwise;
+  photographs are never recoloured anywhere. The hero's photo is a CSS
   background with the overlay colour as fallback (Outlook desktop shows the
   colour). Every link goes through one check — https, http, mailto:, tel:, a
   page on the site, or a `{{token}}`; anything else draws as text and the
