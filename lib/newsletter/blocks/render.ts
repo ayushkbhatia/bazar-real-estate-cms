@@ -25,6 +25,8 @@ import { emailImageUrl, isMediaKey, type EmailImageOptions } from "@/lib/newslet
 import type { EmailBrand } from "@/lib/content-assets/email-brand";
 import type { EmailFeatureBlock } from "@/lib/content-assets/email-feature";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { fillUrl, mixHex } from "@/lib/newsletter/fill";
+import { amenityIcon, amenityIconUrl } from "./amenity-icons";
 import { SOCIAL_NETWORKS } from "./catalogue";
 import { localText, normaliseDesign } from "./document";
 import type { Block, Design, DesignSettings, ImageValue, Props } from "./types";
@@ -189,12 +191,34 @@ function iconTone(ink: string): "light" | "dark" {
 const dirAttr = (ctx: Ctx) => `dir="${ctx.rtl ? "rtl" : "ltr"}"`;
 const TABLE = 'role="presentation" cellspacing="0" cellpadding="0" border="0"';
 
+/**
+ * A block's background as a cell's attributes and style: flat, or fading
+ * top to bottom into `backgroundTo`. The fade is a stretched PNG
+ * (lib/newsletter/fill.ts); the cell's colour is the one halfway between, so
+ * a client that shows no background image still shows the band.
+ */
+function boxFill(props: Props, ctx: Pick<Ctx, "siteUrl">): { attrs: string; style: string } {
+  const bg = color(props.background, "");
+  if (!bg) return { attrs: "", style: "" };
+  const to = color(props.backgroundTo, "");
+  const src = to ? fillUrl(ctx.siteUrl, bg, to) : null;
+  if (!src) return { attrs: ` bgcolor="${bg}"`, style: `background:${bg};` };
+  const mid = mixHex(bg, to, 0.5);
+  return {
+    attrs: ` bgcolor="${mid}" background="${esc(src)}"`,
+    // 1% overscan at each edge: a band seldom ends on a whole pixel, and a
+    // fade stretched to exactly 100% left a hairline of the halfway colour
+    // at the seam between two chained bands.
+    style: `background-color:${mid};background-image:url('${esc(src)}');background-size:100% 102%;background-position:center center;`,
+  };
+}
+
 /** One block's row: full width, its own background and vertical padding. */
 function row(inner: string, props: Props, ctx: Ctx, opts: { gutter?: boolean; padding?: number } = {}): string {
-  const bg = color(props.background, "");
+  const fillOf = boxFill(props, ctx);
   const pad = opts.padding ?? PAD[String(props.padding ?? "m")] ?? 32;
   const gutter = opts.gutter === false ? 0 : GUTTER;
-  return `<tr><td class="${gutter ? "px" : ""}" ${dirAttr(ctx)}${bg ? ` bgcolor="${bg}"` : ""} style="${bg ? `background:${bg};` : ""}padding:${pad}px ${gutter}px">${inner}</td></tr>`;
+  return `<tr><td class="${gutter ? "px" : ""}" ${dirAttr(ctx)}${fillOf.attrs} style="${fillOf.style}padding:${pad}px ${gutter}px">${inner}</td></tr>`;
 }
 
 function eyebrow(text: string, ctx: Ctx, align: string, ink: string): string {
@@ -242,7 +266,9 @@ function button(b: ButtonSpec, ctx: Ctx): string {
     ? `font-family:${arabic(ctx).body};font-size:14px;font-weight:600`
     : `font-family:${FONTS.sans};font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase`;
   const width = b.fullWidth ? ' width="100%"' : "";
-  return `<table ${TABLE} ${dirAttr(ctx)} align="${b.align}"${width} style="margin:${b.align === "center" ? "0 auto" : "0"}"><tr><td align="center"${outline ? "" : ` bgcolor="${bg}"`} style="background:${bg};border-radius:${radius}px;border:1px solid ${b.fill}"><a href="${esc(to)}" style="display:${b.fullWidth ? "block" : "inline-block"};padding:14px 30px;${type};line-height:1.2;color:${ink};text-decoration:none;border-radius:${radius}px">${label}</a></td></tr></table>`;
+  // `border-collapse:separate`: the email's reset collapses every table, and a
+  // collapsed cell draws no rounded corners — a pill came out square.
+  return `<table ${TABLE} ${dirAttr(ctx)} align="${b.align}"${width} style="margin:${b.align === "center" ? "0 auto" : "0"};border-collapse:separate"><tr><td align="center"${outline ? "" : ` bgcolor="${bg}"`} style="background:${bg};border-radius:${radius}px;border:1px solid ${b.fill}"><a href="${esc(to)}" style="display:${b.fullWidth ? "block" : "inline-block"};padding:14px 30px;${type};line-height:1.2;color:${ink};text-decoration:none;border-radius:${radius}px">${label}</a></td></tr></table>`;
 }
 
 function blockButton(props: Props, ctx: Ctx, align: string, prefix = "button"): string {
@@ -258,6 +284,9 @@ function blockButton(props: Props, ctx: Ctx, align: string, prefix = "button"): 
     ctx,
   );
 }
+
+/** An image row's Shape, as width ÷ height; null keeps each upload's own. */
+const GALLERY_RATIO: Record<string, number> = { landscape: 4 / 3, square: 1, portrait: 3 / 4 };
 
 /** An image block's Shape, as width ÷ height; null keeps the upload's own. */
 const IMAGE_RATIO: Record<string, number> = { wide: 16 / 9, panorama: 2, strip: 3 };
@@ -325,19 +354,23 @@ const DRAW: Record<string, Drawer> = {
     const align = alignOf(p.align, ctx);
     const pad = wide ? 28 : ({ s: 48, m: 88, l: 140 }[String(p.height)] ?? 88);
     const bottomLogo = p.logoPosition === "bottom";
+    const corners = p.logoPosition === "corners";
     const bg = !src
       ? `background:${overlay};`
       : baked
         ? `background-color:${overlay};background-image:url('${esc(src)}');background-size:cover;background-position:center;`
         : `background-color:${overlay};background-image:url('${esc(src)}');background-image:linear-gradient(${rgba(overlay, strength)},${rgba(overlay, strength)}),url('${esc(src)}');background-size:cover;background-position:center;`;
-    const logo = bottomLogo ? "" : heroLogo(p, ctx, align);
+    const logo = bottomLogo ? "" : corners ? heroCorners(p, ctx) : heroLogo(p, ctx, align);
     const cta = blockButton(p, ctx, align);
     const projectLogo = projectLogoImg(p, ctx, align);
     const note = localText(p, "note", ctx.locale);
     const copy = [
       eyebrow(localText(p, "eyebrow", ctx.locale), ctx, align, ink),
       headingHtml(localText(p, "heading", ctx.locale), ctx, { size: "xl", align, ink, cls: "hero-h", level: 1 }),
-      headingHtml(localText(p, "subheading", ctx.locale), ctx, { size: "m", align, ink }),
+      p.subheadingStyle === "caps"
+        ? capsLine(localText(p, "subheading", ctx.locale), ctx, align, ink)
+        : headingHtml(localText(p, "subheading", ctx.locale), ctx, { size: "m", align, ink }),
+      pill(localText(p, "tag", ctx.locale), ctx, align, ink),
       localText(p, "text", ctx.locale)
         ? (ctx.text.push(plain(localText(p, "text", ctx.locale), ctx)), paragraphs(localText(p, "text", ctx.locale), ctx, bodyStyle(ctx, ink, align, 16), ink))
         : "",
@@ -360,7 +393,8 @@ const DRAW: Record<string, Drawer> = {
     // between them in every client, Outlook's VML text box included.
     const cell = (content: string, valign: string, padding: string) =>
       `<td class="px" ${dirAttr(ctx)} align="${align}" valign="${valign}" style="padding:${padding};text-align:${align}">${content}</td>`;
-    const top = projectLogo + logo;
+    // Corner logos sit above the project's own; a single logo sits under it, as before.
+    const top = corners ? logo + projectLogo : projectLogo + logo;
     const inner =
       position === "bottom" && top
         ? `<table ${TABLE} ${dirAttr(ctx)} width="100%" height="${minHeight}" style="height:${minHeight}px"><tr>${cell(top, "top", `${pad}px ${GUTTER}px 0`)}</tr><tr>${cell(words, "bottom", `24px ${GUTTER}px ${pad}px`)}</tr></table>`
@@ -483,16 +517,20 @@ const DRAW: Record<string, Drawer> = {
   gallery(p, ctx) {
     const list = items(p).filter((i) => imageUrl(i.image));
     if (list.length === 0) return "";
-    const width = Math.floor((INNER - 16 * (list.length - 1)) / list.length);
+    // Edge to edge: no margin, no gaps, one strip of photos across the email.
+    const bleed = p.fullBleed === true;
+    const gap = bleed ? 0 : 16;
+    const width = Math.floor(((bleed ? COLUMN : INNER) - gap * (list.length - 1)) / list.length);
+    const ratio = GALLERY_RATIO[String(p.shape)] ?? null;
     const cells = list.map((i) => {
       const caption = localText(i, "caption", ctx.locale);
       if (caption) ctx.text.push(plain(caption, ctx));
       return (
-        img(i.image, localText(i, "alt", ctx.locale), width, ctx, { rounded: p.rounded === true, link: i.link }) +
-        (caption ? `<p style="margin:8px 0 0 0;${bodyStyle(ctx, ctx.settings.mutedColor, alignOf("start", ctx), 12)}">${inline(caption, ctx, ctx.settings.linkColor)}</p>` : "")
+        img(i.image, localText(i, "alt", ctx.locale), width, ctx, { rounded: p.rounded === true, link: i.link, ratio }) +
+        (caption ? `<p style="margin:8px 0 0 0;${bleed ? "padding:0 8px;" : ""}${bodyStyle(ctx, ctx.settings.mutedColor, alignOf("start", ctx), 12)}">${inline(caption, ctx, ctx.settings.linkColor)}</p>` : "")
       );
     });
-    return row(columns(cells, ctx, { gap: 16 }), p, ctx);
+    return row(columns(cells, ctx, { gap }), p, ctx, { gutter: !bleed });
   },
 
   features(p, ctx) {
@@ -553,17 +591,156 @@ const DRAW: Record<string, Drawer> = {
     const list = items(p);
     if (list.length === 0) return "";
     const valueInk = color(p.valueColor, ctx.settings.headingColor);
+    const labelInk = color(p.textColor, ctx.settings.mutedColor);
+    const large = p.size === "l";
+    const px = ctx.rtl ? (large ? 30 : 26) : large ? 44 : 32;
     const cells = list.map((i) => {
       const value = localText(i, "value", ctx.locale);
       const label = localText(i, "label", ctx.locale);
       ctx.text.push(`${plain(value, ctx)} — ${plain(label, ctx)}`);
-      return `<p style="margin:0 0 4px 0;font-family:${font(ctx, "heading")};font-size:${ctx.rtl ? 26 : 32}px;line-height:1.1;color:${valueInk};text-align:center"><bdi>${inline(value, ctx, valueInk)}</bdi></p><p style="margin:0;${bodyStyle(ctx, color(p.textColor, ctx.settings.mutedColor), "center", 12)}">${inline(label, ctx, valueInk)}</p>`;
+      return `<p style="margin:0 0 ${large ? 6 : 4}px 0;font-family:${font(ctx, "heading")};font-size:${px}px;line-height:1.1;color:${valueInk};text-align:center"><bdi>${inline(value, ctx, valueInk)}</bdi></p><p style="margin:0;${bodyStyle(ctx, labelInk, "center", large ? 13 : 12)}">${inline(label, ctx, valueInk)}</p>`;
     });
     return row(
       headingHtml(localText(p, "heading", ctx.locale), ctx, { size: "m", align: "center", ink: color(p.textColor, ctx.settings.headingColor) }).replace(
         "margin:0 0 12px 0",
         "margin:0 0 20px 0",
-      ) + columns(cells, ctx, { gap: 12 }),
+      ) + columns(cells, ctx, { gap: 12, valign: "middle", dividers: p.dividers === true ? rgba(labelInk, 0.5) : undefined }),
+      p,
+      ctx,
+    );
+  },
+
+  tiles(p, ctx) {
+    const list = items(p)
+      .map((i) => ({ value: localText(i, "value", ctx.locale).trim(), label: localText(i, "label", ctx.locale).trim() }))
+      .filter((t) => t.value || t.label);
+    if (list.length === 0) return "";
+    const n = Math.min(4, Math.max(2, Number(p.columns) || 3));
+    const gap = 12;
+    const width = Math.floor((INNER - gap * (n - 1)) / n);
+    const ink = color(p.tileColor, color(p.textColor, ctx.settings.headingColor));
+    const fill = color(p.tileFill, "");
+    const strength = Number(p.tileOpacity ?? 14) / 100;
+    const radius = p.shape === "square" ? 0 : 10;
+    const height = list.some((t) => t.value) ? 80 : 56;
+    ctx.text.push(list.map((t) => [t.value, t.label].filter(Boolean).map((v) => plain(v, ctx)).join(" ")).join(" · "));
+    const label = (t: string, alone: boolean) =>
+      ctx.rtl
+        ? `<p style="margin:0;font-family:${arabic(ctx).body};font-size:${alone ? 15 : 13}px;line-height:1.35;font-weight:600;color:${ink};text-align:center">${inline(t, ctx, ink)}</p>`
+        : `<p style="margin:0;font-family:${FONTS.sans};font-size:${alone ? 12 : 11}px;line-height:1.3;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${ink};text-align:center">${inline(t, ctx, ink)}</p>`;
+    const tile = (t: { value: string; label: string }) =>
+      `<td width="${width}" height="${height}" align="center" valign="middle" style="width:${width}px;height:${height}px;padding:6px 8px;border:1px solid ${ink};border-color:${rgba(ink, 0.55)};border-radius:${radius}px;${fill && strength > 0 ? `background:${rgba(fill, strength)};` : ""}">${
+        t.value
+          ? `<p style="margin:0 0 2px 0;font-family:${font(ctx, "heading")};font-size:${ctx.rtl ? 24 : 30}px;line-height:1;color:${ink};text-align:center"><bdi>${inline(t.value, ctx, ink)}</bdi></p>`
+          : ""
+      }${t.label ? label(t.label, !t.value) : ""}</td>`;
+    // Each row its own centred table, so a short last row sits in the middle.
+    const rows: string[] = [];
+    for (let i = 0; i < list.length; i += n) {
+      const cells = list.slice(i, i + n).map(tile).join(`<td width="${gap}" style="width:${gap}px;font-size:1px;line-height:1px">&nbsp;</td>`);
+      // Separate borders, so each tile keeps its own rounded outline.
+      rows.push(`<table ${TABLE} ${dirAttr(ctx)} align="center" style="margin:0 auto${i ? `;margin-top:${gap}px` : ""};border-collapse:separate"><tr>${cells}</tr></table>`);
+    }
+    return row(
+      headingHtml(localText(p, "heading", ctx.locale), ctx, { size: p.size, align: "center", ink: color(p.textColor, ctx.settings.headingColor) }).replace(
+        "margin:0 0 12px 0",
+        "margin:0 0 22px 0",
+      ) + rows.join(""),
+      p,
+      ctx,
+    );
+  },
+
+  price(p, ctx) {
+    const value = localText(p, "value", ctx.locale).trim();
+    if (!value) return "";
+    const ink = color(p.textColor, ctx.settings.headingColor);
+    const valueInk = color(p.valueColor, ink);
+    const label = localText(p, "label", ctx.locale);
+    const currency = localText(p, "currency", ctx.locale).trim();
+    const unit = localText(p, "unit", ctx.locale).trim();
+    const note = localText(p, "note", ctx.locale);
+    const px = { m: 40, l: 54, xl: 66 }[String(p.size)] ?? 54;
+    const big = ctx.rtl ? Math.round(px * 0.8) : px;
+    const small = Math.round(px * 0.44);
+    const unitStyle = ctx.rtl
+      ? `font-family:${arabic(ctx).body};font-size:${small}px;font-weight:700`
+      : `font-family:${FONTS.sans};font-size:${small}px;font-weight:700;letter-spacing:0.01em`;
+    /*
+     * English leads with the currency, Arabic trails with it — "AED 1.66
+     * Million", "1.66 مليون درهم" — derived from the language, the way the
+     * site's own prices are (lib/preferences/unit-labels.ts), not stored.
+     */
+    const words = ctx.rtl ? ["", [unit, currency].filter(Boolean).join(" ")] : [currency, unit];
+    ctx.text.push([label ? `${plain(label, ctx)}:` : "", words[0], value, words[1]].filter(Boolean).join(" "));
+    if (note) ctx.text.push(plain(note, ctx));
+    const word = (w: string) => (w ? `<span style="${unitStyle};color:${valueInk}">${inline(w, ctx, valueInk)}</span>` : "");
+    const parts = [
+      word(words[0]!),
+      `<span style="font-family:${font(ctx, "heading")};font-size:${big}px;line-height:1;color:${valueInk}"><bdi>${inline(value, ctx, valueInk)}</bdi></span>`,
+      word(words[1]!),
+    ].filter(Boolean);
+    return row(
+      (label
+        ? `<p style="margin:0 0 6px 0;font-family:${font(ctx, "heading")};font-size:${ctx.rtl ? 24 : 30}px;line-height:1.2;${ctx.rtl ? `font-weight:${arabic(ctx).headingWeight};` : ""}color:${ink};text-align:center">${inline(label, ctx, ink)}</p>`
+        : "") +
+        `<p style="margin:0;line-height:1.15;text-align:center">${parts.join("&nbsp;")}</p>` +
+        (note ? `<p style="margin:8px 0 0 0;${bodyStyle(ctx, color(p.textColor, ctx.settings.mutedColor), "center", 12)}">${inline(note, ctx, ink)}</p>` : ""),
+      p,
+      ctx,
+    );
+  },
+
+  amenities(p, ctx) {
+    const ink = color(p.textColor, ctx.settings.textColor);
+    const iconInk = color(p.iconColor, ink);
+    const size = Math.min(64, Math.max(24, Number(p.iconSize) || 34));
+    const n = Math.min(6, Math.max(3, Number(p.columns) || 6));
+    const list = items(p)
+      .map((i) => {
+        const icon = amenityIcon(i.icon);
+        // A blank name is the icon's own; an Arabic edition with no Arabic
+        // written reads the icon's Arabic when the English is the icon's too.
+        const en = localText(i, "label", "en").trim();
+        let name = localText(i, "label", ctx.locale).trim();
+        if (icon && (!name || (ctx.rtl && name === en && en === icon.label))) name = ctx.rtl ? icon.label_ar : icon.label;
+        const own = imageUrl(i.image, ctx, { width: size, ratio: 1 });
+        const src = own || (icon ? amenityIconUrl(ctx.siteUrl, icon.id, iconInk) : "");
+        return { name, src };
+      })
+      .filter((a) => a.name || a.src);
+    if (list.length === 0) return "";
+    const heading = localText(p, "heading", ctx.locale);
+    const intro = localText(p, "intro", ctx.locale);
+    const group = localText(p, "group", ctx.locale);
+    if (intro) ctx.text.push(plain(intro, ctx));
+    if (group) ctx.text.push(ctx.rtl ? group : group.toUpperCase());
+    ctx.text.push(list.map((a) => plain(a.name, ctx)).filter(Boolean).join(" · "));
+    const cell = Math.floor(INNER / n);
+    const tile = (a: { name: string; src: string }) =>
+      `<td width="${cell}" valign="top" align="center" style="width:${cell}px;padding:0 4px">${
+        a.src
+          ? `<img src="${esc(a.src)}" alt="" width="${size}" height="${size}" style="display:block;margin:0 auto 8px;width:${size}px;height:${size}px;border:0;outline:none;text-decoration:none">`
+          : ""
+      }${a.name ? `<p style="margin:0;${bodyStyle(ctx, ink, "center", 11)};line-height:1.3">${inline(a.name, ctx, ink)}</p>` : ""}</td>`;
+    const rows: string[] = [];
+    for (let i = 0; i < list.length; i += n) {
+      rows.push(
+        `<table ${TABLE} ${dirAttr(ctx)} align="center" style="margin:0 auto${i ? ";margin-top:18px" : ""}"><tr>${list.slice(i, i + n).map(tile).join("")}</tr></table>`,
+      );
+    }
+    const groupLine = group
+      ? `<p style="margin:0 0 16px 0;${
+          ctx.rtl
+            ? `font-family:${arabic(ctx).body};font-size:14px;font-weight:700`
+            : `font-family:${FONTS.sans};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase`
+        };line-height:1.3;color:${color(p.textColor, ctx.settings.headingColor)};text-align:center">${inline(group, ctx, ink)}</p>`
+      : "";
+    return row(
+      headingHtml(heading, ctx, { size: p.size, align: "center", ink: color(p.textColor, ctx.settings.headingColor) }) +
+        (intro ? paragraphs(intro, ctx, bodyStyle(ctx, ink, "center", 14), ink) + '<div style="height:18px;line-height:18px">&nbsp;</div>' : "") +
+        groupLine +
+        rows.join(""),
       p,
       ctx,
     );
@@ -812,10 +989,10 @@ const DRAW: Record<string, Drawer> = {
     );
   },
 
-  spacer(p) {
-    const bg = color(p.background, "");
+  spacer(p, ctx) {
+    const fillOf = boxFill(p, ctx);
     const h = Number(p.height ?? 32);
-    return `<tr><td height="${h}"${bg ? ` bgcolor="${bg}"` : ""} style="height:${h}px;line-height:${h}px;font-size:1px;${bg ? `background:${bg}` : ""}">&nbsp;</td></tr>`;
+    return `<tr><td height="${h}"${fillOf.attrs} style="height:${h}px;line-height:${h}px;font-size:1px;${fillOf.style}">&nbsp;</td></tr>`;
   },
 };
 
@@ -865,6 +1042,42 @@ function heroFooter(p: Props, ctx: Ctx, words: string, align: string): string {
 function heroLogo(p: Props, ctx: Ctx, align: string): string {
   const logo = logoImg(p, ctx, align);
   return logo ? `<div style="margin:0 0 36px 0">${logo}</div>` : "";
+}
+
+/**
+ * A hero's top row with a logo in each corner: Bazar's at the start, the
+ * partner's (the developer's) at the end — the way a launch mailer is signed
+ * by both. Either can be missing; the other stays in its corner.
+ */
+function heroCorners(p: Props, ctx: Ctx): string {
+  const start = ctx.rtl ? "right" : "left";
+  const end = ctx.rtl ? "left" : "right";
+  const ours = logoImg(p, ctx, start);
+  const width = Number(p.partnerLogoWidth ?? 90);
+  const src = imageUrl(p.partnerLogo, ctx, { width });
+  const theirs = src
+    ? `<img src="${esc(src)}" alt="${esc((p.partnerLogo as ImageValue | null)?.alt ?? "")}" width="${width}" style="display:block;margin:${ctx.rtl ? "0 auto 0 0" : "0 0 0 auto"};width:${width}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none">`
+    : "";
+  if (!ours && !theirs) return "";
+  return `<table ${TABLE} ${dirAttr(ctx)} width="100%" style="margin:0 0 28px 0"><tr><td valign="top" style="text-align:${start}">${ours}</td><td valign="top" style="text-align:${end}">${theirs}</td></tr></table>`;
+}
+
+/** A line in spaced capitals — a hero's second headline in that style. Arabic is never spaced or capitalised. */
+function capsLine(text: string, ctx: Ctx, align: string, ink: string): string {
+  if (!text) return "";
+  ctx.text.push(text);
+  if (ctx.rtl) return `<p style="margin:0 0 14px 0;font-family:${arabic(ctx).heading};font-size:18px;line-height:1.4;font-weight:${arabic(ctx).headingWeight};color:${ink};text-align:${align}">${inline(text, ctx, ink)}</p>`;
+  return `<p style="margin:0 0 14px 0;font-family:${FONTS.serif};font-size:20px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:${ink};text-align:${align}">${inline(text, ctx, ink)}</p>`;
+}
+
+/** A short line in an outlined pill — a hero's tag. */
+function pill(text: string, ctx: Ctx, align: string, ink: string): string {
+  if (!text) return "";
+  ctx.text.push(text);
+  const type = ctx.rtl
+    ? `font-family:${arabic(ctx).body};font-size:13px;font-weight:600`
+    : `font-family:${FONTS.sans};font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase`;
+  return `<p style="margin:4px 0 0 0;text-align:${align}"><span style="display:inline-block;padding:5px 16px;border:1px solid ${ink};border-radius:999px;${type};line-height:1.3;color:${ink}">${inline(text, ctx, ink)}</span></p>`;
 }
 
 /** One block's row, or "" when it has nothing to show. A block that throws is left out rather than costing the email. */

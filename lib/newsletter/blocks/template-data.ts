@@ -1,7 +1,9 @@
 import "server-only";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { mediaPublicUrl } from "@/lib/media";
+import { showcaseTemplate } from "./showcase";
 import {
+  isProjectTemplate,
   launchTemplate,
   staticTemplate,
   type BuiltInTemplate,
@@ -92,13 +94,14 @@ export async function readLaunchProject(id: string): Promise<LaunchProject | nul
   const { data } = await sb
     .from("developments")
     .select(
-      "id, slug, name, name_ar, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, handover_date, amenities, amenities_ar, meta, hero:media_assets!developments_hero_image_id_fkey(storage_key, alt_text), area:areas(name, name_ar), developer:developers(name, name_ar)",
+      "id, slug, name, name_ar, tagline, tagline_ar, description, description_ar, vision, vision_ar, starting_price, payment_plan, bedrooms_text, bedrooms_text_ar, handover_date, amenities, amenities_ar, meta, hero:media_assets!developments_hero_image_id_fkey(storage_key, alt_text), area:areas(name, name_ar), developer:developers(name, name_ar, logo:media_assets!developers_logo_id_fkey(storage_key, alt_text)), unit_types:development_unit_types(label, label_ar, beds, enabled, sort_order)",
     )
     .eq("id", id)
     .not("published_at", "is", null)
     .maybeSingle();
   if (!data) return null;
   const r = data as unknown as Row;
+  const faq = Array.isArray((r.meta as Row | null)?.faq) ? ((r.meta as Row).faq as Row[]) : [];
   const blocks = Array.isArray((r.meta as Row | null)?.feature_blocks) ? (((r.meta as Row).feature_blocks as Row[]) ?? []) : [];
   const mediaIds = blocks.map((b) => s(b.media_id)).filter(Boolean);
   const { data: media } = mediaIds.length
@@ -107,6 +110,13 @@ export async function readLaunchProject(id: string): Promise<LaunchProject | nul
   const keyOf = new Map(((media ?? []) as Row[]).map((m) => [String(m.id), s(m.storage_key)]));
   const name = s(r.name);
   const hero = r.hero as Row | null;
+  const developer = r.developer as Row | null;
+  const logo = developer?.logo as Row | null;
+  const plan = r.payment_plan as Row | null;
+  const milestones = Array.isArray(plan?.milestones) ? (plan!.milestones as Row[]) : [];
+  const unitTypes = (Array.isArray(r.unit_types) ? (r.unit_types as Row[]) : [])
+    .filter((u) => u.enabled !== false && s(u.label))
+    .sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0));
   return {
     id: String(r.id),
     slug: s(r.slug),
@@ -132,6 +142,17 @@ export async function readLaunchProject(id: string): Promise<LaunchProject | nul
     })),
     amenities: Array.isArray(r.amenities) ? (r.amenities as unknown[]).map(s).filter(Boolean) : [],
     amenities_ar: Array.isArray(r.amenities_ar) ? (r.amenities_ar as unknown[]).map(s) : [],
+    // The overview: the project's description, its vision, or — what most
+    // projects actually have filled in (Nov 2026) — the first FAQ answer,
+    // which is written as one ("… is a luxury waterfront development by …").
+    description: s(r.description) || s(r.vision) || s(faq[0]?.a),
+    description_ar: s(r.description_ar) || s(r.vision_ar) || s(faq[0]?.a_ar),
+    startingPrice: typeof r.starting_price === "number" ? r.starting_price : Number(r.starting_price) || null,
+    paymentPlan: plan
+      ? { name: s(plan.name), milestones: milestones.map((m) => ({ label: s(m.label), percent: Number(m.percent) || 0 })) }
+      : null,
+    unitTypes: unitTypes.map((u) => ({ label: s(u.label), label_ar: s(u.label_ar), beds: typeof u.beds === "number" ? u.beds : null })),
+    developerLogo: image(logo?.storage_key, s(logo?.alt_text) || s(developer?.name)),
   };
 }
 
@@ -163,10 +184,11 @@ async function newest(): Promise<TemplatePicks> {
 /** A built-in template filled from the live site. Null when the launch's project isn't published. */
 export async function builtInTemplateDraft(id: BuiltInTemplate, projectId?: string | null): Promise<TemplateDraft | null> {
   const site = await readSiteFooter();
-  if (id === "launch") {
+  if (isProjectTemplate(id)) {
     const pick = projectId ?? (await launchableProjects())[0]?.id;
     const project = pick ? await readLaunchProject(pick) : null;
-    return project ? launchTemplate(project, site) : null;
+    if (!project) return null;
+    return id === "showcase" ? showcaseTemplate(project, site) : launchTemplate(project, site);
   }
   return staticTemplate(id, site, await newest());
 }

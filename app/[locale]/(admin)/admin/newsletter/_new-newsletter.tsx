@@ -14,6 +14,7 @@ import {
   Newspaper,
   Plus,
   Rocket,
+  Sparkles,
   House,
   TrendingUp,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const ICON: Record<Starter, typeof Plus> = {
 
 const TEMPLATE_ICON: Record<BuiltInTemplate, typeof Plus> = {
   launch: Rocket,
+  showcase: Sparkles,
   listings: House,
   market: TrendingUp,
   event: CalendarHeart,

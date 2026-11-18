@@ -5,6 +5,8 @@
  */
 export const BAZAR = {
   navy: "#003452",
+  /** A deeper navy for the foot of a dark email — the showcase's last band. */
+  midnight: "#00233A",
   teal: "#005777",
   taupe: "#99896E",
   taupeDeep: "#6E624D",

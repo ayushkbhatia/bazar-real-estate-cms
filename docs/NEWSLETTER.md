@@ -8,8 +8,8 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
 
 1. **Newsletter → New newsletter.** Pick a starting point:
    - **Built from blocks** — a template laid out block by block (below):
-     **Project launch** (from the project picked in the same dialog),
-     **Featured listings**, **Market update**, **Event invitation**,
+     **Project launch** or **Project showcase** (from the project picked in
+     the same dialog), **Featured listings**, **Market update**, **Event invitation**,
      **Announcement**, or **Build your own**.
    - **Your templates** — any the team saved.
    - **Rich text** — **Blank**, or a layout already filled with what is
@@ -51,12 +51,33 @@ types, a two-column amenities list, an "at a glance" table, a closing band
 with two buttons, social icons and a contact footer.
 
 - **The library** (`lib/newsletter/blocks/catalogue.ts`, presets in
-  `presets.ts`): 23 kinds of block — hero with background image, logo bar,
+  `presets.ts`): 26 kinds of block — hero with background image, logo bar,
   heading, paragraph, heading + text + button, quote, image, image beside
-  text, image row, feature columns, cards, figures, tags, list, at a glance,
-  advisor card, button, call-to-action band, live listings/projects/articles,
-  social links, contact and footer, divider, space — and 55 ready-made
-  presets in **Add a block**, searchable and grouped.
+  text, image row, feature columns, cards, figures, unit tiles, price, tags,
+  amenity icons, list, at a glance, advisor card, button, call-to-action
+  band, live listings/projects/articles, social links, contact and footer,
+  divider, space — and 65 ready-made presets in **Add a block**, searchable
+  and grouped.
+- **Colour fades.** Every block's background can fade top to bottom into a
+  second colour (**Fade to (at the bottom)**). Gmail drops a CSS gradient and
+  Outlook for Windows draws no CSS background, so the fade is a tiny PNG made
+  by `/api/newsletter/fill` (`lib/newsletter/fill.ts`), stretched to the
+  block, over the colour halfway between — what Outlook for Windows shows.
+  Chained blocks (A → B, then B → C) read as one band down a section.
+- **Amenity icons** (`amenity-icons.ts`): 35 line drawings — pool, gym,
+  cabana, BBQ, co-working, kids' play… — each with an English and Arabic
+  name, a group (outdoor / indoor / services) and the words that name it, so
+  a project's own amenity titles are matched to a drawing. Served as PNGs in
+  any colour by `/api/newsletter/icon` (cached a year); the glyphs are
+  Lucide's, copied into `amenity-glyphs.ts` by
+  `scripts/email/amenity-icons.mjs`. An item can use an uploaded icon
+  instead.
+- **Unit tiles** (glass boxes, a figure over a word, the last row centred),
+  **Price** (currency before the figure in English, after it in Arabic —
+  "AED 1.66 Million", "1.66 مليون درهم" — from the language, not stored),
+  **Figures** with lines between them, a hero with a **partner logo** in the
+  opposite top corner, a second headline in **spaced capitals** and a **tag**
+  in an outlined pill, and an **edge-to-edge image row** of up to four.
 - **Each block** has its words, links, pictures (from the media library or
   uploaded on the spot) and colours (Bazar's swatches or any hex), plus page
   colours and typefaces. Blocks are moved, duplicated, inserted below and
@@ -93,7 +114,16 @@ with two buttons, social icons and a contact footer.
   code, like the rich-text starters; what fills them is live. **Project
   launch** reads the chosen project: its hero, name and tagline, its feature
   blocks (titles, copy and photos, with their Arabic), bedrooms, handover,
-  developer and area. Every template's footer reads the footer CMS
+  developer and area. **Project showcase** (`showcase.ts`, Nov 2026, after a
+  launch mailer the client sent as the look to follow) reads the same
+  project further: a photo hero signed by Bazar and the developer's logo, an
+  introduction (the description, or the vision, or — what most projects
+  have — the first FAQ answer) on cream, the unit types as tiles over the
+  starting price and the payment terms (down payment, split, handover) on a
+  navy → teal fade, the amenities as icons grouped outdoor / indoor /
+  services on a deep taupe → navy fade, a strip of four feature photos, and
+  a closing ask to the sign-up page on a navy → midnight foot. Whatever the
+  project doesn't have is left out, and every word has its Arabic. Every template's footer reads the footer CMS
   (/admin/footer): socials, phone, WhatsApp, email, address, licence line.
 - **Project sign-up pages.** A launch mailer's two asks ("Register for
   exclusive access", "Register for priority access") link to the project's
@@ -242,10 +272,12 @@ other email the site sends keeps the env's `RESEND_FROM_ADDRESS` /
 - The From must be on a domain Resend has verified: saving asks Resend
   (`resendSendingDomains()` in `lib/email.ts`) and refuses any other, because
   Resend refuses every message from an unverified domain. As of 3 Nov 2026 the
-  verified domain is **bazarrealestate.com**; `bazarrealestate.ae` is not.
-  To send from `marketing@bazarrealestate.ae`: add the domain in Resend, set
-  the SPF/DKIM records it lists at the .ae registrar, wait for *Verified*,
-  then change the address here — no deploy.
+  verified domains are **bazarrealestate.com** and, since 18 Nov 2026,
+  **bazarrealestate.ae** (DNS at Hostinger). The newsletter sends from
+  `marketing@bazarrealestate.ae`, every other email from
+  `hello@bazarrealestate.ae` (`RESEND_FROM_ADDRESS`). A new sending domain:
+  add it in Resend, set the records it lists at the registrar, wait for
+  *Verified*, then change the address here — no deploy.
 - The Reply-To can be any address; replies need no verification.
 - The sender, "Send me a test" and the preview's inbox header all read
   `readNewsletterSender()` (`lib/newsletter/sender-read.ts`).
@@ -367,7 +399,10 @@ who never asked to go.
 | `lib/newsletter/sender.ts`, `sender-read.ts` | the newsletter's From / Reply-To (0174) |
 | `supabase/migrations/0175_newsletter_block_designs.sql` | `format`, `design`, `newsletter_templates` |
 | `supabase/migrations/0176_newsletter_lists.sql` | lists, contacts, suppressions, deliveries to contacts, erasure |
-| `lib/newsletter/blocks/` | the block library, presets, document, renderer, templates |
+| `lib/newsletter/blocks/` | the block library, presets, document, renderer, templates (`showcase.ts`), amenity icons |
+| `lib/newsletter/fill.ts`, `app/api/newsletter/fill/` | colour fades as stretched PNGs |
+| `app/api/newsletter/icon/` | an amenity icon as a PNG, in any colour |
+| `scripts/email/amenity-icons.mjs` | copies the Lucide glyphs into `amenity-glyphs.ts` |
 | `lib/newsletter/lists.ts` | reading a CSV into contacts |
 | `admin/newsletter/[id]/_designer.tsx` | the block designer |
 | `admin/newsletter/templates/`, `lists/`, `settings/` | saved templates, custom lists, the sender |

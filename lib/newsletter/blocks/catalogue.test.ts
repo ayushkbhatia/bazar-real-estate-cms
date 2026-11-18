@@ -14,7 +14,8 @@ import {
   withoutArabic,
 } from "./document";
 import { href, renderDesign, scaleForPhones, type DesignRenderContext } from "./render";
-import { BUILT_IN_TEMPLATES, launchTemplate, staticTemplate, type LaunchProject, type SiteFooter } from "./templates";
+import { BUILT_IN_TEMPLATES, isProjectTemplate, launchTemplate, staticTemplate, type LaunchProject, type SiteFooter } from "./templates";
+import { showcaseTemplate } from "./showcase";
 
 const site: SiteFooter = {
   socials: [
@@ -56,6 +57,12 @@ const project: LaunchProject = {
   })),
   amenities: [],
   amenities_ar: [],
+  description: "",
+  description_ar: "",
+  startingPrice: null,
+  paymentPlan: null,
+  unitTypes: [],
+  developerLogo: null,
 };
 
 const ctx = (locale: "en" | "ar" = "en"): DesignRenderContext => ({
@@ -87,11 +94,13 @@ describe("block catalogue", () => {
   });
 
   it("never letter-spaces or upper-cases Arabic (it breaks the joins between letters)", () => {
-    const design = launchTemplate(project, site).design;
-    const ar = renderDesign(design, ctx("ar")).html;
-    expect(ar).not.toMatch(/letter-spacing:0\.1[48]em/);
-    expect(ar).not.toContain("text-transform:uppercase");
-    expect(ar).toContain("مساكن جي دبليو ماريوت");
+    const presets = { ...emptyDesign(), blocks: PRESETS.map((p) => newBlock(p.type, p.props)) };
+    for (const design of [launchTemplate(project, site).design, showcaseTemplate(project, site).design, presets]) {
+      const ar = renderDesign(design, ctx("ar")).html;
+      expect(ar).not.toMatch(/letter-spacing:0\.\d+em/);
+      expect(ar).not.toContain("text-transform:uppercase");
+    }
+    expect(renderDesign(launchTemplate(project, site).design, ctx("ar")).html).toContain("مساكن جي دبليو ماريوت");
   });
 });
 
@@ -225,7 +234,9 @@ describe("built-in templates", () => {
     expect(BUILT_IN_TEMPLATES.length).toBeGreaterThanOrEqual(6);
     const picks = { property: [], development: [], article: [] };
     for (const t of BUILT_IN_TEMPLATES) {
-      const draft = t.id === "launch" ? launchTemplate(project, site) : staticTemplate(t.id, site, picks);
+      const draft = isProjectTemplate(t.id)
+        ? (t.id === "showcase" ? showcaseTemplate : launchTemplate)(project, site)
+        : staticTemplate(t.id, site, picks);
       for (const locale of ["en", "ar"] as const) expect(renderDesign(draft.design, ctx(locale)).html).toContain("</html>");
     }
   });

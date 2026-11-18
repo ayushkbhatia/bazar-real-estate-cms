@@ -44,6 +44,18 @@ export const PRESETS: BlockPreset[] = [
     subheading: "",
     eyebrow: "November 2026",
   }),
+  P("hero-showcase", "hero", "Showcase hero", "Bazar's logo and the developer's in the top corners, the headline at the foot of the photo, a tag in a pill.", {
+    shape: "wide",
+    textPosition: "bottom",
+    logoPosition: "corners",
+    logoWidth: 84,
+    heading: "The project's name",
+    subheading: "The new residential phase",
+    subheadingStyle: "caps",
+    tag: "Yas Island, Abu Dhabi",
+    text: "",
+    overlayOpacity: 30,
+  }),
   P("hero-minimal", "hero", "Photograph only", "The picture and the logo, nothing else.", {
     heading: "",
     subheading: "",
@@ -69,6 +81,13 @@ export const PRESETS: BlockPreset[] = [
   P("text-lead", "text", "Large intro", "An opening line in a larger size.", { size: "l", align: "center" }),
   P("section-cream", "section", "Intro on cream", "Heading, paragraph and button on a cream band.", {}),
   P("section-white", "section", "Intro on white", "Heading, paragraph and button on white.", { background: "", padding: "m" }),
+  P("section-fade", "section", "Intro on a fade", "White words on a band fading from navy to teal.", {
+    background: BAZAR.navy,
+    backgroundTo: BAZAR.teal,
+    textColor: "#FFFFFF",
+    buttonColor: "#FFFFFF",
+    buttonStyle: "outline",
+  }),
   P("section-navy", "section", "Intro on navy", "White words on a navy band.", {
     background: BAZAR.navy,
     textColor: "#FFFFFF",
@@ -99,6 +118,18 @@ export const PRESETS: BlockPreset[] = [
   P("gallery-two", "gallery", "Two photos", "Two pictures side by side."),
   P("gallery-three", "gallery", "Three photos", "Three pictures side by side.", {
     items: [
+      { image: null, alt: "", link: "", caption: "" },
+      { image: null, alt: "", link: "", caption: "" },
+      { image: null, alt: "", link: "", caption: "" },
+    ],
+  }),
+
+  P("gallery-strip", "gallery", "Four photos, edge to edge", "Four pictures meeting in one strip across the email, no gaps.", {
+    fullBleed: true,
+    shape: "landscape",
+    padding: "none",
+    items: [
+      { image: null, alt: "", link: "", caption: "" },
       { image: null, alt: "", link: "", caption: "" },
       { image: null, alt: "", link: "", caption: "" },
       { image: null, alt: "", link: "", caption: "" },
@@ -145,6 +176,43 @@ export const PRESETS: BlockPreset[] = [
     valueColor: BAZAR.cream,
   }),
 
+  P("stats-divided", "stats", "Payment terms", "Large figures with lines between — down payment, plan, handover.", {
+    size: "l",
+    dividers: true,
+    items: [
+      { value: "5%", label: "Down payment" },
+      { value: "55/45", label: "Payment plan" },
+    ],
+    background: BAZAR.teal,
+    textColor: "#FFFFFF",
+    valueColor: "#FFFFFF",
+  }),
+  P("tiles-residences", "tiles", "Residences, on a fade", "Unit types as glass tiles on a band fading from navy to teal.", {
+    items: [
+      { value: "", label: "Studio" },
+      { value: "1", label: "Bedroom" },
+      { value: "2", label: "Bedroom" },
+      { value: "2", label: "Bedroom + maid" },
+      { value: "3", label: "Bedroom + maid + study" },
+    ],
+    tileColor: "#FFFFFF",
+    textColor: "#FFFFFF",
+    background: BAZAR.navy,
+    backgroundTo: BAZAR.teal,
+  }),
+  P("tiles-light", "tiles", "Unit tiles on cream", "Navy-outlined tiles on a cream band.", {
+    tileColor: BAZAR.navy,
+    tileFill: BAZAR.white,
+    tileOpacity: 100,
+    background: BAZAR.cream,
+  }),
+  P("price-starting", "price", "Starting price", "“Starting price · AED 1.66 Million”, large and white on teal.", {
+    background: BAZAR.teal,
+    textColor: "#FFFFFF",
+    valueColor: "#FFFFFF",
+  }),
+  P("price-light", "price", "Price on white", "The same in navy on white.", { size: "m" }),
+
   // Lists & details
   P("chips-units", "chips", "Unit types", "“1–4 bedroom apartments · Duplexes · Penthouses” as tags.", {
     intro: "Choose from a collection of residences.",
@@ -162,6 +230,25 @@ export const PRESETS: BlockPreset[] = [
       { text: "Guest suites" },
       { text: "Residents' lounge" },
     ],
+  }),
+  P("amenities-outdoor", "amenities", "Amenity icons, outdoor", "White line icons on a band fading from deep taupe to navy.", {
+    heading: "Designed for modern living",
+    intro: "An extensive collection of indoor and outdoor amenities, crafted for every lifestyle.",
+    textColor: "#FFFFFF",
+    iconColor: "#FFFFFF",
+    background: BAZAR.taupeDeep,
+    backgroundTo: BAZAR.navy,
+  }),
+  P("amenities-indoor", "amenities", "Amenity icons, indoor", "Navy icons in three columns on cream.", {
+    group: "Indoor wellness & productivity",
+    columns: "3",
+    items: [
+      { icon: "coworking", image: null, label: "Residents' co-working lounge" },
+      { icon: "gym", image: null, label: "Gym" },
+      { icon: "play", image: null, label: "Indoor kids' play area" },
+    ],
+    iconColor: BAZAR.navy,
+    background: BAZAR.cream,
   }),
   P("list-ticks", "list", "Ticked list", "One column with ticks.", { columns: "1", marker: "check", align: "start", background: "" }),
   P("kv-glance", "key_values", "At a glance", "Developer, location, setting, unit types.", {
