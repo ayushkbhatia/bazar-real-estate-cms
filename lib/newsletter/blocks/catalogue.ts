@@ -10,6 +10,7 @@
 
 import type { BlockDef, FieldDef, ScalarFieldDef } from "./types";
 import { BAZAR } from "./palette";
+import { AMENITY_ICON_OPTIONS } from "./amenity-icons";
 
 // ── Field helpers ────────────────────────────────────────────────
 
@@ -54,6 +55,12 @@ const PADDING = select("padding", "Space above and below", [
   ["l", "Large"],
 ]);
 const BACKGROUND = color("background", "Background", true);
+/**
+ * A second colour the background fades to, top to bottom. Blank is a flat
+ * band. Chain blocks — this one A → B, the next B → C — for one band that
+ * fades down a whole section (lib/newsletter/fill.ts).
+ */
+const BACKGROUND_TO = color("backgroundTo", "Fade to (at the bottom)", true);
 const TEXT_COLOR = color("textColor", "Text colour", true);
 const HEADING_SIZE = select("size", "Heading size", [
   ["s", "Small"],
@@ -72,8 +79,8 @@ const BUTTON: FieldDef[] = [
     ["link", "Text link"],
   ]),
 ];
-/** Background, padding — the box every block sits in. */
-const BOX: FieldDef[] = [BACKGROUND, PADDING];
+/** Background, its fade, padding — the box every block sits in. */
+const BOX: FieldDef[] = [BACKGROUND, BACKGROUND_TO, PADDING];
 
 export const SOCIAL_NETWORKS = [
   ["instagram", "Instagram"],
@@ -111,12 +118,20 @@ export const BLOCKS: BlockDef[] = [
       select("logoPosition", "Logo position", [
         ["top", "Top, above the headline"],
         ["bottom", "Bottom corner"],
+        ["corners", "Top corner, a partner's logo in the other"],
       ]),
+      image("partnerLogo", "Partner logo", "The developer's logo, in the top corner opposite Bazar's when the logo position is “Top corner”. A transparent PNG."),
+      { kind: "number", key: "partnerLogoWidth", label: "Partner logo width", min: 40, max: 240, step: 10, unit: "px" },
       image("projectLogo", "Project logo", "The development's own logo, shown at the top. A transparent PNG reads best over the photo."),
       { kind: "number", key: "projectLogoWidth", label: "Project logo width", min: 80, max: 400, step: 10, unit: "px" },
       text("eyebrow", "Small line above"),
       text("heading", "Headline"),
       text("subheading", "Second headline"),
+      select("subheadingStyle", "Second headline style", [
+        ["serif", "Serif, like the headline"],
+        ["caps", "Spaced capitals"],
+      ]),
+      text("tag", "Tag", { help: "A short line in an outlined pill under the headlines — “At Yas Point, Yas Island”." }),
       textarea("text", "Line under the headline"),
       ...BUTTON,
       text("note", "Small print at the bottom"),
@@ -145,6 +160,8 @@ export const BLOCKS: BlockDef[] = [
       logoImage: null,
       logoWidth: 110,
       logoPosition: "top",
+      partnerLogo: null,
+      partnerLogoWidth: 90,
       projectLogo: null,
       projectLogoWidth: 220,
       shape: "auto",
@@ -152,6 +169,8 @@ export const BLOCKS: BlockDef[] = [
       eyebrow: "",
       heading: "New launch",
       subheading: "",
+      subheadingStyle: "serif",
+      tag: "",
       text: "",
       buttonLabel: "",
       buttonUrl: "",
@@ -323,7 +342,7 @@ export const BLOCKS: BlockDef[] = [
     type: "gallery",
     label: "Image row",
     category: "Images",
-    description: "Two or three photographs side by side.",
+    description: "Two to four photographs side by side — inset with gaps, or edge to edge as one strip.",
     fields: [
       {
         kind: "items",
@@ -331,13 +350,27 @@ export const BLOCKS: BlockDef[] = [
         label: "Images",
         itemLabel: "Image",
         min: 2,
-        max: 3,
+        max: 4,
         fields: [image("image", "Image"), text("alt", "Describe it"), url("link", "Link"), text("caption", "Caption")],
       },
+      toggle("fullBleed", "Edge to edge", "No margin and no gaps: the photos meet in one strip across the email."),
+      select("shape", "Shape", [
+        ["original", "As uploaded"],
+        ["landscape", "Landscape (4:3)"],
+        ["square", "Square"],
+        ["portrait", "Portrait (3:4)"],
+      ]),
       toggle("rounded", "Rounded corners"),
       ...BOX,
     ],
-    defaults: { items: [{ image: null, alt: "", link: "", caption: "" }, { image: null, alt: "", link: "", caption: "" }], rounded: false, background: "", padding: "s" },
+    defaults: {
+      items: [{ image: null, alt: "", link: "", caption: "" }, { image: null, alt: "", link: "", caption: "" }],
+      fullBleed: false,
+      shape: "original",
+      rounded: false,
+      background: "",
+      padding: "s",
+    },
   },
   {
     type: "features",
@@ -424,6 +457,11 @@ export const BLOCKS: BlockDef[] = [
         max: 4,
         fields: [text("value", "Figure", { help: "“7.2%”, “AED 1.9M”, “Q4 2028”." }), text("label", "Label")],
       },
+      select("size", "Figure size", [
+        ["m", "Medium"],
+        ["l", "Large"],
+      ]),
+      toggle("dividers", "Lines between figures"),
       color("valueColor", "Figure colour"),
       TEXT_COLOR,
       ...BOX,
@@ -435,7 +473,151 @@ export const BLOCKS: BlockDef[] = [
         { value: "Q4 2028", label: "Handover" },
         { value: "60/40", label: "Payment plan" },
       ],
+      size: "m",
+      dividers: false,
       valueColor: "",
+      textColor: "",
+      background: "",
+      padding: "m",
+    },
+  },
+  {
+    type: "tiles",
+    label: "Unit tiles",
+    category: "Columns",
+    description: "Boxed tiles, a figure over a word — “1 Bedroom · 2 Bedroom · Studio”. Rows of two to four, the last one centred.",
+    fields: [
+      text("heading", "Heading"),
+      HEADING_SIZE,
+      {
+        kind: "items",
+        key: "items",
+        label: "Tiles",
+        itemLabel: "Tile",
+        min: 1,
+        max: 12,
+        fields: [
+          text("value", "Figure", { help: "“1”, “2”, “3” — or blank for a word alone, like Studio." }),
+          text("label", "Word", { help: "“Bedroom”, “Bedroom + maid”, “Studio”." }),
+        ],
+      },
+      select("columns", "Tiles in a row", [
+        ["2", "Two"],
+        ["3", "Three"],
+        ["4", "Four"],
+      ]),
+      select("shape", "Corners", [
+        ["square", "Square"],
+        ["rounded", "Rounded"],
+      ]),
+      color("tileColor", "Tile outline and text"),
+      color("tileFill", "Tile fill"),
+      { kind: "number", key: "tileOpacity", label: "Fill strength", min: 0, max: 100, step: 5, unit: "%" },
+      TEXT_COLOR,
+      ...BOX,
+    ],
+    defaults: {
+      heading: "Residences",
+      size: "l",
+      items: [
+        { value: "", label: "Studio" },
+        { value: "1", label: "Bedroom" },
+        { value: "2", label: "Bedroom" },
+        { value: "3", label: "Bedroom" },
+      ],
+      columns: "3",
+      shape: "rounded",
+      tileColor: "",
+      tileFill: "#FFFFFF",
+      tileOpacity: 14,
+      textColor: "",
+      background: "",
+      padding: "m",
+    },
+  },
+  {
+    type: "price",
+    label: "Price",
+    category: "Columns",
+    description: "A price set large, with a line above it — “Starting price · AED 1.66 Million”.",
+    fields: [
+      text("label", "Line above", { help: "“Starting price”, “Prices from”." }),
+      text("currency", "Currency", { help: "“AED” — in Arabic “درهم”. English writes it before the figure, Arabic after." }),
+      text("value", "Figure", { help: "“1.66”, “950,000”." }),
+      text("unit", "Word after the figure", { help: "“Million” — in Arabic “مليون”. Blank for a full figure." }),
+      text("note", "Small line under it"),
+      select("size", "Figure size", [
+        ["m", "Medium"],
+        ["l", "Large"],
+        ["xl", "Extra large"],
+      ]),
+      color("valueColor", "Figure colour"),
+      TEXT_COLOR,
+      ...BOX,
+    ],
+    defaults: {
+      label: "Starting price",
+      currency: "AED",
+      value: "1.66",
+      unit: "Million",
+      note: "",
+      size: "l",
+      valueColor: "",
+      textColor: "",
+      background: "",
+      padding: "m",
+    },
+  },
+  {
+    type: "amenities",
+    label: "Amenity icons",
+    category: "Lists & details",
+    description: "A grid of line icons, each over an amenity's name — a pool, a gym, a cabana — under a group title.",
+    fields: [
+      text("heading", "Heading"),
+      HEADING_SIZE,
+      textarea("intro", "Line under the heading"),
+      text("group", "Group title", { help: "Small capitals over the icons — “Outdoor leisure & recreation”." }),
+      {
+        kind: "items",
+        key: "items",
+        label: "Amenities",
+        itemLabel: "Amenity",
+        min: 1,
+        max: 18,
+        fields: [
+          select("icon", "Icon", AMENITY_ICON_OPTIONS),
+          image("image", "Your own icon", "Optional: a square PNG that replaces the drawing."),
+          text("label", "Name"),
+        ],
+      },
+      select("columns", "Icons in a row", [
+        ["3", "Three"],
+        ["4", "Four"],
+        ["5", "Five"],
+        ["6", "Six"],
+      ]),
+      { kind: "number", key: "iconSize", label: "Icon size", min: 24, max: 64, step: 2, unit: "px" },
+      color("iconColor", "Icon colour"),
+      TEXT_COLOR,
+      ...BOX,
+    ],
+    defaults: {
+      heading: "",
+      size: "m",
+      intro: "",
+      group: "Outdoor leisure & recreation",
+      items: [
+        { icon: "garden", image: null, label: "Landscaped gardens" },
+        { icon: "pool", image: null, label: "Swimming pools" },
+        { icon: "cabana", image: null, label: "Pool cabanas" },
+        { icon: "lounge", image: null, label: "Residents' lounge" },
+        { icon: "bbq", image: null, label: "BBQ & outdoor dining" },
+        { icon: "active", image: null, label: "Active spaces" },
+      ],
+      columns: "6",
+      iconSize: 34,
+      iconColor: "",
       textColor: "",
       background: "",
       padding: "m",
@@ -616,6 +798,7 @@ export const BLOCKS: BlockDef[] = [
       ALIGN,
       color("textColor", "Text colour", false),
       color("background", "Background", false),
+      BACKGROUND_TO,
       PADDING,
     ],
     defaults: {
@@ -735,7 +918,7 @@ export const BLOCKS: BlockDef[] = [
     label: "Space",
     category: "Spacing",
     description: "Empty space, in a colour if you like.",
-    fields: [{ kind: "number", key: "height", label: "Height", min: 8, max: 120, step: 4, unit: "px" }, BACKGROUND],
+    fields: [{ kind: "number", key: "height", label: "Height", min: 8, max: 120, step: 4, unit: "px" }, BACKGROUND, BACKGROUND_TO],
     defaults: { height: 32, background: "" },
   },
 ];

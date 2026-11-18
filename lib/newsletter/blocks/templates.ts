@@ -43,6 +43,13 @@ export type LaunchProject = {
   features: { title: string; title_ar: string; copy: string; copy_ar: string; image: ImageValue | null }[];
   amenities: string[];
   amenities_ar: string[];
+  /** What the showcase template reads beyond the launch's fields. */
+  description: string;
+  description_ar: string;
+  startingPrice: number | null;
+  paymentPlan: { name: string; milestones: { label: string; percent: number }[] } | null;
+  unitTypes: { label: string; label_ar: string; beds: number | null }[];
+  developerLogo: ImageValue | null;
 };
 
 export type TemplateDraft = {
@@ -58,6 +65,12 @@ export const BUILT_IN_TEMPLATES = [
     id: "launch",
     label: "Project launch",
     hint: "A launch mailer from one project: hero photo, features, unit types, amenities, at a glance, closing ask.",
+    needsProject: true,
+  },
+  {
+    id: "showcase",
+    label: "Project showcase",
+    hint: "A modern launch mailer from one project: a photo hero signed by Bazar and the developer, unit tiles and the starting price on a colour fade, amenity icons, a photo strip.",
     needsProject: true,
   },
   {
@@ -101,7 +114,7 @@ export function isBuiltInTemplate(v: unknown): v is BuiltInTemplate {
 const b = newBlock;
 
 /** The two blocks every template ends with, from the site footer. */
-function footerBlocks(site: SiteFooter, background = ""): Block[] {
+export function footerBlocks(site: SiteFooter, background = ""): Block[] {
   const blocks: Block[] = [];
   if (site.socials.length) {
     blocks.push(b("social", { items: site.socials.slice(0, 8), tone: background ? "light" : "dark", background, padding: "s" }));
@@ -274,8 +287,15 @@ function firstSentence(s: string): string {
 
 export type TemplatePicks = { property: string[]; development: string[]; article: string[] };
 
-/** Every built-in but the launch, which needs a project (`launchTemplate`). */
-export function staticTemplate(id: Exclude<BuiltInTemplate, "launch">, site: SiteFooter, picks: TemplatePicks): TemplateDraft {
+/** The built-ins that are filled from one project's record. */
+export type ProjectTemplate = Extract<BuiltInTemplate, "launch" | "showcase">;
+
+export function isProjectTemplate(id: BuiltInTemplate): id is ProjectTemplate {
+  return id === "launch" || id === "showcase";
+}
+
+/** Every built-in but the project ones (`launchTemplate`, `showcaseTemplate`). */
+export function staticTemplate(id: Exclude<BuiltInTemplate, ProjectTemplate>, site: SiteFooter, picks: TemplatePicks): TemplateDraft {
   switch (id) {
     case "listings":
       return {
