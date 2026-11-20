@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Fahid Island is positioned between Yas Island and Saadiyat Island.",
+        "q": "Where is Fahid Island?",
+        "a_ar": "تقع جزيرة فاهد بين جزيرة ياس وجزيرة السعديات.",
+        "q_ar": "أين تقع جزيرة فاهد؟"
+      },
+      {
+        "a": "Current projects include apartments, townhouses and penthouses, alongside premium beachfront residences.",
+        "q": "What properties are available?",
+        "a_ar": "تشمل المشاريع الحالية الشقق والتاون هاوس والبنتهاوس، إلى جانب المساكن الشاطئية الفاخرة.",
+        "q_ar": "ما العقارات المتاحة؟"
+      },
+      {
+        "a": "Its masterplan places a strong emphasis on coastal wellness, walkability and access to nature.",
+        "q": "What makes Fahid Island different?",
+        "a_ar": "يتميز مخططها الرئيسي بتركيز قوي على العافية الساحلية، وسهولة التنقل سيرًا على الأقدام، والوصول إلى الطبيعة.",
+        "q_ar": "ما الذي يميز جزيرة فاهد؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Fahid Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة فاهد"
+  },
+  "enabled": true
+}

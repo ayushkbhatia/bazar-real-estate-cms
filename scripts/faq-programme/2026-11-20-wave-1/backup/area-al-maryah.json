@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is Abu Dhabi’s leading business and lifestyle district, anchored by ADGM and The Galleria.",
+        "q": "What is Al Maryah Island known for?",
+        "a_ar": "تُعد جزيرة المارية من أبرز مناطق الأعمال وأسلوب الحياة في أبوظبي، ويبرز فيها سوق أبوظبي العالمي وذا غاليريا.",
+        "q_ar": "بماذا تشتهر جزيرة المارية؟"
+      },
+      {
+        "a": "Yes. The island offers existing apartments alongside a growing pipeline of premium and branded residences.",
+        "q": "Are there residential properties on Al Maryah Island?",
+        "a_ar": "نعم. توفر الجزيرة شققًا سكنية قائمة، إلى جانب مجموعة متنامية من المشاريع السكنية الفاخرة والمساكن ذات العلامات التجارية.",
+        "q_ar": "هل توجد عقارات سكنية في جزيرة المارية؟"
+      },
+      {
+        "a": "Yes. Selected locations on the island are approximately 10 minutes from Downtown.",
+        "q": "Is Al Maryah Island close to Downtown Abu Dhabi?",
+        "a_ar": "نعم. تبعد بعض المواقع في الجزيرة حوالي 10 دقائق عن وسط مدينة أبوظبي.",
+        "q_ar": "هل جزيرة المارية قريبة من وسط مدينة أبوظبي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Maryah Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة المارية"
+  },
+  "enabled": true
+}

@@ -1,0 +1,545 @@
+{
+  "wave": "1",
+  "batch": "batch-b",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    2019,
+    2000000,
+    2,
+    10,
+    99,
+    50,
+    9,
+    56000,
+    62800,
+    30000,
+    37000,
+    105000,
+    53000,
+    129000,
+    1000,
+    64,
+    2026,
+    2200,
+    15,
+    18,
+    21,
+    4400000,
+    7710000,
+    1150000,
+    1550000,
+    4300000,
+    2300000,
+    3100000,
+    2670,
+    1,
+    19,
+    952,
+    1687,
+    30.64,
+    1962,
+    12.91,
+    105,
+    53,
+    38,
+    35,
+    3
+  ],
+  "sourcedNotes": {
+    "3": "Yasmina British Academy ages 3–18 (aldar.com)",
+    "9": "u.ae — nine Abu Dhabi investment areas where foreigners may own",
+    "10": "adro.gov.ae — 10-year Golden Visa",
+    "2019": "u.ae — Abu Dhabi real estate law amended by Law No. 13 of 2019 (investment areas open to foreigners)",
+    "2200": "Raha International School — Gardens Campus, over 2,200 students (ris.ae / Wikipedia)",
+    "2000000 / 2": "adro.gov.ae — Golden Visa property threshold AED 2 million; 2% Abu Dhabi registration fee (DARI / broker guides)",
+    "99 / 50": "u.ae — expatriate usufruct / ownership deeds up to 99 years; musataha 50 years renewable",
+    "56000 / 62800 / 30000 / 37000": "2% of DB starting prices: Brabus Island 2,800,000; Fay Hills 3,140,000; Bab Al Qasr Garden Residence 66 1,500,000; Al Ghadeer Gardens 1,850,000",
+    "1000 / 105000 / 53000 / 129000": "worked example: 1,000 sq ft × DB rental index (Al Raha 105, Khalifa City 53, Masdar City 129)",
+    "64 / 2026 / 15 / 18 / 21": "Aldar / WAM, May 2026 — Al Ghadeer Gardens announced 15 May, sales opened 18 May, sold out 21 May, 64% of sales to expatriate and overseas buyers",
+    "4400000 / 7710000 / 1150000 / 1550000 / 4300000 / 2300000 / 3100000 / 2670": "DB: published listings on these pages (properties.price_aed, built_up_ft2) — Fay Hills, Royal Park, The Gate Masdar, Bab Al Qasr Garden Residence 65, Al Ghadeer Gardens",
+    "1 / 19": "DB: listing building names (Oasis 1, Bab Al Qasr Resort Residence 19)",
+    "952 / 1687 / 30.64 / 1962 / 12.91 / 105 / 53 / 38 / 35": "DB: neighbouring area's stats / nearby band cited for comparison (khalifa-city, masdar-city, al-raha, al-rahba)"
+  },
+  "pages": [
+    {
+      "kind": "area",
+      "slug": "al-raha",
+      "name": "Al Raha",
+      "pageSlug": "subpage/area/al-raha",
+      "sources": [
+        "DB: subpage/area/al-raha stats band, nearby band, communities band (Al Raha Beach, Al Raha Gardens, Al Zeina, Al Muneera, Al Bandar), landmarks band; developments (Brabus Island)",
+        "u.ae — Expatriates buying a property in the UAE (nine Abu Dhabi investment areas incl. Al Raha Beach)",
+        "propertyfinder.ae / bayut.com — Al Raha Gardens historically sold to UAE and GCC nationals",
+        "brabus.com / propertyfinder.ae — Brabus Island in Al Seef district, Al Raha Beach, freehold",
+        "adro.gov.ae — Golden Visa, real-estate investors",
+        "ris.ae / aldar.com — Raha International School, Yasmina British Academy"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Raha?",
+          "a": "Yes in Al Raha Beach, which is one of Abu Dhabi's nine designated investment areas, open to freehold ownership by every nationality since the 2019 amendment to the emirate's real estate law. That covers the waterfront precincts of Al Zeina, Al Muneera and Al Bandar. Al Raha Gardens, the villa half inland, has traditionally been sold to UAE and GCC nationals, so non-GCC buyers should confirm a unit's status on DARI.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في منطقة الراحة؟",
+          "a_ar": "نعم في شاطئ الراحة، وهو من مناطق الاستثمار التسع المحددة في أبوظبي والمتاحة للتملك الحر لجميع الجنسيات منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويشمل ذلك مجمعات الواجهة المائية في الزينة والمنيرة والبندر. أما حدائق الراحة، وهي جزء الفلل في الداخل، فقد بيعت تقليديًا لمواطني الإمارات ودول مجلس التعاون الخليجي، لذا يُنصح المشترون من خارج المجلس بالتحقق من وضع الوحدة عبر منصة «داري»."
+        },
+        {
+          "q": "How much does property cost in Al Raha in 2026?",
+          "a": "Al Raha's sale price index stood at about AED 1,962 per sq ft, up 12.91% over 12 months. Most stock is ready apartments, townhouses and sky villas on Al Raha Beach and family villas in Al Raha Gardens, while the newest launch, Brabus Island by Reportage, starts from about AED 2.8 million for two to four-bedroom homes.",
+          "q_ar": "كم تبلغ أسعار العقارات في منطقة الراحة في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في منطقة الراحة نحو 1,962 درهمًا للقدم المربع، بارتفاع 12.91% خلال 12 شهرًا. ومعظم المعروض جاهز، من شقق وتاون هاوس وفلل سماوية في شاطئ الراحة وفلل عائلية في حدائق الراحة، بينما يبدأ أحدث المشاريع، برابوس آيلاند من ريبورتاج، من نحو 2.8 مليون درهم لوحدات من غرفتي نوم إلى أربع غرف."
+        },
+        {
+          "q": "What is the average rent in Al Raha?",
+          "a": "Al Raha's rental index was about AED 105 per sq ft a year, up 5.69% over 12 months. On that basis a 1,000 sq ft apartment on Al Raha Beach would rent for roughly AED 105,000 a year; villas and townhouses in Al Raha Gardens are usually let per unit, and rents vary with view, size and building.",
+          "q_ar": "كم يبلغ متوسط الإيجار في منطقة الراحة؟",
+          "a_ar": "بلغ مؤشر الإيجارات في منطقة الراحة نحو 105 دراهم للقدم المربع سنويًا، بارتفاع 5.69% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع في شاطئ الراحة نحو 105,000 درهم سنويًا تقريبًا، أما الفلل والتاون هاوس في حدائق الراحة فتُؤجَّر عادةً بحسب الوحدة، ويختلف الإيجار بحسب الإطلالة والمساحة والمبنى."
+        },
+        {
+          "q": "What is the difference between Al Raha Beach and Al Raha Gardens?",
+          "a": "Al Raha Beach is the waterfront half of Al Raha, with low-rise apartments, townhouses and sky villas along the channel in Al Zeina, Al Muneera and Al Bandar, and is open to all nationalities. Al Raha Gardens is the inland half: gated villa and townhouse precincts built around parks, traditionally owned by UAE and GCC nationals.",
+          "q_ar": "ما الفرق بين شاطئ الراحة وحدائق الراحة؟",
+          "a_ar": "شاطئ الراحة هو الجزء المطل على الواجهة المائية من منطقة الراحة، ويضم شققًا منخفضة الارتفاع وتاون هاوس وفللًا سماوية على امتداد القناة في الزينة والمنيرة والبندر، وهو متاح لجميع الجنسيات. أما حدائق الراحة فهي الجزء الداخلي، وتضم مجمعات مسوّرة من الفلل والتاون هاوس حول الحدائق، ويملكها تقليديًا مواطنو الإمارات ودول مجلس التعاون الخليجي."
+        },
+        {
+          "q": "What is Brabus Island in Al Raha?",
+          "a": "Brabus Island is an off-plan, car-brand-themed residential project by Reportage Properties in the Al Seef district of Al Raha Beach. It has 352 homes of two to four bedrooms, starting from about AED 2.8 million, with handover scheduled for February 2029, and is marketed as freehold for all nationalities.",
+          "q_ar": "ما هو مشروع برابوس آيلاند في منطقة الراحة؟",
+          "a_ar": "برابوس آيلاند مشروع سكني على الخريطة مستوحى من علامة السيارات الألمانية، تطوّره ريبورتاج العقارية في منطقة السيف بشاطئ الراحة. ويضم 352 وحدة من غرفتي نوم إلى أربع غرف، تبدأ أسعارها من نحو 2.8 مليون درهم، ومن المقرر تسليمه في فبراير 2029، ويُسوَّق بنظام التملك الحر لجميع الجنسيات."
+        },
+        {
+          "q": "Does buying property in Al Raha qualify for a UAE Golden Visa?",
+          "a": "It can, if the home is worth at least AED 2 million, the threshold for Abu Dhabi's 10-year Golden Visa. Every unit at Brabus Island starts above that, from about AED 2.8 million, as do most villas in Al Raha Gardens; smaller Al Raha Beach apartments often fall below it. Off-plan buyers must have paid at least AED 2 million, and mortgaged owners need that much equity.",
+          "q_ar": "هل يؤهّل شراء عقار في منطقة الراحة للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "يمكن ذلك إذا كانت قيمة العقار 2 مليون درهم على الأقل، وهو الحد المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. وتبدأ جميع وحدات برابوس آيلاند فوق هذا الحد، من نحو 2.8 مليون درهم، وكذلك معظم الفلل في حدائق الراحة، بينما تقل أسعار كثير من الشقق الأصغر في شاطئ الراحة عنه. ويجب على مشتري العقارات على الخريطة سداد 2 مليون درهم على الأقل، وعلى المالكين بالتمويل امتلاك حصة بهذا القدر."
+        },
+        {
+          "q": "What fees do you pay when buying property in Al Raha?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 2,800,000 Brabus Island home that is AED 56,000. Resale buyers on Al Raha Beach or in Al Raha Gardens usually add about 2% agency commission and a developer NOC fee, and mortgage buyers add bank and mortgage registration fees.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في منطقة الراحة؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «داري»: فعلى وحدة في برابوس آيلاند بسعر 2,800,000 درهم تبلغ 56,000 درهم. ويضيف مشترو عقارات إعادة البيع في شاطئ الراحة أو حدائق الراحة عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من المطوّر، ويضيف المشترون بالتمويل رسوم البنك وتسجيل الرهن."
+        },
+        {
+          "q": "Which schools are near Al Raha?",
+          "a": "Al Raha Gardens is home to Raha International School's Gardens Campus, an IB school with over 2,200 pupils, and Yasmina British Academy, an English-curriculum school for ages 3 to 18, both on Al Mireef Street. More international schools are a short drive away in Khalifa City. Check each school's ADEK rating and fees before choosing a community.",
+          "q_ar": "ما المدارس القريبة من منطقة الراحة؟",
+          "a_ar": "تضم حدائق الراحة الحرم الرئيسي لمدرسة الراحة الدولية، وهي مدرسة تعتمد منهج البكالوريا الدولية ويزيد عدد طلابها على 2,200 طالب، وأكاديمية الياسمينة البريطانية التي تقدّم المنهج الإنجليزي للأعمار من 3 إلى 18 عامًا، وكلتاهما في شارع المريف. وتوجد مدارس دولية أخرى على مسافة قصيرة بالسيارة في مدينة خليفة. ويُنصح بمراجعة تقييم دائرة التعليم والمعرفة والرسوم قبل اختيار المجتمع السكني."
+        },
+        {
+          "q": "How far is Al Raha from the airport, Yas Island and Downtown Abu Dhabi?",
+          "a": "Al Raha is about 10 minutes by car from Zayed International Airport and a similar 10 minutes from Yas Island, and roughly 25 minutes from Downtown Abu Dhabi, along the main Abu Dhabi–Dubai corridor. Travel times vary with the exact precinct and traffic.",
+          "q_ar": "كم تبعد منطقة الراحة عن المطار وجزيرة ياس ووسط مدينة أبوظبي؟",
+          "a_ar": "تبعد منطقة الراحة نحو 10 دقائق بالسيارة عن مطار زايد الدولي، ونحو 10 دقائق كذلك عن جزيرة ياس، وقرابة 25 دقيقة عن وسط مدينة أبوظبي، على الممر الرئيسي بين أبوظبي ودبي. وتختلف مدة الرحلة بحسب المجمع السكني وحركة المرور."
+        },
+        {
+          "q": "Is Al Raha or Khalifa City better value for buyers?",
+          "a": "Al Raha costs about twice as much per square foot as neighbouring Khalifa City: its sale index was about AED 1,962 per sq ft against roughly AED 952. Buyers pay that premium for Al Raha Beach's waterfront apartments, marinas and freehold access for every nationality, while Khalifa City offers larger villas on bigger plots for the money.",
+          "q_ar": "أيهما أنسب للمشترين من حيث القيمة: منطقة الراحة أم مدينة خليفة؟",
+          "a_ar": "تبلغ تكلفة القدم المربع في منطقة الراحة نحو ضعف مدينة خليفة المجاورة: إذ بلغ مؤشر أسعار البيع فيها نحو 1,962 درهمًا للقدم المربع مقابل نحو 952 درهمًا. ويدفع المشترون هذا الفارق مقابل شقق شاطئ الراحة على الواجهة المائية والمراسي وإتاحة التملك الحر لجميع الجنسيات، بينما توفر مدينة خليفة فللًا أكبر على قطع أوسع مقابل المبلغ نفسه."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "khalifa-city",
+      "name": "Khalifa City",
+      "pageSlug": "subpage/area/khalifa-city",
+      "sources": [
+        "DB: subpage/area/khalifa-city stats band, nearby band, landmarks band (Al Forsan, Abu Dhabi Golf Club), communities footnote (Al Forsan Village, Al Rayyana); developments (Fay Hills)",
+        "u.ae — Expatriates buying a property in the UAE (nine investment areas; Khalifa City not listed)",
+        "engelvoelkers.com — Abu Dhabi freehold areas (designated parts of Khalifa City)",
+        "propertyfinder.ae — Fay Hills by Taraf, freehold for all nationalities",
+        "bayut.com — Abu Dhabi Rental Market Report H1 2026 (Khalifa City affordable villa / apartment segment)",
+        "ris.ae / bayut.com — schools in Khalifa City",
+        "adro.gov.ae — Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Khalifa City?",
+          "a": "Only in designated projects: Khalifa City is not among the nine investment areas listed on u.ae, and most of its villa plots are owned by UAE nationals. Master-developed communities marketed to all nationalities, such as Taraf's Fay Hills, are the exception. Outside those, non-nationals usually rent, so confirm any plot's status on DARI before paying a deposit.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في مدينة خليفة؟",
+          "a_ar": "في المشاريع المحددة فقط: فمدينة خليفة ليست من مناطق الاستثمار التسع المدرجة على البوابة الرسمية لحكومة الإمارات، ومعظم قطع الفلل فيها مملوكة لمواطنين إماراتيين. وتُستثنى المجتمعات التي يطوّرها مطوّرون رئيسيون وتُسوَّق لجميع الجنسيات، مثل فاي هيلز من طرف. وخارج هذه المشاريع يقتصر حق غير المواطنين عادةً على الإيجار، لذا يجب التحقق من وضع أي قطعة عبر منصة «داري» قبل دفع أي عربون."
+        },
+        {
+          "q": "How much do villas cost in Khalifa City in 2026?",
+          "a": "Khalifa City's sale price index stood at about AED 952 per sq ft, up 5.73% over 12 months, one of the lower villa-led indexes on Abu Dhabi's mainland. New off-plan homes at Fay Hills start from AED 3,140,000 for a townhouse, with listed villas from AED 4,400,000 to AED 7,710,000.",
+          "q_ar": "كم تبلغ أسعار الفلل في مدينة خليفة في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في مدينة خليفة نحو 952 درهمًا للقدم المربع، بارتفاع 5.73% خلال 12 شهرًا، وهو من أدنى المؤشرات بين مناطق الفلل في البر الرئيسي لأبوظبي. وتبدأ أسعار المنازل الجديدة على الخريطة في فاي هيلز من 3,140,000 درهم لمنزل التاون هاوس، بينما تتراوح الفلل المعروضة بين 4,400,000 و7,710,000 درهم."
+        },
+        {
+          "q": "How much is rent in Khalifa City?",
+          "a": "Khalifa City's rental index was about AED 53 per sq ft a year, up 12.10% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 53,000 a year; Al Rayyana is the busiest apartment rental pocket, while larger family villas are let per unit and remain among Abu Dhabi's more affordable villa rents.",
+          "q_ar": "كم يبلغ الإيجار في مدينة خليفة؟",
+          "a_ar": "بلغ مؤشر الإيجارات في مدينة خليفة نحو 53 درهمًا للقدم المربع سنويًا، بارتفاع 12.10% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 53,000 درهم سنويًا تقريبًا، وتُعد الريانة أنشط مناطق إيجار الشقق، بينما تُؤجَّر الفلل العائلية الأكبر بحسب الوحدة وتظل من أقل إيجارات الفلل في أبوظبي."
+        },
+        {
+          "q": "Which new projects are selling in Khalifa City?",
+          "a": "The off-plan project listed in Khalifa City is Fay Hills by Taraf, a 381-home community of two to six-bedroom townhouses and villas, starting from AED 3,140,000, with handover scheduled for May 2030. Elsewhere in Khalifa City the market is mostly ready villas, with Al Forsan Village prominent in current resale activity.",
+          "q_ar": "ما المشاريع الجديدة المعروضة للبيع في مدينة خليفة؟",
+          "a_ar": "المشروع على الخريطة المدرج في مدينة خليفة هو فاي هيلز من طرف، وهو مجتمع يضم 381 وحدة من التاون هاوس والفلل من غرفتي نوم إلى ست غرف، تبدأ أسعارها من 3,140,000 درهم، ومن المقرر تسليمه في مايو 2030. أما في بقية مدينة خليفة فالسوق يتكون في معظمه من فلل جاهزة، وتبرز قرية الفرسان في نشاط إعادة البيع الحالي."
+        },
+        {
+          "q": "Does buying a villa in Khalifa City qualify for a UAE Golden Visa?",
+          "a": "Yes, at Fay Hills: every home there starts above the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, from AED 3,140,000. Off-plan buyers must have paid at least AED 2 million to the developer before applying, and mortgaged owners need equity of at least AED 2 million. UAE nationals buying in the rest of Khalifa City do not need the visa.",
+          "q_ar": "هل يؤهّل شراء فيلا في مدينة خليفة للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "نعم في فاي هيلز: إذ تبدأ أسعار جميع المنازل فيه فوق حد 2 مليون درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، وذلك من 3,140,000 درهم. ويجب على مشتري العقارات على الخريطة سداد 2 مليون درهم على الأقل للمطوّر قبل التقديم، وعلى المالكين بالتمويل امتلاك حصة لا تقل عن 2 مليون درهم. أما المواطنون الذين يشترون في بقية مدينة خليفة فلا يحتاجون إلى هذه الإقامة."
+        },
+        {
+          "q": "What fees do you pay when buying property in Khalifa City?",
+          "a": "Budget for Abu Dhabi's 2% registration fee, paid through DARI: on a AED 3,140,000 Fay Hills townhouse that is AED 62,800. Buying a resale villa in Khalifa City usually adds about 2% agency commission, plus bank and mortgage registration fees if you finance; off-plan purchases direct from Taraf normally carry no agency commission.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في مدينة خليفة؟",
+          "a_ar": "يجب احتساب رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «داري»: فعلى منزل تاون هاوس في فاي هيلز بسعر 3,140,000 درهم تبلغ 62,800 درهم. ويضيف شراء فيلا إعادة بيع في مدينة خليفة عادةً عمولة وساطة بنحو 2%، إضافة إلى رسوم البنك وتسجيل الرهن عند التمويل، بينما لا يتحمل الشراء على الخريطة من طرف مباشرة عادةً أي عمولة وساطة."
+        },
+        {
+          "q": "Is Khalifa City a good area for families?",
+          "a": "Khalifa City is one of Abu Dhabi's main family suburbs, known for spacious villas, quieter streets away from the city centre and a dense cluster of international schools. Weekends revolve around Al Forsan International Sports Resort, which covers about 1.6 sq km, and Abu Dhabi Golf Club, spread across roughly 162 hectares.",
+          "q_ar": "هل مدينة خليفة منطقة مناسبة للعائلات؟",
+          "a_ar": "مدينة خليفة من أبرز ضواحي العائلات في أبوظبي، وتشتهر بالفلل الواسعة والشوارع الهادئة بعيدًا عن وسط المدينة وكثرة المدارس الدولية. وتتمحور عطلات نهاية الأسبوع حول منتجع الفرسان الرياضي الدولي الممتد على نحو 1.6 كم مربع، ونادي أبوظبي للجولف الممتد على نحو 162 هكتارًا."
+        },
+        {
+          "q": "Which schools are in Khalifa City?",
+          "a": "Khalifa City has one of Abu Dhabi's largest concentrations of schools, including Raha International School's Khalifa City campus, GEMS American Academy, the International School of Choueifat and the Italian International School, with Yasmina British Academy next door in Al Raha Gardens. Check each school's ADEK rating and fees before choosing a street.",
+          "q_ar": "ما المدارس الموجودة في مدينة خليفة؟",
+          "a_ar": "تضم مدينة خليفة من أكبر تجمعات المدارس في أبوظبي، ومنها حرم مدينة خليفة لمدرسة الراحة الدولية، وأكاديمية جيمس الأمريكية، والمدرسة الدولية للشويفات، والمدرسة الإيطالية الدولية، إضافة إلى أكاديمية الياسمينة البريطانية المجاورة في حدائق الراحة. ويُنصح بمراجعة تقييم دائرة التعليم والمعرفة والرسوم لكل مدرسة قبل اختيار الحي."
+        },
+        {
+          "q": "How far is Khalifa City from the airport and Downtown Abu Dhabi?",
+          "a": "Khalifa City is about 10 minutes from Zayed International Airport from the Al Forsan side and around 25 minutes from Downtown Abu Dhabi. Masdar City sits right beside it, and Al Raha Beach and Yas Island are an easy drive, which is why many airline and airport staff live here. Times vary by sector and traffic.",
+          "q_ar": "كم تبعد مدينة خليفة عن المطار ووسط مدينة أبوظبي؟",
+          "a_ar": "تبعد مدينة خليفة نحو 10 دقائق عن مطار زايد الدولي من جهة الفرسان، ونحو 25 دقيقة عن وسط مدينة أبوظبي. وتقع مدينة مصدر بجوارها مباشرة، ويسهل الوصول بالسيارة إلى شاطئ الراحة وجزيرة ياس، ولذلك يسكنها كثير من موظفي الطيران والمطار. وتختلف المدة بحسب القطاع وحركة المرور."
+        },
+        {
+          "q": "Is Khalifa City or Masdar City better for buyers?",
+          "a": "Khalifa City suits buyers who want space: villas on large plots at an index of about AED 952 per sq ft, mostly owned by UAE nationals. Masdar City is an apartment-led freehold district open to all nationalities, at about AED 1,687 per sq ft and rising faster, up 30.64% over 12 months against Khalifa City's 5.73%.",
+          "q_ar": "أيهما أنسب للمشترين: مدينة خليفة أم مدينة مصدر؟",
+          "a_ar": "تناسب مدينة خليفة المشترين الباحثين عن المساحة: فلل على قطع كبيرة بمؤشر نحو 952 درهمًا للقدم المربع، ومعظمها مملوك لمواطنين. أما مدينة مصدر فمنطقة تملك حر للشقق في الغالب ومتاحة لجميع الجنسيات، بمؤشر نحو 1,687 درهمًا للقدم المربع ونمو أسرع بلغ 30.64% خلال 12 شهرًا مقابل 5.73% في مدينة خليفة."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "masdar-city",
+      "name": "Masdar City",
+      "pageSlug": "subpage/area/masdar-city",
+      "sources": [
+        "DB: subpage/area/masdar-city stats band (June 2026), nearby band, landmarks band, why band; developments (Bab Al Qasr Garden Residence 65, 66); published listings (Oasis 1, Oasis 2, The Gate Masdar, Royal Park, Bab Al Qasr Resort Residence 19)",
+        "u.ae — Expatriates buying a property in the UAE (Masdar City among nine investment areas)",
+        "adro.gov.ae — Golden Visa",
+        "masdar.ae — 40% less energy and water claim (via DB stats footnote)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy freehold property in Masdar City?",
+          "a": "Yes. Masdar City is one of Abu Dhabi's nine designated investment areas, where buyers of every nationality can own freehold since the 2019 amendment to the emirate's real estate law. That covers ready buildings such as Oasis Residences and The Gate Masdar as well as off-plan towers at Bab Al Qasr, all registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب تملّك العقارات بنظام التملك الحر في مدينة مصدر؟",
+          "a_ar": "نعم. مدينة مصدر من مناطق الاستثمار التسع المحددة في أبوظبي، حيث يحق للمشترين من جميع الجنسيات التملك الحر منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويشمل ذلك المباني الجاهزة مثل واحة ريزيدنسز وذا غيت مصدر، والأبراج على الخريطة في باب القصر، وتُسجَّل جميعها لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "How much does an apartment cost in Masdar City in 2026?",
+          "a": "Masdar City's sale price index stood at about AED 1,687 per sq ft in June 2026, up 30.64% over 12 months. Ready apartments in buildings such as Royal Park, Oasis 1 and The Gate Masdar are listed from about AED 1,150,000 to AED 1,550,000, while off-plan units at Bab Al Qasr Garden Residence 66 start from AED 1,500,000.",
+          "q_ar": "كم يبلغ سعر الشقة في مدينة مصدر في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في مدينة مصدر نحو 1,687 درهمًا للقدم المربع في يونيو 2026، بارتفاع 30.64% خلال 12 شهرًا. وتُعرض الشقق الجاهزة في مبانٍ مثل رويال بارك وواحة 1 وذا غيت مصدر بأسعار تتراوح بين 1,150,000 و1,550,000 درهم تقريبًا، بينما تبدأ الوحدات على الخريطة في باب القصر غاردن ريزيدنس 66 من 1,500,000 درهم."
+        },
+        {
+          "q": "What is the average rent in Masdar City?",
+          "a": "Masdar City's rental index was about AED 129 per sq ft a year, up 13.13% over 12 months, one of the higher rates on the mainland. On that basis a 1,000 sq ft apartment would rent for roughly AED 129,000 a year; compact studios and one-bedrooms near the research campuses rent by unit and vary with building and furnishing.",
+          "q_ar": "كم يبلغ متوسط الإيجار في مدينة مصدر؟",
+          "a_ar": "بلغ مؤشر الإيجارات في مدينة مصدر نحو 129 درهمًا للقدم المربع سنويًا، بارتفاع 13.13% خلال 12 شهرًا، وهو من أعلى المعدلات في البر الرئيسي. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 129,000 درهم سنويًا تقريبًا، أما الاستوديوهات والشقق ذات الغرفة الواحدة قرب الحرم البحثي فتُؤجَّر بحسب الوحدة وتختلف بحسب المبنى والتأثيث."
+        },
+        {
+          "q": "Which off-plan projects are selling in Masdar City now?",
+          "a": "Two off-plan projects are selling in Masdar City, both by Burtville Developments. Bab Al Qasr Garden Residence 65 has 405 homes of one to five bedrooms from AED 1,830,000 and handover in February 2030; Bab Al Qasr Garden Residence 66 has 240 homes of one to four bedrooms from AED 1,500,000 and handover in May 2029.",
+          "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في مدينة مصدر؟",
+          "a_ar": "يُعرض في مدينة مصدر مشروعان على الخريطة، كلاهما من تطوير بيرتفيل. يضم باب القصر غاردن ريزيدنس 65 405 وحدات من غرفة نوم إلى خمس غرف تبدأ من 1,830,000 درهم ويُسلَّم في فبراير 2030، ويضم باب القصر غاردن ريزيدنس 66 عدد 240 وحدة من غرفة نوم إلى أربع غرف تبدأ من 1,500,000 درهم ويُسلَّم في مايو 2029."
+        },
+        {
+          "q": "Is Masdar City a good place to live?",
+          "a": "Masdar City suits residents who want a compact, walkable neighbourhood a few minutes from the airport, built around shaded streets, Masdar Park and low-carbon design; Masdar says its buildings use about 40% less energy and water than comparable ones. It is quieter than the islands, with a working population drawn by MBZUAI and the UAE Space Agency.",
+          "q_ar": "هل مدينة مصدر مكان مناسب للسكن؟",
+          "a_ar": "تناسب مدينة مصدر السكان الباحثين عن حي مدمج يسهل التنقل فيه سيرًا وعلى بعد دقائق من المطار، صُمم حول الشوارع المظللة وحديقة مصدر والتصميم منخفض الانبعاثات، إذ تشير مصدر إلى أن مبانيها تستهلك طاقة ومياه أقل بنحو 40% من المباني المماثلة. وهي أهدأ من الجزر، ويجذب إليها السكان العاملون في جامعة محمد بن زايد للذكاء الاصطناعي ووكالة الإمارات للفضاء."
+        },
+        {
+          "q": "Does buying in Masdar City qualify for a UAE Golden Visa?",
+          "a": "Only for larger units, as most Masdar City apartments sit below the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. Bigger homes at Bab Al Qasr Garden Residence 65, listed up to AED 4,300,000, clear it. Off-plan buyers must have paid at least AED 2 million, and mortgaged owners need that much equity.",
+          "q_ar": "هل يؤهّل الشراء في مدينة مصدر للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "للوحدات الأكبر فقط، إذ تقل أسعار معظم الشقق في مدينة مصدر عن حد 2 مليون درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. أما المنازل الأكبر في باب القصر غاردن ريزيدنس 65، المعروضة بأسعار تصل إلى 4,300,000 درهم، فتتجاوزه. ويجب على مشتري العقارات على الخريطة سداد 2 مليون درهم على الأقل، وعلى المالكين بالتمويل امتلاك حصة بهذا القدر."
+        },
+        {
+          "q": "What fees do you pay when buying an apartment in Masdar City?",
+          "a": "Expect Abu Dhabi's 2% registration fee, paid through DARI: AED 30,000 on a AED 1,500,000 apartment at Bab Al Qasr Garden Residence 66. Resale purchases in ready Masdar City buildings such as Oasis Residences usually add about 2% agency commission and a developer NOC fee, plus bank and mortgage registration fees if you finance.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء شقة في مدينة مصدر؟",
+          "a_ar": "يُتوقع دفع رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»: أي 30,000 درهم على شقة بسعر 1,500,000 درهم في باب القصر غاردن ريزيدنس 66. ويضيف شراء عقار إعادة بيع في مباني مدينة مصدر الجاهزة مثل واحة ريزيدنسز عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من المطوّر، إضافة إلى رسوم البنك وتسجيل الرهن عند التمويل."
+        },
+        {
+          "q": "How far is Masdar City from the airport, Downtown Abu Dhabi and Dubai?",
+          "a": "Masdar City is about 5 minutes by car from Zayed International Airport, around 20 minutes from Downtown Abu Dhabi and roughly 45 minutes from Dubai, with direct road links towards Yas Island. Travel times depend on the starting point and traffic.",
+          "q_ar": "كم تبعد مدينة مصدر عن المطار ووسط مدينة أبوظبي ودبي؟",
+          "a_ar": "تبعد مدينة مصدر نحو 5 دقائق بالسيارة عن مطار زايد الدولي، ونحو 20 دقيقة عن وسط مدينة أبوظبي، وقرابة 45 دقيقة عن دبي، مع طرق مباشرة نحو جزيرة ياس. وتختلف مدة الرحلة بحسب نقطة الانطلاق وحركة المرور."
+        },
+        {
+          "q": "What kind of property can you buy in Masdar City?",
+          "a": "Masdar City is almost entirely apartments, from studios to five-bedroom units, in low and mid-rise buildings. Ready options include Oasis 1, Oasis 2, The Gate Masdar, Royal Park and Bab Al Qasr Resort Residence 19; the off-plan Bab Al Qasr Garden Residences add larger family layouts, with handovers in 2029 and 2030.",
+          "q_ar": "ما نوع العقارات التي يمكن شراؤها في مدينة مصدر؟",
+          "a_ar": "تتكون مدينة مصدر بالكامل تقريبًا من الشقق، من الاستوديو حتى خمس غرف نوم، في مبانٍ منخفضة ومتوسطة الارتفاع. وتشمل الخيارات الجاهزة واحة 1 وواحة 2 وذا غيت مصدر ورويال بارك وباب القصر ريزورت ريزيدنس 19، بينما تضيف مشاريع باب القصر غاردن ريزيدنس على الخريطة تصاميم عائلية أكبر، بمواعيد تسليم في 2029 و2030."
+        },
+        {
+          "q": "Is Masdar City or Al Raha better to buy in?",
+          "a": "Masdar City is the cheaper entry and the faster-moving market: its sale index of about AED 1,687 per sq ft rose 30.64% over 12 months, against Al Raha's AED 1,962 and 12.91%. Al Raha offers waterfront living and villas; Masdar City offers newer, energy-efficient apartments 5 minutes from the airport, with a higher rental index of AED 129 against 105.",
+          "q_ar": "أيهما أنسب للشراء: مدينة مصدر أم منطقة الراحة؟",
+          "a_ar": "تمثل مدينة مصدر مدخلًا أقل تكلفة وسوقًا أسرع حركة: إذ ارتفع مؤشر أسعار البيع فيها البالغ نحو 1,687 درهمًا للقدم المربع بنسبة 30.64% خلال 12 شهرًا، مقابل 1,962 درهمًا و12.91% في منطقة الراحة. وتوفر الراحة السكن على الواجهة المائية والفلل، بينما توفر مصدر شققًا أحدث موفرة للطاقة على بعد 5 دقائق من المطار، بمؤشر إيجار أعلى يبلغ 129 درهمًا مقابل 105."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-ghadeer",
+      "name": "Al Ghadeer",
+      "pageSlug": "subpage/area/al-ghadeer",
+      "sources": [
+        "DB: subpage/area/al-ghadeer stats band (May 2026), nearby band, landmarks band (2,800-student school), communities footnote (437 homes); developments (Al Ghadeer Gardens); listings",
+        "u.ae — nine Abu Dhabi investment areas (Sayh Al Sedairah)",
+        "wam.ae / aldar.com — Al Ghadeer Gardens launch (15 May 2026, 437 villas and townhouses) and sell-out (21 May 2026, 64% expatriate and overseas buyers)",
+        "metropolitan.realestate / opr.ae — Al Ghadeer Gardens on Seih Sedeirah, freehold",
+        "adro.gov.ae — Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Ghadeer?",
+          "a": "Yes. Al Ghadeer sits on Sayh Al Sedairah, one of Abu Dhabi's nine designated investment areas, where buyers of every nationality can own freehold since the 2019 amendment to the emirate's real estate law. Aldar reported that 64% of Al Ghadeer Gardens sales went to expatriate residents and overseas buyers.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في الغدير؟",
+          "a_ar": "نعم. تقع الغدير في سيح السديرة، وهي من مناطق الاستثمار التسع المحددة في أبوظبي، حيث يحق للمشترين من جميع الجنسيات التملك الحر منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. وأعلنت الدار أن 64% من مبيعات الغدير جاردنز ذهبت إلى مقيمين أجانب ومشترين من خارج الدولة."
+        },
+        {
+          "q": "How much does property cost in Al Ghadeer in 2026?",
+          "a": "Al Ghadeer's sale price index stood at about AED 1,128 per sq ft in May 2026, up 13.29% over 12 months, with villa prices up 17.82%. At Al Ghadeer Gardens, townhouses are listed from AED 1,850,000 to AED 2,300,000 and villas from AED 3,100,000, well below comparable homes closer to Abu Dhabi city.",
+          "q_ar": "كم تبلغ أسعار العقارات في الغدير في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في الغدير نحو 1,128 درهمًا للقدم المربع في مايو 2026، بارتفاع 13.29% خلال 12 شهرًا، فيما ارتفعت أسعار الفلل بنسبة 17.82%. وفي الغدير جاردنز تُعرض منازل التاون هاوس بأسعار بين 1,850,000 و2,300,000 درهم، والفلل من 3,100,000 درهم، وهي أقل بكثير من المنازل المماثلة الأقرب إلى مدينة أبوظبي."
+        },
+        {
+          "q": "What is Al Ghadeer Gardens by Aldar?",
+          "a": "Al Ghadeer Gardens is Aldar's 437-home community of villas and townhouses in Al Ghadeer, in a walkable, nature-led masterplan. Announced on 15 May 2026, it opened for sale on 18 May and sold out by 21 May; the release now on sale starts from AED 1,850,000, with two to four bedrooms and handover scheduled for December 2030.",
+          "q_ar": "ما هو مشروع الغدير جاردنز من الدار؟",
+          "a_ar": "الغدير جاردنز مجتمع من الدار يضم 437 فيلا وتاون هاوس في الغدير، ضمن مخطط رئيسي يركز على سهولة المشي والطبيعة. وقد أُعلن عنه في 15 مايو 2026، وافتُتح للبيع في 18 مايو وبيعت وحداته بالكامل بحلول 21 مايو، وتبدأ أسعار المرحلة المعروضة حاليًا من 1,850,000 درهم، بوحدات من غرفتي نوم إلى أربع غرف، ومن المقرر تسليمها في ديسمبر 2030."
+        },
+        {
+          "q": "Where is Al Ghadeer and how far is it from Dubai?",
+          "a": "Al Ghadeer is on the Abu Dhabi–Dubai border, about 40 minutes from Downtown Abu Dhabi and within roughly 20 minutes of Expo City Dubai, Dubai Parks and Resorts and Al Maktoum International Airport. That makes it one of the few Abu Dhabi addresses that works for a Dubai commute. Times vary with traffic.",
+          "q_ar": "أين تقع الغدير وكم تبعد عن دبي؟",
+          "a_ar": "تقع الغدير على الحدود بين أبوظبي ودبي، على بعد نحو 40 دقيقة من وسط مدينة أبوظبي، وفي حدود 20 دقيقة تقريبًا من إكسبو سيتي دبي ودبي باركس آند ريزورتس ومطار آل مكتوم الدولي. ويجعلها ذلك من العناوين القليلة في أبوظبي المناسبة للتنقل اليومي إلى دبي. وتختلف المدة بحسب حركة المرور."
+        },
+        {
+          "q": "Is Al Ghadeer a good place for families?",
+          "a": "Al Ghadeer is built for families: low-rise apartments, townhouses and villas around landscaped areas, the Al Ghadeer Gardens community hub and sports facilities. A new school planned for more than 2,800 students is part of the area's growth, which matters in a district that has relied on schools in neighbouring Dubai and Abu Dhabi suburbs.",
+          "q_ar": "هل الغدير مكان مناسب للعائلات؟",
+          "a_ar": "صُممت الغدير للعائلات: شقق منخفضة الارتفاع وتاون هاوس وفلل حول مساحات منسقة، ومركز مجتمع الغدير جاردنز والمرافق الرياضية. ومن ضمن نمو المنطقة مدرسة جديدة مخطط لها تستوعب أكثر من 2,800 طالب، وهو أمر مهم في منطقة اعتمدت على مدارس الضواحي المجاورة في دبي وأبوظبي."
+        },
+        {
+          "q": "Does buying in Al Ghadeer qualify for a UAE Golden Visa?",
+          "a": "It can, if the home is worth at least AED 2 million, the threshold for Abu Dhabi's 10-year Golden Visa. At Al Ghadeer Gardens that means the larger townhouses, listed at AED 2,300,000, and the villas from AED 3,100,000; entry townhouses from AED 1,850,000 fall just short. Off-plan buyers must also have paid at least AED 2 million.",
+          "q_ar": "هل يؤهّل الشراء في الغدير للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "يمكن ذلك إذا كانت قيمة العقار 2 مليون درهم على الأقل، وهو الحد المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. وفي الغدير جاردنز يعني ذلك منازل التاون هاوس الأكبر المعروضة بسعر 2,300,000 درهم والفلل من 3,100,000 درهم، بينما تقل منازل التاون هاوس الأولى التي تبدأ من 1,850,000 درهم عن هذا الحد بقليل. ويجب على مشتري العقارات على الخريطة أيضًا سداد 2 مليون درهم على الأقل."
+        },
+        {
+          "q": "What fees do you pay when buying property in Al Ghadeer?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: AED 37,000 on a AED 1,850,000 Al Ghadeer Gardens townhouse. Buying a resale apartment or townhouse in the older Al Ghadeer phases usually adds about 2% agency commission and a developer NOC fee, plus bank and mortgage registration fees if you finance.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في الغدير؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «داري»: أي 37,000 درهم على منزل تاون هاوس في الغدير جاردنز بسعر 1,850,000 درهم. ويضيف شراء شقة أو تاون هاوس إعادة بيع في مراحل الغدير الأقدم عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من المطوّر، إضافة إلى رسوم البنك وتسجيل الرهن عند التمويل."
+        },
+        {
+          "q": "What types of property are available in Al Ghadeer?",
+          "a": "Al Ghadeer offers ready apartments and townhouses in its established phases and new villas and townhouses at Al Ghadeer Gardens, from two-bedroom townhouses to four-bedroom standalone villas such as a 2,670 sq ft home listed at AED 3,100,000. Most buildings are low-rise, with gardens and parking rather than towers.",
+          "q_ar": "ما أنواع العقارات المتوفرة في الغدير؟",
+          "a_ar": "توفر الغدير شققًا ومنازل تاون هاوس جاهزة في مراحلها القائمة، وفللًا وتاون هاوس جديدة في الغدير جاردنز، من منازل التاون هاوس بغرفتي نوم إلى الفلل المستقلة بأربع غرف، مثل منزل مساحته 2,670 قدمًا مربعًا معروض بسعر 3,100,000 درهم. ومعظم المباني منخفضة الارتفاع، مع حدائق ومواقف بدلًا من الأبراج."
+        },
+        {
+          "q": "Is Al Ghadeer cheaper than Yas Island or Al Raha?",
+          "a": "Yes, by a wide margin: Al Ghadeer's sale index of about AED 1,128 per sq ft compares with roughly AED 1,962 in Al Raha. Buyers trade a longer drive into Abu Dhabi, about 40 minutes to Downtown, for more space per dirham and quicker access to Dubai's southern districts.",
+          "q_ar": "هل الغدير أرخص من جزيرة ياس أو منطقة الراحة؟",
+          "a_ar": "نعم وبفارق كبير: إذ يبلغ مؤشر أسعار البيع في الغدير نحو 1,128 درهمًا للقدم المربع مقارنة بنحو 1,962 درهمًا في منطقة الراحة. ويقبل المشترون رحلة أطول إلى أبوظبي، نحو 40 دقيقة إلى وسط المدينة، مقابل مساحة أكبر لكل درهم ووصول أسرع إلى المناطق الجنوبية من دبي."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-bahia",
+      "name": "Al Bahia",
+      "pageSlug": "subpage/area/al-bahia",
+      "sources": [
+        "DB: subpage/area/al-bahia stats band, nearby band, map band (E11), landmarks band",
+        "u.ae — nine Abu Dhabi investment areas (Al Bahia not listed); expatriate rights (usufruct 99 years, musataha 50 years)",
+        "bayut.com / dubizzle.com — Al Bahia and Al Rahba area guides (Deerfields Townsquare, Burjeel Medical Centre, Emirates Park Zoo)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Bahia?",
+          "a": "Generally no: Al Bahia is not one of the nine investment areas where Abu Dhabi allows foreign freehold, so ownership of its villas and plots is held by UAE nationals. Non-nationals can rent there. Check any specific property's status on DARI before agreeing terms.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في الباهية؟",
+          "a_ar": "في الغالب لا: فالباهية ليست من مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ولذلك يملك فللها وأراضيها مواطنون إماراتيون. ويمكن لغير المواطنين الاستئجار فيها. ويجب التحقق من وضع أي عقار بعينه عبر منصة «داري» قبل الاتفاق على الشروط."
+        },
+        {
+          "q": "How much does property cost in Al Bahia?",
+          "a": "Al Bahia's sale price index stood at about AED 1,404 per sq ft, up 48.63% over 12 months, one of the sharpest rises on Abu Dhabi's northern mainland. The market is small and mostly villas and residential plots traded between UAE nationals, so a handful of large sales can move the index; treat it as a guide, not a valuation.",
+          "q_ar": "كم تبلغ أسعار العقارات في الباهية؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في الباهية نحو 1,404 دراهم للقدم المربع، بارتفاع 48.63% خلال 12 شهرًا، وهو من أكبر الارتفاعات في شمال البر الرئيسي لأبوظبي. والسوق صغير ويتكون في معظمه من فلل وأراضٍ سكنية تُتداول بين المواطنين، لذا قد تحرّك صفقات كبيرة قليلة المؤشر، ويُستحسن اعتباره دليلًا لا تقييمًا."
+        },
+        {
+          "q": "Is Al Bahia a good place to rent a villa?",
+          "a": "Al Bahia is one of the more affordable places to rent a large family villa near Abu Dhabi's northern coast, which draws a growing number of expatriate families alongside its Emirati community. Homes are typically spacious standalone villas with gardens, with Deerfields Townsquare mall and Burjeel Medical Centre on the doorstep.",
+          "q_ar": "هل الباهية مكان مناسب لاستئجار فيلا؟",
+          "a_ar": "تُعد الباهية من الأماكن الأقل تكلفة لاستئجار فيلا عائلية كبيرة قرب الساحل الشمالي لأبوظبي، ما يجذب عددًا متزايدًا من العائلات المقيمة إلى جانب مجتمعها الإماراتي. والمنازل في الغالب فلل مستقلة واسعة بحدائق، ويقع مركز ديرفيلدز تاون سكوير التجاري ومركز برجيل الطبي على مقربة منها."
+        },
+        {
+          "q": "Where is Al Bahia in Abu Dhabi?",
+          "a": "Al Bahia is a coastal residential district in north-eastern Abu Dhabi, between Al Shahama and Al Rahba, with access to the E11 highway and the coastal road network towards Dubai. It sits about 5–15 minutes from Al Shahama and 20–30 minutes from both Yas Island and Zayed International Airport.",
+          "q_ar": "أين تقع الباهية في أبوظبي؟",
+          "a_ar": "الباهية منطقة سكنية ساحلية في شمال شرق أبوظبي، بين الشهامة والرحبة، مع سهولة الوصول إلى طريق E11 وشبكة الطرق الساحلية المتجهة إلى دبي. وتبعد نحو 5 إلى 15 دقيقة عن الشهامة، ومن 20 إلى 30 دقيقة عن كل من جزيرة ياس ومطار زايد الدولي."
+        },
+        {
+          "q": "What types of property are in Al Bahia?",
+          "a": "Al Bahia is mainly spacious villas, many on large plots close to the sea, with some low-rise apartments and residential land. There are no master-developed off-plan projects selling in Al Bahia at present, so most activity is ready villas changing hands between nationals and villas let to tenants.",
+          "q_ar": "ما أنواع العقارات الموجودة في الباهية؟",
+          "a_ar": "تتكون الباهية أساسًا من فلل واسعة، كثير منها على قطع كبيرة قريبة من البحر، إلى جانب بعض الشقق منخفضة الارتفاع والأراضي السكنية. ولا توجد حاليًا مشاريع على الخريطة من مطوّرين رئيسيين معروضة للبيع في الباهية، لذا يتركز النشاط على الفلل الجاهزة التي تنتقل ملكيتها بين المواطنين والفلل المؤجرة."
+        },
+        {
+          "q": "Is Al Bahia good for families?",
+          "a": "Al Bahia suits families who want space and quiet: large villas, a coastal setting and an established neighbourhood away from city traffic. Emirates Park Zoo is on the area's edge, Deerfields Townsquare covers shopping and cinema, and Al Shahama's community facilities are 5–15 minutes away.",
+          "q_ar": "هل الباهية مناسبة للعائلات؟",
+          "a_ar": "تناسب الباهية العائلات الباحثة عن المساحة والهدوء: فلل كبيرة وموقع ساحلي وحي قائم بعيد عن ازدحام المدينة. وتقع حديقة الإمارات للحيوانات على أطراف المنطقة، ويلبي مركز ديرفيلدز تاون سكوير احتياجات التسوق والسينما، وتبعد المرافق المجتمعية في الشهامة من 5 إلى 15 دقيقة."
+        },
+        {
+          "q": "How far is Al Bahia from Yas Island and the airport?",
+          "a": "Al Bahia is about 20–30 minutes by car from both Yas Island and Zayed International Airport, and 5–15 minutes from Al Shahama, using the E11 and the coastal road. Travel times depend on the part of Al Bahia you start from and on traffic.",
+          "q_ar": "كم تبعد الباهية عن جزيرة ياس والمطار؟",
+          "a_ar": "تبعد الباهية نحو 20 إلى 30 دقيقة بالسيارة عن كل من جزيرة ياس ومطار زايد الدولي، ومن 5 إلى 15 دقيقة عن الشهامة، عبر طريق E11 والطريق الساحلي. وتختلف مدة الرحلة بحسب الجزء الذي تنطلق منه في الباهية وحركة المرور."
+        },
+        {
+          "q": "Is Al Bahia or Al Shahama better to live in?",
+          "a": "Al Bahia is the quieter, coastal choice, with larger villas and a sale index of about AED 1,404 per sq ft, while neighbouring Al Shahama has more apartments, a bus station and a busier local centre. The two are 5–15 minutes apart, so residents of either use the same malls, clinics and the E11 towards Dubai.",
+          "q_ar": "أيهما أنسب للسكن: الباهية أم الشهامة؟",
+          "a_ar": "الباهية هي الخيار الأهدأ والساحلي، بفلل أكبر ومؤشر أسعار بيع يبلغ نحو 1,404 دراهم للقدم المربع، بينما تضم الشهامة المجاورة عددًا أكبر من الشقق ومحطة حافلات ومركزًا محليًا أكثر حركة. وتفصل بينهما مسافة 5 إلى 15 دقيقة، لذا يستخدم سكان كل منهما المراكز التجارية والعيادات نفسها وطريق E11 نحو دبي."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-rahba",
+      "name": "Al Rahba",
+      "pageSlug": "subpage/area/al-rahba",
+      "sources": [
+        "DB: subpage/area/al-rahba stats band (villa rental index), nearby band, map band (E11, Al Samha), landmarks band (Al Rahba Hospital, Emirates Park Zoo)",
+        "u.ae — nine Abu Dhabi investment areas (Al Rahba not listed); expatriate rights (usufruct 99 years)",
+        "bayut.com — Al Rahba area guide (Sheikh Maktoum Bin Rashid Road, Al Rahba Hospital, Deerfields Mall, Yas Mall)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Rahba?",
+          "a": "Generally no: Al Rahba is outside the nine investment areas where Abu Dhabi permits foreign freehold, and its villas and compounds are owned by UAE nationals. Expatriates can rent there. Confirm any property's status on DARI first.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في الرحبة؟",
+          "a_ar": "في الغالب لا: فالرحبة تقع خارج مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ويملك فللها ومجمعاتها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار فيها. ويجب التحقق من وضع أي عقار عبر منصة «داري» أولًا."
+        },
+        {
+          "q": "How much is villa rent in Al Rahba?",
+          "a": "Al Rahba's villa rental index was about AED 38 per sq ft a year, up 16.64% over 12 months, one of the lower villa rates in Abu Dhabi. That makes it a common choice for families who want a large villa or compound home and can accept a 25–35 minute drive to Yas Island and the airport.",
+          "q_ar": "كم يبلغ إيجار الفلل في الرحبة؟",
+          "a_ar": "بلغ مؤشر إيجارات الفلل في الرحبة نحو 38 درهمًا للقدم المربع سنويًا، بارتفاع 16.64% خلال 12 شهرًا، وهو من أدنى معدلات إيجار الفلل في أبوظبي. ويجعلها ذلك خيارًا شائعًا للعائلات الراغبة في فيلا كبيرة أو منزل ضمن مجمع سكني، مع قبول رحلة من 25 إلى 35 دقيقة إلى جزيرة ياس والمطار."
+        },
+        {
+          "q": "Where is Al Rahba in Abu Dhabi?",
+          "a": "Al Rahba is a residential area in north-eastern Abu Dhabi, beside Al Shahama, Al Bahia and Al Samha, with Sheikh Maktoum Bin Rashid Road (E11) running through it. Al Shahama is about 10–15 minutes away, and Yas Island and Zayed International Airport are 25–35 minutes by car.",
+          "q_ar": "أين تقع الرحبة في أبوظبي؟",
+          "a_ar": "الرحبة منطقة سكنية في شمال شرق أبوظبي، بجوار الشهامة والباهية والسمحة، ويمر بها طريق الشيخ مكتوم بن راشد (E11). وتبعد الشهامة عنها نحو 10 إلى 15 دقيقة، بينما تبعد جزيرة ياس ومطار زايد الدولي من 25 إلى 35 دقيقة بالسيارة."
+        },
+        {
+          "q": "What types of property are available in Al Rahba?",
+          "a": "Al Rahba is mostly spacious family villas and gated residential compounds, with a smaller number of apartments. There are no master-developed off-plan projects selling in Al Rahba, so the market is ready homes: villas let to families, and sales between UAE nationals.",
+          "q_ar": "ما أنواع العقارات المتوفرة في الرحبة؟",
+          "a_ar": "تتكون الرحبة في معظمها من فلل عائلية واسعة ومجمعات سكنية مسوّرة، مع عدد أقل من الشقق. ولا توجد مشاريع على الخريطة من مطوّرين رئيسيين معروضة للبيع في الرحبة، لذا يقتصر السوق على المنازل الجاهزة: فلل مؤجرة للعائلات، وصفقات بيع بين المواطنين."
+        },
+        {
+          "q": "Is Al Rahba a good area for families?",
+          "a": "Al Rahba suits families who value space and quiet over city convenience: large villas, compounds and calm streets outside central Abu Dhabi. Al Rahba Hospital, one of the emirate's main government hospitals, is inside the community, local girls' and primary schools are nearby, and Emirates Park Zoo is a short drive away.",
+          "q_ar": "هل الرحبة منطقة مناسبة للعائلات؟",
+          "a_ar": "تناسب الرحبة العائلات التي تفضّل المساحة والهدوء على قرب المدينة: فلل كبيرة ومجمعات سكنية وشوارع هادئة خارج وسط أبوظبي. ويقع مستشفى الرحبة، وهو من المستشفيات الحكومية الرئيسية في الإمارة، داخل المنطقة، كما توجد مدارس محلية للبنات وأخرى ابتدائية بالقرب منها، وتقع حديقة الإمارات للحيوانات على مسافة قصيرة بالسيارة."
+        },
+        {
+          "q": "How far is Al Rahba from Yas Island and the airport?",
+          "a": "Al Rahba is about 25–35 minutes by car from both Yas Island and Zayed International Airport, and 10–15 minutes from Al Shahama, via the E11. Yas Mall and Deerfields Mall are the nearest large shopping centres. Times vary with where in Al Rahba you start and with traffic.",
+          "q_ar": "كم تبعد الرحبة عن جزيرة ياس والمطار؟",
+          "a_ar": "تبعد الرحبة نحو 25 إلى 35 دقيقة بالسيارة عن كل من جزيرة ياس ومطار زايد الدولي، ومن 10 إلى 15 دقيقة عن الشهامة، عبر طريق E11. ويُعد ياس مول وديرفيلدز مول أقرب المراكز التجارية الكبيرة. وتختلف المدة بحسب نقطة الانطلاق في الرحبة وحركة المرور."
+        },
+        {
+          "q": "What amenities are in Al Rahba?",
+          "a": "Al Rahba has everyday services rather than big malls: Al Rahba Hospital, community facilities, clinics, mosques and local shops. For larger shopping and cinemas, residents drive to Deerfields Mall in neighbouring Al Bahia or to Yas Mall, and Al Raha Beach and Hydra Village are within reach along the coast.",
+          "q_ar": "ما المرافق الموجودة في الرحبة؟",
+          "a_ar": "تضم الرحبة خدمات يومية لا مراكز تجارية كبيرة: مستشفى الرحبة والمرافق المجتمعية والعيادات والمساجد والمتاجر المحلية. وللتسوق الأوسع ودور السينما يتوجه السكان بالسيارة إلى ديرفيلدز مول في الباهية المجاورة أو إلى ياس مول، كما يسهل الوصول إلى شاطئ الراحة وقرية هيدرا على امتداد الساحل."
+        },
+        {
+          "q": "Is Al Rahba cheaper to rent than Khalifa City?",
+          "a": "Yes, generally: Al Rahba's villa rental index of about AED 38 per sq ft a year is well below the roughly AED 53 recorded across Khalifa City. The trade-off is distance, with Al Rahba 25–35 minutes from the airport against about 10 minutes from Khalifa City's Al Forsan side, and fewer international schools nearby.",
+          "q_ar": "هل الإيجار في الرحبة أرخص من مدينة خليفة؟",
+          "a_ar": "نعم في الغالب: إذ يقل مؤشر إيجارات الفلل في الرحبة البالغ نحو 38 درهمًا للقدم المربع سنويًا كثيرًا عن نحو 53 درهمًا المسجلة في مدينة خليفة. والمقابل هو المسافة، إذ تبعد الرحبة من 25 إلى 35 دقيقة عن المطار مقابل نحو 10 دقائق من جهة الفرسان في مدينة خليفة، مع عدد أقل من المدارس الدولية القريبة."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-shahama",
+      "name": "Al Shahama",
+      "pageSlug": "subpage/area/al-shahama",
+      "sources": [
+        "DB: subpage/area/al-shahama stats band (apartment and New Shahama rental index), nearby band, landmarks band (bus station, Emirates Park Zoo), existing FAQ (Old / New Shahama)",
+        "u.ae — nine Abu Dhabi investment areas (Al Shahama not listed); expatriate rights (usufruct 99 years)",
+        "bhomes.com — Al Shahama area guide (not a designated freehold zone)",
+        "bayut.com — Old Shahama / New Shahama area guides (Deerfields Mall, Emirates Park Zoo)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Shahama?",
+          "a": "Generally no: Al Shahama is not a designated investment area, so foreign freehold is not available and its villas and apartments are owned by UAE nationals. Expatriates can rent there. Check a property's status on DARI before committing.",
+          "q_ar": "هل يمكن للأجانب شراء العقارات في الشهامة؟",
+          "a_ar": "في الغالب لا: فالشهامة ليست من مناطق الاستثمار المحددة، لذا لا يتاح فيها التملك الحر للأجانب، ويملك فللها وشققها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار فيها. ويجب التحقق من وضع العقار عبر منصة «داري» قبل الالتزام."
+        },
+        {
+          "q": "How much is apartment rent in Al Shahama?",
+          "a": "Al Shahama's apartment rental index was about AED 56 per sq ft a year, up 61.78% over 12 months, and New Shahama was slightly higher at about AED 60. On that basis a 1,000 sq ft apartment would rent for roughly AED 56,000 a year, still well below rents on Yas Island or Al Raha.",
+          "q_ar": "كم يبلغ إيجار الشقق في الشهامة؟",
+          "a_ar": "بلغ مؤشر إيجارات الشقق في الشهامة نحو 56 درهمًا للقدم المربع سنويًا، بارتفاع 61.78% خلال 12 شهرًا، وكان أعلى قليلًا في الشهامة الجديدة عند نحو 60 درهمًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 56,000 درهم سنويًا تقريبًا، وهو أقل بكثير من الإيجارات في جزيرة ياس أو منطقة الراحة."
+        },
+        {
+          "q": "What is the difference between Old Shahama and New Shahama?",
+          "a": "Old Shahama is the original village, with older standalone villas on larger plots near Deerfields Mall and Emirates Park Zoo. New Shahama is the newer planned section, with a higher share of apartment buildings, where the apartment rental index was about AED 60 per sq ft a year. Both sit within the wider Al Shahama locality.",
+          "q_ar": "ما الفرق بين الشهامة القديمة والشهامة الجديدة؟",
+          "a_ar": "الشهامة القديمة هي القرية الأصلية، وتضم فللًا مستقلة أقدم على قطع أكبر قرب ديرفيلدز مول وحديقة الإمارات للحيوانات. أما الشهامة الجديدة فهي الجزء المخطط الأحدث، وفيها نسبة أعلى من المباني السكنية، وبلغ مؤشر إيجار الشقق فيها نحو 60 درهمًا للقدم المربع سنويًا. وكلتاهما ضمن منطقة الشهامة الأوسع."
+        },
+        {
+          "q": "Where is Al Shahama and how far is it from Yas Island?",
+          "a": "Al Shahama is in north-eastern Abu Dhabi, next to Al Bahia and Al Rahba, on the main roads linking Abu Dhabi and Dubai. Yas Island is about 15–25 minutes away by car, Zayed International Airport 20–30 minutes, and Al Bahia 5–15 minutes. Times depend on traffic and where you start.",
+          "q_ar": "أين تقع الشهامة وكم تبعد عن جزيرة ياس؟",
+          "a_ar": "تقع الشهامة في شمال شرق أبوظبي بجوار الباهية والرحبة، على الطرق الرئيسية التي تربط أبوظبي بدبي. وتبعد جزيرة ياس نحو 15 إلى 25 دقيقة بالسيارة، ومطار زايد الدولي من 20 إلى 30 دقيقة، والباهية من 5 إلى 15 دقيقة. وتختلف المدة بحسب حركة المرور ونقطة الانطلاق."
+        },
+        {
+          "q": "What types of property are available in Al Shahama?",
+          "a": "Al Shahama offers standalone villas, many of them large family homes in Old Shahama, and apartments, concentrated in New Shahama's newer buildings. There are no master-developed off-plan projects selling in Al Shahama, so the market is ready homes for rent and sales between UAE nationals.",
+          "q_ar": "ما أنواع العقارات المتوفرة في الشهامة؟",
+          "a_ar": "توفر الشهامة فللًا مستقلة، كثير منها منازل عائلية كبيرة في الشهامة القديمة، وشققًا تتركز في المباني الأحدث بالشهامة الجديدة. ولا توجد مشاريع على الخريطة من مطوّرين رئيسيين معروضة للبيع في الشهامة، لذا يقتصر السوق على منازل جاهزة للإيجار وصفقات بيع بين المواطنين."
+        },
+        {
+          "q": "Is Al Shahama a good place to live?",
+          "a": "Al Shahama suits residents who want lower rents and a suburban setting with easy road access towards both Abu Dhabi and Dubai. It has neighbourhood parks, local shops and services, and the Al Shahama bus station for public transport, with Deerfields Mall and Emirates Park Zoo close by.",
+          "q_ar": "هل الشهامة مكان مناسب للسكن؟",
+          "a_ar": "تناسب الشهامة السكان الباحثين عن إيجارات أقل وبيئة في الضواحي مع سهولة الوصول بالطرق إلى أبوظبي ودبي. وتضم حدائق للأحياء ومتاجر وخدمات محلية ومحطة حافلات الشهامة للنقل العام، ويقع ديرفيلدز مول وحديقة الإمارات للحيوانات على مقربة منها."
+        },
+        {
+          "q": "Are rents still affordable in Al Shahama after the recent rise?",
+          "a": "Yes, relative to the islands: Al Shahama's apartment rental index rose 61.78% over 12 months but only to about AED 56 per sq ft a year, because rents started from a low base. That keeps Al Shahama one of the cheaper apartment areas within 15–25 minutes of Yas Island, though tenants renewing should budget for a larger increase than in recent years.",
+          "q_ar": "هل ما زالت الإيجارات في الشهامة في المتناول بعد ارتفاعها الأخير؟",
+          "a_ar": "نعم مقارنة بالجزر: فقد ارتفع مؤشر إيجارات الشقق في الشهامة بنسبة 61.78% خلال 12 شهرًا، لكنه لم يتجاوز نحو 56 درهمًا للقدم المربع سنويًا لأن الإيجارات بدأت من مستوى منخفض. ويُبقي ذلك الشهامة من أرخص مناطق الشقق على بعد 15 إلى 25 دقيقة من جزيرة ياس، وإن كان على المستأجرين عند التجديد توقّع زيادة أكبر مما اعتادوه في السنوات الأخيرة."
+        },
+        {
+          "q": "Is Al Shahama or Al Rahba better for renting a family home?",
+          "a": "Al Shahama is closer to Yas Island, at 15–25 minutes against Al Rahba's 25–35, and has more apartments and public transport. Al Rahba is the quieter villa and compound area, with a villa rental index of about AED 38 per sq ft a year and Al Rahba Hospital on hand. The two are 10–15 minutes apart.",
+          "q_ar": "أيهما أنسب لاستئجار منزل عائلي: الشهامة أم الرحبة؟",
+          "a_ar": "الشهامة أقرب إلى جزيرة ياس، من 15 إلى 25 دقيقة مقابل 25 إلى 35 دقيقة من الرحبة، وفيها عدد أكبر من الشقق ووسائل النقل العام. أما الرحبة فهي منطقة الفلل والمجمعات الأهدأ، بمؤشر إيجار للفلل يبلغ نحو 38 درهمًا للقدم المربع سنويًا، ويقع فيها مستشفى الرحبة. وتفصل بينهما مسافة 10 إلى 15 دقيقة."
+        }
+      ]
+    }
+  ]
+}

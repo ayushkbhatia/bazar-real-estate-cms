@@ -6,6 +6,13 @@ import { GuideShell } from "../_components/guide-shell";
 import { PropertyResidencyChecker } from "./_checker";
 import { localeAlternates } from "@/lib/i18n/metadata";
 
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
+
 const METADATA: Metadata = {
   title: "Property-linked UAE residency — 2-year visa guide",
   description:
@@ -52,6 +59,7 @@ export default async function PropertyLinkedResidencyPage({
   const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
+      faqKey="guide-property-linked-residency"
       locale={locale}
       eyebrow={t("propertyLinkedResidency.eyebrow")}
       title={t("propertyLinkedResidency.title")}

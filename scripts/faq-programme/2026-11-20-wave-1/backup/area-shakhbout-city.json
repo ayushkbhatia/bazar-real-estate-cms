@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is located in mainland Abu Dhabi, near Mohammed Bin Zayed City.",
+        "q": "Where is Shakhbout City located?",
+        "a_ar": "تقع في بر أبوظبي بالقرب من مدينة محمد بن زايد.",
+        "q_ar": "أين تقع مدينة شخبوط؟"
+      },
+      {
+        "a": "The area primarily offers standalone villas and residential compounds.",
+        "q": "What properties are available in Shakhbout City?",
+        "a_ar": "تتوفر بشكل رئيسي الفلل المستقلة والمجمعات السكنية.",
+        "q_ar": "ما أنواع العقارات المتوفرة في مدينة شخبوط؟"
+      },
+      {
+        "a": "Yes. It offers spacious housing and access to schools and healthcare.",
+        "q": "Is Shakhbout City suitable for families?",
+        "a_ar": "نعم، توفر منازل واسعة ومدارس ومرافق صحية قريبة.",
+        "q_ar": "هل مدينة شخبوط مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Shakhbout City",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مدينة شخبوط"
+  },
+  "enabled": true
+}

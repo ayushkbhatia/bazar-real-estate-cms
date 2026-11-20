@@ -1,0 +1,64 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.50384234567217,
+    "lng": 54.418022369521
+  },
+  "nearby_ids": [],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy private movie screenings in a comfortable, immersive cinema setting.",
+      "title": "Cinema",
+      "copy_ar": "استمتع بعروض سينمائية خاصة ضمن أجواء مريحة وغامرة.",
+      "media_id": "996ed007-0171-4437-a256-664ad4f8c554",
+      "title_ar": "السينما"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Relax and recharge in a tranquil spa designed for complete wellness and rejuvenation.",
+      "title": "Spa",
+      "copy_ar": "استرخِ واستعد نشاطك في سبا هادئ مصمم للعافية وتجديد الحيوية.",
+      "media_id": "87756e44-a112-42ac-95a0-4ce03f1990e3",
+      "title_ar": "السبا"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active in a fully equipped gym designed for strength, fitness and overall well-being.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك في صالة مجهزة بالكامل لدعم القوة واللياقة والعافية.",
+      "media_id": "7b8d3847-6454-4beb-ae26-7e0457a9accc",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Connect, unwind and spend time with others in a welcoming social space designed for everyday gatherings.",
+      "title": "Social Space",
+      "copy_ar": "مساحة مرحبة للتواصل والاسترخاء وقضاء الوقت مع الآخرين.",
+      "media_id": "51316ea0-98aa-457f-8db7-d134158415c7",
+      "title_ar": "المساحة الاجتماعية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Work comfortably and productively in a modern co-working space designed for focus, collaboration and flexibility.",
+      "title": "Co-Working Space",
+      "copy_ar": "اعمل براحة وإنتاجية في مساحة عصرية مصممة للتركيز والتعاون والمرونة.",
+      "media_id": "9717dc49-5462-47b5-8949-aaf85be4c69d",
+      "title_ar": "مساحة العمل المشتركة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Arrive in a stylish, welcoming lobby designed to create a refined first impression.",
+      "title": "Lobby",
+      "copy_ar": "استقبل يومك في ردهة أنيقة ومرحبة تمنح انطباعًا أوليًا راقيًا.",
+      "media_id": "d6794df7-5889-4d97-830e-30812c0d5c26",
+      "title_ar": "الردهة"
+    }
+  ]
+}

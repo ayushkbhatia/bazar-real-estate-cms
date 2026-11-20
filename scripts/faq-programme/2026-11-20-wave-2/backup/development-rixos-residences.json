@@ -1,0 +1,67 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.496197031481003,
+    "lng": 54.40085256525654
+  },
+  "nearby_ids": [
+    "ea7e7e51-aea1-49df-b060-06730acaf6e3",
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Dedicated concierge services designed to make everyday living more seamless and convenient.",
+      "title": "Concierge",
+      "copy_ar": "خدمات مخصصة مصممة لجعل الحياة اليومية أكثر سهولة وراحة للسكان.",
+      "media_id": "eb2e1d19-b3fb-4799-8637-88a983fe4d34",
+      "title_ar": "خدمة الكونسيرج"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "An elegant arrival experience with a refined lobby that reflects the project’s luxury hospitality standards.",
+      "title": "Lobby",
+      "copy_ar": "مساحة استقبال أنيقة وراقية تعكس معايير الضيافة الفاخرة للمشروع.",
+      "media_id": "53e4062a-3f7e-46b8-8b6a-81dc15234119",
+      "title_ar": "الردهة"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A private cinema space where residents can enjoy films and entertainment in comfort.",
+      "title": "Cinema",
+      "copy_ar": "مساحة سينما خاصة تتيح للسكان الاستمتاع بالأفلام والترفيه في أجواء مريحة.",
+      "media_id": "954d4478-12e6-4643-beba-899d40504abd",
+      "title_ar": "السينما"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A dedicated wellness space designed for relaxation, treatments, and restorative experiences.",
+      "title": "Wellness Room",
+      "copy_ar": "مساحة مخصصة للاسترخاء والعلاجات وتجارب العافية المتجددة.",
+      "media_id": "51b059e5-cf6e-405d-97bf-4f5dd0288e22",
+      "title_ar": "غرفة العافية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A fully equipped fitness space designed to support an active and balanced lifestyle.",
+      "title": "Gym",
+      "copy_ar": "مساحة لياقة بدنية مجهزة بالكامل لدعم أسلوب حياة نشط ومتوازن.",
+      "media_id": "8171590b-c70b-4356-a32d-affbca5ad6f4",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "A safe and engaging indoor space created for children to play, learn, and enjoy.",
+      "title": "Kids Room",
+      "copy_ar": "مساحة داخلية آمنة وممتعة مصممة للأطفال للعب والتعلم والاستمتاع.",
+      "media_id": "f5e8dba9-f900-4b23-922e-e27df22eff4f",
+      "title_ar": "غرفة الأطفال"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Hudayriyat is known for its waterfront setting, premium residential communities and strong focus on sport, wellness and outdoor recreation.",
+        "q": "What is Hudayriyat Island known for?",
+        "a_ar": "تشتهر جزيرة الحديريات بموقعها على الواجهة البحرية ومجتمعاتها السكنية الفاخرة وتركيزها الكبير على الرياضة والعافية والأنشطة الترفيهية الخارجية.",
+        "q_ar": "ما الذي تشتهر به جزيرة الحديريات؟"
+      },
+      {
+        "a": "The island includes apartments, townhouses, villas, mansions and residential plots across different communities.",
+        "q": "What properties are available on Hudayriyat Island?",
+        "a_ar": "تضم الجزيرة شققًا وتاون هاوس وفللًا وقصورًا وأراضي سكنية ضمن مجتمعات مختلفة.",
+        "q_ar": "ما العقارات المتاحة في جزيرة الحديريات؟"
+      },
+      {
+        "a": "It is approximately 15–20 minutes from central Abu Dhabi, depending on traffic and the exact destination.",
+        "q": "How far is Hudayriyat Island from Downtown Abu Dhabi?",
+        "a_ar": "تبعد حوالي 15 إلى 20 دقيقة عن وسط أبوظبي، حسب حركة المرور والوجهة المحددة.",
+        "q_ar": "كم تبعد جزيرة الحديريات عن وسط مدينة أبوظبي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Hudayriyat Island",
+    "intro_ar": null,
+    "heading_ar": "أسئلة شائعة حول جزيرة الحديريات"
+  },
+  "enabled": true
+}

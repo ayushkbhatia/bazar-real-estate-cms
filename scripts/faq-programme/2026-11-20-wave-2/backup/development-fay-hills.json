@@ -1,0 +1,41 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.429587779153408,
+    "lng": 54.60817575612785
+  },
+  "nearby_ids": [
+    "226ea1ad-052b-4848-bda7-7d670da763a0",
+    "34181f94-0b19-4427-947c-0782ea67dfb9",
+    "b427f603-1c47-407b-b0c8-7d4693a689b4"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy a refreshing escape in a beautifully designed swimming pool, surrounded by relaxing spaces.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بأجواء من الاسترخاء في حمام سباحة مصمم بعناية، تحيط به مساحات مريحة وهادئة.",
+      "media_id": "2d430267-8190-4f75-9df8-0959f831f0c0",
+      "title_ar": "حمام السباحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A welcoming community space offering premium amenities for relaxation, recreation and social gatherings.",
+      "title": "Clubhouse",
+      "copy_ar": "مساحة اجتماعية متكاملة توفر مرافق متميزة للاسترخاء والترفيه والتجمعات الاجتماعية.",
+      "media_id": "0222da3e-48a3-4d5e-9c96-1abcbb6499a6",
+      "title_ar": "النادي الاجتماعي"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Beautifully landscaped gardens and open green spaces create a peaceful environment for outdoor living.",
+      "title": "Green Spaces",
+      "copy_ar": "حدائق منسقة ومساحات خضراء مفتوحة توفر بيئة هادئة للاستمتاع بالحياة في الهواء الطلق.",
+      "media_id": "8d233c10-dffe-49d1-b78c-836d85f5f217",
+      "title_ar": "المساحات الخضراء"
+    }
+  ]
+}

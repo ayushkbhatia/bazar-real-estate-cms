@@ -1,0 +1,68 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.499664103947637,
+    "lng": 54.391835190782075
+  },
+  "nearby_ids": [
+    "26066402-c4d8-4a53-96b6-9ae2b2ca9ac1",
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c",
+    "ea7e7e51-aea1-49df-b060-06730acaf6e3"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Unwind in an elegant infinity pool designed to create a seamless sense of space, relaxation, and luxury.",
+      "title": "Infinity Pool",
+      "copy_ar": "استرخِ في مسبح لامتناهٍ أنيق مصمم ليمنح إحساسًا بالاتساع والهدوء والفخامة.",
+      "media_id": "7f990e3c-4e89-4e8d-88af-30b2c7b257c4",
+      "title_ar": "المسبح اللامتناهي"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy a beautifully designed swimming pool ideal for refreshing swims, relaxation, and everyday leisure.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بمسبح مصمم بعناية للسباحة المنعشة والاسترخاء والترفيه اليومي.",
+      "media_id": "5ca66103-690e-4ab3-91d9-f24001a77f1d",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Recharge in dedicated spa and wellness facilities created to support relaxation, balance, and wellbeing.",
+      "title": "Spa & Wellness",
+      "copy_ar": "استعد نشاطك في مرافق مخصصة للسبا والعافية، مصممة لدعم الاسترخاء والتوازن والصحة العامة.",
+      "media_id": "069f52f1-ecba-4dfd-8f28-990df7342ccf",
+      "title_ar": "السبا والعافية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Stay active in a fully equipped modern gym designed for effective workouts, strength training, and everyday fitness.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك في صالة حديثة ومجهزة بالكامل للتمارين الفعالة وتمارين القوة واللياقة اليومية.",
+      "media_id": "081df828-0240-453c-a2c1-666f919d0133",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Enjoy an exclusive cinematic experience in a private screening room designed for comfort and entertainment.",
+      "title": "Private Cinema",
+      "copy_ar": "استمتع بتجربة سينمائية حصرية في غرفة عرض خاصة مصممة للراحة والترفيه.",
+      "media_id": "e7d8fd11-d63b-4fc5-b466-a49881764d70",
+      "title_ar": "السينما الخاصة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Practice your swing and enjoy an immersive golfing experience with a state-of-the-art golf simulator.",
+      "title": "Golf Simulator",
+      "copy_ar": "طوّر مهاراتك واستمتع بتجربة غولف غامرة باستخدام محاكي غولف متطور.",
+      "media_id": "d0051ca1-a116-40ce-9143-6f4624ec4784",
+      "title_ar": "محاكي الغولف"
+    }
+  ]
+}

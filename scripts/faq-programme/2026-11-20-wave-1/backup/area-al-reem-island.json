@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is one of Abu Dhabi’s leading mixed-use waterfront destinations, combining residential, retail and commercial development.",
+        "q": "What is Al Reem Island known for?",
+        "a_ar": "تُعد من أبرز الوجهات متعددة الاستخدامات على الواجهة البحرية في أبوظبي، حيث تجمع بين المشاريع السكنية والتجارية ومرافق التجزئة.",
+        "q_ar": "ما الذي تشتهر به جزيرة الريم؟"
+      },
+      {
+        "a": "Apartments dominate the established market, with newer developments also introducing townhouses and villas.",
+        "q": "What types of properties are available?",
+        "a_ar": "تهيمن الشقق على السوق القائم، بينما تقدم المشاريع الأحدث أيضًا وحدات تاون هاوس وفلل.",
+        "q_ar": "ما أنواع العقارات المتاحة؟"
+      },
+      {
+        "a": "Selected central Reem locations are approximately five minutes from Downtown.",
+        "q": "How close is Al Reem Island to Downtown Abu Dhabi?",
+        "a_ar": "تبعد بعض المواقع المركزية في جزيرة الريم حوالي 5 دقائق عن وسط مدينة أبوظبي.",
+        "q_ar": "ما مدى قرب جزيرة الريم من وسط مدينة أبوظبي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Reem Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة الريم"
+  },
+  "enabled": true
+}

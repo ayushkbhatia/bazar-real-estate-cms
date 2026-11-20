@@ -6,6 +6,13 @@ import { notFound } from "next/navigation";
 import { ServicePage } from "../_components/service-page";
 import { getSeedServiceBySlug } from "@/lib/seeds/services";
 
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
+
 const slug = "snagging" as const;
 
 export async function generateMetadata({

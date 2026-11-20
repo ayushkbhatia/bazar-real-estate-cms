@@ -1,0 +1,41 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.537341895343815,
+    "lng": 54.412373747199524
+  },
+  "nearby_ids": [
+    "33333333-0000-0000-0000-000000000005",
+    "26066402-c4d8-4a53-96b6-9ae2b2ca9ac1",
+    "ea7e7e51-aea1-49df-b060-06730acaf6e3"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A relaxing pool area designed for leisure, wellness, and everyday enjoyment.",
+      "title": "Swimming Pool",
+      "copy_ar": "مساحة مريحة مصممة للترفيه والعافية والاستمتاع اليومي.",
+      "media_id": "a146ee47-37fc-416b-98e7-3eeb5eac20fb",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A landscaped elevated garden offering green spaces for relaxation and outdoor living.",
+      "title": "Podium Garden",
+      "copy_ar": "حديقة مرتفعة ومنسقة تضم مساحات خضراء للاسترخاء والاستمتاع بالحياة في الهواء الطلق.",
+      "media_id": "1a80c229-313a-4eba-9346-b58adf473d75",
+      "title_ar": "حديقة البوديوم"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A dedicated social and lifestyle space designed for residents to gather, relax, and unwind.",
+      "title": "Club House",
+      "copy_ar": "مساحة اجتماعية مخصصة للسكان للتجمع والاسترخاء والاستمتاع بأوقاتهم.",
+      "media_id": "cf7d6f20-7f9a-47a7-8f0e-884fed547017",
+      "title_ar": "النادي"
+    }
+  ]
+}

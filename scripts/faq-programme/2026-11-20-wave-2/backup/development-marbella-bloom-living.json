@@ -1,0 +1,68 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.403140909382884,
+    "lng": 54.64998830935477
+  },
+  "nearby_ids": [
+    "226ea1ad-052b-4848-bda7-7d670da763a0",
+    "5b49546d-ce31-48d8-9812-789dc2b2c836",
+    "077c7fec-6ce9-42cc-8f63-83638dbd342d"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A welcoming space for residents to connect, socialise, and enjoy community activities.",
+      "title": "Community Center",
+      "copy_ar": "مساحة مميزة تجمع السكان للتواصل والاستمتاع بالأنشطة المجتمعية.",
+      "media_id": "a3eceed3-20d0-401f-930d-872bdea1089a",
+      "title_ar": "المركز المجتمعي"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A dedicated outdoor play area where children can have fun, explore, and make new friends.",
+      "title": "Kids Play Area",
+      "copy_ar": "منطقة مخصصة للأطفال للعب والاستكشاف وتكوين صداقات جديدة.",
+      "media_id": "72617f08-0520-45f0-9898-c3101f8133d2",
+      "title_ar": "منطقة ألعاب الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Beautifully designed outdoor spaces for dining and enjoying memorable moments with family and friends.",
+      "title": "Outdoor Dining",
+      "copy_ar": "مساحات خارجية مصممة بعناية للاستمتاع بتناول الطعام وقضاء أوقات مميزة مع العائلة والأصدقاء.",
+      "media_id": "f00e0037-1a2f-4c34-bcc5-689ea53e17f6",
+      "title_ar": "تناول الطعام في الهواء الطلق"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A relaxing poolside setting with comfortable spaces to unwind and enjoy the sunshine.",
+      "title": "Pool Deck",
+      "copy_ar": "مساحة مريحة بجانب المسبح للاسترخاء والاستمتاع بأشعة الشمس.",
+      "media_id": "19eb901f-2105-41fc-999b-58c26798894a",
+      "title_ar": "منطقة الاسترخاء بجانب المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A scenic walkway offering a peaceful setting for leisurely strolls and outdoor relaxation.",
+      "title": "Promenade",
+      "copy_ar": "ممشى بإطلالات جميلة يوفر أجواء هادئة للتنزه والاسترخاء في الهواء الطلق.",
+      "media_id": "c715c9f9-817a-471e-a454-f1fb7f66e6e1",
+      "title_ar": "الممشى"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "A thoughtfully designed collection of facilities that enhance comfort, convenience, and everyday living.",
+      "title": "Residential Amenities",
+      "copy_ar": "مجموعة من المرافق المصممة بعناية لتعزيز الراحة وتوفير أسلوب حياة متكامل للسكان.",
+      "media_id": "00a4140a-f0bc-4dd2-92f4-481fe6881bb3",
+      "title_ar": "المرافق السكنية"
+    }
+  ]
+}

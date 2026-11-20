@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is located in northeastern Abu Dhabi, near Al Bahia.",
+        "q": "Where is Al Shahama located?",
+        "a_ar": "تقع في شمال شرق أبوظبي بالقرب من الباهية.",
+        "q_ar": "أين تقع الشهامة؟"
+      },
+      {
+        "a": "They are residential sections of the wider Al Shahama locality, with different layouts and property options.",
+        "q": "What is the difference between Old Shahama and New Shahama?",
+        "a_ar": "هما منطقتان سكنيتان ضمن الشهامة، وتختلفان في التخطيط وخيارات العقارات.",
+        "q_ar": "ما الفرق بين الشهامة القديمة والشهامة الجديدة؟"
+      },
+      {
+        "a": "The area offers villas and apartments across its established neighbourhoods.",
+        "q": "What properties are available in Al Shahama?",
+        "a_ar": "تضم المنطقة فللا وشققا في مختلف الأحياء السكنية.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الشهامة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Shahama",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الشهامة"
+  },
+  "enabled": true
+}

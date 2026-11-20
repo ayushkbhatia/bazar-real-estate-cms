@@ -5,6 +5,8 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { SEED_SERVICES, type SeedService } from "@/lib/seeds/services";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
+import { PageFaq } from "../../_components/marketing/page-faq";
+import { pageFaqKeyFor } from "@/lib/master-pages/page-faqs";
 
 /**
  * Shared layout for each /services/[slug] sub-page.
@@ -18,6 +20,7 @@ export async function ServicePage({ service }: { service: SeedService }) {
   const prev = idx > 0 ? SEED_SERVICES[idx - 1] : null;
   const next =
     idx < SEED_SERVICES.length - 1 ? SEED_SERVICES[idx + 1] : null;
+  const faqKey = pageFaqKeyFor("services", service.slug);
 
   return (
     <div className="bg-bz-bg">
@@ -158,6 +161,10 @@ export async function ServicePage({ service }: { service: SeedService }) {
           )}
         </div>
       </section>
+
+      {/* The page's own questions (/admin/pages/sub/faq/service-<slug>).
+          The locale is read the same ambient way the translations above are. */}
+      {faqKey ? <PageFaq faqKey={faqKey} /> : null}
 
       {/* Publishes the page's context to the floating CTA rail (mounted once
           in the public layout).

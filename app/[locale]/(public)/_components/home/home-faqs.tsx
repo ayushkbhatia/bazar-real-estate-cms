@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import type { SectionCopy } from "./section-copy";
+import { FaqJsonLd } from "../marketing/faq-json-ld";
 
 /**
  * Home "FAQs" (handoff §7). Single-open accordion, first item open, plus
@@ -26,6 +27,9 @@ export function HomeFaqs({
 
   return (
     <section className="px-4 md:px-12 py-14 md:py-20">
+      {/* Only the open answer is in the HTML, so the schema is how a crawler
+          reads the rest. */}
+      <FaqJsonLd items={items ?? []} />
       <div className="grid items-start gap-10 md:grid-cols-[0.9fr_1.4fr] md:gap-16">
         <div className="md:sticky md:top-10">
           <div

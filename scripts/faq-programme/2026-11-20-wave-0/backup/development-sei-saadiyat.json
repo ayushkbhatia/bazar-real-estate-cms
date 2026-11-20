@@ -1,0 +1,84 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.53296790564825,
+    "lng": 54.413767510372026
+  },
+  "nearby_ids": [
+    "3445eb6d-e7b5-48e6-a52e-0aa23c02eedb"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Thoughtfully designed workspaces for productivity, focus and flexible working.",
+      "title": "Co-Working Spaces",
+      "copy_ar": "مساحات مصممة بعناية لتعزيز الإنتاجية والتركيز والعمل بمرونة.",
+      "media_id": "fda73c76-3644-43d8-b7b5-4689a35f6bb0",
+      "title_ar": "مساحات العمل المشتركة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A modern space designed for everyday training and active living.",
+      "title": "Fitness Studio",
+      "copy_ar": "مساحة عصرية مصممة للتمارين اليومية وتعزيز أسلوب حياة نشط.",
+      "media_id": "9c78b234-83b2-48e3-a4ec-d2bb2754ebf9",
+      "title_ar": "استوديو اللياقة البدنية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A restorative wellness experience designed to support relaxation and recovery.",
+      "title": "Hot & Cold Bath",
+      "copy_ar": "تجربة عافية مخصصة للاسترخاء ودعم التعافي وتجديد النشاط.",
+      "media_id": "871c303b-1c9b-40c2-8c91-16a3ce9df969",
+      "title_ar": "الحمام الساخن والبارد"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A private cinema setting for comfortable entertainment and movie nights.",
+      "title": "Indoor Cinema",
+      "copy_ar": "مساحة سينما خاصة للاستمتاع بالأفلام والترفيه في أجواء مريحة.",
+      "media_id": "3e407a69-0f55-4e42-931c-329a5407cfd4",
+      "title_ar": "السينما الداخلية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A dedicated space for children to play, learn and enjoy supervised activities.",
+      "title": "Kids Club",
+      "copy_ar": "مساحة مخصصة للأطفال للعب والتعلم والاستمتاع بالأنشطة المختلفة.",
+      "media_id": "66863fe5-9cd9-406c-8669-956bb314e12f",
+      "title_ar": "نادي الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "A relaxed social space combining quiet reading areas with interactive entertainment.",
+      "title": "Library & Gaming Lounge",
+      "copy_ar": "مساحة اجتماعية مريحة تجمع بين القراءة الهادئة والترفيه التفاعلي.",
+      "media_id": "23e368a8-7899-4d50-ad35-5a89eb0c28ce",
+      "title_ar": "المكتبة وصالة الألعاب"
+    },
+    {
+      "alt": null,
+      "key": "feature_8",
+      "copy": "A calming wellness space for yoga, meditation and mindful movement.",
+      "title": "Mind & Body Studio",
+      "copy_ar": "مساحة هادئة مخصصة لليوغا والتأمل والحركة الواعية.",
+      "media_id": "3314773d-97b2-4993-8f04-8b25f6fb1b38",
+      "title_ar": "استوديو العقل والجسم"
+    },
+    {
+      "alt": null,
+      "key": "feature_8",
+      "copy": "A tranquil retreat offering a relaxing environment for wellness and rejuvenation.",
+      "title": "Spa",
+      "copy_ar": "ملاذ هادئ يوفر أجواء مثالية للاسترخاء والعافية وتجديد النشاط.",
+      "media_id": "8ef9f2b1-855c-4cbd-a1cf-df9715170854",
+      "title_ar": "السبا"
+    }
+  ]
+}

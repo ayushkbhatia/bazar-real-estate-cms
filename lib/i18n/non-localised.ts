@@ -37,6 +37,9 @@ export const NON_LOCALISED = new RegExp(
     // Root metadata routes. sitemap.xml and robots.txt carry a dot and are
     // already excluded by the matcher; opengraph-image is not.
     "^/opengraph-image",
+    // The matcher already skips it (it has a dot); listed so the route-tree
+    // guard sees it covered rather than relying on that.
+    "^/llms\\.txt$",
     "^/_next(/|$)",
   ].join("|"),
 );

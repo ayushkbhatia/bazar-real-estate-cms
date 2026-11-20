@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.49760414404328,
+    "lng": 54.408904213554024
+  },
+  "nearby_ids": [
+    "46c08375-1776-4351-a07d-147059f12a15",
+    "a7b50903-72a0-48cd-a992-4d66316c937b",
+    "8ca0b0cb-7423-469b-b28f-da935ae85a11"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy a refreshing escape in a beautifully designed swimming pool, perfect for relaxation and leisure.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بأجواء من الاسترخاء والراحة في حمام سباحة مصمم بعناية، يوفر تجربة مثالية للترفيه والاستجمام.",
+      "media_id": "07725e24-0a23-48c6-8a5f-c02644befc34",
+      "title_ar": "حمام السباحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy an active lifestyle with modern padel courts designed for recreation, fitness, and friendly competition.",
+      "title": "Padel Courts",
+      "copy_ar": "استمتع بأسلوب حياة نشط مع ملاعب بادل عصرية، مثالية للترفيه واللياقة البدنية والمنافسات الودية.",
+      "media_id": "eeb071b8-91c6-47a9-84ac-3c0281b6fd84",
+      "title_ar": "ملاعب البادل"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active and achieve your fitness goals in a modern gym equipped for a complete workout experience.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك وحقق أهدافك الرياضية في صالة ألعاب رياضية عصرية مجهزة لتوفير تجربة تدريب متكاملة.",
+      "media_id": "3f7227ad-fbed-40f9-9760-bdf771aab1f6",
+      "title_ar": "صالة الألعاب الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A dedicated play area where children can explore, play, and enjoy fun-filled moments in a welcoming environment.",
+      "title": "Kids Play Area",
+      "copy_ar": "مساحة مخصصة للأطفال للاستكشاف واللعب والاستمتاع بأوقات مليئة بالمرح في بيئة مريحة ومناسبة لهم.",
+      "media_id": "081ae59b-9b29-4261-a0a4-f3ee4087d7ef",
+      "title_ar": "منطقة ألعاب الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A sophisticated and welcoming lobby featuring elegant interiors that create a lasting first impression.",
+      "title": "Lobby",
+      "copy_ar": "ردهة رئيسية راقية بتصاميم داخلية أنيقة وأجواء ترحيبية تعكس الفخامة وتترك انطباعا مميزا منذ اللحظة الأولى.",
+      "media_id": "f070d3fe-3be0-46bd-8141-ba493270afff",
+      "title_ar": "الردهة الرئيسية"
+    }
+  ]
+}

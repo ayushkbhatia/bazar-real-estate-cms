@@ -1,0 +1,546 @@
+{
+  "wave": "1",
+  "batch": "batch-a",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    "2",
+    "10",
+    "2019",
+    "2022",
+    "2023",
+    "1000",
+    "110000",
+    "151000",
+    "84000",
+    "86000",
+    "14000",
+    "42300",
+    "44000",
+    "70000",
+    "2025",
+    "60",
+    "3000",
+    "2026",
+    "400",
+    "1980",
+    "2007",
+    "2009",
+    "8",
+    "2691",
+    "2230",
+    "1775",
+    "110",
+    "84",
+    "27.10",
+    "2029",
+    "3500000"
+  ],
+  "sourcedNotes": {
+    "2": "2% DARI registration fee / agency commission (broker guides)",
+    "8": "Corniche 8 km waterfront (visitabudhabi.ae)",
+    "10": "10-year Golden Visa (adro.gov.ae)",
+    "60": "Al Maryah expansion GDV > AED 60bn (mediaoffice.abudhabi)",
+    "84": "Zahiyah rental index (DB), cited on Corniche page",
+    "110": "Reem rental index June 2026 (DB, Reem page), cited on Zahiyah page",
+    "400": "Lulu Island ≈ 400 hectares (theweek.in, citing The National, Aug 2026)",
+    "1000": "worked example: 1,000 sq ft × rental index",
+    "1775": "Reem sale index June 2026 (DB, Reem page), cited on other pages",
+    "1980": "Lulu Island built in the 1980s as a breakwater (theweek.in)",
+    "2007": "Lulu Island opened to public / Sorouh masterplan 2007 (theweek.in)",
+    "2009": "Lulu Island ferry suspended 2009 (theweek.in)",
+    "2019": "2019 amendment opening investment zones (u.ae; The National 22 Apr 2019)",
+    "2022": "GEMS World Academy opened Reem campus (propertyfinder.ae)",
+    "2023": "Nord Anglia International School Abu Dhabi established at Tamouh (bayut.com)",
+    "2025": "Al Maryah expansion announced 10 Dec 2025 (mediaoffice.abudhabi)",
+    "2026": "enabling works 2026 / Eagle Hills confirmed Aug 2026 (mediaoffice.abudhabi; theweek.in)",
+    "2029": "Fahid first handovers 2029 (DB, Fahid developments), cited in comparisons",
+    "2230": "Yas sale index June 2026 (DB, Yas page)",
+    "2691": "Saadiyat sale index June 2026 (DB, Saadiyat page)",
+    "3000": "> 3,000 residences in Al Maryah expansion (mediaoffice.abudhabi)",
+    "14000": "2% of AED 700,000 (Radiant Terrace)",
+    "42300": "2% of AED 2,115,000 (Rixos Residences)",
+    "44000": "2% of AED 2,200,000 (W Residences)",
+    "70000": "2% of AED 3,500,000 (Fahid Beach Residences)",
+    "84000": "worked example 1,000 × AED 84 (Zahiyah)",
+    "86000": "worked example 1,000 × AED 86 (Corniche)",
+    "110000": "worked example 1,000 × AED 110 (Reem)",
+    "151000": "worked example 1,000 × AED 151 (Maryah)",
+    "3500000": "Fahid Beach Residences starting price (DB)",
+    "27.10": "Zahiyah 12-month rent change (DB), cited on Corniche page"
+  },
+  "pages": [
+    {
+      "kind": "area",
+      "slug": "al-reem-island",
+      "name": "Al Reem Island",
+      "pageSlug": "subpage/area/al-reem-island",
+      "sources": [
+        "DB: subpage/area/al-reem-island stats band (June 2026), nearby band (from Tara Park), landmarks footnote (bridges March 2026), communities band, developments table (area = al-reem-island, 10 on sale)",
+        "u.ae — Expatriates buying a property in the UAE (nine Abu Dhabi investment areas, incl. Reem)",
+        "thenationalnews.com (22 Apr 2019) — designated investment zones list",
+        "adro.gov.ae — Golden Visa for real-estate investors",
+        "propertyfinder.ae / bayut.com — schools on Al Reem Island (Repton, GEMS World Academy 2022, Nord Anglia 2023)",
+        "Broker guides (Bayut, Property Finder): 2% DARI registration fee"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property on Al Reem Island?",
+          "a": "Yes. Al Reem Island is one of the nine Abu Dhabi areas where foreigners may own property, so buyers of any nationality can purchase apartments, townhouses and villas there. That covers communities such as Tara Park, Maysan, Muheira and Reem Hills, and ownership is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة الريم؟",
+          "a_ar": "نعم. جزيرة الريم من المناطق التسع في أبوظبي التي يحق للأجانب تملّك العقارات فيها، لذا يستطيع المشترون من أي جنسية شراء الشقق والتاون هاوس والفلل هناك. ويشمل ذلك مجتمعات مثل تارا بارك وميسان ومهيرة وريم هيلز، ويُسجَّل التملك لدى مركز أبوظبي العقاري عبر منصة «DARI»."
+        },
+        {
+          "q": "How much does property cost on Al Reem Island in 2026?",
+          "a": "Al Reem Island's sale price index stood at about AED 1,775 per sq ft in June 2026, up 23.61% over 12 months. Off-plan prices currently start from AED 700,000 at Radiant Terrace and AED 940,000 at The Artery Residences, rising to AED 2,316,000 at Radiant Legacy.",
+          "q_ar": "كم تبلغ أسعار العقارات في جزيرة الريم في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في جزيرة الريم نحو 1,775 درهمًا للقدم المربع في يونيو 2026، بارتفاع 23.61% خلال 12 شهرًا. وتبدأ أسعار المشاريع على الخريطة حاليًا من 700,000 درهم في راديانت تيراس و940,000 درهم في ذا آرتري ريزيدنسز، وتصل إلى 2,316,000 درهم في راديانت ليجاسي."
+        },
+        {
+          "q": "What is the average rent on Al Reem Island?",
+          "a": "Al Reem Island's rental index was about AED 110 per sq ft a year in June 2026, up 5.49% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 110,000 a year; towers facing the water or Reem Central Park usually ask more, and older buildings less.",
+          "q_ar": "كم يبلغ متوسط الإيجار في جزيرة الريم؟",
+          "a_ar": "بلغ مؤشر الإيجارات في جزيرة الريم نحو 110 دراهم للقدم المربع سنويًا في يونيو 2026، بارتفاع 5.49% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 110,000 درهم سنويًا تقريبًا، وعادةً ما تطلب الأبراج المطلة على الماء أو على حديقة الريم المركزية إيجارًا أعلى، بينما تكون المباني الأقدم أقل."
+        },
+        {
+          "q": "Which off-plan projects are selling on Al Reem Island now?",
+          "a": "Nine off-plan projects are on sale on Al Reem Island, including Rixos Residences, Waterfront by Missoni, Radisson Residences, The Artery Residences by IMKAN, A1LA Residence and three Radiant Real Estate towers: Radiant Terrace, Radiant Legacy and Breeze by Trace. Handovers run from 2027 to Bab Al Qasr Beach Resort Residence 77 in 2031.",
+          "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في جزيرة الريم؟",
+          "a_ar": "تُعرض تسعة مشاريع على الخريطة للبيع في جزيرة الريم، منها ريكسوس ريزيدنسز وووترفرونت من ميسوني وراديسون ريزيدنسز وذا آرتري ريزيدنسز من إيمكان وإيلا ريزيدنس، إضافة إلى ثلاثة أبراج من راديانت العقارية هي راديانت تيراس وراديانت ليجاسي وبريز من تريس. وتمتد مواعيد التسليم من 2027 حتى باب القصر بيتش ريزورت ريزيدنس 77 في 2031."
+        },
+        {
+          "q": "Does buying property on Al Reem Island qualify for a UAE Golden Visa?",
+          "a": "It can, if the property is worth at least AED 2 million. On Al Reem Island that includes Radiant Legacy from AED 2,316,000, Bab Al Qasr Beach Resort Residence 77 from AED 2,200,000 and Rixos Residences from AED 2,115,000. Off-plan buyers need AED 2 million already paid, and mortgaged owners need AED 2 million of equity.",
+          "q_ar": "هل يؤهّل شراء عقار في جزيرة الريم للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "نعم إذا بلغت قيمة العقار مليوني درهم على الأقل: ويشمل ذلك في جزيرة الريم راديانت ليجاسي بدءًا من 2,316,000 درهم، وباب القصر بيتش ريزورت ريزيدنس 77 بدءًا من 2,200,000 درهم، وريكسوس ريزيدنسز بدءًا من 2,115,000 درهم. ويجب أن يكون مشتري العقار على الخريطة قد سدد مليوني درهم، وأن تبلغ حصة مالك العقار المرهون مليوني درهم."
+        },
+        {
+          "q": "What fees do you pay when buying property on Al Reem Island?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 700,000 Radiant Terrace apartment that is AED 14,000, and on a AED 2,115,000 Rixos Residences unit AED 42,300. Resale buyers usually add about 2% agency commission and a developer NOC fee, and mortgage buyers add bank and mortgage registration fees.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في جزيرة الريم؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «DARI»: فعلى شقة في راديانت تيراس بسعر 700,000 درهم تبلغ 14,000 درهم، وعلى وحدة في ريكسوس ريزيدنسز بسعر 2,115,000 درهم تبلغ 42,300 درهم. ويضيف مشترو عقارات إعادة البيع عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من المطوّر، ويضيف المشترون بالتمويل رسوم البنك وتسجيل الرهن."
+        },
+        {
+          "q": "Which schools are on Al Reem Island?",
+          "a": "Al Reem Island's main schools are Repton School Abu Dhabi, GEMS World Academy, which opened its Reem campus in 2022, and Nord Anglia International School Abu Dhabi, established in 2023 at Tamouh. Sorbonne University Abu Dhabi also has its campus on the island, so families can cover nursery to university without leaving Reem.",
+          "q_ar": "ما المدارس الموجودة في جزيرة الريم؟",
+          "a_ar": "أبرز المدارس في جزيرة الريم مدرسة ريبتون أبوظبي، وأكاديمية جيمس العالمية التي افتتحت حرمها في الريم عام 2022، ومدرسة نورد أنجليا الدولية أبوظبي التي تأسست عام 2023 في منطقة تموح. كما يقع حرم جامعة السوربون أبوظبي على الجزيرة، فتستطيع العائلات تغطية المراحل من الحضانة حتى الجامعة دون مغادرة الريم."
+        },
+        {
+          "q": "How far is Al Reem Island from Downtown Abu Dhabi and the airport?",
+          "a": "From the central Tara Park area, Al Reem Island is about 5 minutes by car from Downtown Abu Dhabi and from ADGM on Al Maryah Island, and about 25 minutes from Zayed International Airport. Two marine bridges opened in March 2026 link the island directly to Sheikh Khalifa Bin Zayed Highway, toward Saadiyat and the E12.",
+          "q_ar": "كم تبعد جزيرة الريم عن وسط مدينة أبوظبي والمطار؟",
+          "a_ar": "من منطقة تارا بارك المركزية، تبعد جزيرة الريم نحو 5 دقائق بالسيارة عن وسط مدينة أبوظبي وعن سوق أبوظبي العالمي في جزيرة المارية، ونحو 25 دقيقة عن مطار زايد الدولي. وقد افتُتح جسران بحريان في مارس 2026 يربطان الجزيرة مباشرة بطريق الشيخ خليفة بن زايد السريع باتجاه السعديات وطريق E12."
+        },
+        {
+          "q": "What types of property can you buy on Al Reem Island?",
+          "a": "Al Reem Island is mostly apartments, from studios to penthouses in high-rise towers around Reem Mall, Tara Park, Maysan and Muheira. Reem Hills adds townhouses and villas, and branded residences such as Rixos Residences and Waterfront by Missoni sit on the water.",
+          "q_ar": "ما أنواع العقارات التي يمكن شراؤها في جزيرة الريم؟",
+          "a_ar": "يغلب على جزيرة الريم طابع الشقق، من الاستوديوهات حتى البنتهاوس في أبراج شاهقة حول ريم مول وتارا بارك وميسان ومهيرة. ويضيف مجتمع ريم هيلز منازل تاون هاوس وفللًا، بينما تقع على الماء مساكن تحمل علامات تجارية مثل ريكسوس ريزيدنسز وووترفرونت من ميسوني."
+        },
+        {
+          "q": "Is Al Reem Island a good place to live?",
+          "a": "Al Reem Island suits professionals and families who want a central, walkable waterfront address: Reem Mall, Reem Central Park, schools such as Repton and canal-side promenades are all on the island, with ADGM about 5 minutes away. It is dense and tower-led, so buyers wanting a garden usually look at Reem Hills.",
+          "q_ar": "هل جزيرة الريم مكان مناسب للعيش؟",
+          "a_ar": "تناسب جزيرة الريم المهنيين والعائلات الباحثين عن عنوان مركزي على الواجهة البحرية يسهل التنقل فيه سيرًا: فريم مول وحديقة الريم المركزية ومدارس مثل ريبتون والمماشي المحاذية للقنوات كلها على الجزيرة، ويبعد سوق أبوظبي العالمي نحو 5 دقائق. لكنها كثيفة ويغلب عليها طابع الأبراج، لذا يتجه من يريد حديقة خاصة عادةً إلى ريم هيلز."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-maryah",
+      "name": "Al Maryah Island",
+      "pageSlug": "subpage/area/al-maryah",
+      "sources": [
+        "DB: subpage/area/al-maryah stats band (June 2026), nearby band (from Jumeirah Residences), landmarks footnote (5.4 km promenade, Galleria 400 stores / 100 dining), developments table (3 on sale)",
+        "u.ae — Expatriates buying a property in the UAE (\"Mariya\" among nine investment areas)",
+        "mediaoffice.abudhabi — Mubadala and Aldar AED 60bn Al Maryah expansion (10 Dec 2025)",
+        "adro.gov.ae — Golden Visa for real-estate investors",
+        "Broker guides: 2% DARI registration fee"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property on Al Maryah Island?",
+          "a": "Yes. Al Maryah Island is one of the nine Abu Dhabi areas where foreigners may own property, listed by the UAE government as Mariya, so buyers of any nationality can purchase its apartments and branded residences. The island also falls under ADGM's financial jurisdiction, while property ownership is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة المارية؟",
+          "a_ar": "نعم. جزيرة المارية من المناطق التسع في أبوظبي التي يحق للأجانب تملّك العقارات فيها، وتذكرها البوابة الحكومية الرسمية باسم «مارية»، لذا يستطيع المشترون من أي جنسية شراء شققها ومساكنها ذات العلامات التجارية. وتقع الجزيرة ضمن الاختصاص المالي لسوق أبوظبي العالمي، بينما يُسجَّل تملك العقارات لدى مركز أبوظبي العقاري عبر منصة «DARI»."
+        },
+        {
+          "q": "How much does property cost on Al Maryah Island in 2026?",
+          "a": "Al Maryah Island's sale price index stood at about AED 2,189 per sq ft in June 2026, up 11.23% over 12 months. Off-plan prices start from AED 2,200,000 at W Residences, AED 3,950,000 at The Ritz-Carlton Residences and AED 4,700,000 at Jumeirah Residences, so entry is higher than on neighbouring Al Reem Island.",
+          "q_ar": "كم تبلغ أسعار العقارات في جزيرة المارية في عام 2026؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في جزيرة المارية نحو 2,189 درهمًا للقدم المربع في يونيو 2026، بارتفاع 11.23% خلال 12 شهرًا. وتبدأ أسعار المشاريع على الخريطة من 2,200,000 درهم في دبليو ريزيدنسز، و3,950,000 درهم في ذا ريتز كارلتون ريزيدنسز، و4,700,000 درهم في جميرا ريزيدنسز، أي أن نقطة الدخول أعلى منها في جزيرة الريم المجاورة."
+        },
+        {
+          "q": "What is the average rent on Al Maryah Island?",
+          "a": "Al Maryah Island's rental index was about AED 151 per sq ft a year in June 2026, up 1.75% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 151,000 a year; tenants are mostly ADGM professionals, and serviced or hotel-run apartments usually ask more.",
+          "q_ar": "كم يبلغ متوسط الإيجار في جزيرة المارية؟",
+          "a_ar": "بلغ مؤشر الإيجارات في جزيرة المارية نحو 151 درهمًا للقدم المربع سنويًا في يونيو 2026، بارتفاع 1.75% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 151,000 درهم سنويًا تقريبًا، ومعظم المستأجرين من العاملين في سوق أبوظبي العالمي، وعادةً ما تطلب الشقق المخدومة أو التي تديرها فنادق إيجارًا أعلى."
+        },
+        {
+          "q": "Which off-plan projects are selling on Al Maryah Island now?",
+          "a": "Three branded off-plan projects are on sale on Al Maryah Island. W Residences by Taraf, 177 units from AED 2,200,000 with handover in December 2027, The Ritz-Carlton Residences by SAAS Properties, 165 units from AED 3,950,000 due in 2030, and Jumeirah Residences by Emirates Developments, 253 units from AED 4,700,000 due in December 2030.",
+          "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في جزيرة المارية؟",
+          "a_ar": "تُعرض ثلاثة مشاريع على الخريطة تحمل علامات تجارية في جزيرة المارية: دبليو ريزيدنسز من تطوير طرف، وتضم 177 وحدة بدءًا من 2,200,000 درهم مع التسليم في ديسمبر 2027؛ وذا ريتز كارلتون ريزيدنسز من ساس العقارية، وتضم 165 وحدة بدءًا من 3,950,000 درهم مع التسليم في 2030؛ وجميرا ريزيدنسز من إمارات للتطوير، وتضم 253 وحدة بدءًا من 4,700,000 درهم مع التسليم في ديسمبر 2030."
+        },
+        {
+          "q": "Does buying property on Al Maryah Island qualify for a UAE Golden Visa?",
+          "a": "Yes, in most cases: every off-plan project now selling on Al Maryah Island starts at or above AED 2,200,000, over the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. For off-plan homes the developer must confirm at least AED 2 million already paid; mortgaged homes need owner equity of at least AED 2 million.",
+          "q_ar": "هل يؤهّل شراء عقار في جزيرة المارية للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "نعم في معظم الحالات: فجميع المشاريع على الخريطة المعروضة حاليًا في جزيرة المارية تبدأ من 2,200,000 درهم أو أكثر، أي فوق حد المليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل، أما العقارات المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+        },
+        {
+          "q": "What fees do you pay when buying property on Al Maryah Island?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 2,200,000 W Residences apartment that is AED 44,000. Resale buyers usually add about 2% agency commission and a developer NOC fee, mortgage buyers add bank and mortgage registration fees, and branded towers carry service charges set by the operator.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في جزيرة المارية؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «DARI»: فعلى شقة في دبليو ريزيدنسز بسعر 2,200,000 درهم تبلغ 44,000 درهم. ويضيف مشترو عقارات إعادة البيع عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من المطوّر، ويضيف المشترون بالتمويل رسوم البنك وتسجيل الرهن، كما تفرض الأبراج ذات العلامات التجارية رسوم خدمات يحددها المشغّل."
+        },
+        {
+          "q": "What is the Al Maryah Island expansion?",
+          "a": "The Al Maryah Island expansion is a Mubadala and Aldar joint venture, announced in December 2025, to build the island's last undeveloped plot on its north side, with a gross development value above AED 60 billion. Plans include more than 3,000 waterfront residences, Grade A offices, hotels and three proposed bridges to Al Reem Island, with enabling works due to start in 2026.",
+          "q_ar": "ما مشروع توسعة جزيرة المارية؟",
+          "a_ar": "توسعة جزيرة المارية مشروع مشترك بين مبادلة والدار أُعلن في ديسمبر 2025 لتطوير آخر قطعة أرض غير مطوّرة في الجهة الشمالية من الجزيرة، بقيمة تطويرية إجمالية تتجاوز 60 مليار درهم. وتشمل الخطط أكثر من 3,000 مسكن على الواجهة البحرية ومكاتب من الفئة الممتازة وفنادق وثلاثة جسور مقترحة إلى جزيرة الريم، على أن تبدأ الأعمال التمهيدية في 2026."
+        },
+        {
+          "q": "How far is Al Maryah Island from Downtown Abu Dhabi and the airport?",
+          "a": "From the Jumeirah Residences area, Al Maryah Island is about 4 minutes from ADGM, 5 minutes from The Galleria, 10 minutes from Downtown Abu Dhabi and 12 minutes from Louvre Abu Dhabi by car. Yas Island and Zayed International Airport are each about 25 minutes away, traffic permitting.",
+          "q_ar": "كم تبعد جزيرة المارية عن وسط مدينة أبوظبي والمطار؟",
+          "a_ar": "من منطقة جميرا ريزيدنسز، تبعد جزيرة المارية بالسيارة نحو 4 دقائق عن سوق أبوظبي العالمي، و5 دقائق عن ذا غاليريا، و10 دقائق عن وسط مدينة أبوظبي، و12 دقيقة عن اللوفر أبوظبي. أما جزيرة ياس ومطار زايد الدولي فيبعد كل منهما نحو 25 دقيقة بحسب حركة المرور."
+        },
+        {
+          "q": "What is there to do on Al Maryah Island?",
+          "a": "Al Maryah Island's lifestyle centres on The Galleria Al Maryah Island, with around 400 stores and 100 dining outlets, and a 5.4 km waterfront promenade linking offices, hotels and homes on foot. Cleveland Clinic Abu Dhabi is on the island, and Al Reem Island's parks and Reem Mall are a short drive across the water.",
+          "q_ar": "ما الأنشطة والمرافق المتاحة في جزيرة المارية؟",
+          "a_ar": "يتمحور أسلوب الحياة في جزيرة المارية حول ذا غاليريا جزيرة المارية التي تضم نحو 400 متجر و100 مطعم ومقهى، وممشى على الواجهة البحرية بطول 5.4 كيلومتر يربط المكاتب والفنادق والمنازل سيرًا على الأقدام. ويقع مستشفى كليفلاند كلينك أبوظبي على الجزيرة، كما أن حدائق جزيرة الريم وريم مول على مسافة قصيرة بالسيارة."
+        },
+        {
+          "q": "Is Al Maryah Island or Al Reem Island better to buy in?",
+          "a": "Al Maryah Island suits buyers who want a smaller, branded-residence market next to ADGM, with a sale index of about AED 2,189 per sq ft and rents near AED 151 per sq ft in June 2026. Al Reem Island next door is larger and cheaper, at about AED 1,775 and AED 110 per sq ft, with more choice of schools and family homes.",
+          "q_ar": "أيهما أنسب للشراء: جزيرة المارية أم جزيرة الريم؟",
+          "a_ar": "تناسب جزيرة المارية المشترين الباحثين عن سوق أصغر تغلب عليه المساكن ذات العلامات التجارية بجوار سوق أبوظبي العالمي، إذ بلغ مؤشر البيع فيها نحو 2,189 درهمًا للقدم المربع والإيجارات نحو 151 درهمًا للقدم المربع في يونيو 2026. أما جزيرة الريم المجاورة فهي أكبر وأقل سعرًا، عند نحو 1,775 و110 دراهم للقدم المربع، مع خيارات أوسع من المدارس والمنازل العائلية."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-zahiyah",
+      "name": "Al Zahiyah",
+      "pageSlug": "subpage/area/al-zahiyah",
+      "sources": [
+        "DB: subpage/area/al-zahiyah stats band (apartment rental index), nearby band, landmarks band, hero (formerly Tourist Club Area)",
+        "u.ae — Expatriates buying a property in the UAE (nine investment areas; this area not among them)",
+        "thenationalnews.com (22 Apr 2019) — full designated investment zones list (this area not named)",
+        "chambers.com — expanded real estate ownership in Abu Dhabi (ownership outside investment zones)"
+      ],
+      "faq": [
+        {
+          "q": "Is Al Zahiyah the same as Tourist Club Area?",
+          "a": "Yes. Al Zahiyah is the official name of the central Abu Dhabi district long known as Tourist Club Area, around Abu Dhabi Mall on the island's north-eastern shore. Many residents, taxi drivers and older listings still use the old name, so search for both when looking for apartments there.",
+          "q_ar": "هل الزاهية هي نفسها منطقة النادي السياحي؟",
+          "a_ar": "نعم. الزاهية هو الاسم الرسمي للحي الواقع في وسط أبوظبي والمعروف منذ زمن باسم منطقة النادي السياحي، حول أبوظبي مول على الشاطئ الشمالي الشرقي للجزيرة. ولا يزال كثير من السكان وسائقي سيارات الأجرة والإعلانات القديمة يستخدمون الاسم القديم، لذا يُستحسن البحث بالاسمين عند البحث عن شقة هناك."
+        },
+        {
+          "q": "Can foreigners buy property in Al Zahiyah?",
+          "a": "Generally no. Al Zahiyah is not one of Abu Dhabi's designated investment areas, so ownership there is reserved for UAE nationals; expatriates usually rent. Buyers who want to own nearby can look at Al Reem Island or Al Maryah Island, both open to foreigners, and should confirm any building's status on DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في الزاهية؟",
+          "a_ar": "في الغالب لا. فالزاهية ليست من مناطق الاستثمار المحددة في أبوظبي، لذا يقتصر التملك فيها على مواطني الدولة، بينما يستأجر المقيمون الأجانب عادةً. ويمكن لمن يرغب في التملك بالقرب منها النظر في جزيرة الريم أو جزيرة المارية المفتوحتين للأجانب، مع التحقق من وضع أي مبنى عبر منصة «DARI»."
+        },
+        {
+          "q": "How much is rent in Al Zahiyah?",
+          "a": "Al Zahiyah's apartment rental index was about AED 84 per sq ft a year, up 27.10% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 84,000 a year; rents vary widely between older towers and newer buildings near Abu Dhabi Mall.",
+          "q_ar": "كم يبلغ الإيجار في الزاهية؟",
+          "a_ar": "بلغ مؤشر إيجارات الشقق في الزاهية نحو 84 درهمًا للقدم المربع سنويًا، بارتفاع 27.10% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 84,000 درهم سنويًا تقريبًا، وتتفاوت الإيجارات كثيرًا بين الأبراج الأقدم والمباني الأحدث القريبة من أبوظبي مول."
+        },
+        {
+          "q": "Why have rents gone up in Al Zahiyah?",
+          "a": "Al Zahiyah's apartment rents rose 27.10% over 12 months, one of the sharper increases in central Abu Dhabi, as demand for affordable homes close to Al Maryah Island and the city centre outpaced supply. Few new towers are being built in the district, so renewals rather than new stock set the market.",
+          "q_ar": "لماذا ارتفعت الإيجارات في الزاهية؟",
+          "a_ar": "ارتفعت إيجارات الشقق في الزاهية بنسبة 27.10% خلال 12 شهرًا، وهي من الزيادات الأوضح في وسط أبوظبي، إذ فاق الطلب على المساكن المعقولة التكلفة القريبة من جزيرة المارية ووسط المدينة حجم المعروض. وقلّما تُبنى أبراج جديدة في الحي، لذا تحدد عقود التجديد لا المعروض الجديد اتجاه السوق."
+        },
+        {
+          "q": "What type of property is in Al Zahiyah?",
+          "a": "Al Zahiyah is almost entirely apartments, from studios to three-bedroom units in established residential and mixed-use towers, many with shops or offices at street level. There are no villa communities, and hotel apartments around Abu Dhabi Mall add short-stay options.",
+          "q_ar": "ما أنواع العقارات الموجودة في الزاهية؟",
+          "a_ar": "تتكون الزاهية بالكامل تقريبًا من شقق، من الاستوديوهات حتى الوحدات ذات ثلاث غرف نوم في أبراج سكنية ومتعددة الاستخدامات قائمة، يضم كثير منها متاجر أو مكاتب في الطابق الأرضي. ولا توجد فيها مجتمعات فلل، بينما توفر الشقق الفندقية حول أبوظبي مول خيارات للإقامة القصيرة."
+        },
+        {
+          "q": "What is near Al Zahiyah?",
+          "a": "Al Zahiyah's anchors are Abu Dhabi Mall and Electra Park, with Abu Dhabi Corniche along the waterfront to the west. Al Maryah Island, home to ADGM and The Galleria, is across a short bridge, which makes the district popular with people who work there but want lower rents.",
+          "q_ar": "ما أبرز المعالم القريبة من الزاهية؟",
+          "a_ar": "أبرز معالم الزاهية أبوظبي مول وحديقة إلكترا، ويمتد كورنيش أبوظبي على الواجهة البحرية إلى الغرب منها. وتقع جزيرة المارية، مقر سوق أبوظبي العالمي وذا غاليريا، على مسافة جسر قصير، ما يجعل الحي مفضلًا لدى العاملين هناك الباحثين عن إيجارات أقل."
+        },
+        {
+          "q": "How far is Al Zahiyah from Al Maryah Island and the Corniche?",
+          "a": "Al Zahiyah is about 5–10 minutes by car from both Abu Dhabi Mall and Al Maryah Island, and about 10–15 minutes from Abu Dhabi Corniche. Times depend on traffic on the island's central streets, which are busy at peak hours.",
+          "q_ar": "كم تبعد الزاهية عن جزيرة المارية والكورنيش؟",
+          "a_ar": "تبعد الزاهية نحو 5 إلى 10 دقائق بالسيارة عن أبوظبي مول وعن جزيرة المارية، ونحو 10 إلى 15 دقيقة عن كورنيش أبوظبي. وتعتمد المدة على حركة المرور في شوارع وسط الجزيرة المزدحمة في ساعات الذروة."
+        },
+        {
+          "q": "Is Al Zahiyah cheaper to rent than Al Reem Island?",
+          "a": "Yes, on average: Al Zahiyah's apartment rental index was about AED 84 per sq ft a year, against about AED 110 on Al Reem Island in June 2026. Reem offers newer towers, parks and schools on the island; Al Zahiyah trades that for older buildings, a busier city setting and walkable shops.",
+          "q_ar": "هل الإيجار في الزاهية أرخص من جزيرة الريم؟",
+          "a_ar": "نعم في المتوسط: فقد بلغ مؤشر إيجارات الشقق في الزاهية نحو 84 درهمًا للقدم المربع سنويًا، مقابل نحو 110 دراهم في جزيرة الريم في يونيو 2026. وتوفر الريم أبراجًا أحدث وحدائق ومدارس على الجزيرة، بينما تقدم الزاهية بدلًا من ذلك مباني أقدم وبيئة حضرية أكثر حيوية ومتاجر يمكن الوصول إليها سيرًا."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "corniche",
+      "name": "Corniche",
+      "pageSlug": "subpage/area/corniche",
+      "sources": [
+        "DB: subpage/area/corniche stats band (rental index), nearby band, landmarks band",
+        "u.ae — Expatriates buying a property in the UAE (nine investment areas; this area not among them)",
+        "thenationalnews.com (22 Apr 2019) — full designated investment zones list (this area not named)",
+        "visitabudhabi.ae — Abu Dhabi Corniche (8 km waterfront, Blue Flag beach)",
+        "theweek.in / thenationalnews.com (Aug 2026) — Lulu Island redevelopment by Eagle Hills"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property on Abu Dhabi Corniche?",
+          "a": "Generally no. The Corniche is not one of Abu Dhabi's designated investment areas, so ownership of its towers is reserved for UAE nationals, and most expatriates rent there. Foreign buyers wanting sea views nearby usually look at Al Reem Island, Al Maryah Island or Saadiyat, and should check any building's status on DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار على كورنيش أبوظبي؟",
+          "a_ar": "في الغالب لا. فالكورنيش ليس من مناطق الاستثمار المحددة في أبوظبي، لذا يقتصر تملك أبراجه على مواطني الدولة، ويستأجر معظم المقيمين الأجانب هناك. ويتجه المشترون الأجانب الراغبون في إطلالات بحرية قريبة عادةً إلى جزيرة الريم أو جزيرة المارية أو السعديات، مع التحقق من وضع أي مبنى عبر منصة «DARI»."
+        },
+        {
+          "q": "How much is rent on Abu Dhabi Corniche?",
+          "a": "The Corniche's rental index was about AED 86 per sq ft a year, up 6.43% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 86,000 a year; full sea-view units in newer towers ask well above that, and older buildings set back from the water less.",
+          "q_ar": "كم يبلغ الإيجار على كورنيش أبوظبي؟",
+          "a_ar": "بلغ مؤشر الإيجارات على الكورنيش نحو 86 درهمًا للقدم المربع سنويًا، بارتفاع 6.43% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 86,000 درهم سنويًا تقريبًا، وتطلب الوحدات المطلة بالكامل على البحر في الأبراج الأحدث أكثر من ذلك بكثير، بينما تكون المباني الأقدم البعيدة عن الماء أقل."
+        },
+        {
+          "q": "What type of apartments are on Abu Dhabi Corniche?",
+          "a": "The Corniche is lined with established residential towers offering studios, one- to four-bedroom apartments and some luxury penthouses, many with views over the Arabian Gulf. Etihad Towers at the western end mixes apartments with a hotel and offices; there are no villas on the Corniche itself.",
+          "q_ar": "ما أنواع الشقق الموجودة على كورنيش أبوظبي؟",
+          "a_ar": "يصطف على الكورنيش عدد من الأبراج السكنية القائمة التي توفر استوديوهات وشققًا من غرفة إلى أربع غرف نوم وبعض البنتهاوس الفاخرة، ويطل كثير منها على الخليج العربي. وتجمع أبراج الاتحاد في الطرف الغربي بين الشقق والفندق والمكاتب، ولا توجد فلل على الكورنيش نفسه."
+        },
+        {
+          "q": "Is there a beach on Abu Dhabi Corniche?",
+          "a": "Yes. Corniche Beach is a public, lifeguarded Blue Flag beach on the city's 8 km waterfront, with family and singles sections, play areas and separate cycling and walking paths along the promenade. Residents of the Corniche towers can walk to it.",
+          "q_ar": "هل يوجد شاطئ على كورنيش أبوظبي؟",
+          "a_ar": "نعم. شاطئ الكورنيش شاطئ عام يحمل شهادة العلم الأزرق ويخضع لمراقبة المنقذين، ويقع على الواجهة البحرية للمدينة بطول 8 كيلومترات، مع أقسام للعائلات وللأفراد ومناطق للعب ومسارات منفصلة للدراجات والمشي على امتداد الممشى. ويستطيع سكان أبراج الكورنيش الوصول إليه سيرًا."
+        },
+        {
+          "q": "How far is the Corniche from Downtown Abu Dhabi and Al Maryah Island?",
+          "a": "The Corniche is about 5–10 minutes by car from Downtown Abu Dhabi, 10–20 minutes from Al Maryah Island and 15–25 minutes from Saadiyat Island. It runs along the north-western edge of Abu Dhabi Island, so most of the city's offices and malls are a short drive away.",
+          "q_ar": "كم يبعد الكورنيش عن وسط أبوظبي وجزيرة المارية؟",
+          "a_ar": "يبعد الكورنيش نحو 5 إلى 10 دقائق بالسيارة عن وسط أبوظبي، ومن 10 إلى 20 دقيقة عن جزيرة المارية، ومن 15 إلى 25 دقيقة عن جزيرة السعديات. ويمتد على الحافة الشمالية الغربية لجزيرة أبوظبي، لذا تقع معظم مكاتب المدينة ومراكز التسوق فيها على مسافة قصيرة بالسيارة."
+        },
+        {
+          "q": "Is Abu Dhabi Corniche a good place to live for families?",
+          "a": "The Corniche suits families who want city living by the sea: the Blue Flag beach, family park sections and promenade are on the doorstep, and apartments range up to four bedrooms. The trade-offs are older buildings, limited parking in some towers and fewer schools within walking distance than island communities such as Al Reem.",
+          "q_ar": "هل كورنيش أبوظبي مكان مناسب لعيش العائلات؟",
+          "a_ar": "يناسب الكورنيش العائلات الراغبة في الحياة الحضرية قرب البحر: فشاطئ العلم الأزرق وأقسام الحديقة العائلية والممشى على عتبة المنزل، وتصل الشقق إلى أربع غرف نوم. أما التنازلات فهي المباني الأقدم ومحدودية المواقف في بعض الأبراج وقلة المدارس القريبة سيرًا مقارنة بمجتمعات الجزر مثل الريم."
+        },
+        {
+          "q": "What is the island opposite Abu Dhabi Corniche?",
+          "a": "The island facing Abu Dhabi Corniche is Lulu Island, a man-made island of about 400 hectares. Eagle Hills confirmed in August 2026 that it will redevelop it, which may in future change the outlook from Corniche towers; no homes have been launched there yet.",
+          "q_ar": "ما الجزيرة المقابلة لكورنيش أبوظبي؟",
+          "a_ar": "الجزيرة المقابلة لكورنيش أبوظبي هي جزيرة اللؤلؤ، وهي جزيرة اصطناعية تبلغ مساحتها نحو 400 هكتار. وقد أكدت إيغل هيلز في أغسطس 2026 أنها ستعيد تطويرها، ما قد يغيّر مستقبلًا الإطلالة من أبراج الكورنيش، ولم تُطرح فيها أي منازل بعد."
+        },
+        {
+          "q": "Should you rent on the Corniche or in Al Zahiyah?",
+          "a": "The Corniche and Al Zahiyah rent at similar levels per square foot, about AED 86 against AED 84 a year, so the choice is about setting. The Corniche gives sea views and the beach; Al Zahiyah is closer to Abu Dhabi Mall and Al Maryah Island and has seen faster rent rises, up 27.10% against 6.43%.",
+          "q_ar": "أيهما أنسب للإيجار: الكورنيش أم الزاهية؟",
+          "a_ar": "تتقارب إيجارات الكورنيش والزاهية من حيث القدم المربع، نحو 86 درهمًا مقابل 84 درهمًا سنويًا، لذا يتوقف الاختيار على البيئة. فالكورنيش يوفر إطلالات بحرية والشاطئ، بينما الزاهية أقرب إلى أبوظبي مول وجزيرة المارية وشهدت ارتفاعًا أسرع في الإيجارات، بنسبة 27.10% مقابل 6.43%."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-bateen",
+      "name": "Al Bateen",
+      "pageSlug": "subpage/area/al-bateen",
+      "sources": [
+        "DB: subpage/area/al-bateen stats band (sale index), nearby band, landmarks band",
+        "u.ae — Expatriates buying a property in the UAE (nine investment areas; this area not among them)",
+        "thenationalnews.com (22 Apr 2019) — full designated investment zones list (this area not named)",
+        "bayut.com / abu-dhabi.realestate — Al Bateen area guide; Al Bateen Park (Aldar) marketed to UAE nationals"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Bateen?",
+          "a": "Generally no. Al Bateen is not one of Abu Dhabi's designated investment areas, so villas and land there are reserved for UAE nationals; Aldar's Al Bateen Park villas, for example, have been marketed to UAE nationals only. Expatriates usually rent, and any purchase should be checked on DARI first.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في البطين؟",
+          "a_ar": "في الغالب لا. فالبطين ليست من مناطق الاستثمار المحددة في أبوظبي، لذا تقتصر الفلل والأراضي فيها على مواطني الدولة؛ فعلى سبيل المثال طُرحت فلل البطين بارك من الدار لمواطني الدولة فقط. ويستأجر المقيمون الأجانب عادةً، وينبغي التحقق من أي عملية شراء عبر منصة «DARI» أولًا."
+        },
+        {
+          "q": "How much does property cost in Al Bateen?",
+          "a": "Al Bateen's sale price index was about AED 1,641 per sq ft, up 6.30% over 12 months, below Al Reem Island's AED 1,775 despite the district's prestige. Large plots push villa prices far higher than that per-foot figure suggests, because Al Bateen homes are often several thousand square feet with private gardens.",
+          "q_ar": "كم تبلغ أسعار العقارات في البطين؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في البطين نحو 1,641 درهمًا للقدم المربع، بارتفاع 6.30% خلال 12 شهرًا، أي أقل من مؤشر جزيرة الريم البالغ 1,775 درهمًا رغم مكانة الحي. لكن مساحات الأراضي الكبيرة ترفع أسعار الفلل كثيرًا فوق ما يوحي به سعر القدم، لأن منازل البطين غالبًا ما تمتد على آلاف الأقدام المربعة مع حدائق خاصة."
+        },
+        {
+          "q": "What type of property is in Al Bateen?",
+          "a": "Al Bateen is mainly large standalone villas on private plots, many of them family homes held for decades, plus a smaller number of apartments and waterfront residences around Al Bateen Marina. Newer gated villa and townhouse schemes such as Al Bateen Park add modern stock, but new supply is rare.",
+          "q_ar": "ما أنواع العقارات الموجودة في البطين؟",
+          "a_ar": "تتكون البطين أساسًا من فلل مستقلة كبيرة على قطع أراضٍ خاصة، كثير منها منازل عائلية مملوكة منذ عقود، إضافة إلى عدد أقل من الشقق والمساكن على الواجهة البحرية حول مرسى البطين. وتضيف مشاريع الفلل والتاون هاوس المسوّرة الأحدث مثل البطين بارك وحدات عصرية، لكن المعروض الجديد نادر."
+        },
+        {
+          "q": "Where is Al Bateen in Abu Dhabi?",
+          "a": "Al Bateen is on the western side of Abu Dhabi Island, between the Corniche and the Qasr Al Watan and Emirates Palace headland. It is about 5–10 minutes from Abu Dhabi Corniche, 10–15 minutes from Downtown Abu Dhabi and 20–30 minutes from Saadiyat Island by car.",
+          "q_ar": "أين تقع البطين في أبوظبي؟",
+          "a_ar": "تقع البطين على الجانب الغربي من جزيرة أبوظبي، بين الكورنيش ورأس قصر الوطن وقصر الإمارات. وتبعد بالسيارة نحو 5 إلى 10 دقائق عن كورنيش أبوظبي، ومن 10 إلى 15 دقيقة عن وسط أبوظبي، ومن 20 إلى 30 دقيقة عن جزيرة السعديات."
+        },
+        {
+          "q": "What is Al Bateen known for?",
+          "a": "Al Bateen is known as one of Abu Dhabi's oldest premium villa districts, with Al Bateen Beach, Al Bateen Marina and its dhow-building heritage on the waterfront, and Qasr Al Watan close by. Its streets are quieter and greener than central Abu Dhabi, with low-rise homes rather than towers.",
+          "q_ar": "بماذا تشتهر البطين؟",
+          "a_ar": "تشتهر البطين بأنها من أقدم أحياء الفلل الراقية في أبوظبي، ويضم واجهتها البحرية شاطئ البطين ومرسى البطين وتراث صناعة المراكب الخشبية، مع قرب قصر الوطن منها. وشوارعها أهدأ وأكثر خضرة من وسط أبوظبي، ومبانيها منازل منخفضة الارتفاع لا أبراج."
+        },
+        {
+          "q": "Is Al Bateen a good area for families?",
+          "a": "Al Bateen suits families who want space and privacy close to the city: large villas with gardens, Al Bateen Beach a short drive away and the Corniche about 5–10 minutes off. Most homes are rented by expatriate families or owned by UAE nationals, so availability is limited and well-kept villas let quickly.",
+          "q_ar": "هل البطين منطقة مناسبة للعائلات؟",
+          "a_ar": "تناسب البطين العائلات الباحثة عن المساحة والخصوصية قرب المدينة: فلل كبيرة بحدائق، وشاطئ البطين على مسافة قصيرة بالسيارة، والكورنيش على بُعد نحو 5 إلى 10 دقائق. ويستأجر معظم المنازل عائلات مقيمة أو يملكها مواطنون، لذا يكون المعروض محدودًا وتُؤجَّر الفلل الجيدة بسرعة."
+        },
+        {
+          "q": "Are there new developments in Al Bateen?",
+          "a": "Very few. Al Bateen is an established district with little vacant land, so new launches are rare and usually small gated schemes such as Al Bateen Park. No off-plan projects in Al Bateen are currently listed for sale on the Bazar site.",
+          "q_ar": "هل توجد مشاريع جديدة في البطين؟",
+          "a_ar": "قليلة جدًا. فالبطين حي قائم لا تتوفر فيه أراضٍ شاغرة كثيرة، لذا تندر المشاريع الجديدة وتكون عادةً مجمعات مسوّرة صغيرة مثل البطين بارك. ولا توجد حاليًا مشاريع على الخريطة في البطين معروضة للبيع على موقع بازار."
+        },
+        {
+          "q": "Is Al Bateen or the Corniche better to live in?",
+          "a": "Al Bateen suits buyers and tenants who want a villa with a garden in a quiet, low-rise district, while the Corniche next door is apartment towers with sea views and the public beach on the doorstep. The two are only about 5–10 minutes apart by car, so many families choose on home type rather than location.",
+          "q_ar": "أيهما أنسب للسكن: البطين أم الكورنيش؟",
+          "a_ar": "تناسب البطين المشترين والمستأجرين الباحثين عن فيلا بحديقة في حي هادئ منخفض الارتفاع، بينما يضم الكورنيش المجاور أبراج شقق بإطلالات بحرية والشاطئ العام على عتبة المنزل. ولا تفصل بينهما سوى 5 إلى 10 دقائق تقريبًا بالسيارة، لذا تختار عائلات كثيرة بحسب نوع المنزل لا الموقع."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "lulu-island",
+      "name": "Lulu Island",
+      "pageSlug": "subpage/area/lulu-island",
+      "sources": [
+        "DB: subpage/area/lulu-island stats band (20,000 residents in historical planning; 2026 plans announced), nearby band, landmarks band",
+        "theweek.in / thenationalnews.com (25–26 Aug 2026) — Eagle Hills confirms Lulu Island redevelopment; 400 hectares; history",
+        "u.ae — Expatriates buying a property in the UAE (Lulu among nine investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Where is Lulu Island in Abu Dhabi?",
+          "a": "Lulu Island is a man-made island lying directly opposite Abu Dhabi Corniche, across the water from Downtown Abu Dhabi and close to Marina Mall. It covers about 400 hectares of reclaimed land and was first built in the 1980s as a breakwater protecting the city's shoreline.",
+          "q_ar": "أين تقع جزيرة اللؤلؤ في أبوظبي؟",
+          "a_ar": "جزيرة اللؤلؤ جزيرة اصطناعية تقع مقابل كورنيش أبوظبي مباشرة، في الجهة المقابلة لوسط أبوظبي عبر الماء وبالقرب من مارينا مول. وتمتد على نحو 400 هكتار من الأراضي المستصلحة، وقد أُنشئت أول مرة في عقد 1980 حاجزًا للأمواج يحمي ساحل المدينة."
+        },
+        {
+          "q": "Who is developing Lulu Island?",
+          "a": "Eagle Hills, the Abu Dhabi developer led by Mohamed Alabbar, confirmed in August 2026 that it will develop Lulu Island. It has not yet published a masterplan, unit mix or timeline, though heavy machinery has been reported working on the island, so buyers should treat any project details as unconfirmed until Eagle Hills launches officially.",
+          "q_ar": "من يطوّر جزيرة اللؤلؤ؟",
+          "a_ar": "أكدت شركة إيغل هيلز، المطوّر العقاري في أبوظبي الذي يرأسه محمد العبار، في أغسطس 2026 أنها ستطوّر جزيرة اللؤلؤ. ولم تنشر الشركة بعد مخططًا رئيسيًا أو توزيعًا للوحدات أو جدولًا زمنيًا، رغم ورود تقارير عن عمل معدات ثقيلة على الجزيرة، لذا ينبغي للمشترين اعتبار أي تفاصيل عن المشاريع غير مؤكدة حتى الإطلاق الرسمي."
+        },
+        {
+          "q": "Can you buy property on Lulu Island now?",
+          "a": "Not yet. No homes on Lulu Island have been launched for sale or rent as of November 2026, and no prices have been published. When Eagle Hills releases its first phase, sales will be off-plan; until then, any offer claiming Lulu Island units should be checked against the developer and DARI.",
+          "q_ar": "هل يمكن شراء عقار في جزيرة اللؤلؤ الآن؟",
+          "a_ar": "ليس بعد. فحتى نوفمبر 2026 لم تُطرح أي منازل في جزيرة اللؤلؤ للبيع أو الإيجار، ولم تُعلن أي أسعار. وعندما تطرح إيغل هيلز مرحلتها الأولى ستكون المبيعات على الخريطة، وحتى ذلك الحين ينبغي التحقق من أي عرض لوحدات في جزيرة اللؤلؤ لدى المطوّر ومنصة «DARI»."
+        },
+        {
+          "q": "Can foreigners buy property on Lulu Island?",
+          "a": "Yes, once homes are launched. Lulu Island is one of the nine Abu Dhabi areas the UAE government lists as open to foreign ownership, alongside Saadiyat, Reem and Al Maryah, so buyers of any nationality will be able to purchase there. Ownership will be registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة اللؤلؤ؟",
+          "a_ar": "نعم، بمجرد طرح المنازل. فجزيرة اللؤلؤ من المناطق التسع في أبوظبي التي تدرجها الحكومة الإماراتية ضمن المناطق المفتوحة لتملّك الأجانب، إلى جانب السعديات والريم والمارية، لذا سيتمكن المشترون من أي جنسية من الشراء فيها. وسيُسجَّل التملك لدى مركز أبوظبي العقاري عبر منصة «DARI»."
+        },
+        {
+          "q": "What is planned for Lulu Island?",
+          "a": "Earlier plans for Lulu Island envisaged a community of about 20,000 residents, and consultants expect the new scheme to lean towards low-rise homes: apartments, villas and mansions facing the Corniche. Eagle Hills has not confirmed the density or unit mix, so these remain indications rather than a launched project.",
+          "q_ar": "ما المخطط لجزيرة اللؤلؤ؟",
+          "a_ar": "تصوّرت الخطط السابقة لجزيرة اللؤلؤ مجتمعًا يضم نحو 20,000 نسمة، ويتوقع الاستشاريون أن يميل المخطط الجديد إلى المباني المنخفضة: شقق وفلل وقصور تطل على الكورنيش. ولم تؤكد إيغل هيلز الكثافة السكانية أو توزيع الوحدات، لذا تبقى هذه مؤشرات وليست مشروعًا مطروحًا."
+        },
+        {
+          "q": "Can you visit Lulu Island?",
+          "a": "Lulu Island is not currently open to the public. It welcomed visitors from 2007 with cafés, lakes and a ferry from the Corniche, but development stalled during the global downturn and the ferry stopped in 2009. Today the island is reached only by boat, for construction crews.",
+          "q_ar": "هل يمكن زيارة جزيرة اللؤلؤ؟",
+          "a_ar": "جزيرة اللؤلؤ غير مفتوحة للجمهور حاليًا. فقد استقبلت الزوار منذ 2007 بمقاهٍ وبحيرات وعبّارة من الكورنيش، لكن التطوير توقف خلال الأزمة الاقتصادية العالمية وتوقفت العبّارة في 2009. واليوم لا يُوصل إلى الجزيرة إلا بالقوارب، لنقل طواقم البناء."
+        },
+        {
+          "q": "Why did Lulu Island stay undeveloped for so long?",
+          "a": "Lulu Island's first masterplan was drawn up in 2007, but the project halted in the global financial downturn and the island sat dormant for more than a decade. Redevelopment plans were announced again in 2026, with Eagle Hills now confirmed as developer.",
+          "q_ar": "لماذا بقيت جزيرة اللؤلؤ دون تطوير لفترة طويلة؟",
+          "a_ar": "وُضع أول مخطط رئيسي لجزيرة اللؤلؤ عام 2007، لكن المشروع توقف خلال الأزمة المالية العالمية وبقيت الجزيرة خاملة أكثر من عقد. ثم أُعلنت خطط إعادة التطوير مجددًا في 2026، مع تأكيد إيغل هيلز مطوّرًا للمشروع."
+        },
+        {
+          "q": "How will Lulu Island compare with living on Abu Dhabi Corniche?",
+          "a": "Lulu Island will offer what the Corniche cannot: new, low-rise homes with the city skyline as the view, rather than towers looking out to sea. The Corniche, directly opposite, has ready apartments for rent today, beaches and Marina Mall nearby, while Lulu Island has no homes yet and depends on future access arrangements.",
+          "q_ar": "كيف ستختلف جزيرة اللؤلؤ عن السكن على كورنيش أبوظبي؟",
+          "a_ar": "ستوفر جزيرة اللؤلؤ ما لا يوفره الكورنيش: منازل جديدة منخفضة الارتفاع تطل على أفق المدينة، بدلًا من أبراج تطل على البحر. أما الكورنيش المقابل لها مباشرة فيضم اليوم شققًا جاهزة للإيجار وشواطئ ومارينا مول بالقرب منه، بينما لا توجد في جزيرة اللؤلؤ منازل بعد، ويعتمد الوصول إليها على ترتيبات مستقبلية."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "fahid-island",
+      "name": "Fahid Island",
+      "pageSlug": "subpage/area/fahid-island",
+      "sources": [
+        "DB: subpage/area/fahid-island stats band (sale index April 2026; off-plan and studio indices June 2026), nearby band, landmarks band + footnote (AED 40bn, 11 km coastline), why band (30% natural space), developments table (2 on sale)",
+        "thenationalnews.com (22 Apr 2019) — designated investment zones list, incl. \"Fahed Island\"",
+        "adro.gov.ae — Golden Visa for real-estate investors",
+        "Broker guides: 2% DARI registration fee"
+      ],
+      "faq": [
+        {
+          "q": "Where is Fahid Island in Abu Dhabi?",
+          "a": "Fahid Island is a new island community by Aldar between Yas Island and Saadiyat Island, about 5 minutes from Yas, 15 minutes from Saadiyat and Zayed International Airport, and 20 minutes from Abu Dhabi city. Its masterplan has about 11 km of coastline and a development value above AED 40 billion.",
+          "q_ar": "أين تقع جزيرة فاهد في أبوظبي؟",
+          "a_ar": "جزيرة فاهد مجتمع جديد على جزيرة من تطوير الدار، يقع بين جزيرة ياس وجزيرة السعديات، على بُعد نحو 5 دقائق من ياس، و15 دقيقة من السعديات ومطار زايد الدولي، و20 دقيقة من مدينة أبوظبي. ويمتد مخططها الرئيسي على ساحل طوله نحو 11 كيلومترًا بقيمة تطويرية تتجاوز 40 مليار درهم."
+        },
+        {
+          "q": "Can foreigners buy property on Fahid Island?",
+          "a": "Yes. Fahid Island, spelled Fahed Island on the list, was among the designated investment zones published when Abu Dhabi opened freehold ownership to foreigners in 2019, and Aldar sells its projects to buyers of every nationality. Ownership is registered with the Abu Dhabi Real Estate Centre through DARI, where buyers can confirm a unit's status.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة فاهد؟",
+          "a_ar": "نعم. كانت جزيرة فاهد ضمن مناطق الاستثمار المحددة التي أُعلنت عندما فتحت أبوظبي باب التملك الحر للأجانب عام 2019، وتبيع الدار مشاريعها فيها للمشترين من جميع الجنسيات. ويُسجَّل التملك لدى مركز أبوظبي العقاري عبر منصة «DARI»، حيث يمكن للمشتري التحقق من وضع الوحدة."
+        },
+        {
+          "q": "How much does property cost on Fahid Island?",
+          "a": "Fahid Island's sale price index was about AED 3,876 per sq ft in April 2026, up 2.29% over 12 months, while its off-plan apartment index reached AED 3,845 per sq ft in June 2026, up 8.95%. Studios index higher, at AED 4,251 per sq ft. Projects on sale start from AED 3,500,000 at Fahid Beach Residences.",
+          "q_ar": "كم تبلغ أسعار العقارات في جزيرة فاهد؟",
+          "a_ar": "بلغ مؤشر أسعار البيع في جزيرة فاهد نحو 3,876 درهمًا للقدم المربع في أبريل 2026، بارتفاع 2.29% خلال 12 شهرًا، بينما وصل مؤشر الشقق على الخريطة إلى 3,845 درهمًا للقدم المربع في يونيو 2026، بارتفاع 8.95%. ويرتفع مؤشر الاستوديوهات إلى 4,251 درهمًا للقدم المربع. وتبدأ أسعار المشاريع المعروضة من 3,500,000 درهم في فاهد بيتش ريزيدنسز."
+        },
+        {
+          "q": "Which projects are selling on Fahid Island now?",
+          "a": "Two Aldar projects are on sale on Fahid Island: Fahid Beach Residences, 464 units from AED 3,500,000 with handover due in August 2029, and Fahid Beach Terraces, 501 units from AED 3,600,000 due in November 2029. Both are apartment-led beachfront buildings with townhouses and penthouses in the mix.",
+          "q_ar": "ما المشاريع المعروضة للبيع حاليًا في جزيرة فاهد؟",
+          "a_ar": "يُعرض مشروعان من الدار للبيع في جزيرة فاهد: فاهد بيتش ريزيدنسز، ويضم 464 وحدة بدءًا من 3,500,000 درهم مع موعد تسليم في أغسطس 2029، وفاهد بيتش تيراسز، ويضم 501 وحدة بدءًا من 3,600,000 درهم مع التسليم في نوفمبر 2029. ويغلب على المشروعين طابع الشقق على الشاطئ، مع منازل تاون هاوس وبنتهاوس ضمن الخيارات."
+        },
+        {
+          "q": "When will Fahid Island be ready to live in?",
+          "a": "The first homes on Fahid Island are scheduled for 2029: Fahid Beach Residences in August 2029 and Fahid Beach Terraces in November 2029. Until then there are no completed homes or rental history on the island, so buyers are purchasing off-plan on a developer payment plan.",
+          "q_ar": "متى تصبح جزيرة فاهد جاهزة للسكن؟",
+          "a_ar": "من المقرر تسليم أول المنازل في جزيرة فاهد في 2029: فاهد بيتش ريزيدنسز في أغسطس 2029، وفاهد بيتش تيراسز في نوفمبر 2029. وحتى ذلك الحين لا توجد على الجزيرة منازل مكتملة أو سجل إيجارات، لذا يشتري المشترون على الخريطة وفق خطة سداد من المطوّر."
+        },
+        {
+          "q": "Does buying on Fahid Island qualify for a UAE Golden Visa?",
+          "a": "Yes, usually: both projects on sale on Fahid Island start above the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, at AED 3,500,000 and AED 3,600,000. Because they are off-plan, the developer must confirm that at least AED 2 million has already been paid before the application.",
+          "q_ar": "هل يؤهّل الشراء في جزيرة فاهد للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "نعم عادةً: فكلا المشروعين المعروضين في جزيرة فاهد يبدأ سعره فوق حد المليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، عند 3,500,000 درهم و3,600,000 درهم. ولأنهما على الخريطة، يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل قبل تقديم الطلب."
+        },
+        {
+          "q": "What fees do you pay when buying on Fahid Island?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 3,500,000 Fahid Beach Residences apartment that is AED 70,000. Buying off-plan direct from Aldar normally carries no agency commission; mortgage buyers add bank and mortgage registration fees once the home is complete.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في جزيرة فاهد؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2%، وتُدفع عبر منصة «DARI»: فعلى شقة في فاهد بيتش ريزيدنسز بسعر 3,500,000 درهم تبلغ 70,000 درهم. ولا يتحمل الشراء على الخريطة من الدار مباشرة عادةً أي عمولة وساطة، ويضيف المشترون بالتمويل رسوم البنك وتسجيل الرهن بعد اكتمال المنزل."
+        },
+        {
+          "q": "What is the lifestyle like on Fahid Island?",
+          "a": "Fahid Island is planned as a wellness-led coastal community, with 30% of the masterplan kept as natural space, beaches and mangroves. Its signature amenities are the Fahid Beach Club, a mangrove boardwalk and a waterfront promenade, with walking and cycling routes designed in from the start.",
+          "q_ar": "كيف يبدو أسلوب الحياة في جزيرة فاهد؟",
+          "a_ar": "صُمّمت جزيرة فاهد مجتمعًا ساحليًا يركّز على العافية، إذ خُصّص 30% من مخططها الرئيسي للمساحات الطبيعية والشواطئ وأشجار القرم. وأبرز مرافقها نادي فاهد الشاطئي وممشى أشجار القرم وممشى الواجهة البحرية، مع مسارات للمشي وركوب الدراجات مدمجة في التصميم منذ البداية."
+        },
+        {
+          "q": "Is Fahid Island more expensive than Saadiyat Island or Yas Island?",
+          "a": "Yes, per square foot: Fahid Island's sale index was about AED 3,876 per sq ft in April 2026, against about AED 2,691 on Saadiyat Island and AED 2,230 on Yas Island in June 2026. The premium reflects new beachfront stock only; Yas and Saadiyat offer ready homes, schools and rental history that Fahid will not have before 2029.",
+          "q_ar": "هل العقارات في جزيرة فاهد أغلى من جزيرة السعديات أو جزيرة ياس؟",
+          "a_ar": "نعم من حيث سعر القدم المربع: فقد بلغ مؤشر البيع في جزيرة فاهد نحو 3,876 درهمًا للقدم المربع في أبريل 2026، مقابل نحو 2,691 درهمًا في جزيرة السعديات و2,230 درهمًا في جزيرة ياس في يونيو 2026. وتعكس هذه العلاوة أن المعروض كله جديد على الشاطئ، بينما توفر ياس والسعديات منازل جاهزة ومدارس وسجل إيجارات لن يتوفر في فاهد قبل 2029."
+        },
+        {
+          "q": "Is Fahid Island a good investment?",
+          "a": "Fahid Island offers early entry to a new Aldar masterplan, and its off-plan apartment index rose 8.95% in the 12 months to June 2026. It is also untested: no homes are complete, rents are unknown until handover in 2029, and prices start at AED 3,500,000. Returns are not guaranteed, so weigh the payment plan and exit timing carefully.",
+          "q_ar": "هل الاستثمار في جزيرة فاهد خيار جيد؟",
+          "a_ar": "تتيح جزيرة فاهد دخولًا مبكرًا إلى مخطط رئيسي جديد من الدار، وقد ارتفع مؤشر الشقق على الخريطة فيها بنسبة 8.95% خلال 12 شهرًا حتى يونيو 2026. لكنها سوق لم تُختبر بعد: فلا توجد منازل مكتملة، والإيجارات غير معروفة قبل التسليم في 2029، والأسعار تبدأ من 3,500,000 درهم. ولا توجد عوائد مضمونة، لذا ينبغي دراسة خطة السداد وتوقيت الخروج بعناية."
+        }
+      ]
+    }
+  ]
+}

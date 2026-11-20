@@ -21,6 +21,8 @@ import { getDeveloperPageCopy } from "@/lib/queries/developer-page";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 import { entryLogo, findDirectoryEntry, listDirectory } from "../_directory";
+import { PageFaq } from "../../_components/marketing/page-faq";
+import { developerFaqKey } from "@/lib/master-pages/page-faqs";
 import { cardFactProps } from "@/lib/properties/type-rules";
 
 /**
@@ -290,6 +292,9 @@ export default async function DeveloperProfilePage({
           </div>
         </section>
       ) : null}
+
+      {/* The developer's own questions (/admin/pages/sub/faq/developer-<slug>). */}
+      <PageFaq faqKey={developerFaqKey(slug)} locale={asLocale(locale)} />
     </div>
   );
 }

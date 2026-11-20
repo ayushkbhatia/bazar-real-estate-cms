@@ -1,0 +1,39 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.8378197258334,
+    "lng": 55.027500674086696
+  },
+  "nearby_ids": [
+    "94b606af-607b-469a-8492-f4eef347f403"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Stay active with dedicated spaces designed for sports, fitness, and recreation.",
+      "title": "Sports Facilities",
+      "copy_ar": "مساحات مخصصة للرياضة واللياقة والترفيه، مصممة لتعزيز أسلوب حياة نشط.",
+      "media_id": "737fe1a7-b32e-413b-90be-fab9ed5ecfbd",
+      "title_ar": "المرافق الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy landscaped green areas designed for relaxation, walking, and outdoor living.",
+      "title": "Open Green Spaces",
+      "copy_ar": "مناطق طبيعية منسقة للاسترخاء والمشي والاستمتاع بالحياة في الهواء الطلق.",
+      "media_id": "1ceb1d52-e856-457e-b25a-c76be33b3956",
+      "title_ar": "المساحات الخضراء المفتوحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A welcoming outdoor space where families can relax, play, and spend quality time together.",
+      "title": "Family Park",
+      "copy_ar": "مساحة خارجية مريحة للعائلات للاسترخاء واللعب وقضاء أوقات ممتعة معًا.",
+      "media_id": "b8ccb075-7517-4e3f-87bc-6b589fab6653",
+      "title_ar": "الحديقة العائلية"
+    }
+  ]
+}

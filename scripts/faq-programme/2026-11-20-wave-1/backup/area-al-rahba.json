@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Rahba is located in northeastern Abu Dhabi, near Al Shahama and Al Bahia.",
+        "q": "Where is Al Rahba located?",
+        "a_ar": "تقع الرحبة في شمال شرق أبوظبي بالقرب من الشهامة والباهية.",
+        "q_ar": "أين تقع الرحبة؟"
+      },
+      {
+        "a": "The area offers villas, residential compounds and selected apartments.",
+        "q": "What types of properties are available in Al Rahba?",
+        "a_ar": "تضم المنطقة فللا ومجمعات سكنية وبعض الشقق.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الرحبة؟"
+      },
+      {
+        "a": "Yes. Al Rahba offers spacious homes, quieter neighbourhoods and access to local amenities.",
+        "q": "Is Al Rahba suitable for families?",
+        "a_ar": "نعم، توفر الرحبة منازل واسعة وأحياء هادئة وخدمات محلية مناسبة للعائلات.",
+        "q_ar": "هل الرحبة مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Rahba",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الرحبة"
+  },
+  "enabled": true
+}

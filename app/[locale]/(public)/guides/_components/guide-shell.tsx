@@ -2,6 +2,8 @@ import Link from "@/components/i18n/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft, Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { asLocale } from "@/lib/i18n/locales";
+import { PageFaq } from "../../_components/marketing/page-faq";
 
 export type GuideBlock = {
   heading?: string;
@@ -27,6 +29,11 @@ type Props = {
    */
   locale: string;
   children?: React.ReactNode;
+  /**
+   * The guide's page-FAQ key (`guide-<slug>`, lib/master-pages/page-faqs.ts).
+   * Its questions render last, after any widget; none saved, nothing renders.
+   */
+  faqKey?: string;
 };
 
 /**
@@ -42,6 +49,7 @@ export async function GuideShell({
   body,
   locale,
   children,
+  faqKey,
 }: Props) {
   const t = await getTranslations({ locale, namespace: "guides" });
   return (
@@ -123,6 +131,7 @@ export async function GuideShell({
       </section>
 
       {children}
+      {faqKey ? <PageFaq faqKey={faqKey} locale={asLocale(locale)} /> : null}
     </article>
   );
 }

@@ -1,0 +1,68 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.51882291003342,
+    "lng": 54.496715261182516
+  },
+  "nearby_ids": [
+    "fe41995c-a49d-4f23-aad3-6bc89b4192f7",
+    "82eb225b-25e9-4809-ad14-9bb1b9b1acb1",
+    "339e6094-61a3-456f-acff-8518234c06e4"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy direct access to a serene community beach surrounded by natural waterfront beauty.",
+      "title": "Waterfront Beach",
+      "copy_ar": "استمتع بالوصول المباشر إلى شاطئ هادئ وسط الطبيعة والإطلالات المائية الخلابة.",
+      "media_id": "a17906d1-cc5c-4f72-a60f-d6a7b0e491f1",
+      "title_ar": "شاطئ على الواجهة المائية"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Relax and unwind in a resort-style swimming pool designed for comfort and leisure.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بالاسترخاء في مسبح بتصميم مستوحى من المنتجعات الفاخرة.",
+      "media_id": "35abf8ab-5682-4d25-9a91-0c0215558e1d",
+      "title_ar": "مسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active with dedicated sports courts designed for recreation and an active lifestyle.",
+      "title": "Sports Facilities",
+      "copy_ar": "حافظ على نشاطك مع ملاعب رياضية مخصصة للترفيه وممارسة الأنشطة البدنية.",
+      "media_id": "9340f657-26f2-4d0e-9dec-7c93ed550edb",
+      "title_ar": "مرافق رياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Discover beautifully landscaped green spaces offering peaceful surroundings and natural beauty.",
+      "title": "Landscaped Gardens",
+      "copy_ar": "استمتع بمساحات خضراء منسقة بعناية توفر أجواء هادئة وسط الطبيعة.",
+      "media_id": "e4b41895-60be-46ed-9bf8-a90d16870189",
+      "title_ar": "حدائق خضراء"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Maintain your fitness routine in a modern gym designed for health and wellbeing.",
+      "title": "Indoor Gym",
+      "copy_ar": "حافظ على لياقتك البدنية في صالة رياضية حديثة مصممة لتعزيز الصحة والرفاهية.",
+      "media_id": "7ae6620e-57ab-4423-a433-cf5bed0105d7",
+      "title_ar": "صالة رياضية داخلية"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Explore scenic cycling routes surrounded by greenery and Jubail Island's natural landscapes.",
+      "title": "Cycling Track",
+      "copy_ar": "استمتع بمسارات مخصصة لركوب الدراجات وسط المساحات الخضراء والطبيعة الخلابة في جزيرة الجبيل.",
+      "media_id": "966d99c7-9668-473d-8343-7dffcd2052cf",
+      "title_ar": "مسارات للدراجات الهوائية"
+    }
+  ]
+}

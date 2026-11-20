@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bazar FAQ Programme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 12mm 14mm 11mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; color: #000; background: #fff; font: 8.25pt/1.38 "Inter", "Helvetica Neue", Arial, sans-serif; }
+  h1, h2, h3 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; margin: 0; }
+  h1 { font-size: 21pt; line-height: 1.1; letter-spacing: -0.01em; }
+  h2 { font-size: 11.5pt; margin: 8pt 0 3pt; padding-top: 4pt; border-top: 0.6pt solid #000; }
+  h2 .n { font-weight: 400; margin-right: 5pt; }
+  h3 { font-size: 9.6pt; margin: 6pt 0 2pt; }
+  p { margin: 0 0 4pt; }
+  .meta { font-size: 7.6pt; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4pt; }
+  .lede { font-family: "Source Serif 4", Georgia, serif; font-size: 10.2pt; line-height: 1.36; margin: 6pt 0 0; }
+  table { width: 100%; border-collapse: collapse; margin: 3pt 0 4pt; font-size: 7.7pt; }
+  th, td { text-align: left; vertical-align: top; padding: 2pt 4pt 2pt 0; border-bottom: 0.4pt solid #000; }
+  th { font-weight: 600; border-bottom: 0.9pt solid #000; font-size: 7.4pt; text-transform: uppercase; letter-spacing: 0.04em; }
+  td.num, th.num { text-align: right; padding-right: 8pt; white-space: nowrap; }
+  ul, ol { margin: 0 0 4pt; padding-left: 12pt; }
+  li { margin: 0 0 1.6pt; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14pt; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .box { border: 0.8pt solid #000; padding: 5pt 7pt; margin: 0; }
+  .box p:last-child { margin: 0; }
+  em.q { font-style: italic; font-family: "Source Serif 4", Georgia, serif; font-size: 9pt; }
+  .foot { font-size: 7pt; margin-top: 6pt; }
+  b { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<section class="page">
+  <h1>FAQ Programme — Bazar Real Estate</h1>
+  <div class="meta">Sprint plan · 20 November 2026 · Draft for approval · bazarrealestate.ae (EN + AR)</div>
+
+  <p class="lede">Put the right questions on every public page — the ones Abu Dhabi buyers, investors and tenants actually type into Google or ask ChatGPT, Gemini, Perplexity and Claude — with answers written so an AI engine can lift the first sentence and cite us. Same method as Indus Hydraulics: research → payload → checks → database write. After one code batch, content costs no deploys.</p>
+
+  <h2><span class="n">1</span>Where we stand (measured on the live database today)</h2>
+  <table>
+    <tr><th>Page type</th><th class="num">Pages</th><th>FAQs today</th><th>Schema</th><th>Stored in</th></tr>
+    <tr><td>Listings <span>/p/[slug]</span></td><td class="num">143</td><td>4 from facts + 8 shared, identical on all</td><td>Yes</td><td>code + shared doc</td></tr>
+    <tr><td>Projects <span>/developments/[slug]</span></td><td class="num">46</td><td>4 curated (20 Qs); 42 generic only</td><td>Yes</td><td>developments.meta</td></tr>
+    <tr><td>Area guides <span>/areas/[slug]</span></td><td class="num">30</td><td>3 each on most; 3 areas have 5–6</td><td>Yes</td><td>pages (subpage/area)</td></tr>
+    <tr><td>Landings (home, buy, rent, off-plan, commercial …)</td><td class="num">9</td><td>6–10 each</td><td><b>1 of 9</b></td><td>pages (master)</td></tr>
+    <tr><td>Developer profiles <span>/developers/[slug]</span></td><td class="num">43</td><td>None</td><td>—</td><td>no field yet</td></tr>
+    <tr><td>Guides (golden visa, KYC, tax …)</td><td class="num">11</td><td>None</td><td>—</td><td>no field yet</td></tr>
+    <tr><td>Service sub-pages</td><td class="num">14</td><td>None</td><td>—</td><td>no field yet</td></tr>
+    <tr><td>Tools, market reports, agents</td><td class="num">~35</td><td>None (mortgage tool: 8)</td><td>—</td><td>no field yet</td></tr>
+    <tr><td>Insights articles</td><td class="num">128</td><td>None</td><td>—</td><td>article body (TipTap)</td></tr>
+  </table>
+  <p><b>What this tells us.</b> Plumbing exists for listings, projects and areas; the content is thin and templated. Eight landings show FAQs with no <span>FAQPage</span> JSON-LD. Guides, services and developers — the pages most cited for “how do I…” questions — have nowhere to put one. Unlike Indus, we hold no Search Console data, so research starts outside (§3).</p>
+
+  <h2><span class="n">2</span>The standard every FAQ must pass</h2>
+  <div class="cols">
+    <ol>
+      <li><b>Search-shaped.</b> Reads like a real query and names the thing: the area, project, developer, law or fee. <em class="q">“Can foreigners buy freehold on Saadiyat Island?”</em> — not <em class="q">“Who can buy here?”</em></li>
+      <li><b>Answer first.</b> The first sentence answers on its own (≈25–40 words) so an AI engine can quote it; 2–4 sentences, 250–500 characters in all.</li>
+      <li><b>Sourced.</b> Every figure comes from our data (price, size, handover, payment plan, permit) or a named authority — ADREC, DARI, ADGM, ICP, Central Bank, the developer. No invented yields, prices or growth.</li>
+    </ol>
+    <ol start="4">
+      <li><b>Dated where it moves.</b> Fees, visa thresholds, rents and prices carry “as of November 2026”, and get a re-check date.</li>
+      <li><b>Specific to the page.</b> No answer reused verbatim across more than a handful of siblings.</li>
+      <li><b>Leads somewhere.</b> 2–3 internal links per page: listings, the project, the area guide, the mortgage tool, a guide, the enquiry form.</li>
+      <li><b>Bilingual and compliant.</b> Arabic twin as a gated machine first draft (ADR-0008). No guaranteed returns, no “best/No.1” claims, permit numbers per ADREC advertising rules.</li>
+    </ol>
+  </div>
+
+  <h2><span class="n">3</span>Research: where the questions come from</h2>
+  <div class="cols">
+    <ul>
+      <li><b>Google</b>: People Also Ask, autocomplete and related searches for each area, project and developer name, EN and AR.</li>
+      <li><b>AI engines</b>: ask ChatGPT, Perplexity, Gemini and Claude the obvious buyer questions; note whom they cite — the pages to out-answer.</li>
+      <li><b>Competitors</b>: Bayut, Property Finder, developer sites and Abu Dhabi brokers' area guides: what they answer, what they miss.</li>
+    </ul>
+    <ul>
+      <li><b>Forums</b>: Reddit r/abudhabi and r/dubai, expat forums.</li>
+      <li><b>Our own leads</b>: enquiry messages, concierge chat logs and on-site search terms (anonymised).</li>
+      <li><b>Search Console</b>: ask the client for access (or an export): queries we show for but don't win.</li>
+    </ul>
+  </div>
+  <p>Output per page type: a <b>research brief</b>: real queries, facts needed, sources, common confusions (freehold zones, DARI vs. DLD, resale before handover, golden visa thresholds).</p>
+
+  <h2><span class="n">4</span>Built to be cited by AI engines</h2>
+  <div class="cols">
+    <ul>
+      <li><b>FAQPage JSON-LD on every page that shows FAQs</b> — including the eight landings missing it today. No FAQ rich results since 2023; the value is long-tail matching and clean Q&amp;A for AI engines.</li>
+      <li><b>Answer-first prose</b> rendered in the server HTML (already true), with a visible “Updated” date on the FAQ band.</li>
+    </ul>
+    <ul>
+      <li><b>Crawler access</b>: confirm robots.txt and Vercel let GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot and Google-Extended in; add an <span>llms.txt</span> pointing at guides and area pages.</li>
+      <li><b>Entity consistency</b>: RealEstateAgent / Organization schema with ADREC licence and <span>sameAs</span> links; same facts on every page. <b>IndexNow</b> (Bing, feeds Copilot) for every URL we touch.</li>
+    </ul>
+  </div>
+
+</section>
+
+<!-- PAGE 2 -->
+<section class="page">
+  <h2 style="margin-top:0"><span class="n">5</span>Question slots by page type</h2>
+  <table>
+    <tr><th style="width:17%">Page type</th><th class="num" style="width:7%">FAQs</th><th>Slots (pick what the data supports; never pad to the count)</th></tr>
+    <tr><td>Area guide</td><td class="num">10–12</td><td>Freehold for foreigners? · typical prices and rents by type · service charges · schools, hospitals, beaches · commute to downtown / airport · master developer and upcoming projects · golden visa eligibility · vs. a named neighbour · rental yield (sourced, dated)</td></tr>
+    <tr><td>Project</td><td class="num">10–12</td><td>Handover date · payment plan · starting price and unit types · developer track record · escrow and registration · service charge estimate · can I resell before handover · golden visa at this price · mortgage on off-plan · location vs. landmarks</td></tr>
+    <tr><td>Listing</td><td class="num">6–8</td><td>From the listing's facts: what it includes · price per ft² vs. the area · tenure · permit check · fees on top of the price · non-resident purchase · mortgage on this price · viewing.</td></tr>
+    <tr><td>Developer</td><td class="num">6–8</td><td>Who they are · projects in Abu Dhabi · delivered on time? · payment plans they usually offer · buying direct vs. through Bazar · current launches</td></tr>
+    <tr><td>Guide / service</td><td class="num">8–10</td><td>Process step by step · cost · timeline · documents · who is eligible · common mistakes · how Bazar helps (max 1–2 commercial)</td></tr>
+    <tr><td>Landing / tool</td><td class="num">8–10</td><td>The broad questions for that intent: buying process, fees, mortgages for expats, off-plan risks, renting rules, how valuation works</td></tr>
+  </table>
+
+  <h2><span class="n">6</span>Build — one code batch, then data only</h2>
+  <div class="cols">
+    <div>
+      <h3>Code (one PR, one deploy)</h3>
+      <ul>
+        <li>FAQ section (EN + AR, up to 12) for guides, service sub-pages, developer profiles and tools, reusing the existing master-page <span>faqList</span>.</li>
+        <li>FAQPage JSON-LD on all marketing landings.</li>
+        <li>Links in answers: <span>[text](/path)</span>, same-origin only, stripped to plain text in the JSON-LD.</li>
+        <li>Optional per-listing FAQ override, so a listing can carry its own questions.</li>
+        <li>llms.txt, robots check, IndexNow ping on save.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Content pipeline (no deploy)</h3>
+      <ol>
+        <li>Research brief per page type, then one <b>payload.json</b> per wave: page key → FAQs, EN + AR.</li>
+        <li>Automated checks: every figure traceable to our data or a cited source; banned-claims grep; near-duplicate check across siblings; length bounds; every link resolves to a live slug; Arabic present.</li>
+        <li><b>run.ts</b> writes each page in its own transaction to <span>pages</span> / <span>developments.meta</span>, revalidates, pings IndexNow. Off-peak, never during a deploy.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2><span class="n">7</span>Waves</h2>
+  <table>
+    <tr><th style="width:6%">Wave</th><th style="width:40%">Scope</th><th class="num" style="width:9%">Pages</th><th>Why in this order</th></tr>
+    <tr><td>0</td><td>Pilot: Saadiyat, Yas, 2 projects, 5 listings, 1 guide</td><td class="num">10</td><td>Prove the loop; you sign off the format once</td></tr>
+    <tr><td>1</td><td>Area guides</td><td class="num">30</td><td>Highest search demand; most-asked “living in X” questions</td></tr>
+    <tr><td>2</td><td>Projects (off-plan)</td><td class="num">46</td><td>Highest commercial value; 42 have nothing of their own</td></tr>
+    <tr><td>3</td><td>Guides, service sub-pages, landings, tools</td><td class="num">~45</td><td>The “how do I…” pages AI engines cite most</td></tr>
+    <tr><td>4</td><td>Developer profiles</td><td class="num">43</td><td>Brand-name queries (“Aldar”, “Modon”, “Imkan”)</td></tr>
+    <tr><td>5</td><td>Listings</td><td class="num">143</td><td>Volume, mostly templated. Then Insights articles that already rank (optional)</td></tr>
+  </table>
+
+  <h2><span class="n">8</span>Measuring it, and what I need from you</h2>
+  <div class="cols">
+    <div>
+      <p><b>Baseline before wave 1</b>, re-read at 4 and 8 weeks: Search Console impressions, clicks and distinct queries per URL; Bing Webmaster. <b>AI citation probe</b>: a fixed set of ~50 buyer questions asked monthly in ChatGPT, Perplexity, Gemini and Claude, counting how often bazarrealestate.ae is cited.</p>
+    </div>
+    <div class="box">
+      <p><b>Decisions</b></p>
+      <ol style="margin:0">
+        <li>FAQ counts per type as in §5?</li>
+        <li>Can we get Search Console access from the client?</li>
+        <li>Who reviews the Arabic, and is the ADR-0008 gate enough?</li>
+        <li>Per-listing FAQs: generated from facts only, or curated?</li>
+        <li>May answers quote yields and price ranges if sourced and dated?</li>
+      </ol>
+    </div>
+  </div>
+  <p class="foot">Counts read from the production database, 20 Nov 2026. Method adapted from the Indus Hydraulics product FAQ programme (approved 19 Nov 2026).</p>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Yes. Al Zahiyah is the current name of the district formerly known as Tourist Club Area.",
+        "q": "Is Al Zahiyah the same as Tourist Club Area?",
+        "a_ar": "نعم، الزاهية هو الاسم الحالي للمنطقة المعروفة سابقا باسم النادي السياحي.",
+        "q_ar": "هل الزاهية هي منطقة النادي السياحي؟"
+      },
+      {
+        "a": "The area primarily offers apartments in residential and mixed-use towers.",
+        "q": "What properties are available in Al Zahiyah?",
+        "a_ar": "تتوفر بشكل رئيسي الشقق في الأبراج السكنية والمباني متعددة الاستخدامات.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الزاهية؟"
+      },
+      {
+        "a": "Yes. Abu Dhabi Mall and other central retail destinations are nearby.",
+        "q": "Is Al Zahiyah close to shopping destinations?",
+        "a_ar": "نعم، تقع بالقرب من أبوظبي مول ووجهات تسوق أخرى.",
+        "q_ar": "هل الزاهية قريبة من مراكز التسوق؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Zahiyah",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الزاهية"
+  },
+  "enabled": true
+}

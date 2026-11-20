@@ -1,0 +1,86 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.496566075703782,
+    "lng": 54.39135457509525
+  },
+  "nearby_ids": [
+    "78b17aac-2169-49b0-90c9-6074df705532",
+    "8ca0b0cb-7423-469b-b28f-da935ae85a11",
+    "26066402-c4d8-4a53-96b6-9ae2b2ca9ac1"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy uninterrupted views and a refreshing escape in a beautifully designed infinity pool.",
+      "title": "Infinity Pool",
+      "copy_ar": "استمتع بإطلالات بانورامية وأجواء منعشة في مسبح إنفينيتي بتصميم فاخر ومميز.",
+      "media_id": "04df7e1b-fd55-46c3-919c-83dff2c4b167",
+      "title_ar": "مسبح إنفينيتي"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Experience year-round relaxation in a serene, temperature-controlled swimming environment.",
+      "title": "Indoor Swimming Pool",
+      "copy_ar": "استمتع بالسباحة والاسترخاء على مدار العام في مسبح داخلي بدرجة حرارة مثالية.",
+      "media_id": "bdceac22-99ef-4a48-b066-d0d3181e3357",
+      "title_ar": "مسبح داخلي"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Relax, recharge, and rejuvenate with wellness facilities designed for complete tranquillity.",
+      "title": "Spa & Wellness",
+      "copy_ar": "استمتع بتجربة استرخاء متكاملة مع مرافق السبا والعافية المصممة لتجديد نشاطك واستعادة حيويتك.",
+      "media_id": "04b97b72-93a5-4c58-b237-8773cea41839",
+      "title_ar": "السبا والعافية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Enjoy a private cinematic experience in a comfortable and luxurious setting.",
+      "title": "Indoor Cinema",
+      "copy_ar": "استمتع بتجربة سينمائية خاصة في أجواء فاخرة ومريحة.",
+      "media_id": "82845644-c083-4105-b64c-566b6843df56",
+      "title_ar": "سينما داخلية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Find balance and inner peace in a dedicated space for yoga and mindfulness.",
+      "title": "Yoga Room",
+      "copy_ar": "استمتع بأجواء من الهدوء والراحة في مساحة مخصصة لممارسة اليوغا والتأمل.",
+      "media_id": "4711ef16-9875-497f-9416-db4748d4b6a6",
+      "title_ar": "غرفة اليوغا"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Stay active and achieve your fitness goals in a modern, fully equipped fitness centre.",
+      "title": "Gym",
+      "copy_ar": "حافظ على لياقتك البدنية وحقق أهدافك الرياضية في صالة حديثة مجهزة بأحدث المعدات.",
+      "media_id": "3492783a-a7f7-4169-8d9e-984b18a3ca52",
+      "title_ar": "صالة رياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_7",
+      "copy": "Perfect your swing with an immersive indoor golfing experience.",
+      "title": "Golf Simulator",
+      "copy_ar": "استمتع بتجربة جولف واقعية وتفاعلية تتيح لك تطوير مهاراتك في أجواء داخلية مميزة.",
+      "media_id": "dc1f5842-439f-4321-8eeb-ea4fb3ec87c4",
+      "title_ar": "محاكي الجولف"
+    },
+    {
+      "alt": null,
+      "key": "feature_8",
+      "copy": "Unwind and enjoy entertainment in a vibrant space designed for leisure and socialising.",
+      "title": "Games Room",
+      "copy_ar": "استمتع بأوقات مليئة بالمرح والترفيه في مساحة مخصصة للألعاب والأنشطة الترفيهية.",
+      "media_id": "fb738029-4dfa-4f56-8c4b-3744a0cdb737",
+      "title_ar": "غرفة الألعاب"
+    }
+  ]
+}

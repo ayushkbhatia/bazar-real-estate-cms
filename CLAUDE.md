@@ -266,6 +266,19 @@ lib/
                            #   search facet (7 facets over 6 routes). Read by
                            #   SearchList and by each route's generateMetadata;
                            #   edited at /admin/pages/sub/search.
+  master-pages/page-faqs.ts
+                           # Page FAQs: the questions at the foot of every
+                           #   guide, service page, tool and developer profile
+                           #   (pages whose body is code copy, so no document
+                           #   of their own). One `subpage/faq/<key>` document
+                           #   each (`guide-`, `service-`, `tool-`,
+                           #   `developer-<slug>`), shipped EMPTY: no saved
+                           #   questions = no FAQ rendered. `PageFaq` renders
+                           #   them; the shared marketing `Faq` and `HomeFaqs`
+                           #   emit `FAQPage` JSON-LD (`faq-json-ld.tsx`).
+                           #   Edited at /admin/pages/sub/faq; content comes
+                           #   from scripts/faq-programme/ (run.mjs, kind
+                           #   "faqdoc").
   env.ts                   # zod-validated env loader (use `env.X`, never raw process.env.X)
   utils.ts                 # cn() helper
   posthog.tsx              # client analytics provider (no-op without keys)

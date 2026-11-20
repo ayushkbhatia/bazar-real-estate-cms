@@ -1,0 +1,42 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Ramhan Island is a natural island development located off the coast of Abu Dhabi, UAE. It offers convenient access to Yas Island, Saadiyat Island and Zayed International Airport.",
+        "q": "Where is Ramhan Island located?",
+        "a_ar": "جزيرة رمحان هي مشروع سكني على جزيرة طبيعية تقع قبالة ساحل أبوظبي في دولة الإمارات العربية المتحدة. وتتميز بموقع استراتيجي يسهل الوصول منه إلى جزيرة ياس وجزيرة السعديات ومطار زايد الدولي.",
+        "q_ar": "أين تقع جزيرة رمحان؟"
+      },
+      {
+        "a": "Ramhan Island is developed by Eagle Hills, an Abu Dhabi-based real estate development company specialising in luxury residential, hospitality and mixed-use destinations.",
+        "q": "Who is the developer of Ramhan Island?",
+        "a_ar": "تتولى شركة إيجل هيلز تطوير جزيرة رمحان، وهي شركة تطوير عقاري مقرها أبوظبي، متخصصة في المشاريع السكنية الفاخرة والوجهات الفندقية والمشاريع متعددة الاستخدامات.",
+        "q_ar": "من هو المطور العقاري لجزيرة رمحان؟"
+      },
+      {
+        "a": "Ramhan Island offers a collection of luxury waterfront villas and premium apartments, including residences at The Bristol Residences. Properties feature contemporary designs, spacious layouts and waterfront surroundings.",
+        "q": "What types of properties are available on Ramhan Island?",
+        "a_ar": "تضم جزيرة رمحان مجموعة من الفلل الفاخرة المطلة على الواجهة البحرية والشقق السكنية الراقية، بما في ذلك شقق ذا بريستول ريزيدنسز. وتتميز العقارات بتصاميم عصرية ومساحات واسعة وإطلالات مميزة على الواجهة البحرية.",
+        "q_ar": "ما أنواع العقارات المتاحة في جزيرة رمحان؟"
+      },
+      {
+        "a": "Ramhan Island is approximately 10 minutes from Yas Island, 15 minutes from Zayed International Airport and 18 minutes from Saadiyat Island by car. Travel times may vary depending on traffic and road access.",
+        "q": "How far is Ramhan Island from Yas Island and Zayed International Airport?",
+        "a_ar": "تبعد جزيرة رمحان حوالي 10 دقائق بالسيارة عن جزيرة ياس، و15 دقيقة عن مطار زايد الدولي، و18 دقيقة عن جزيرة السعديات. وقد تختلف أوقات الوصول حسب حركة المرور والطرق المستخدمة.",
+        "q_ar": "كم تبعد جزيرة رمحان عن جزيرة ياس ومطار زايد الدولي؟"
+      },
+      {
+        "a": "Yes, Ramhan Island offers freehold properties available to UAE nationals and international buyers, subject to applicable ownership regulations.",
+        "q": "Can foreigners buy property on Ramhan Island?",
+        "a_ar": "نعم، توفر جزيرة رمحان عقارات بنظام التملك الحر متاحة لمواطني دولة الإمارات والمشترين الدوليين، وفقا لقوانين وأنظمة التملك العقاري المعمول بها.",
+        "q_ar": "هل يمكن للأجانب شراء عقارات في جزيرة رمحان؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Ramhan Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة رمحان"
+  },
+  "enabled": true
+}

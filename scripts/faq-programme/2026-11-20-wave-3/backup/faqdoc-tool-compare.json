@@ -1,0 +1,62 @@
+{
+  "key": "faq",
+  "values": {
+    "items": [
+      {
+        "a": "Shortlist listings with the save icon on any card, then open the comparison and pick which ones to line up. The table sets out price and terms, specifications, location, amenities and investment points in columns, can highlight only the rows that differ, and can be shared as a link or downloaded as a PDF.",
+        "q": "How do I compare properties side by side on Bazar?",
+        "a_ar": "أضف العقارات إلى قائمتك المختصرة بأيقونة الحفظ على أي بطاقة، ثم افتح المقارنة واختر ما تريد مقارنته. ويعرض الجدول السعر والشروط والمواصفات والموقع والمرافق وعناصر الاستثمار في أعمدة، ويمكنه إبراز الصفوف المختلفة فقط، ومشاركته رابطًا أو تنزيله ملفًا.",
+        "q_ar": "كيف أقارن العقارات جنبًا إلى جنب على بازار؟"
+      },
+      {
+        "a": "Up to 4 properties sit side by side in one comparison, which is what the table layout holds. Your shortlist can keep up to 25 saved listings, so you can swap properties in and out of the four columns without losing the others; at least two are needed for a comparison to be useful.",
+        "q": "How many properties can I compare at once?",
+        "a_ar": "يمكن وضع ما يصل إلى 4 عقارات جنبًا إلى جنب في مقارنة واحدة، وهو ما يتسع له تصميم الجدول. وتحتفظ قائمتك المختصرة بما يصل إلى 25 عقارًا محفوظًا، فيمكنك تبديل العقارات في الأعمدة الأربعة دون فقدان البقية، ويلزم عقاران على الأقل لتكون المقارنة مفيدة.",
+        "q_ar": "كم عقارًا يمكنني مقارنته في وقت واحد؟"
+      },
+      {
+        "a": "Look past the asking price to the price per square foot, the annual service charge, view, floor, parking and the year built or handover date. Then check tenure, whether the unit is vacant on transfer or tenanted, and whether it can be mortgaged now; two similar prices can hide very different running costs and timelines.",
+        "q": "What should I compare between two apartments in Abu Dhabi?",
+        "a_ar": "تجاوز السعر المطلوب إلى سعر القدم المربع، ورسوم الخدمات السنوية، والإطلالة، والطابق، ومواقف السيارات، وسنة البناء أو موعد التسليم. ثم تحقق من نوع الملكية، وهل تُسلَّم الوحدة شاغرة عند نقل الملكية أم مؤجرة، وهل يمكن تمويلها الآن، فقد يخفي سعران متقاربان تكاليف تشغيل ومددًا زمنية مختلفة كثيرًا.",
+        "q_ar": "ما الذي يجب أن أقارنه بين شقتين في أبوظبي؟"
+      },
+      {
+        "a": "Freehold is outright, unlimited ownership, open to foreigners in Abu Dhabi's investment areas under Law No. 19 of 2005 as amended in 2019. Usufruct is a registered right to use and benefit from a property for up to 99 years, and musataha a right to build on and use land for up to 50 years, both renewable.",
+        "q": "What is the difference between freehold, usufruct and musataha in Abu Dhabi?",
+        "a_ar": "التملك الحر ملكية تامة غير محددة المدة، ومتاحة للأجانب في مناطق الاستثمار في أبوظبي وفق القانون رقم 19 لسنة 2005 المعدَّل في عام 2019. أما حق الانتفاع فهو حق مسجل في استخدام العقار والانتفاع به لمدة تصل إلى 99 عامًا، والمساطحة حق في البناء على الأرض واستخدامها لمدة تصل إلى 50 عامًا، وكلاهما قابل للتجديد.",
+        "q_ar": "ما الفرق بين التملك الحر وحق الانتفاع والمساطحة في أبوظبي؟"
+      },
+      {
+        "a": "Divide the annual rent by the purchase price and multiply by 100 for the gross yield: AED 100,000 a year on a AED 2 million apartment is 5%. For the net figure, subtract service charges, maintenance and any management fee from the rent first. Yields are indicative and returns are not guaranteed.",
+        "q": "How do I calculate the rental yield on an Abu Dhabi property?",
+        "a_ar": "اقسم الإيجار السنوي على سعر الشراء واضرب الناتج في 100 لتحصل على العائد الإجمالي: فإيجار 100,000 درهم سنويًا لشقة سعرها مليونا درهم يعني 5%. وللعائد الصافي اطرح أولًا رسوم الخدمات والصيانة وأي أتعاب إدارة من الإيجار. والعوائد تقديرية ولا توجد عوائد مضمونة.",
+        "q_ar": "كيف أحسب العائد الإيجاري على عقار في أبوظبي؟"
+      },
+      {
+        "a": "Because they are a fixed yearly cost charged per square foot, and they vary widely between buildings. As a worked example, a 1,000 sq ft apartment at AED 20 per sq ft costs AED 20,000 a year before any other expense, which comes straight off your rental return or adds to the cost of living there.",
+        "q": "Why do service charges matter when comparing Abu Dhabi properties?",
+        "a_ar": "لأنها تكلفة سنوية ثابتة تُحتسب لكل قدم مربع وتتفاوت كثيرًا بين المباني. ومثال ذلك أن شقة مساحتها 1,000 قدم مربع برسوم 20 درهمًا للقدم المربع تكلّف 20,000 درهم سنويًا قبل أي مصروف آخر، وتُخصم مباشرة من عائدك الإيجاري أو تُضاف إلى تكلفة سكنك فيها.",
+        "q_ar": "لماذا تهم رسوم الخدمات عند مقارنة العقارات في أبوظبي؟"
+      },
+      {
+        "a": "Yes, and the comparison shows how they differ beyond price. A ready home can be mortgaged now, within the Central Bank's caps of 80% for an expatriate's first home up to AED 5 million; an off-plan unit can be financed only once 50% of the price is paid under ADREC's framework, and earns no rent until handover.",
+        "q": "Can I compare off-plan and ready properties in Abu Dhabi?",
+        "a_ar": "نعم، وتُظهر المقارنة اختلافهما بما يتجاوز السعر. فالمنزل الجاهز يمكن تمويله الآن ضمن سقوف المصرف المركزي البالغة 80% للمنزل الأول للوافد حتى 5 ملايين درهم، أما الوحدة على الخريطة فلا يمكن تمويلها إلا بعد سداد 50% من السعر وفق إطار مركز أبوظبي العقاري، ولا تدر إيجارًا قبل التسليم.",
+        "q_ar": "هل يمكنني مقارنة العقارات على الخريطة بالعقارات الجاهزة في أبوظبي؟"
+      },
+      {
+        "a": "Use the share button to copy the comparison's link: anyone who opens it sees the same properties in the same order, with no account needed. You can also download the table as a PDF, and the advisor card on each column lets you ask the listing's advisor about it directly.",
+        "q": "How do I share a property comparison with my partner or advisor?",
+        "a_ar": "استخدم زر المشاركة لنسخ رابط المقارنة: فمن يفتحه يرى العقارات نفسها بالترتيب نفسه دون الحاجة إلى حساب. ويمكنك أيضًا تنزيل الجدول ملفًا للطباعة، وتتيح لك بطاقة المستشار في كل عمود التواصل مباشرة مع مستشار العقار بشأنه.",
+        "q_ar": "كيف أشارك مقارنة العقارات مع شريكي أو مستشاري؟"
+      },
+      {
+        "a": "It means the property will be handed over empty on the day ownership transfers, so you can move in or let it at once. A tenanted unit passes to you with its existing Tawtheeq lease, rent and expiry date, and with renewals now capped at a 0% increase, the rent you inherit is the rent you will receive.",
+        "q": "What does vacant on transfer mean in an Abu Dhabi listing?",
+        "a_ar": "يعني أن العقار سيُسلَّم خاليًا يوم نقل الملكية، فيمكنك السكن فيه أو تأجيره فورًا. أما الوحدة المؤجرة فتنتقل إليك مع عقد توثيق القائم وإيجاره وتاريخ انتهائه، ومع تحديد زيادة التجديد حاليًا عند 0% يكون الإيجار الذي ترثه هو الإيجار الذي ستتقاضاه.",
+        "q_ar": "ماذا يعني تسليم العقار شاغرًا عند نقل الملكية في إعلانات أبوظبي؟"
+      }
+    ]
+  },
+  "enabled": true
+}

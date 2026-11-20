@@ -1,0 +1,49 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.518890553410813,
+    "lng": 54.41557297957456
+  },
+  "nearby_ids": [
+    "82eb225b-25e9-4809-ad14-9bb1b9b1acb1",
+    "3445eb6d-e7b5-48e6-a52e-0aa23c02eedb"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Landscaped outdoor areas designed for relaxation, walking, and everyday connection with nature.",
+      "title": "Outdoor Green Spaces",
+      "copy_ar": "مساحات خارجية منسقة صممت للاسترخاء والمشي والاستمتاع بالطبيعة في الحياة اليومية.",
+      "media_id": "decf9a9d-0923-4362-897f-5e27762a9208",
+      "title_ar": "المساحات الخضراء الخارجية"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A dedicated space where children can play, explore, and enjoy outdoor activities safely.",
+      "title": "Kids' Play Area",
+      "copy_ar": "مساحة مخصصة للأطفال للعب والاستكشاف والاستمتاع بالأنشطة الخارجية بأمان.",
+      "media_id": "1740ad3a-9cb4-4c59-8ca0-82afccbb4dd6",
+      "title_ar": "منطقة لعب الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Inviting outdoor spaces created for relaxed gatherings, family time, and casual dining.",
+      "title": "Picnic Areas",
+      "copy_ar": "مساحات خارجية مريحة مخصصة للتجمعات العائلية وقضاء الوقت وتناول الطعام في أجواء هادئة.",
+      "media_id": "b1301a2c-120c-49f1-bc9d-a3f4d9a4015c",
+      "title_ar": "مناطق النزهات"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A welcoming outdoor setting designed for social gatherings, conversation, and relaxation.",
+      "title": "Outdoor Majlis Pavilion",
+      "copy_ar": "مساحة خارجية مريحة مصممة للتجمعات الاجتماعية واللقاءات والاسترخاء.",
+      "media_id": "90bb86a2-2dba-4992-8275-c81cde16eb5c",
+      "title_ar": "مجلس خارجي"
+    }
+  ]
+}

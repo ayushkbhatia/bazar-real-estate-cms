@@ -1,0 +1,68 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.43417674317446,
+    "lng": 54.61601870278221
+  },
+  "nearby_ids": [
+    "a290c4e2-28e0-4b14-8012-02e9a17c974c",
+    "339e6094-61a3-456f-acff-8518234c06e4",
+    "151a3b6b-00b4-456b-bd11-61f12766afe0"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A beautifully designed swimming pool offering a refreshing space to relax, unwind, and enjoy leisurely moments.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح مصمم بعناية يوفر مساحة منعشة للاسترخاء والاستمتاع بأوقات هادئة.",
+      "media_id": "0b71c4c3-aae3-4918-8a94-c8885c8bfc3a",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A safe and engaging play area designed for children to enjoy, explore, and socialize.",
+      "title": "Play Area",
+      "copy_ar": "مساحة آمنة وممتعة للأطفال للعب والاستكشاف والتواصل.",
+      "media_id": "7dffc996-d0b6-4946-bd07-a7c65c8117fa",
+      "title_ar": "منطقة اللعب"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A dedicated tennis court offering the perfect setting for recreation, fitness, and friendly matches.",
+      "title": "Tennis Court",
+      "copy_ar": "ملعب مخصص للتنس يوفر بيئة مثالية للرياضة واللياقة والمباريات الودية.",
+      "media_id": "9f3036b4-d87f-4d84-b56d-463884c782ae",
+      "title_ar": "ملعب التنس"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A fully equipped modern gym designed to support an active and healthy lifestyle.",
+      "title": "Gym",
+      "copy_ar": "صالة حديثة ومجهزة بالكامل لدعم أسلوب حياة صحي ونشط.",
+      "media_id": "9c178a00-f0b7-488c-b0f7-ba48a3541f3e",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "An elegant lounge providing a comfortable space to relax, socialize, and unwind.",
+      "title": "Lounge",
+      "copy_ar": "مساحة أنيقة ومريحة للاسترخاء والتواصل الاجتماعي.",
+      "media_id": "97f44d61-7ffb-483e-af52-33a7405658b5",
+      "title_ar": "الاستراحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "A sophisticated and welcoming lobby designed to create an impressive first impression.",
+      "title": "Lobby",
+      "copy_ar": "ردهة راقية ومرحبة مصممة لتمنح انطباعًا أوليًا مميزًا.",
+      "media_id": "6aa781a2-db2f-4bac-b719-1db4387ab7d4",
+      "title_ar": "الردهة"
+    }
+  ]
+}

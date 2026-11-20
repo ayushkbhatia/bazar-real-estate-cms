@@ -1,0 +1,656 @@
+{
+  "wave": "2",
+  "batch": "batch-c",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    17,
+    22,
+    24,
+    36,
+    38,
+    43,
+    437,
+    2015,
+    2026,
+    2028,
+    800000,
+    22000,
+    14000,
+    18800,
+    38000,
+    42300,
+    "1.3",
+    "1.45",
+    "1.7",
+    "1.9",
+    "2.1",
+    "3.1",
+    "3.8",
+    "4.5",
+    50,
+    30,
+    19000
+  ],
+  "sourcedNotes": {
+    "1/2/3/4": "quarter numbers (Q1–Q4) derived from DB handover_date and payment_plan timings; Corniche Al Reem 1 km (gulfconstructiononline.com); Object 1 / Object 1's four plots (zawya.com); Law No. 3 of 2015 (ADREC / Abu Dhabi real estate law)",
+    "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector — off-plan escrow",
+    "2026": "launch / groundbreaking / announcement dates: A1LA April 2026 (zawya.com), Rixos groundbreaking Sept 2026 (gulfnews.com), Missoni 22 Oct 2026 (tradearabia.com)",
+    "2028": "A1LA handover Q4 2028 per Object 1 launch release (zawya.com / gulftoday.ae, Apr 2026)",
+    "4.5": "Object 1's four Al Reem plots, AED 4.5bn combined value (zawya.com)",
+    "17": "A1LA 17 residential floors, sky pool on the 17th floor (zawya.com)",
+    "6/8": "Al Reem rental yields 6–8%, as cited in Object 1's release (zawya.com) — indicative",
+    "1.7": "A1LA launch price on propertyfinder.ae (AED 1.7M); Breeze by Trace 2-bed from AED 1.7M (Bazar live page unit table)",
+    "1.9/3.8": "Breeze by Trace 3-bed from AED 1.9M and 4-bed from AED 3.8M (Bazar live page unit table)",
+    "1.3/2.1": "Radiant Terrace 1-bed from AED 1.3M, 2-bed from AED 2.1M (propertyfinder.ae, developer price list)",
+    "3.1": "Rixos Residences 2-bed from AED 3.1M (propertyfinder.ae)",
+    "36": "Radiant Legacy 36-storey tower (client's existing meta.faq; luxhabitat / insiderealty listings)",
+    "43/10": "Radiant Terrace 43 floors, 618 residences + 10 retail units (dxboffplan.com / insiderealty.ae)",
+    "800000": "Radisson Residences launch price AED 800,000 on propertyfinder.ae (DB has 950,000)",
+    "24/437/1.45": "Radisson Residences: 24 residential floors per tower; phase 1 sold out within 24 hours; phase 2 tower of 437 furnished residences; AED 1.45bn total (zawya.com)",
+    "38/22": "Waterfront by Missoni penthouses on the 38th floor; article dated 22 Oct 2026 (tradearabia.com)",
+    "22000/14000/18800/38000/42300": "2% of DB starting prices: A1LA 1,100,000; Radiant Terrace 700,000; The Artery 940,000; Missoni 1,900,000; Rixos 2,115,000",
+    "50": "ADREC off-plan mortgage framework: 50% of price paid (gulfnews.com / wam.ae, Sept 2026); Radiant Terrace 10/40/50 split on propertyfinder.ae",
+    "30": "Rixos Residences 10/30/60 split on propertyfinder.ae / dubizzle",
+    "19000": "2% of DB starting price: Radisson Residences 950,000"
+  },
+  "pages": [
+    {
+      "kind": "development",
+      "slug": "a1la-residence",
+      "name": "A1LA Residence",
+      "sources": [
+        "DB: developments row a1la-residence (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band and stats",
+        "zawya.com / gulftoday.ae / tradearabia.com (Apr 2026) — Object 1 launch: TSZ Holding, 171 units, 17 floors, duplexes, sky pool, Q4 2028, AED 4.5bn plots, Reem yields 6–8%",
+        "propertyfinder.ae — A1LA Residence: from AED 1.7M, 10/40/50, December 2028",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa for property investors"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of A1LA Residence?",
+          "a": "A1LA Residence is developed by Object 1, a Dubai developer that is part of TSZ Holding. Launched in April 2026, it is Object 1's first residential project in Abu Dhabi, on one of four waterfront plots the developer bought on Al Reem Island with a combined planned value of about AED 4.5 billion.",
+          "q_ar": "من هو مطوّر مشروع إيلا ريزيدنس؟",
+          "a_ar": "يطوّر مشروع إيلا ريزيدنس شركة أوبجكت 1، المطوّر العقاري في دبي التابع لمجموعة تي إس زد القابضة. وأُطلق المشروع في أبريل 2026 ليكون أول مشروع سكني لأوبجكت 1 في أبوظبي، على واحدة من أربع قطع أرض على الواجهة المائية اشتراها المطوّر في جزيرة الريم بقيمة إجمالية مخططة تبلغ نحو 4.5 مليار درهم."
+        },
+        {
+          "q": "Where is A1LA Residence located?",
+          "a": "A1LA Residence is on Al Reem Island, Abu Dhabi, in the Shams Gate District, overlooking the Al Reem Island canal near ADGM. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM on Al Maryah Island are about 5 minutes by car, and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع إيلا ريزيدنس؟",
+          "a_ar": "يقع مشروع إيلا ريزيدنس في جزيرة الريم بأبوظبي، ضمن منطقة بوابة شمس، ويطل على قناة جزيرة الريم بالقرب من سوق أبوظبي العالمي. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي في جزيرة المارية نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of A1LA Residence?",
+          "a": "A1LA Residence starts from AED 1,100,000 for a one-bedroom apartment. Prices rise with size, floor and canal view, and some portals now show releases from about AED 1.7 million, so ask a Bazar advisor for the current price list and availability.",
+          "q_ar": "ما سعر البداية في مشروع إيلا ريزيدنس؟",
+          "a_ar": "تبدأ الأسعار في مشروع إيلا ريزيدنس من 1,100,000 درهم لشقة بغرفة نوم واحدة. وترتفع الأسعار بحسب المساحة والطابق والإطلالة على القناة، وتعرض بعض المنصات حاليًا مراحل طرح تبدأ من نحو 1.7 مليون درهم، لذا اطلب قائمة الأسعار والتوافر الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at A1LA Residence?",
+          "a": "A1LA Residence has 171 homes: one- to three-bedroom apartments plus a limited number of two- and three-bedroom duplexes over 17 residential floors. One-bedrooms measure about 797–1,068 sq ft, two-bedrooms 1,180–1,501 sq ft and three-bedrooms 1,919–2,058 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع إيلا ريزيدنس؟",
+          "a_ar": "يضم مشروع إيلا ريزيدنس 171 وحدة سكنية: شققًا من غرفة إلى ثلاث غرف نوم، وعددًا محدودًا من الشقق الدوبلكس بغرفتين وثلاث غرف، موزعة على 17 طابقًا سكنيًا. وتبلغ مساحة شقق الغرفة الواحدة نحو 797 إلى 1,068 قدمًا مربعًا، والغرفتين من 1,180 إلى 1,501 قدم مربع، والثلاث غرف من 1,919 إلى 2,058 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for A1LA Residence?",
+          "a": "A1LA Residence is sold on a 50/50 payment plan: 10% on booking, 40% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top, about AED 22,000 on the AED 1,100,000 starting price. Confirm the plan for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع إيلا ريزيدنس؟",
+          "a_ar": "يُباع مشروع إيلا ريزيدنس بخطة سداد 50/50: 10% عند الحجز، و40% خلال فترة الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، أي نحو 22,000 درهم على سعر البداية البالغ 1,100,000 درهم. ويُنصح بتأكيد خطة وحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for A1LA Residence?",
+          "a": "A1LA Residence is listed for handover in Q4 2027, while Object 1's April 2026 launch announcement gave Q4 2028. Check the anticipated completion date in your sale and purchase agreement, which also sets out what happens if construction runs late.",
+          "q_ar": "متى موعد تسليم مشروع إيلا ريزيدنس؟",
+          "a_ar": "يُدرج موعد تسليم مشروع إيلا ريزيدنس في الربع الرابع من 2027، بينما ذكر إعلان إطلاق أوبجكت 1 في أبريل 2026 الربع الرابع من 2028. لذا راجع تاريخ الإنجاز المتوقع في عقد البيع والشراء، الذي يحدد أيضًا ما يترتب على أي تأخير في البناء."
+        },
+        {
+          "q": "Can foreigners buy at A1LA Residence?",
+          "a": "Yes. Al Reem Island is one of Abu Dhabi's designated investment areas, so buyers of any nationality, resident in the UAE or not, can own A1LA Residence apartments and duplexes freehold. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع إيلا ريزيدنس؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو غير مقيمين، تملّك شقق ووحدات الدوبلكس في إيلا ريزيدنس بنظام التملك الحر. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at A1LA Residence?",
+          "a": "Not with an entry-level unit: A1LA Residence starts at AED 1,100,000, below the AED 2 million Golden Visa threshold, so a one-bedroom does not qualify on its own. A larger three-bedroom or duplex may reach AED 2 million; off-plan buyers must have paid AED 2 million, and a mortgaged home needs at least AED 2 million of equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في إيلا ريزيدنس؟",
+          "a_ar": "ليس بوحدة من الفئة الأولى: تبدأ الأسعار في إيلا ريزيدنس من 1,100,000 درهم، أي دون حد المليوني درهم المطلوب للإقامة الذهبية، فلا تؤهل شقة الغرفة الواحدة وحدها. وقد تبلغ شقة كبيرة بثلاث غرف أو دوبلكس مليوني درهم؛ ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، وفي العقار المرهون ألا تقل حصة المالك عن مليوني درهم."
+        },
+        {
+          "q": "What amenities does A1LA Residence have?",
+          "a": "A1LA Residence spreads its amenities over three levels, led by a sky pool on the 17th floor. Residents also get an infinity pool, a kids' pool, a gym, a yoga and pilates room, a cinema, a clubhouse, a games room, a BBQ area, outdoor sports zones and a rooftop terrace with open views.",
+          "q_ar": "ما المرافق المتوفرة في مشروع إيلا ريزيدنس؟",
+          "a_ar": "يوزّع مشروع إيلا ريزيدنس مرافقه على ثلاثة مستويات، أبرزها مسبح معلّق في الطابق 17. كما يحصل السكان على مسبح لا متناهٍ ومسبح للأطفال وصالة رياضية وغرفة لليوغا والبيلاتس وسينما ونادٍ اجتماعي وغرفة ألعاب ومنطقة شواء ومساحات رياضية خارجية وتراس على السطح بإطلالات مفتوحة."
+        },
+        {
+          "q": "Is A1LA Residence a good investment?",
+          "a": "A1LA Residence offers entry to Al Reem Island, whose sale price index rose 23.61% in the 12 months to June 2026, to about AED 1,775 per sq ft. Object 1 cites Reem rental yields of 6–8%; that is indicative and returns are not guaranteed, so weigh the 50% handover payment and the new supply due on the island.",
+          "q_ar": "هل مشروع إيلا ريزيدنس استثمار جيد؟",
+          "a_ar": "يتيح مشروع إيلا ريزيدنس الدخول إلى جزيرة الريم، التي ارتفع مؤشر أسعار البيع فيها 23.61% خلال 12 شهرًا حتى يونيو 2026 ليبلغ نحو 1,775 درهمًا للقدم المربع. وتذكر أوبجكت 1 عوائد إيجارية في الريم بين 6 و8%، وهي أرقام استرشادية ولا توجد عوائد مضمونة، لذا ضع في الحسبان دفعة التسليم البالغة 50% والمعروض الجديد المرتقب في الجزيرة."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "breeze-by-trace",
+      "name": "Breeze by Trace",
+      "sources": [
+        "DB: developments row breeze-by-trace (developer, units, starting price, handover, 45/55 milestones, feature blocks, existing meta.faq ×5), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "bazarrealestate.ae/developments/breeze-by-trace — live unit table (2-bed from AED 1.7M, 3-bed 1.9M, 4-bed 3.8M)",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa off-plan rule",
+        "gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage framework, 50% paid"
+      ],
+      "faq": [
+        {
+          "q": "What is Breeze by Trace on Al Reem Island?",
+          "a": "Breeze by Trace, also marketed as Radiant Breeze, is an off-plan residential tower on Al Reem Island, Abu Dhabi, with 217 one- to four-bedroom apartments. Residents get a swimming pool, an outdoor cinema, an indoor gym and a kids' play area, with shopping, schools and parks close by on the island.",
+          "q_ar": "ما هو مشروع بريز من تريس في جزيرة الريم؟",
+          "a_ar": "بريز من تريس، الذي يُسوَّق أيضًا باسم راديانت بريز، برج سكني على الخريطة في جزيرة الريم بأبوظبي، يضم 217 شقة من غرفة إلى أربع غرف نوم. ويحصل السكان على مسبح وسينما خارجية وصالة رياضية داخلية ومنطقة ألعاب للأطفال، مع قرب مراكز التسوق والمدارس والحدائق في الجزيرة."
+        },
+        {
+          "q": "Who is the developer of Breeze by Trace?",
+          "a": "Breeze by Trace is sold through Radiant Real Estate, the Al Reem Island developer behind Radiant Terrace and Radiant Legacy. Earlier project material names Trace Real Estate as the developing company, with Radiant as its marketing partner; the sale and purchase agreement names the legal developer, so check it before you sign.",
+          "q_ar": "من هو مطوّر مشروع بريز من تريس؟",
+          "a_ar": "يُباع مشروع بريز من تريس عبر راديانت العقارية، المطوّر الذي يقف وراء راديانت تيراس وراديانت ليجاسي في جزيرة الريم. وتذكر مواد سابقة للمشروع أن شركة تريس العقارية هي الجهة المطوّرة وأن راديانت شريكها في التسويق؛ ويحدد عقد البيع والشراء اسم المطوّر القانوني، لذا راجعه قبل التوقيع."
+        },
+        {
+          "q": "Where is Breeze by Trace located?",
+          "a": "Breeze by Trace is on Al Reem Island, Abu Dhabi, with Reem Mall, Reem Central Park and The Galleria on Al Maryah Island close by. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM are about 5 minutes by car and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع بريز من تريس؟",
+          "a_ar": "يقع مشروع بريز من تريس في جزيرة الريم بأبوظبي، بالقرب من ريم مول وحديقة الريم المركزية وذا غاليريا في جزيرة المارية. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Breeze by Trace?",
+          "a": "Breeze by Trace starts from AED 1,231,000 for a one-bedroom apartment. Two-bedrooms are listed from about AED 1.7 million, three-bedrooms from AED 1.9 million and four-bedrooms from AED 3.8 million; prices vary with floor, layout and availability, so ask Bazar for the current list.",
+          "q_ar": "ما سعر البداية في مشروع بريز من تريس؟",
+          "a_ar": "تبدأ الأسعار في مشروع بريز من تريس من 1,231,000 درهم لشقة بغرفة نوم واحدة. وتبدأ شقق الغرفتين من نحو 1.7 مليون درهم، والثلاث غرف من 1.9 مليون درهم، والأربع غرف من 3.8 مليون درهم؛ وتختلف الأسعار بحسب الطابق والتصميم والتوافر، لذا اطلب القائمة الحالية من بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Breeze by Trace?",
+          "a": "Breeze by Trace offers one- to four-bedroom apartments across 217 homes, laid out to make the most of natural light. One-bedrooms measure about 703–868 sq ft, two-bedrooms 1,151–1,268 sq ft, three-bedrooms 1,458–1,744 sq ft and four-bedrooms about 2,507–2,508 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع بريز من تريس؟",
+          "a_ar": "يوفر مشروع بريز من تريس شققًا من غرفة إلى أربع غرف نوم ضمن 217 وحدة سكنية، بتصاميم تستفيد من الإضاءة الطبيعية. وتبلغ مساحة شقق الغرفة الواحدة نحو 703 إلى 868 قدمًا مربعًا، والغرفتين من 1,151 إلى 1,268 قدمًا مربعًا، والثلاث غرف من 1,458 إلى 1,744 قدمًا مربعًا، والأربع غرف نحو 2,507 إلى 2,508 أقدام مربعة."
+        },
+        {
+          "q": "What is the payment plan for Breeze by Trace?",
+          "a": "Breeze by Trace is sold on a 45/55 payment plan: 5% on booking in Q4 2026, then eight instalments of 5% each between Q2 2027 and Q1 2030, and 55% on handover in Q2 2030. The 2% Abu Dhabi registration fee is paid on top.",
+          "q_ar": "ما خطة السداد في مشروع بريز من تريس؟",
+          "a_ar": "يُباع مشروع بريز من تريس بخطة سداد 45/55: 5% عند الحجز في الربع الرابع من 2026، ثم ثماني دفعات بنسبة 5% لكل منها بين الربع الثاني من 2027 والربع الأول من 2030، و55% عند التسليم في الربع الثاني من 2030. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك."
+        },
+        {
+          "q": "When is the handover date for Breeze by Trace?",
+          "a": "Breeze by Trace is scheduled for handover in Q2 2030, when the final 55% of the price falls due. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع بريز من تريس؟",
+          "a_ar": "من المقرر تسليم مشروع بريز من تريس في الربع الثاني من 2030، حين تستحق آخر 55% من السعر. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at Breeze by Trace?",
+          "a": "Yes. Al Reem Island is a designated investment area, so buyers of any nationality, resident in the UAE or abroad, can own a Breeze by Trace apartment freehold. Non-residents can buy without a UAE visa, and the sale is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع بريز من تريس؟",
+          "a_ar": "نعم. جزيرة الريم منطقة استثمار محددة، لذا يحق للمشترين من أي جنسية، داخل الإمارات أو خارجها، تملّك شقة في بريز من تريس بنظام التملك الحر. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل البيع لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Breeze by Trace?",
+          "a": "Only the four-bedroom apartments at Breeze by Trace, listed from about AED 3.8 million, clear the AED 2 million Golden Visa threshold on their own; one- to three-bedroom homes start below it. Off-plan buyers must have paid AED 2 million, which on the 45/55 plan a four-bedroom buyer usually reaches only at handover.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في بريز من تريس؟",
+          "a_ar": "تتجاوز شقق الأربع غرف وحدها في بريز من تريس، التي تبدأ من نحو 3.8 مليون درهم، حد المليوني درهم المطلوب للإقامة الذهبية؛ أما الشقق من غرفة إلى ثلاث غرف فتبدأ دونه. ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، وهو ما يبلغه مشتري شقة الأربع غرف عادةً عند التسليم فقط وفق خطة 45/55."
+        },
+        {
+          "q": "Can I get a mortgage on Breeze by Trace before handover?",
+          "a": "Usually not before handover. ADREC's off-plan mortgage framework requires buyers to have paid 50% of the price, and on Breeze by Trace's plan you have paid 45% by Q1 2030. Most buyers therefore finance the 55% handover payment with a standard mortgage at completion, unless they pay ahead of the schedule.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري لوحدة في بريز من تريس قبل التسليم؟",
+          "a_ar": "غالبًا لا قبل التسليم. إذ يشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة سداد 50% من السعر، ووفق خطة بريز من تريس تكون قد سددت 45% بحلول الربع الأول من 2030. لذا يموّل معظم المشترين دفعة التسليم البالغة 55% بتمويل عقاري اعتيادي عند الإنجاز، ما لم يسددوا دفعات مسبقة."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "radiant-legacy",
+      "name": "Radiant Legacy",
+      "sources": [
+        "DB: developments row radiant-legacy (developer, units, starting price, handover, 45/55 milestones, feature blocks, existing meta.faq ×5), development_unit_types (floor bands and sizes), subpage/area/al-reem-island nearby band",
+        "insiderealty.ae / luxhabitat.ae / engelvoelkers.com — Radiant Legacy: Shams, 36 office floors, 158 suites, Q1 2030, 5/40/55",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa for property investors"
+      ],
+      "faq": [
+        {
+          "q": "What is Radiant Legacy in Abu Dhabi?",
+          "a": "Radiant Legacy is an off-plan commercial office tower by Radiant Real Estate on Al Reem Island, Abu Dhabi, with 158 office units over 36 storeys. It offers waterfront views, private underground parking, a lobby and reception, dedicated elevators, a private gym and a private terrace.",
+          "q_ar": "ما هو مشروع راديانت ليجاسي في أبوظبي؟",
+          "a_ar": "راديانت ليجاسي برج مكاتب تجارية على الخريطة من راديانت العقارية في جزيرة الريم بأبوظبي، يضم 158 وحدة مكتبية على 36 طابقًا. ويوفر إطلالات على الواجهة البحرية ومواقف خاصة تحت الأرض وردهة استقبال ومصاعد مخصصة وصالة رياضية خاصة وتراسًا خاصًا."
+        },
+        {
+          "q": "Who is the developer of Radiant Legacy?",
+          "a": "Radiant Legacy is developed by Radiant Real Estate, an Abu Dhabi developer with several residential and commercial towers on Al Reem Island, including Radiant Terrace and Breeze by Trace. Legacy is its office tower in the island's Shams district.",
+          "q_ar": "من هو مطوّر مشروع راديانت ليجاسي؟",
+          "a_ar": "يطوّر مشروع راديانت ليجاسي شركة راديانت العقارية، المطوّر في أبوظبي الذي يملك عدة أبراج سكنية وتجارية في جزيرة الريم، منها راديانت تيراس وبريز من تريس. وليجاسي هو برج المكاتب الخاص بها في منطقة شمس بالجزيرة."
+        },
+        {
+          "q": "Where is Radiant Legacy located?",
+          "a": "Radiant Legacy is on the waterfront in the Shams district of Al Reem Island, Abu Dhabi. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and the ADGM financial centre on Al Maryah Island are about 5 minutes by car, and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع راديانت ليجاسي؟",
+          "a_ar": "يقع مشروع راديانت ليجاسي على الواجهة المائية في منطقة شمس بجزيرة الريم في أبوظبي. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي ومركز سوق أبوظبي العالمي المالي في جزيرة المارية نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Radiant Legacy offices?",
+          "a": "Radiant Legacy offices start from AED 2,316,000. Prices rise with size and floor, and full floors of about 16,885–16,894 sq ft are priced separately, so ask a Bazar advisor for the current price list and which suites are still available.",
+          "q_ar": "ما سعر البداية لمكاتب راديانت ليجاسي؟",
+          "a_ar": "تبدأ أسعار المكاتب في راديانت ليجاسي من 2,316,000 درهم. وترتفع الأسعار بحسب المساحة والطابق، وتُسعَّر الطوابق الكاملة البالغة نحو 16,885 إلى 16,894 قدمًا مربعًا بشكل منفصل، لذا اطلب من مستشار بازار قائمة الأسعار الحالية والمكاتب المتاحة."
+        },
+        {
+          "q": "How many office units are available in Radiant Legacy?",
+          "a": "Radiant Legacy has 158 commercial office units across a 36-storey tower, in layouts that range from single suites for small firms to whole floors for one occupier. Ask Bazar which floors are still on sale, as the larger units release separately.",
+          "q_ar": "كم عدد المكاتب في مشروع راديانت ليجاسي؟",
+          "a_ar": "يضم مشروع راديانت ليجاسي 158 وحدة مكتبية تجارية في برج من 36 طابقًا، بتصاميم تتراوح بين مكاتب منفردة للشركات الصغيرة وطوابق كاملة لشاغل واحد. واسأل بازار عن الطوابق التي ما زالت معروضة للبيع، إذ تُطرح الوحدات الأكبر بشكل منفصل."
+        },
+        {
+          "q": "What office sizes are available in Radiant Legacy?",
+          "a": "Radiant Legacy offices start from about 1,544 sq ft. Suites on floors 7 to 16 and 18 to 25 run 1,544–2,114 sq ft, with 2,098–2,100 sq ft units on floors 7 to 11, while full floors measure about 16,885 sq ft on floor 27 and 16,894 sq ft on floors 31, 32, 34 and 35.",
+          "q_ar": "ما مساحات المكاتب المتاحة في راديانت ليجاسي؟",
+          "a_ar": "تبدأ مساحات المكاتب في راديانت ليجاسي من نحو 1,544 قدمًا مربعًا. وتتراوح المكاتب في الطوابق من 7 إلى 16 ومن 18 إلى 25 بين 1,544 و2,114 قدمًا مربعًا، مع وحدات من 2,098 إلى 2,100 قدم مربع في الطوابق من 7 إلى 11، بينما تبلغ مساحة الطابق الكامل نحو 16,885 قدمًا مربعًا في الطابق 27 و16,894 قدمًا مربعًا في الطوابق 31 و32 و34 و35."
+        },
+        {
+          "q": "What is the payment plan for Radiant Legacy?",
+          "a": "Radiant Legacy is sold on a 45/55 payment plan: 5% on booking in Q4 2026, six instalments of 5% each from Q2 2027 to Q4 2029, 10% in Q1 2030 and 55% on handover. The 2% Abu Dhabi registration fee is paid on top.",
+          "q_ar": "ما خطة السداد في مشروع راديانت ليجاسي؟",
+          "a_ar": "يُباع مشروع راديانت ليجاسي بخطة سداد 45/55: 5% عند الحجز في الربع الرابع من 2026، وست دفعات بنسبة 5% لكل منها من الربع الثاني من 2027 حتى الربع الرابع من 2029، و10% في الربع الأول من 2030، و55% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك."
+        },
+        {
+          "q": "When is the handover date for Radiant Legacy?",
+          "a": "Radiant Legacy is scheduled for handover in Q2 2030. Some listings give Q1 2030 and the payment schedule places the final instalment in Q3 2030, so confirm the anticipated completion date, and what happens if it moves, in the sale and purchase agreement.",
+          "q_ar": "متى موعد تسليم مشروع راديانت ليجاسي؟",
+          "a_ar": "من المقرر تسليم مشروع راديانت ليجاسي في الربع الثاني من 2030. وتذكر بعض القوائم الربع الأول من 2030، بينما يضع جدول السداد الدفعة الأخيرة في الربع الثالث من 2030، لذا تأكد من تاريخ الإنجاز المتوقع وما يترتب على تغيّره في عقد البيع والشراء."
+        },
+        {
+          "q": "Can foreigners or companies buy offices at Radiant Legacy?",
+          "a": "Yes. Al Reem Island is a designated investment area, so individuals of any nationality can own Radiant Legacy offices freehold, registered with the Abu Dhabi Real Estate Centre through DARI. A company buying in its own name should first confirm that its trade licence and jurisdiction allow it to hold property in Abu Dhabi.",
+          "q_ar": "هل يمكن للأجانب أو الشركات شراء مكاتب في راديانت ليجاسي؟",
+          "a_ar": "نعم. جزيرة الريم منطقة استثمار محددة، لذا يحق للأفراد من أي جنسية تملّك مكاتب راديانت ليجاسي بنظام التملك الحر، مع تسجيلها لدى مركز أبوظبي العقاري عبر منصة «داري». وعلى الشركة التي تشتري باسمها أن تتأكد أولًا من أن رخصتها التجارية والجهة التابعة لها تسمحان لها بتملّك العقارات في أبوظبي."
+        },
+        {
+          "q": "Does buying an office at Radiant Legacy qualify for a Golden Visa?",
+          "a": "Possibly: Radiant Legacy's starting price of AED 2,316,000 is above the AED 2 million property threshold, but confirm with the Abu Dhabi Residents Office that a commercial unit qualifies for your application. Off-plan, the developer must confirm AED 2 million paid, which on the 45/55 plan most buyers reach at handover.",
+          "q_ar": "هل يؤهل شراء مكتب في راديانت ليجاسي للإقامة الذهبية؟",
+          "a_ar": "ربما: يتجاوز سعر البداية في راديانت ليجاسي البالغ 2,316,000 درهم حد المليوني درهم للعقار، لكن تأكد من مكتب أبوظبي للمقيمين أن الوحدة التجارية تؤهل لطلبك. وفي العقار على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم، وهو ما يبلغه معظم المشترين عند التسليم وفق خطة 45/55."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "radiant-terrace",
+      "name": "Radiant Terrace",
+      "sources": [
+        "DB: developments row radiant-terrace (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "propertyfinder.ae — Radiant Terrace: Shams Abu Dhabi, six-level podium, prices by type (1-bed AED 1.3M, 2-bed AED 2.1M), 10/40/50, September 2029",
+        "dxboffplan.com / insiderealty.ae — 43 floors, 618 residences + 10 retail units",
+        "u.ae — Abu Dhabi investment areas; Abu Dhabi Law No. 3 of 2015 (off-plan escrow, ADREC)",
+        "adro.gov.ae — Golden Visa off-plan rule"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Radiant Terrace?",
+          "a": "Radiant Terrace is developed by Radiant Real Estate, an Abu Dhabi developer focused on Al Reem Island, where its towers include Radiant Legacy and Breeze by Trace. Radiant Terrace is its largest residential release on the island, with 618 homes.",
+          "q_ar": "من هو مطوّر مشروع راديانت تيراس؟",
+          "a_ar": "يطوّر مشروع راديانت تيراس شركة راديانت العقارية، المطوّر في أبوظبي الذي يركّز على جزيرة الريم، حيث تضم أبراجه راديانت ليجاسي وبريز من تريس. وراديانت تيراس أكبر طرح سكني للشركة في الجزيرة، بواقع 618 وحدة سكنية."
+        },
+        {
+          "q": "Where is Radiant Terrace located?",
+          "a": "Radiant Terrace is in Shams Abu Dhabi on Al Reem Island, close to Reem Mall and the island's waterfront promenades. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM on Al Maryah Island are about 5 minutes by car, and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع راديانت تيراس؟",
+          "a_ar": "يقع مشروع راديانت تيراس في شمس أبوظبي بجزيرة الريم، بالقرب من ريم مول وممشى الواجهة المائية في الجزيرة. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي في جزيرة المارية نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Radiant Terrace?",
+          "a": "Radiant Terrace starts from AED 700,000 for a studio, one of the lowest entry prices for a new tower on Al Reem Island. The developer's list shows one-bedrooms from about AED 1.3 million and two-bedrooms from about AED 2.1 million; the 2% registration fee on a AED 700,000 studio is AED 14,000.",
+          "q_ar": "ما سعر البداية في مشروع راديانت تيراس؟",
+          "a_ar": "تبدأ الأسعار في مشروع راديانت تيراس من 700,000 درهم للاستوديو، وهو من أدنى أسعار الدخول إلى برج جديد في جزيرة الريم. وتُظهر قائمة المطوّر شقق الغرفة الواحدة من نحو 1.3 مليون درهم والغرفتين من نحو 2.1 مليون درهم؛ وتبلغ رسوم التسجيل البالغة 2% على استوديو بسعر 700,000 درهم نحو 14,000 درهم."
+        },
+        {
+          "q": "What unit types and sizes are available at Radiant Terrace?",
+          "a": "Radiant Terrace has 618 homes, mostly studios and one-bedrooms, plus two- and three-bedroom apartments and a few four-bedroom duplexes on the upper floors. Studios measure about 352–585 sq ft, one-bedrooms 877–1,208 sq ft, two-bedrooms 1,364–1,983 sq ft and three-bedrooms 2,574–3,861 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع راديانت تيراس؟",
+          "a_ar": "يضم مشروع راديانت تيراس 618 وحدة سكنية، معظمها استوديوهات وشقق بغرفة واحدة، إلى جانب شقق بغرفتين وثلاث غرف وعدد قليل من شقق الدوبلكس بأربع غرف في الطوابق العليا. وتبلغ مساحة الاستوديو نحو 352 إلى 585 قدمًا مربعًا، والغرفة الواحدة من 877 إلى 1,208 أقدام مربعة، والغرفتين من 1,364 إلى 1,983 قدمًا مربعًا، والثلاث غرف من 2,574 إلى 3,861 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Radiant Terrace?",
+          "a": "Radiant Terrace is sold on a 40/60 payment plan: 10% on booking, 30% during construction and 60% on handover. The 2% Abu Dhabi registration fee is paid on top. Some portals show a 10/40/50 split, so confirm the plan for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع راديانت تيراس؟",
+          "a_ar": "يُباع مشروع راديانت تيراس بخطة سداد 40/60: 10% عند الحجز، و30% خلال فترة الإنشاء، و60% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. وتعرض بعض المنصات تقسيمًا بنسبة 10/40/50، لذا تأكد من خطة وحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Radiant Terrace?",
+          "a": "Radiant Terrace is scheduled for handover in Q4 2029; some portals list September 2029. Off-plan completion dates are set by the developer and can move, and the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع راديانت تيراس؟",
+          "a_ar": "من المقرر تسليم مشروع راديانت تيراس في الربع الرابع من 2029، وتذكر بعض المنصات سبتمبر 2029. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at Radiant Terrace?",
+          "a": "Yes. Al Reem Island is one of Abu Dhabi's designated investment areas, so buyers of any nationality can own a Radiant Terrace studio or apartment freehold, whether they live in the UAE or abroad. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع راديانت تيراس؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك استوديو أو شقة في راديانت تيراس بنظام التملك الحر، سواء أقاموا في الإمارات أو خارجها. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Radiant Terrace?",
+          "a": "Only with a larger home. Radiant Terrace's studios and one-bedrooms are priced below the AED 2 million Golden Visa threshold, while two-bedrooms from about AED 2.1 million and the three-bedrooms reach it. Off-plan buyers must have paid AED 2 million, so on the 40/60 plan most qualify at handover.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في راديانت تيراس؟",
+          "a_ar": "فقط بوحدة أكبر. فأسعار الاستوديوهات وشقق الغرفة الواحدة في راديانت تيراس دون حد المليوني درهم المطلوب للإقامة الذهبية، بينما تبلغه شقق الغرفتين التي تبدأ من نحو 2.1 مليون درهم وشقق الثلاث غرف. ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، لذا يتأهل معظم المشترين عند التسليم وفق خطة 40/60."
+        },
+        {
+          "q": "What amenities does Radiant Terrace have?",
+          "a": "Radiant Terrace is a 43-storey tower over a six-level podium with 10 retail units at its base. Residents get a swimming pool, a gym, a multi-purpose sports court, an outdoor cinema and a kids' play area, with Reem Mall and Reem Central Park a short drive away.",
+          "q_ar": "ما المرافق المتوفرة في مشروع راديانت تيراس؟",
+          "a_ar": "راديانت تيراس برج من 43 طابقًا يعلو منصة من ستة مستويات تضم 10 وحدات تجارية في قاعدتها. ويحصل السكان على مسبح وصالة رياضية وملعب متعدد الاستخدامات وسينما خارجية ومنطقة لعب للأطفال، مع قرب ريم مول وحديقة الريم المركزية."
+        },
+        {
+          "q": "Are off-plan payments for Radiant Terrace protected?",
+          "a": "Yes. Under Abu Dhabi Law No. 3 of 2015 regulating the real estate sector, payments for an off-plan project such as Radiant Terrace go into the project's escrow account, regulated by ADREC, and are released to the developer against construction progress. Pay only into the escrow account named in your sale and purchase agreement.",
+          "q_ar": "هل دفعات الشراء على الخريطة في راديانت تيراس محمية؟",
+          "a_ar": "نعم. بموجب قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري، تُودع دفعات المشاريع على الخريطة مثل راديانت تيراس في حساب الضمان الخاص بالمشروع، الذي ينظمه مركز أبوظبي العقاري، وتُصرف للمطوّر بحسب تقدم البناء. ولا تدفع إلا في حساب الضمان المذكور في عقد البيع والشراء."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "radisson-residences",
+      "name": "Radisson Residences",
+      "sources": [
+        "DB: developments row radisson-residences (developer, units, starting price, handover, payment plan), development_unit_types (sizes), subpage/area/al-reem-island nearby band and stats",
+        "zawya.com / wam.ae / arabianbusiness.com (2025–2026) — Royal Development Holding + Radisson Hotel Group: first standalone Radisson Residences, Emirates Stallions Group / IHC, three towers, 24 residential floors, mangroves, end-2027 completion, phase 1 sold out in 24 hours, phase 2 437 furnished units, AED 1.45bn",
+        "propertyfinder.ae — Radisson Residences: from AED 800,000, 5/35/60, December 2027",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa for property investors"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Radisson Residences on Al Reem Island?",
+          "a": "Radisson Residences is developed by Royal Development Holding, listed with us as Royal Development Company, a subsidiary of Emirates Stallions Group within International Holding Company. It is built in partnership with Radisson Hotel Group and is the world's first standalone Radisson Residences.",
+          "q_ar": "من هو مطوّر مشروع راديسون ريزيدنسز في جزيرة الريم؟",
+          "a_ar": "يطوّر مشروع راديسون ريزيدنسز شركة رويال للتطوير القابضة، المدرجة لدينا باسم رويال ديفيلوبمنت كومباني، وهي تابعة لمجموعة إمارات ستاليونز ضمن الشركة العالمية القابضة. ويُنفَّذ المشروع بالشراكة مع مجموعة راديسون للفنادق، وهو أول مشروع مستقل لراديسون ريزيدنسز في العالم."
+        },
+        {
+          "q": "Where is Radisson Residences located?",
+          "a": "Radisson Residences sits on the waterfront edge of Al Reem Island, Abu Dhabi, overlooking the mangroves, with Reem Central Park nearby. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM are about 5 minutes by car and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع راديسون ريزيدنسز؟",
+          "a_ar": "يقع مشروع راديسون ريزيدنسز على الحافة المائية لجزيرة الريم في أبوظبي، مطلًا على أشجار القرم، وبالقرب من حديقة الريم المركزية. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Radisson Residences?",
+          "a": "Radisson Residences starts from AED 950,000 for a studio. Some portals still show the launch price of AED 800,000, which applied to earlier releases; prices rise with size and view, so ask a Bazar advisor for what is available now.",
+          "q_ar": "ما سعر البداية في مشروع راديسون ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في مشروع راديسون ريزيدنسز من 950,000 درهم للاستوديو. وما زالت بعض المنصات تعرض سعر الإطلاق البالغ 800,000 درهم، الذي كان ينطبق على مراحل طرح سابقة؛ وترتفع الأسعار بحسب المساحة والإطلالة، لذا اسأل مستشار بازار عن المتاح حاليًا."
+        },
+        {
+          "q": "What unit types and sizes are available at Radisson Residences?",
+          "a": "Radisson Residences has 488 homes from studios to two-bedroom apartments, in towers over a shared podium with 24 residential floors each. Studios measure about 444–518 sq ft, one-bedrooms 803–1,084 sq ft and two-bedrooms 1,346–1,690 sq ft; the developer has also released a small number of two-bedroom townhouses.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع راديسون ريزيدنسز؟",
+          "a_ar": "يضم مشروع راديسون ريزيدنسز 488 وحدة سكنية من الاستوديو حتى الشقق بغرفتي نوم، في أبراج تعلو منصة مشتركة، لكل منها 24 طابقًا سكنيًا. وتبلغ مساحة الاستوديو نحو 444 إلى 518 قدمًا مربعًا، والغرفة الواحدة من 803 إلى 1,084 قدمًا مربعًا، والغرفتين من 1,346 إلى 1,690 قدمًا مربعًا؛ كما طرح المطوّر عددًا محدودًا من منازل التاون هاوس بغرفتين."
+        },
+        {
+          "q": "What is the payment plan for Radisson Residences?",
+          "a": "Radisson Residences is sold on a 40/60 payment plan: 5% on booking, 35% during construction and 60% on handover. The 2% Abu Dhabi registration fee is paid on top, about AED 19,000 on the AED 950,000 starting price. Confirm the plan for your tower in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع راديسون ريزيدنسز؟",
+          "a_ar": "يُباع مشروع راديسون ريزيدنسز بخطة سداد 40/60: 5% عند الحجز، و35% خلال فترة الإنشاء، و60% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، أي نحو 19,000 درهم على سعر البداية البالغ 950,000 درهم. ويُنصح بتأكيد خطة البرج الذي تشتري فيه في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Radisson Residences?",
+          "a": "Radisson Residences is scheduled for handover in Q4 2027, in line with Royal Development Holding's stated target of completion by the end of 2027. That makes it one of the nearest off-plan handovers on Al Reem Island; the sale and purchase agreement states the anticipated completion date.",
+          "q_ar": "متى موعد تسليم مشروع راديسون ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع راديسون ريزيدنسز في الربع الرابع من 2027، بما يتوافق مع هدف رويال للتطوير القابضة المعلن لإنجازه بنهاية 2027. وهذا يجعله من أقرب مواعيد التسليم للمشاريع على الخريطة في جزيرة الريم، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع."
+        },
+        {
+          "q": "What does the Radisson brand provide at Radisson Residences?",
+          "a": "Radisson Hotel Group brands the residences and brings its hospitality standards, including concierge services and Radisson Rewards privileges for residents. The towers share a pool deck over the water, fitness centres, yoga studios, lounges and landscaped courtyards, and the developer says its phase two homes are handed over furnished and rental-ready.",
+          "q_ar": "ماذا تقدم علامة راديسون في مشروع راديسون ريزيدنسز؟",
+          "a_ar": "تمنح مجموعة راديسون للفنادق علامتها للمشروع وتنقل إليه معاييرها الفندقية، ومنها خدمات الكونسيرج وامتيازات برنامج مكافآت راديسون للسكان. وتتشارك الأبراج سطح مسبح مطلًا على الماء ومراكز لياقة واستوديوهات لليوغا وصالات استرخاء وساحات منسّقة، ويقول المطوّر إن وحدات المرحلة الثانية تُسلَّم مفروشة وجاهزة للتأجير."
+        },
+        {
+          "q": "Can foreigners buy at Radisson Residences?",
+          "a": "Yes. Al Reem Island is a designated investment area, so buyers of any nationality can own a Radisson Residences apartment freehold, with or without UAE residency. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI, and owners can lease the unit out once it is handed over.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع راديسون ريزيدنسز؟",
+          "a_ar": "نعم. جزيرة الريم منطقة استثمار محددة، لذا يحق للمشترين من أي جنسية تملّك شقة في راديسون ريزيدنسز بنظام التملك الحر، سواء كانت لديهم إقامة إماراتية أم لا. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»، ويمكن للمالك تأجير الوحدة بعد تسلّمها."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Radisson Residences?",
+          "a": "Not with an entry-level unit: Radisson Residences starts at AED 950,000, under half the AED 2 million Golden Visa threshold, and its homes run from studios to two-bedrooms. Check the price of a specific two-bedroom against the threshold; off-plan buyers must have paid AED 2 million, and a mortgaged home needs AED 2 million of equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في راديسون ريزيدنسز؟",
+          "a_ar": "ليس بوحدة من الفئة الأولى: تبدأ الأسعار في راديسون ريزيدنسز من 950,000 درهم، أي أقل من نصف حد المليوني درهم المطلوب للإقامة الذهبية، وتتراوح الوحدات بين الاستوديو والشقة بغرفتين. لذا قارن سعر شقة محددة بغرفتين بهذا الحد؛ ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، وفي العقار المرهون حصة لا تقل عن مليوني درهم."
+        },
+        {
+          "q": "Is Radisson Residences a good investment?",
+          "a": "Radisson Residences has drawn strong demand: phase one sold out within 24 hours of its public launch, and phase two added a third tower of 437 furnished homes, taking the project to AED 1.45 billion. Al Reem Island's sale index rose 23.61% in the year to June 2026, but returns are not guaranteed.",
+          "q_ar": "هل مشروع راديسون ريزيدنسز استثمار جيد؟",
+          "a_ar": "شهد مشروع راديسون ريزيدنسز طلبًا قويًا: فقد بيعت المرحلة الأولى بالكامل خلال 24 ساعة من طرحها للجمهور، وأضافت المرحلة الثانية برجًا ثالثًا من 437 وحدة مفروشة لترتفع قيمة المشروع إلى 1.45 مليار درهم. وارتفع مؤشر أسعار البيع في جزيرة الريم 23.61% خلال العام حتى يونيو 2026، لكن لا توجد عوائد مضمونة."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "rixos-residences",
+      "name": "Rixos Residences",
+      "sources": [
+        "DB: developments row rixos-residences (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "gulfnews.com (Sept 2026) — East & West breaks ground on Rixos Al Reem Residences: 386 units, Aedas, HBA Residential, Accor One Living, concierge, valet",
+        "propertyfinder.ae — Rixos Al Reem Residences: City of Lights, from AED 2.1M (1-bed) / 3.1M (2-bed), 10/30/60, Q1 2029",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa off-plan rule"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Rixos Residences on Al Reem Island?",
+          "a": "Rixos Residences is developed by East & West Property Development, the Abu Dhabi arm of East & West Properties, in partnership with the Accor-owned Rixos brand. It is the developer's first branded project and Abu Dhabi's first Rixos-branded residential tower; ground was broken in 2026.",
+          "q_ar": "من هو مطوّر مشروع ريكسوس ريزيدنسز في جزيرة الريم؟",
+          "a_ar": "يطوّر مشروع ريكسوس ريزيدنسز شركة إيست آند ويست للتطوير العقاري، الذراع التطويرية في أبوظبي لشركة إيست آند ويست العقارية، بالشراكة مع علامة ريكسوس التابعة لمجموعة أكور. وهو أول مشروع يحمل علامة تجارية للمطوّر، وأول برج سكني بعلامة ريكسوس في أبوظبي، وبدأت أعمال البناء فيه عام 2026."
+        },
+        {
+          "q": "Where is Rixos Residences located?",
+          "a": "Rixos Residences is on a waterfront plot in the City of Lights district of Al Reem Island, Abu Dhabi. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM on Al Maryah Island are about 5 minutes by car, and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "يقع مشروع ريكسوس ريزيدنسز على قطعة أرض على الواجهة المائية في منطقة سيتي أوف لايتس بجزيرة الريم في أبوظبي. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي في جزيرة المارية نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Rixos Residences?",
+          "a": "Rixos Residences starts from AED 2,115,000 for a one-bedroom apartment, with two-bedrooms listed from about AED 3.1 million. The 2% Abu Dhabi registration fee adds AED 42,300 at the starting price; ask a Bazar advisor for the current price list and views.",
+          "q_ar": "ما سعر البداية في مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في مشروع ريكسوس ريزيدنسز من 2,115,000 درهم لشقة بغرفة نوم واحدة، وتبدأ شقق الغرفتين من نحو 3.1 مليون درهم. وتضيف رسوم التسجيل في أبوظبي البالغة 2% مبلغ 42,300 درهم عند سعر البداية؛ واطلب من مستشار بازار قائمة الأسعار والإطلالات الحالية."
+        },
+        {
+          "q": "What unit types and sizes are available at Rixos Residences?",
+          "a": "Rixos Residences has 386 branded homes. One-bedrooms measure about 1,049–1,203 sq ft, two-bedrooms 1,582–1,700 sq ft and three-bedrooms about 2,850 sq ft; the developer also markets four-bedroom apartments and signature loft units, so ask for those floor plans separately.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "يضم مشروع ريكسوس ريزيدنسز 386 وحدة سكنية تحمل العلامة. وتبلغ مساحة شقق الغرفة الواحدة نحو 1,049 إلى 1,203 أقدام مربعة، والغرفتين من 1,582 إلى 1,700 قدم مربع، والثلاث غرف نحو 2,850 قدمًا مربعًا؛ كما يسوّق المطوّر شققًا بأربع غرف ووحدات لوفت مميزة، لذا اطلب مخططاتها بشكل منفصل."
+        },
+        {
+          "q": "What is the payment plan for Rixos Residences?",
+          "a": "Rixos Residences is sold on a 40/60 payment plan: 5% on booking, 35% during construction and 60% on handover. The 2% Abu Dhabi registration fee is paid on top. Some portals show a 10/30/60 split, so confirm the plan for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "يُباع مشروع ريكسوس ريزيدنسز بخطة سداد 40/60: 5% عند الحجز، و35% خلال فترة الإنشاء، و60% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. وتعرض بعض المنصات تقسيمًا بنسبة 10/30/60، لذا تأكد من خطة وحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Rixos Residences?",
+          "a": "Rixos Residences is scheduled for handover in Q1 2029, and construction is under way after the 2026 groundbreaking. Off-plan completion dates can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع ريكسوس ريزيدنسز في الربع الأول من 2029، وأعمال البناء جارية بعد وضع حجر الأساس عام 2026. وقد تتغير مواعيد إنجاز المشاريع على الخريطة، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "What Rixos services and amenities are at Rixos Residences?",
+          "a": "Rixos Residences follows the Rixos hotel approach: concierge, valet, 24-hour security and curated dining, with owner privileges through Accor's One Living programme. Architecture is by Aedas and interiors by HBA Residential, and residents get a hotel-style lobby, a private cinema, a wellness room, a gym and a kids' room.",
+          "q_ar": "ما خدمات ريكسوس ومرافقها في مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "يتبع مشروع ريكسوس ريزيدنسز نهج فنادق ريكسوس: خدمة الكونسيرج وصف السيارات وأمن على مدار 24 ساعة ومطاعم منتقاة، مع امتيازات للمالكين عبر برنامج ون ليفينغ من أكور. ويحمل المشروع تصميمًا معماريًا من إيداس وتصميمًا داخليًا من إتش بي إيه ريزيدنشال، ويحصل السكان على ردهة بطابع فندقي وسينما خاصة وغرفة للعافية وصالة رياضية وغرفة للأطفال."
+        },
+        {
+          "q": "Can foreigners buy at Rixos Residences?",
+          "a": "Yes. Al Reem Island is a designated investment area, so buyers of any nationality, resident in the UAE or overseas, can own a Rixos Residences apartment freehold. The sale is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع ريكسوس ريزيدنسز؟",
+          "a_ar": "نعم. جزيرة الريم منطقة استثمار محددة، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو خارجها، تملّك شقة في ريكسوس ريزيدنسز بنظام التملك الحر. ويُسجَّل البيع لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Rixos Residences?",
+          "a": "Yes, as every home at Rixos Residences is priced from AED 2,115,000, above the AED 2 million threshold. Off-plan, the developer must confirm AED 2 million paid, so on the 40/60 plan most buyers qualify at handover in Q1 2029 unless they pay ahead of schedule.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ريكسوس ريزيدنسز؟",
+          "a_ar": "نعم، فأسعار جميع الوحدات في ريكسوس ريزيدنسز تبدأ من 2,115,000 درهم، أي فوق حد المليوني درهم. لكن في العقار على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم، لذا يتأهل معظم المشترين بخطة 40/60 عند التسليم في الربع الأول من 2029، ما لم يسددوا دفعات مسبقة."
+        },
+        {
+          "q": "Can I resell a Rixos Residences apartment before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price set in your sale and purchase agreement. East & West then issues a no-objection certificate, the assignment is registered through DARI, and the new buyer takes over the remaining instalments, including the 60% due on handover.",
+          "q_ar": "هل يمكنني إعادة بيع شقة في ريكسوس ريزيدنسز قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر إيست آند ويست عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الدفعات المتبقية، ومنها دفعة 60% المستحقة عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "the-artery-residences",
+      "name": "The Artery Residences",
+      "sources": [
+        "DB: developments row the-artery-residences (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "propertyfinder.ae — The Artery Residences by IMKAN: Makers District, duplexes, 10/30/60, December 2029, indoor pool, cold plunge, podcast studio",
+        "gulfconstructiononline.com / thenationalnews.com — IMKAN's Makers District and the 1 km Corniche Al Reem",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa for property investors"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of The Artery Residences?",
+          "a": "The Artery Residences is developed by IMKAN Properties, the Abu Dhabi developer that master-planned the Makers District on Al Reem Island. The Artery is one of its residential towers in the district, alongside IMKAN's Pixel and Makers District retail and office buildings.",
+          "q_ar": "من هو مطوّر مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "يطوّر مشروع ذا آرتري ريزيدنسز شركة إمكان العقارية، المطوّر في أبوظبي الذي وضع المخطط الرئيسي لمنطقة ميكرز ديستريكت في جزيرة الريم. وذا آرتري أحد أبراجها السكنية في المنطقة، إلى جانب مشروع بيكسل ومباني التجزئة والمكاتب في ميكرز ديستريكت."
+        },
+        {
+          "q": "Where is The Artery Residences located?",
+          "a": "The Artery Residences is on the waterfront of the Makers District on Al Reem Island, beside the 1 km Corniche Al Reem promenade. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM are about 5 minutes by car and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "يقع مشروع ذا آرتري ريزيدنسز على الواجهة المائية لمنطقة ميكرز ديستريكت في جزيرة الريم، بجوار ممشى كورنيش الريم الممتد 1 كيلومتر. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of The Artery Residences?",
+          "a": "The Artery Residences starts from AED 940,000 for a studio apartment. The 2% Abu Dhabi registration fee adds about AED 18,800 at that price; larger apartments and duplexes are priced on request, so ask a Bazar advisor for the current list.",
+          "q_ar": "ما سعر البداية في مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في مشروع ذا آرتري ريزيدنسز من 940,000 درهم لشقة استوديو. وتضيف رسوم التسجيل في أبوظبي البالغة 2% نحو 18,800 درهم عند هذا السعر؛ وتُسعَّر الشقق الأكبر ووحدات الدوبلكس عند الطلب، لذا اطلب القائمة الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at The Artery Residences?",
+          "a": "The Artery Residences has 220 homes from studios to four-bedroom apartments, including duplexes. Studios measure about 483 sq ft, one-bedrooms 926–1,087 sq ft, two-bedrooms 1,389–2,153 sq ft, three-bedrooms about 2,389 sq ft and four-bedroom duplexes about 3,702 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "يضم مشروع ذا آرتري ريزيدنسز 220 وحدة سكنية من الاستوديو حتى الشقق بأربع غرف نوم، ومنها وحدات دوبلكس. وتبلغ مساحة الاستوديو نحو 483 قدمًا مربعًا، والغرفة الواحدة من 926 إلى 1,087 قدمًا مربعًا، والغرفتين من 1,389 إلى 2,153 قدمًا مربعًا، والثلاث غرف نحو 2,389 قدمًا مربعًا، والدوبلكس بأربع غرف نحو 3,702 قدم مربع."
+        },
+        {
+          "q": "What is the payment plan for The Artery Residences?",
+          "a": "The Artery Residences is sold on a 40/60 payment plan: 10% on booking, 30% during construction and 60% on handover in Q4 2029. The 2% Abu Dhabi registration fee is paid on top. Confirm the schedule of construction instalments in your sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "يُباع مشروع ذا آرتري ريزيدنسز بخطة سداد 40/60: 10% عند الحجز، و30% خلال فترة الإنشاء، و60% عند التسليم في الربع الرابع من 2029. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد جدول دفعات الإنشاء في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for The Artery Residences?",
+          "a": "The Artery Residences is scheduled for handover in Q4 2029, with December 2029 given as the expected completion. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع ذا آرتري ريزيدنسز في الربع الرابع من 2029، مع تحديد ديسمبر 2029 موعدًا متوقعًا للإنجاز. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء التاريخ المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "What amenities does The Artery Residences have?",
+          "a": "The Artery Residences is designed for people who work from home as well as live there, with a co-working space, a social space and a cinema. Residents also get a spa, a gym, an indoor pool and a styled lobby, and the Makers District around the tower adds waterfront cafes and shops.",
+          "q_ar": "ما المرافق المتوفرة في مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "صُمّم مشروع ذا آرتري ريزيدنسز لمن يعمل من المنزل ويسكن فيه، فيضم مساحة عمل مشتركة ومساحة اجتماعية وسينما. كما يحصل السكان على سبا وصالة رياضية ومسبح داخلي وردهة أنيقة، وتضيف منطقة ميكرز ديستريكت حول البرج مقاهي ومتاجر على الواجهة المائية."
+        },
+        {
+          "q": "What is the Makers District on Al Reem Island?",
+          "a": "The Makers District is IMKAN's mixed-use neighbourhood on the Al Reem Island waterfront, planned around creative work, design-led towers and street-level retail. Its 1 km Corniche Al Reem promenade runs along the water, so residents of The Artery Residences can walk to cafes, shops and the canal edge.",
+          "q_ar": "ما هي منطقة ميكرز ديستريكت في جزيرة الريم؟",
+          "a_ar": "ميكرز ديستريكت حي متعدد الاستخدامات طوّرته إمكان على الواجهة المائية لجزيرة الريم، وخُطِّط حول العمل الإبداعي والأبراج ذات التصميم المميز ومحال التجزئة على مستوى الشارع. ويمتد ممشى كورنيش الريم بطول 1 كيلومتر على الماء، فيمكن لسكان ذا آرتري ريزيدنسز الوصول سيرًا إلى المقاهي والمتاجر وحافة القناة."
+        },
+        {
+          "q": "Can foreigners buy at The Artery Residences?",
+          "a": "Yes. Al Reem Island is one of Abu Dhabi's designated investment areas, so buyers of any nationality can own a studio, apartment or duplex at The Artery Residences freehold, with or without UAE residency. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع ذا آرتري ريزيدنسز؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك استوديو أو شقة أو دوبلكس في ذا آرتري ريزيدنسز بنظام التملك الحر، سواء كانت لديهم إقامة إماراتية أم لا. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at The Artery Residences?",
+          "a": "Not with a studio or one-bedroom: The Artery Residences starts at AED 940,000, below the AED 2 million Golden Visa threshold. The larger three-bedroom apartments and four-bedroom duplexes may reach it; off-plan buyers must have paid AED 2 million, which on the 40/60 plan usually means at handover.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ذا آرتري ريزيدنسز؟",
+          "a_ar": "ليس باستوديو أو شقة بغرفة واحدة: تبدأ الأسعار في ذا آرتري ريزيدنسز من 940,000 درهم، أي دون حد المليوني درهم المطلوب للإقامة الذهبية. وقد تبلغه الشقق الأكبر بثلاث غرف ووحدات الدوبلكس بأربع غرف؛ ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، وهو ما يتحقق عادةً عند التسليم وفق خطة 40/60."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "waterfront-by-missoni",
+      "name": "Waterfront by Missoni",
+      "sources": [
+        "DB: developments row waterfront-by-missoni (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "tradearabia.com / gdnonline.com (22 Oct 2026) — Emirates Developments + Missoni: 250 freehold homes, Shams Abu Dhabi, 38th-floor penthouses, zigzag motif, Missoni-spec kitchens and wardrobes, amenity deck, Q2 2030",
+        "dxboffplan.com / luxhabitat.ae — Waterfront by Missoni: unit mix, 5/35/60, from AED 1.9M",
+        "u.ae — Abu Dhabi investment areas (Al Reem Island)",
+        "adro.gov.ae — Golden Visa off-plan rule"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Waterfront by Missoni?",
+          "a": "Waterfront by Missoni is developed by Emirates Developments, with creative direction from the Italian fashion house Missoni. Announced in October 2026, it is Missoni's first branded residential address in Abu Dhabi.",
+          "q_ar": "من هو مطوّر مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "يطوّر مشروع ووترفرونت من ميسوني شركة الإمارات للتطوير العقاري، بإدارة إبداعية من دار الأزياء الإيطالية ميسوني. وأُعلن عنه في أكتوبر 2026، وهو أول عنوان سكني يحمل علامة ميسوني في أبوظبي."
+        },
+        {
+          "q": "Where is Waterfront by Missoni located?",
+          "a": "Waterfront by Missoni is in the Shams Abu Dhabi community on Al Reem Island, between a canal and the sea, with direct beach access and Reem Mall and Repton School nearby. From central Al Reem Island around Tara Park, Downtown Abu Dhabi and ADGM are about 5 minutes by car and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "يقع مشروع ووترفرونت من ميسوني في مجتمع شمس أبوظبي بجزيرة الريم، بين قناة والبحر، مع وصول مباشر إلى الشاطئ وبالقرب من ريم مول ومدرسة ريبتون. ومن وسط جزيرة الريم حول تارا بارك، يبعد وسط مدينة أبوظبي وسوق أبوظبي العالمي نحو 5 دقائق بالسيارة، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Waterfront by Missoni?",
+          "a": "Waterfront by Missoni starts from AED 1,900,000 for a one-bedroom apartment. The 2% Abu Dhabi registration fee adds about AED 38,000 at that price; larger apartments and the penthouses are priced well above, so ask a Bazar advisor for the price list.",
+          "q_ar": "ما سعر البداية في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "تبدأ الأسعار في مشروع ووترفرونت من ميسوني من 1,900,000 درهم لشقة بغرفة نوم واحدة. وتضيف رسوم التسجيل في أبوظبي البالغة 2% نحو 38,000 درهم عند هذا السعر؛ وتُسعَّر الشقق الأكبر والبنتهاوس بأسعار أعلى بكثير، لذا اطلب قائمة الأسعار من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Waterfront by Missoni?",
+          "a": "Waterfront by Missoni has 250 homes: one- to four-bedroom apartments and five-bedroom penthouses on the 38th floor. One-bedrooms measure about 668–1,119 sq ft, two-bedrooms 1,128–1,895 sq ft, three-bedrooms 2,516–2,571 sq ft, four-bedrooms 2,949–3,442 sq ft and the penthouses about 4,442 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "يضم مشروع ووترفرونت من ميسوني 250 وحدة سكنية: شققًا من غرفة إلى أربع غرف نوم، وبنتهاوس بخمس غرف في الطابق 38. وتبلغ مساحة الغرفة الواحدة نحو 668 إلى 1,119 قدمًا مربعًا، والغرفتين من 1,128 إلى 1,895 قدمًا مربعًا، والثلاث غرف من 2,516 إلى 2,571 قدمًا مربعًا، والأربع غرف من 2,949 إلى 3,442 قدمًا مربعًا، والبنتهاوس نحو 4,442 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Waterfront by Missoni?",
+          "a": "Waterfront by Missoni is sold on a 40/60 payment plan: 5% on booking, 35% during construction and 60% on handover. The 2% Abu Dhabi registration fee is paid on top. Confirm the instalment dates for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "يُباع مشروع ووترفرونت من ميسوني بخطة سداد 40/60: 5% عند الحجز، و35% خلال فترة الإنشاء، و60% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد مواعيد الدفعات الخاصة بوحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Waterfront by Missoni?",
+          "a": "Waterfront by Missoni is scheduled for handover in Q2 2030, the date Emirates Developments gave at launch. Off-plan completion dates can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "من المقرر تسليم مشروع ووترفرونت من ميسوني في الربع الثاني من 2030، وهو الموعد الذي أعلنته الإمارات للتطوير العقاري عند الإطلاق. وقد تتغير مواعيد إنجاز المشاريع على الخريطة، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "What does Missoni design at Waterfront by Missoni?",
+          "a": "Missoni directs the design of the common areas and the interiors of all 250 homes. Its zigzag motif runs through the podium paving, the cladding and the tower's mid-section, and each home has kitchen appliances and built-in wardrobes to Missoni's specification.",
+          "q_ar": "ماذا تصمم ميسوني في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "تتولى ميسوني توجيه تصميم المساحات المشتركة والتصميم الداخلي لجميع الوحدات البالغ عددها 250. ويمتد نقشها المتعرّج المعروف عبر أرضيات المنصة والواجهات والجزء الأوسط من البرج، وتضم كل وحدة أجهزة مطبخ وخزائن مدمجة وفق مواصفات ميسوني."
+        },
+        {
+          "q": "What amenities does Waterfront by Missoni have?",
+          "a": "Waterfront by Missoni has a first-floor amenity deck with a swimming pool, a padel court, a gym, a spa, a residents' clubhouse, a children's room and a barbecue area. The ground floor adds a cinema, a virtual-reality room and a business lounge, all styled by Missoni.",
+          "q_ar": "ما المرافق المتوفرة في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "يضم مشروع ووترفرونت من ميسوني منصة مرافق في الطابق الأول بها مسبح وملعب بادل وصالة رياضية وسبا ونادٍ للسكان وغرفة للأطفال ومنطقة شواء. ويضيف الطابق الأرضي سينما وغرفة للواقع الافتراضي وصالة أعمال، وجميعها بتصميم ميسوني."
+        },
+        {
+          "q": "Can foreigners buy at Waterfront by Missoni?",
+          "a": "Yes. Waterfront by Missoni is in Shams Abu Dhabi on Al Reem Island, a designated investment area, and its 250 homes are sold freehold to buyers of any nationality, resident in the UAE or abroad. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع ووترفرونت من ميسوني؟",
+          "a_ar": "نعم. يقع مشروع ووترفرونت من ميسوني في شمس أبوظبي بجزيرة الريم، وهي منطقة استثمار محددة، وتُباع وحداته البالغة 250 بنظام التملك الحر للمشترين من أي جنسية، مقيمين في الإمارات أو خارجها. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Waterfront by Missoni?",
+          "a": "Not with the entry unit: Waterfront by Missoni starts at AED 1,900,000, just below the AED 2 million threshold, so a larger one-bedroom or a two-bedroom and above is needed. Off-plan buyers must have paid AED 2 million, so on the 40/60 plan most qualify at handover in Q2 2030.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ووترفرونت من ميسوني؟",
+          "a_ar": "ليس بوحدة سعر البداية: تبدأ الأسعار في ووترفرونت من ميسوني من 1,900,000 درهم، أي دون حد المليوني درهم بقليل، لذا تلزم شقة أكبر بغرفة واحدة أو شقة بغرفتين فأكثر. ويشترط في العقار على الخريطة سداد مليوني درهم فعليًا، لذا يتأهل معظم المشترين بخطة 40/60 عند التسليم في الربع الثاني من 2030."
+        }
+      ]
+    }
+  ]
+}

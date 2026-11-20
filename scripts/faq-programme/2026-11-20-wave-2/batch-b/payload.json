@@ -1,0 +1,649 @@
+{
+ "wave": "2",
+ "batch": "batch-b",
+ "written": "2026-11-20",
+ "sourcedNumbers": [
+  "2019",
+  "2015",
+  "3",
+  "1650000",
+  "36",
+  "2030",
+  "2026",
+  "2029",
+  "2025",
+  "2024",
+  "40",
+  "38",
+  "4.7",
+  "60",
+  "18",
+  "20",
+  "30",
+  "1.5",
+  "84",
+  "6",
+  "700",
+  "10000",
+  "140700",
+  "800",
+  "80",
+  "54",
+  "46",
+  "16",
+  "45",
+  "395000",
+  "3950000",
+  "13",
+  "840000",
+  "153",
+  "1256000",
+  "7710000",
+  "5",
+  "9"
+ ],
+ "sourcedNotes": {
+  "2019": "u.ae — 2019 amendment opening investment areas to foreigners",
+  "2015/3": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (escrow)",
+  "1650000": "arithmetic: 50% of DB price 3,300,000 (JW Marriott)",
+  "36": "JW Marriott DB payment plan, ninth instalment at month 36",
+  "2030/2026/2029/2025/2024": "dates from DB handover and launch coverage (tradearabia, gulfnews, zawya)",
+  "40/38": "Sobha City AED 40bn and 38m sq ft (gulfnews.com, thenationalnews.com, Apr 2026)",
+  "4.7": "Sobha City villas from about AED 4.7m at launch (khaleejtimes.com)",
+  "60/18": "Sobha City 60% green, 18 km loop (gulfnews.com)",
+  "20/30": "Al Bahia area page nearby band (Yas Island and airport 20–30 min) and Masdar City band (downtown 20 min)",
+  "1.5/84/6/700/10000": "The Canopies: AED 1.5bn launch sales, 84% new Aldar buyers, Yas Point AED 6bn, 700 m promenade, 10,000 sq m landscaping (zawya.com, albawaba.com)",
+  "140700": "The Wadi plot, sq m (gulfnews.com, wam.ae)",
+  "800/80/54/46/16": "Yas Park Place launch sales (zawya.com, wam.ae, Apr 2026)",
+  "45/395000/3950000": "Yas Riva Reserve 45 waterfront villas (Aldar release); 5% and 50% of DB price 7,900,000",
+  "13/840000": "Brabus Island 13 floors (zawya.com BRABUS release); 30% of DB price 2,800,000",
+  "153/1256000/7710000/5": "Fay Hills 153 acres (zawya.com); 40% of DB price 3,140,000; six-bed villas from AED 7.71m (metropolitan.realestate); Masdar City nearby band airport 5 min",
+  "9": "nine investment areas listed on u.ae; nine JW Marriott instalments"
+ },
+ "pages": [
+  {
+   "kind": "development",
+   "slug": "jw-marriott-residences",
+   "name": "JW Marriott Residences",
+   "sources": [
+    "DB: developments row jw-marriott-residences (price, handover, units, payment plan, feature blocks, existing meta.faq), development_unit_types (sizes), subpage/area/yas-island nearby band",
+    "tradearabia.com (16 Oct 2026) — Taraf + Steppe JV, Marriott International brand, beachfront beside golf course, amenities, second collaboration after W Residences Al Maryah Island",
+    "u.ae — Yas Island investment area; adro.gov.ae — Golden Visa off-plan rule; gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage framework, 50% paid"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of JW Marriott Residences?",
+     "a": "JW Marriott Residences Abu Dhabi, Yas Island is developed by Taraf, the real estate arm of Yas Holding, in a joint venture with Steppe Capital, under a branding agreement with Marriott International. It is the partners' second Marriott-branded project after the sold-out W Residences on Al Maryah Island, and the first JW Marriott residences in Abu Dhabi.",
+     "q_ar": "من هو مطوّر مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "يطوّر مشروع جي دبليو ماريوت ريزيدنسز أبوظبي في جزيرة ياس شركة ترف، الذراع العقارية لمجموعة ياس القابضة، في مشروع مشترك مع ستيب كابيتال، بموجب اتفاقية علامة تجارية مع ماريوت الدولية. وهو ثاني مشروع يحمل علامة ماريوت للشريكين بعد مشروع دبليو ريزيدنسز في جزيرة الماريه الذي بيعت وحداته بالكامل، وأول مساكن تحمل علامة جي دبليو ماريوت في أبوظبي."
+    },
+    {
+     "q": "Where is JW Marriott Residences located?",
+     "a": "JW Marriott Residences sits directly on the beach on Yas Island, Abu Dhabi, with the Yas Links golf course alongside it and views over the Arabian Gulf. Yas Marina, Yas Mall and Yas Marina Circuit are close by; Zayed International Airport is less than 10 minutes from Yas Island and Downtown Abu Dhabi about 20 minutes by car.",
+     "q_ar": "أين يقع مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "يقع مشروع جي دبليو ماريوت ريزيدنسز مباشرة على الشاطئ في جزيرة ياس بأبوظبي، بجوار ملعب ياس لينكس للجولف ومع إطلالات على الخليج العربي. ويقع بالقرب منه مرسى ياس وياس مول وحلبة مرسى ياس، ويبعد مطار زايد الدولي أقل من 10 دقائق عن جزيرة ياس، ووسط مدينة أبوظبي نحو 20 دقيقة بالسيارة."
+    },
+    {
+     "q": "What is the starting price of JW Marriott Residences?",
+     "a": "JW Marriott Residences starts from AED 3,300,000 for a one-bedroom apartment. Prices rise with size, floor and whether a home faces the sea or the golf course, with four-bedroom duplexes and penthouses at the top; ask a Bazar advisor for the current price list and availability.",
+     "q_ar": "ما سعر البداية في مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "تبدأ الأسعار في مشروع جي دبليو ماريوت ريزيدنسز من 3,300,000 درهم لشقة بغرفة نوم واحدة. وترتفع الأسعار بحسب المساحة والطابق وإطلالة الوحدة على البحر أو ملعب الجولف، وتأتي شقق الدوبلكس بأربع غرف والبنتهاوس في أعلى الفئات، ويمكنك طلب قائمة الأسعار والتوافر الحالية من مستشار بازار."
+    },
+    {
+     "q": "What unit types and sizes are available at JW Marriott Residences?",
+     "a": "JW Marriott Residences is a collection of 199 branded homes, from one-bedroom apartments to four-bedroom duplexes and penthouses. One-bedroom units measure about 1,097–1,225 sq ft, two-bedrooms 1,705–1,890 sq ft, three-bedrooms 2,459–3,225 sq ft and four-bedroom duplexes 4,364–5,102 sq ft. Two- and three-bedroom apartments include a maid's room.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "يضم مشروع جي دبليو ماريوت ريزيدنسز 199 وحدة سكنية تحمل العلامة، من شقق بغرفة نوم واحدة إلى شقق دوبلكس وبنتهاوس بأربع غرف. وتبلغ مساحة شقق الغرفة الواحدة نحو 1,097 إلى 1,225 قدمًا مربعًا، والغرفتين من 1,705 إلى 1,890 قدمًا مربعًا، والثلاث غرف من 2,459 إلى 3,225 قدمًا مربعًا، والدوبلكس بأربع غرف من 4,364 إلى 5,102 قدم مربع. وتشمل شقق الغرفتين والثلاث غرف غرفة للخدم."
+    },
+    {
+     "q": "What is the payment plan for JW Marriott Residences?",
+     "a": "JW Marriott Residences is sold on a 50/50 payment plan: a 5% down payment, then nine instalments of 5% over 36 months during construction, and the remaining 50% on handover. The 2% Abu Dhabi registration fee is paid on top. Confirm the schedule and any current offer before reserving.",
+     "q_ar": "ما خطة السداد في مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "يُباع مشروع جي دبليو ماريوت ريزيدنسز بخطة سداد 50/50: دفعة أولى بنسبة 5%، ثم تسعة أقساط بنسبة 5% لكل منها على مدى 36 شهرًا خلال الإنشاء، و50% المتبقية عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد الجدول وأي عرض قائم قبل الحجز."
+    },
+    {
+     "q": "When is the handover date for JW Marriott Residences?",
+     "a": "JW Marriott Residences is scheduled for handover in July 2030. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "من المقرر تسليم مشروع جي دبليو ماريوت ريزيدنسز في يوليو 2030. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Does JW Marriott Residences have private beach access and golf course views?",
+     "a": "Yes. JW Marriott Residences has its own private beach and direct access to the neighbouring Yas Links golf course, so homes look out over the Arabian Gulf, the fairways or both. Which view a residence gets depends on its tower, floor and orientation, so ask for the view plan with the floor plan.",
+     "q_ar": "هل يوفر مشروع جي دبليو ماريوت ريزيدنسز شاطئًا خاصًا وإطلالات على ملعب الجولف؟",
+     "a_ar": "نعم. يمتلك مشروع جي دبليو ماريوت ريزيدنسز شاطئًا خاصًا ووصولًا مباشرًا إلى ملعب ياس لينكس للجولف المجاور، فتطل المنازل على الخليج العربي أو على مسارات الجولف أو على كليهما. وتعتمد إطلالة كل وحدة على البرج والطابق والاتجاه، لذا اطلب مخطط الإطلالات مع مخطط الوحدة."
+    },
+    {
+     "q": "What amenities does JW Marriott Residences have?",
+     "a": "JW Marriott Residences brings the brand's wellbeing approach home, with a spa and recovery centre, steam and sauna, indoor and outdoor yoga spaces, a fitness centre and a swimming pool. Residents also get a lounge, meeting spaces, a golf simulator and games area, a media room, a children's activity area and guest suites.",
+     "q_ar": "ما المرافق المتوفرة في مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "ينقل مشروع جي دبليو ماريوت ريزيدنسز فلسفة العلامة في العافية إلى المنزل، إذ يضم مركزًا للسبا والتعافي وغرف بخار وساونا ومساحات لليوغا داخلية وخارجية ومركزًا للياقة البدنية ومسبحًا. كما يحصل السكان على صالة خاصة وقاعات اجتماعات وجهاز محاكاة للجولف ومنطقة ألعاب وغرفة ترفيه ومنطقة أنشطة للأطفال وأجنحة للضيوف."
+    },
+    {
+     "q": "Can foreigners buy at JW Marriott Residences?",
+     "a": "Yes. Yas Island is one of Abu Dhabi's designated investment areas, so buyers of any nationality can own a JW Marriott residence freehold, whether or not they live in the UAE. The sale is registered with the Abu Dhabi Real Estate Centre through DARI, and non-residents can buy without a UAE visa.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "نعم. جزيرة ياس من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك وحدة في جي دبليو ماريوت ريزيدنسز بنظام التملك الحر، سواء كانوا مقيمين في الإمارات أم لا. ويُسجَّل البيع لدى مركز أبوظبي العقاري عبر منصة «داري»، ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at JW Marriott Residences?",
+     "a": "Yes, as every home at JW Marriott Residences is priced above the AED 2 million threshold, from AED 3,300,000. For an off-plan home the developer must confirm at least AED 2 million paid; on the 50/50 plan an entry-level buyer has paid AED 1,650,000 before handover, so most qualify at handover unless they pay ahead or buy a larger unit.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في جي دبليو ماريوت ريزيدنسز؟",
+     "a_ar": "نعم، فجميع المنازل في جي دبليو ماريوت ريزيدنسز تتجاوز حد المليوني درهم، إذ تبدأ من 3,300,000 درهم. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل، ووفق خطة 50/50 يكون مشتري الوحدة الأدنى سعرًا قد سدد 1,650,000 درهم قبل التسليم، لذا يتأهل معظم المشترين عند التسليم ما لم يسددوا دفعات مسبقة أو يشتروا وحدة أكبر."
+    },
+    {
+     "q": "Can I get a mortgage on JW Marriott Residences before handover?",
+     "a": "Yes, once half the price is paid. ADREC's off-plan mortgage framework, under which Abu Dhabi's first off-plan mortgage was completed in September 2026, requires buyers to have paid 50% first. On this plan that point arrives with the ninth instalment, 36 months after booking, so the 50% due on handover can be financed.",
+     "q_ar": "هل يمكنني الحصول على تمويل عقاري لوحدة في جي دبليو ماريوت ريزيدنسز قبل التسليم؟",
+     "a_ar": "نعم، بعد سداد نصف السعر. ويشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، الذي أُتمّ بموجبه أول رهن عقاري على الخريطة في أبوظبي في سبتمبر 2026، أن يكون المشتري قد سدد 50% أولًا. ووفق هذه الخطة تتحقق هذه النسبة مع القسط التاسع بعد 36 شهرًا من الحجز، فيمكن تمويل الـ50% المستحقة عند التسليم."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "sobha-city-abu-dhabi",
+   "name": "Sobha City Abu Dhabi",
+   "sources": [
+    "DB: developments row sobha-city-abu-dhabi (price, handover, units, payment plan, feature blocks), development_unit_types (sizes); subpage/area/al-bahia nearby band (drive times)",
+    "gulfnews.com / thenationalnews.com / khaleejtimes.com (13 Apr 2026) — Sobha's first Abu Dhabi masterplan, Al Bahia on the E10/E12, 38m sq ft, AED 40bn, 2 km promenade, marina, 60% green, 18 km loop, villas from about AED 4.7m",
+    "u.ae — list of Abu Dhabi investment areas (Al Bahia not on it); adro.gov.ae — Golden Visa; Abu Dhabi Law No. 3 of 2015 — escrow"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of Sobha City Abu Dhabi?",
+     "a": "Sobha City Abu Dhabi is developed by Sobha Realty, the Dubai developer known for Sobha Hartland, and is its first large master community in the capital. Launched in April 2026, the plan covers about 38 million sq ft and is valued at around AED 40 billion, built in phases.",
+     "q_ar": "من هو مطوّر مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "يطوّر مشروع شوبا سيتي أبوظبي شركة شوبا العقارية، المطوّر الدبيّ المعروف بمشروع شوبا هارتلاند، وهو أول مجتمع رئيسي كبير لها في العاصمة. وأُطلق المشروع في أبريل 2026 على مساحة تبلغ نحو 38 مليون قدم مربع وبقيمة تقارب 40 مليار درهم، ويُنفَّذ على مراحل."
+    },
+    {
+     "q": "Where is Sobha City Abu Dhabi located?",
+     "a": "Sobha City Abu Dhabi is in Al Bahia, on the mainland along the E10 and E12 corridors, north of Yas Island and Zayed International Airport. Yas Island and the airport are each about 20–30 minutes away by car, and the E10 links the community to Dubai.",
+     "q_ar": "أين يقع مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "يقع مشروع شوبا سيتي أبوظبي في الباهية على البر الرئيسي، على امتداد محوري E10 وE12، شمال جزيرة ياس ومطار زايد الدولي. وتبعد جزيرة ياس والمطار كلٌّ منهما نحو 20 إلى 30 دقيقة بالسيارة، ويربط طريق E10 المجتمع بدبي."
+    },
+    {
+     "q": "What is the starting price of Sobha City Abu Dhabi?",
+     "a": "Sobha City Abu Dhabi starts from AED 1,310,000 for a one-bedroom apartment. Townhouses and villas sit well above that, with launch pricing for villas from about AED 4.7 million; ask a Bazar advisor for the current price list, as prices change between phases.",
+     "q_ar": "ما سعر البداية في مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "تبدأ الأسعار في مشروع شوبا سيتي أبوظبي من 1,310,000 درهم لشقة بغرفة نوم واحدة. وتأتي منازل التاون هاوس والفلل بأسعار أعلى بكثير، إذ بدأت أسعار الفلل عند الإطلاق من نحو 4.7 مليون درهم، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار، إذ تتغير الأسعار بين المراحل."
+    },
+    {
+     "q": "What unit types and sizes are available at Sobha City Abu Dhabi?",
+     "a": "Sobha City Abu Dhabi plans about 6,500 homes, from one-bedroom apartments to six-bedroom villas. One-bedroom units measure 566–608 sq ft and two-bedrooms 1,012–1,212 sq ft; three-bedroom townhouses run 2,577–3,453 sq ft, four-bedroom villas 4,506–5,849 sq ft, five-bedroom villas 5,489–6,556 sq ft and six-bedroom villas 6,383–6,491 sq ft.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "يخطط مشروع شوبا سيتي أبوظبي لنحو 6,500 وحدة سكنية، من شقق بغرفة نوم واحدة إلى فلل بست غرف. وتبلغ مساحة شقق الغرفة الواحدة من 566 إلى 608 أقدام مربعة، والغرفتين من 1,012 إلى 1,212 قدمًا مربعًا؛ ومنازل التاون هاوس بثلاث غرف من 2,577 إلى 3,453 قدمًا مربعًا، والفلل بأربع غرف من 4,506 إلى 5,849 قدمًا مربعًا، وبخمس غرف من 5,489 إلى 6,556 قدمًا مربعًا، وبست غرف من 6,383 إلى 6,491 قدمًا مربعًا."
+    },
+    {
+     "q": "What is the payment plan for Sobha City Abu Dhabi?",
+     "a": "Sobha City Abu Dhabi is sold on a 60/40 payment plan: 20% on booking, 40% during construction and 40% on handover. The 20% booking payment is higher than on most Abu Dhabi launches, and the 2% registration fee is paid on top. Confirm the plan for your phase in the sale and purchase agreement.",
+     "q_ar": "ما خطة السداد في مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "يُباع مشروع شوبا سيتي أبوظبي بخطة سداد 60/40: 20% عند الحجز، و40% خلال الإنشاء، و40% عند التسليم. وتُعد دفعة الحجز البالغة 20% أعلى من معظم المشاريع المطروحة في أبوظبي، وتُدفع رسوم التسجيل البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد الخطة الخاصة بمرحلتك في عقد البيع والشراء."
+    },
+    {
+     "q": "When is the handover date for Sobha City Abu Dhabi?",
+     "a": "The first phase of Sobha City Abu Dhabi is scheduled for handover in December 2029, in Q4 2029. Later phases of the master community will follow on their own timelines. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "من المقرر تسليم المرحلة الأولى من مشروع شوبا سيتي أبوظبي في ديسمبر 2029، أي في الربع الرابع من 2029، على أن تتبعها المراحل اللاحقة من المجتمع وفق جداولها الخاصة. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at Sobha City Abu Dhabi?",
+     "a": "Sobha Realty markets Sobha City to buyers of every nationality, but Al Bahia is not one of the nine investment areas listed on u.ae, where foreign freehold has applied since 2019. Before paying a deposit, ask for the title type in writing and confirm on DARI that the unit will be registered to you freehold.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "تسوّق شوبا العقارية مشروع شوبا سيتي للمشترين من جميع الجنسيات، لكن الباهية ليست من مناطق الاستثمار التسع المدرجة على البوابة الرسمية لحكومة الإمارات، والتي يُطبَّق فيها التملك الحر للأجانب منذ 2019. لذا اطلب نوع سند الملكية كتابيًا قبل دفع أي عربون، وتحقق عبر منصة «داري» من أن الوحدة ستُسجَّل باسمك بنظام التملك الحر."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at Sobha City Abu Dhabi?",
+     "a": "Not with an entry apartment: the AED 1,310,000 starting price is below the AED 2 million Golden Visa threshold. Townhouses and villas, from about AED 4.7 million at launch, clear it, and because 60% is paid before handover, villa buyers can reach AED 2 million paid during construction. Mortgaged owners need AED 2 million of equity.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في شوبا سيتي أبوظبي؟",
+     "a_ar": "ليس بشقة من الفئة الأدنى: فسعر البداية البالغ 1,310,000 درهم أقل من حد المليوني درهم للإقامة الذهبية. أما منازل التاون هاوس والفلل، التي بدأت أسعارها عند الإطلاق من نحو 4.7 مليون درهم، فتتجاوزه، ولأن 60% تُسدَّد قبل التسليم يمكن لمشتري الفلل بلوغ مليوني درهم مسددة خلال الإنشاء. ويحتاج المالكون بالتمويل إلى حصة لا تقل عن مليوني درهم."
+    },
+    {
+     "q": "What amenities will Sobha City Abu Dhabi have?",
+     "a": "Sobha City Abu Dhabi is planned as a green waterfront city: about 60% of the land is landscaped, with a 2 km promenade and marina, a boardwalk, an 18 km walking and cycling loop and a par-3 golf course. Families get a nature playground, kids' play areas, a pet garden and a yoga deck, with schools, healthcare, mosques and retail in the masterplan.",
+     "q_ar": "ما المرافق التي سيضمها مشروع شوبا سيتي أبوظبي؟",
+     "a_ar": "صُمّم مشروع شوبا سيتي أبوظبي مدينةً خضراء على الواجهة المائية: إذ تُخصَّص نحو 60% من الأرض للمساحات الخضراء، مع ممشى بطول 2 كيلومتر ومرسى وممر خشبي ومسار للمشي وركوب الدراجات بطول 18 كيلومترًا وملعب جولف بنظام بار 3. وتحصل العائلات على ملعب طبيعي ومناطق لعب للأطفال وحديقة للحيوانات الأليفة ومنصة لليوغا، ويشمل المخطط مدارس ومرافق صحية ومساجد ومتاجر."
+    },
+    {
+     "q": "How are off-plan payments protected at Sobha City Abu Dhabi?",
+     "a": "Under Abu Dhabi Law No. 3 of 2015 regulating the real estate sector, off-plan payments must go into the project's escrow account, overseen by the Abu Dhabi Real Estate Centre (ADREC), and the developer draws on it against construction progress. With 60% paid before handover here, check that every instalment is paid to the escrow account named in your contract.",
+     "q_ar": "كيف تُحمى دفعات الشراء على الخريطة في شوبا سيتي أبوظبي؟",
+     "a_ar": "وفق قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري، يجب إيداع دفعات العقارات على الخريطة في حساب الضمان الخاص بالمشروع، الذي يشرف عليه مركز أبوظبي العقاري، ولا يسحب المطوّر منه إلا وفق تقدّم الإنشاء. ولأن 60% تُسدَّد هنا قبل التسليم، تأكد من دفع كل قسط إلى حساب الضمان المذكور في عقدك."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "the-canopies-at-yas-point-aldar",
+   "name": "The Canopies at Yas Point",
+   "sources": [
+    "DB: developments row the-canopies-at-yas-point-aldar (price, handover, units, payment plan, feature blocks), development_unit_types (sizes), subpage/area/yas-island nearby band",
+    "zawya.com / albawaba.com (July 2026) — first community at Yas Point, AED 6bn destination on Yas's northern shore, six mid-rise buildings, 592 apartments, 10,000 sq m landscaping, 700 m promenade; AED 1.5bn launch sales",
+    "u.ae — Yas Island investment area; adro.gov.ae — Golden Visa; gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage, 50% paid"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of The Canopies at Yas Point?",
+     "a": "The Canopies at Yas Point is developed by Aldar Properties, Abu Dhabi's largest listed developer and the master developer behind much of Yas Island. Aldar launched it in July 2026 as the first residential community at Yas Point, and the release recorded about AED 1.5 billion of sales at launch.",
+     "q_ar": "من هو مطوّر مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "يطوّر مشروع ذا كانوبيز آت ياس بوينت شركة الدار العقارية، أكبر مطوّر مدرج في أبوظبي والمطوّر الرئيسي لجزء كبير من جزيرة ياس. وأطلقته الدار في يوليو 2026 بوصفه أول مجتمع سكني في ياس بوينت، وسجّل الطرح مبيعات بلغت نحو 1.5 مليار درهم عند الإطلاق."
+    },
+    {
+     "q": "Where is The Canopies at Yas Point located?",
+     "a": "The Canopies is in Yas Point, a new AED 6 billion waterfront destination on the northern shore of Yas Island, Abu Dhabi, near SeaWorld Abu Dhabi and Warner Bros. World. A 700-metre waterfront promenade is planned alongside; Zayed International Airport is less than 10 minutes away and Downtown Abu Dhabi about 20 minutes.",
+     "q_ar": "أين يقع مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "يقع مشروع ذا كانوبيز في ياس بوينت، الوجهة الجديدة على الواجهة المائية بقيمة 6 مليارات درهم على الساحل الشمالي لجزيرة ياس في أبوظبي، بالقرب من سي وورلد أبوظبي وعالم وارنر براذرز. ومن المخطط إنشاء ممشى على الواجهة المائية بطول 700 متر بجواره، ويبعد مطار زايد الدولي أقل من 10 دقائق، ووسط مدينة أبوظبي نحو 20 دقيقة."
+    },
+    {
+     "q": "What is the starting price of The Canopies at Yas Point?",
+     "a": "The Canopies at Yas Point starts from AED 1,650,000 for a studio. One- to three-bedroom apartments are priced higher by size, floor and view; ask a Bazar advisor for the current price list, as Aldar releases Yas Point homes in phases and pricing moves between releases.",
+     "q_ar": "ما سعر البداية في مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "تبدأ الأسعار في مشروع ذا كانوبيز آت ياس بوينت من 1,650,000 درهم لشقة استوديو. وتُسعَّر الشقق من غرفة إلى ثلاث غرف بأسعار أعلى بحسب المساحة والطابق والإطلالة، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار، إذ تطرح الدار منازل ياس بوينت على مراحل وتتغير الأسعار بين الطروحات."
+    },
+    {
+     "q": "What unit types and sizes are available at The Canopies at Yas Point?",
+     "a": "The Canopies has 592 apartments across six mid-rise buildings, from studios to three bedrooms. Studios measure about 495–500 sq ft, one-bedrooms 872–900 sq ft, two-bedrooms 1,281–1,518 sq ft and three-bedrooms 1,981–1,990 sq ft.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "يضم مشروع ذا كانوبيز 592 شقة في ستة مبانٍ متوسطة الارتفاع، من الاستوديو حتى ثلاث غرف نوم. وتبلغ مساحة الاستوديو نحو 495 إلى 500 قدم مربع، وشقق الغرفة الواحدة من 872 إلى 900 قدم مربع، والغرفتين من 1,281 إلى 1,518 قدمًا مربعًا، والثلاث غرف من 1,981 إلى 1,990 قدمًا مربعًا."
+    },
+    {
+     "q": "What is the payment plan for The Canopies at Yas Point?",
+     "a": "The Canopies at Yas Point is sold on a 55/45 payment plan: 5% on booking, 50% during construction and 45% on handover in Q3 2030. The 2% Abu Dhabi registration fee is paid on top. Confirm the instalment dates for your unit in the sale and purchase agreement.",
+     "q_ar": "ما خطة السداد في مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "يُباع مشروع ذا كانوبيز آت ياس بوينت بخطة سداد 55/45: 5% عند الحجز، و50% خلال الإنشاء، و45% عند التسليم في الربع الثالث من 2030. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد مواعيد الأقساط الخاصة بوحدتك في عقد البيع والشراء."
+    },
+    {
+     "q": "When is the handover date for The Canopies at Yas Point?",
+     "a": "The Canopies at Yas Point is scheduled for handover in Q3 2030, in August 2030 on the current schedule. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "من المقرر تسليم مشروع ذا كانوبيز آت ياس بوينت في الربع الثالث من 2030، أي في أغسطس 2030 وفق الجدول الحالي. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at The Canopies at Yas Point?",
+     "a": "Yes. Yas Point is part of Yas Island, a designated investment area, so buyers of every nationality can own an apartment at The Canopies freehold, resident or not. Aldar said 84% of launch buyers were new to the developer; each sale is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "نعم. ياس بوينت جزء من جزيرة ياس، وهي منطقة استثمار محددة، لذا يحق للمشترين من جميع الجنسيات تملّك شقة في ذا كانوبيز بنظام التملك الحر، سواء كانوا مقيمين أم لا. وذكرت الدار أن 84% من مشتري الإطلاق كانوا عملاء جددًا لديها، وتُسجَّل كل عملية بيع لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at The Canopies at Yas Point?",
+     "a": "Not with a studio or one-bedroom: The Canopies starts at AED 1,650,000, below the AED 2 million threshold. Only larger two- and three-bedroom apartments priced at AED 2 million or more can qualify, and off-plan buyers must have paid AED 2 million, which on the 55/45 plan usually means near or at handover.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "ليس بشقة استوديو أو بغرفة واحدة: فأسعار ذا كانوبيز تبدأ من 1,650,000 درهم، أي دون حد المليوني درهم. ولا تتأهل إلا الشقق الأكبر بغرفتين وثلاث غرف التي يبلغ سعرها مليوني درهم أو أكثر، ويجب على مشتري العقارات على الخريطة سداد مليوني درهم، وهو ما يعني عادةً وفق خطة 55/45 قرب التسليم أو عنده."
+    },
+    {
+     "q": "What amenities does The Canopies at Yas Point have?",
+     "a": "The Canopies is designed around nature, with more than 10,000 sq m of landscaped space: shaded pathways, gardens, outdoor wellness areas and social spaces. Residents get a swimming pool, a gym, co-working spaces, a kids' room and a multi-purpose room, with the Yas Point promenade on the doorstep.",
+     "q_ar": "ما المرافق المتوفرة في مشروع ذا كانوبيز آت ياس بوينت؟",
+     "a_ar": "صُمّم مشروع ذا كانوبيز حول الطبيعة، مع أكثر من 10,000 متر مربع من المساحات الخضراء: ممرات مظللة وحدائق ومناطق خارجية للعافية ومساحات اجتماعية. ويحصل السكان على مسبح وصالة رياضية ومساحات عمل مشتركة وغرفة للأطفال وقاعة متعددة الاستخدامات، مع ممشى ياس بوينت على مقربة منهم."
+    },
+    {
+     "q": "Can I get a mortgage on The Canopies at Yas Point before handover?",
+     "a": "Yes, and earlier than on most plans. ADREC's off-plan mortgage framework requires 50% of the price to be paid; on The Canopies' 5/50/45 plan that point is passed during construction, so a buyer can finance the 45% due on handover. Bank approval, valuation and your own eligibility still apply.",
+     "q_ar": "هل يمكنني الحصول على تمويل عقاري لوحدة في ذا كانوبيز آت ياس بوينت قبل التسليم؟",
+     "a_ar": "نعم، وفي وقت أبكر من معظم الخطط. إذ يشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة سداد 50% من السعر، ووفق خطة ذا كانوبيز 5/50/45 تُتجاوز هذه النسبة خلال الإنشاء، فيمكن للمشتري تمويل الـ45% المستحقة عند التسليم. وتظل موافقة البنك والتقييم وأهليتك الشخصية شروطًا قائمة."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "the-wadi-reportage",
+   "name": "The Wadi",
+   "sources": [
+    "DB: developments row the-wadi-reportage (price, handover, units, payment plan, feature blocks), development_unit_types (sizes), subpage/area/yas-island nearby band",
+    "gulfnews.com / wam.ae / thenationalnews.com (18–21 Sept 2026) — Cosmo Developments (Flag Holding + Reportage), AED 6bn, 140,700 sq m on Yas Canal, 3,950 homes, central valley, yacht marina, hotel; first phase about 700 homes in two buildings",
+    "u.ae — Yas Island investment area; adro.gov.ae — Golden Visa; Abu Dhabi Law No. 3 of 2015 — escrow"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of The Wadi?",
+     "a": "The Wadi is developed by Cosmo Developments, a joint venture between Abu Dhabi's Flag Holding Group and Reportage Group, with Reportage managing design, delivery and long-term operation. Launched in September 2026, it is an estimated AED 6 billion mixed-use community.",
+     "q_ar": "من هو مطوّر مشروع الوادي؟",
+     "a_ar": "يطوّر مشروع الوادي شركة كوزمو للتطوير، وهي مشروع مشترك بين مجموعة فلاغ القابضة في أبوظبي ومجموعة ريبورتاج، وتتولى ريبورتاج التصميم والتنفيذ والإدارة على المدى الطويل. وأُطلق المشروع في سبتمبر 2026 مجتمعًا متعدد الاستخدامات بقيمة تقديرية تبلغ 6 مليارات درهم."
+    },
+    {
+     "q": "Where is The Wadi located?",
+     "a": "The Wadi sits along Yas Canal on Yas Island, Abu Dhabi, on a plot of about 140,700 sq m near Ferrari World and the planned Disney resort. Zayed International Airport is less than 10 minutes away and Downtown Abu Dhabi about 20 minutes, with Dubai about 50 minutes by car.",
+     "q_ar": "أين يقع مشروع الوادي؟",
+     "a_ar": "يقع مشروع الوادي على امتداد قناة ياس في جزيرة ياس بأبوظبي، على قطعة أرض تبلغ مساحتها نحو 140,700 متر مربع بالقرب من عالم فيراري ومنتجع ديزني المرتقب. ويبعد مطار زايد الدولي أقل من 10 دقائق، ووسط مدينة أبوظبي نحو 20 دقيقة، ودبي نحو 50 دقيقة بالسيارة."
+    },
+    {
+     "q": "What is the starting price of The Wadi?",
+     "a": "The Wadi starts from AED 750,000 for a studio, among the lowest entry prices for a new launch on Yas Island. Larger apartments are priced by size, floor and canal view; studios in the first phase sold quickly, so ask a Bazar advisor which units are still available.",
+     "q_ar": "ما سعر البداية في مشروع الوادي؟",
+     "a_ar": "تبدأ الأسعار في مشروع الوادي من 750,000 درهم لشقة استوديو، وهي من أدنى أسعار البداية لمشروع جديد في جزيرة ياس. وتُسعَّر الشقق الأكبر بحسب المساحة والطابق والإطلالة على القناة، وقد بيعت الاستوديوهات في المرحلة الأولى سريعًا، لذا اسأل مستشار بازار عن الوحدات المتاحة حاليًا."
+    },
+    {
+     "q": "What unit types and sizes are available at The Wadi?",
+     "a": "The Wadi plans 3,950 homes, from studios to four-bedroom apartments. Studios measure about 315–502 sq ft, one-bedrooms 660–872 sq ft, two-bedrooms 786–1,267 sq ft, three-bedrooms 1,142–1,966 sq ft and four-bedrooms 2,330–3,300 sq ft. Selected units have private balconies or terraces.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع الوادي؟",
+     "a_ar": "يخطط مشروع الوادي لـ3,950 وحدة سكنية، من الاستوديو حتى شقق بأربع غرف نوم. وتبلغ مساحة الاستوديو نحو 315 إلى 502 قدم مربع، وشقق الغرفة الواحدة من 660 إلى 872 قدمًا مربعًا، والغرفتين من 786 إلى 1,267 قدمًا مربعًا، والثلاث غرف من 1,142 إلى 1,966 قدمًا مربعًا، والأربع غرف من 2,330 إلى 3,300 قدم مربع. وتتميز وحدات مختارة بشرفات أو تراسات خاصة."
+    },
+    {
+     "q": "What is the payment plan for The Wadi?",
+     "a": "The Wadi is sold on a 20/80 payment plan: 10% on booking, 10% during construction and 80% on handover. Only a fifth of the price is paid before completion, so plan how you will fund the large handover payment; the 2% Abu Dhabi registration fee is paid on top.",
+     "q_ar": "ما خطة السداد في مشروع الوادي؟",
+     "a_ar": "يُباع مشروع الوادي بخطة سداد 20/80: 10% عند الحجز، و10% خلال الإنشاء، و80% عند التسليم. ولا يُسدَّد قبل الإنجاز سوى خُمس السعر، لذا خطط مسبقًا لتمويل دفعة التسليم الكبيرة؛ وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك."
+    },
+    {
+     "q": "When is the handover date for The Wadi?",
+     "a": "The first phase of The Wadi is scheduled for handover in Q4 2030, in December 2030 on the current schedule; later buildings follow in phases. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع الوادي؟",
+     "a_ar": "من المقرر تسليم المرحلة الأولى من مشروع الوادي في الربع الرابع من 2030، أي في ديسمبر 2030 وفق الجدول الحالي، على أن تتبعها المباني الأخرى على مراحل. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at The Wadi?",
+     "a": "Yes. The Wadi is on Yas Island, one of Abu Dhabi's designated investment areas, so buyers of every nationality can own its apartments freehold. Its low entry price has drawn first-time and overseas investors; non-residents can buy without a UAE visa, and every sale is registered through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع الوادي؟",
+     "a_ar": "نعم. يقع مشروع الوادي في جزيرة ياس، وهي من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من جميع الجنسيات تملّك شققه بنظام التملك الحر. وقد جذب سعر البداية المنخفض مستثمرين يشترون لأول مرة ومن خارج الدولة؛ ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، وتُسجَّل كل عملية بيع عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at The Wadi?",
+     "a": "Rarely: The Wadi starts at AED 750,000, well below the AED 2 million Golden Visa threshold, so only the largest three- and four-bedroom apartments could qualify. Because 80% is due on handover, an off-plan buyer will not have paid AED 2 million until completion in any case.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في مشروع الوادي؟",
+     "a_ar": "نادرًا: فأسعار مشروع الوادي تبدأ من 750,000 درهم، أي أقل بكثير من حد المليوني درهم للإقامة الذهبية، لذا قد لا تتأهل إلا أكبر الشقق بثلاث وأربع غرف. ولأن 80% تُستحق عند التسليم، فلن يكون مشتري العقار على الخريطة قد سدد مليوني درهم قبل الإنجاز في كل الأحوال."
+    },
+    {
+     "q": "What amenities will The Wadi have?",
+     "a": "The Wadi is planned around a landscaped central valley, with canals, water features and native ghaf and palm trees. Residents get a private marina and dock, waterfront dining, private gardens, pools, tennis, gyms, a spa, children's areas and running and cycling paths, with a hotel in the masterplan.",
+     "q_ar": "ما المرافق التي سيضمها مشروع الوادي؟",
+     "a_ar": "صُمّم مشروع الوادي حول وادٍ مركزي مزروع، مع قنوات ومسطحات مائية وأشجار غاف ونخيل محلية. ويحصل السكان على مرسى خاص ورصيف للقوارب ومطاعم على الواجهة المائية وحدائق خاصة ومسابح وملاعب تنس وصالات رياضية وسبا ومناطق للأطفال ومسارات للجري وركوب الدراجات، ويشمل المخطط فندقًا."
+    },
+    {
+     "q": "Is my money protected when buying off-plan at The Wadi?",
+     "a": "Yes, through the project escrow account. Abu Dhabi Law No. 3 of 2015 requires off-plan payments to be deposited in an escrow account for the project, overseen by ADREC, and released to the developer against construction progress. Pay only into the escrow account named in your sale and purchase agreement.",
+     "q_ar": "هل أموالي محمية عند الشراء على الخريطة في مشروع الوادي؟",
+     "a_ar": "نعم، من خلال حساب الضمان الخاص بالمشروع. إذ يُلزم قانون أبوظبي رقم 3 لسنة 2015 بإيداع دفعات العقارات على الخريطة في حساب ضمان خاص بالمشروع يشرف عليه مركز أبوظبي العقاري، ولا تُصرف للمطوّر إلا وفق تقدّم الإنشاء. لذا لا تدفع إلا إلى حساب الضمان المذكور في عقد البيع والشراء."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "yas-park-place",
+   "name": "Yas Park Place",
+   "sources": [
+    "DB: developments row yas-park-place (price, handover, units, payment plan, feature blocks), development_unit_types (sizes), subpage/area/yas-island nearby band",
+    "zawya.com / wam.ae / gulfnews.com (Apr 2026) — six mid-rise buildings overlooking Yas Central Park, two-bedroom duplexes, oasis podium gardens, first phase from 16 April, AED 800m+ sales with 80% of released units sold",
+    "u.ae — Yas Island investment area; adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of Yas Park Place?",
+     "a": "Yas Park Place is developed by Aldar Properties, the master developer of much of Yas Island. Aldar opened the first phase in April 2026, releasing four of its six buildings, and reported more than AED 800 million of sales with 80% of released units sold.",
+     "q_ar": "من هو مطوّر مشروع ياس بارك بليس؟",
+     "a_ar": "يطوّر مشروع ياس بارك بليس شركة الدار العقارية، المطوّر الرئيسي لجزء كبير من جزيرة ياس. وطرحت الدار المرحلة الأولى في أبريل 2026 بأربعة من مبانيه الستة، وأعلنت مبيعات تجاوزت 800 مليون درهم مع بيع 80% من الوحدات المطروحة."
+    },
+    {
+     "q": "Where is Yas Park Place located?",
+     "a": "Yas Park Place is on the northern side of Yas Island, Abu Dhabi, overlooking Yas Central Park and close to Yas Acres, Yas Mall and the planned Disney resort. The E11 links it to the city: Zayed International Airport is less than 10 minutes away and Downtown Abu Dhabi about 20 minutes.",
+     "q_ar": "أين يقع مشروع ياس بارك بليس؟",
+     "a_ar": "يقع مشروع ياس بارك بليس في الجهة الشمالية من جزيرة ياس بأبوظبي، مطلًا على حديقة ياس المركزية وقريبًا من ياس إيكرز وياس مول ومنتجع ديزني المرتقب. ويربطه طريق E11 بالمدينة: إذ يبعد مطار زايد الدولي أقل من 10 دقائق، ووسط مدينة أبوظبي نحو 20 دقيقة."
+    },
+    {
+     "q": "What is the starting price of Yas Park Place?",
+     "a": "Yas Park Place starts from AED 1,390,000 for a studio. One- to three-bedroom homes and two-bedroom duplexes are priced higher by size and park view; the final buildings are released in a later phase, so ask a Bazar advisor for the current price list.",
+     "q_ar": "ما سعر البداية في مشروع ياس بارك بليس؟",
+     "a_ar": "تبدأ الأسعار في مشروع ياس بارك بليس من 1,390,000 درهم لشقة استوديو. وتُسعَّر المنازل من غرفة إلى ثلاث غرف وشقق الدوبلكس بغرفتين بأسعار أعلى بحسب المساحة والإطلالة على الحديقة؛ وتُطرح المباني الأخيرة في مرحلة لاحقة، لذا اطلب قائمة الأسعار الحالية من مستشار بازار."
+    },
+    {
+     "q": "What unit types and sizes are available at Yas Park Place?",
+     "a": "Yas Park Place has 780 homes in six mid-rise buildings, from studios to three bedrooms, plus two-bedroom duplexes. Studios measure about 484–532 sq ft, one-bedrooms 873–960 sq ft, two-bedrooms 1,170–1,593 sq ft and three-bedrooms 1,628–1,790 sq ft.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ياس بارك بليس؟",
+     "a_ar": "يضم مشروع ياس بارك بليس 780 وحدة سكنية في ستة مبانٍ متوسطة الارتفاع، من الاستوديو حتى ثلاث غرف نوم، إضافة إلى شقق دوبلكس بغرفتين. وتبلغ مساحة الاستوديو نحو 484 إلى 532 قدمًا مربعًا، وشقق الغرفة الواحدة من 873 إلى 960 قدمًا مربعًا، والغرفتين من 1,170 إلى 1,593 قدمًا مربعًا، والثلاث غرف من 1,628 إلى 1,790 قدمًا مربعًا."
+    },
+    {
+     "q": "What is the payment plan for Yas Park Place?",
+     "a": "Yas Park Place is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top. Brokers have advertised other structures for some releases, so confirm the plan in your sale and purchase agreement.",
+     "q_ar": "ما خطة السداد في مشروع ياس بارك بليس؟",
+     "a_ar": "يُباع مشروع ياس بارك بليس بخطة سداد 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. وقد روّج بعض الوسطاء لخطط مختلفة في بعض الطروحات، لذا تحقق من الخطة في عقد البيع والشراء."
+    },
+    {
+     "q": "When is the handover date for Yas Park Place?",
+     "a": "Yas Park Place is scheduled for handover in Q1 2030, in February 2030 on the current schedule. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع ياس بارك بليس؟",
+     "a_ar": "من المقرر تسليم مشروع ياس بارك بليس في الربع الأول من 2030، أي في فبراير 2030 وفق الجدول الحالي. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at Yas Park Place?",
+     "a": "Yes. Yas Park Place is on Yas Island, a designated investment area, so every nationality can buy freehold. At launch, expatriate residents and international buyers made up 54% of sales and UAE nationals 46%; each purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع ياس بارك بليس؟",
+     "a_ar": "نعم. يقع مشروع ياس بارك بليس في جزيرة ياس، وهي منطقة استثمار محددة، لذا يحق لجميع الجنسيات الشراء بنظام التملك الحر. وعند الإطلاق شكّل المقيمون الوافدون والمشترون الدوليون 54% من المبيعات، والمواطنون الإماراتيون 46%، وتُسجَّل كل عملية شراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at Yas Park Place?",
+     "a": "Not with a studio or one-bedroom: Yas Park Place starts at AED 1,390,000, below the AED 2 million threshold. Larger two- and three-bedroom homes and duplexes priced at AED 2 million or more can qualify, but off-plan buyers must first have paid AED 2 million, usually at handover on the 50/50 plan.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ياس بارك بليس؟",
+     "a_ar": "ليس بشقة استوديو أو بغرفة واحدة: فأسعار ياس بارك بليس تبدأ من 1,390,000 درهم، أي دون حد المليوني درهم. ويمكن أن تتأهل المنازل الأكبر بغرفتين وثلاث غرف وشقق الدوبلكس التي يبلغ سعرها مليوني درهم أو أكثر، لكن يجب على مشتري العقار على الخريطة سداد مليوني درهم أولًا، وهو ما يحدث عادةً عند التسليم وفق خطة 50/50."
+    },
+    {
+     "q": "What amenities does Yas Park Place have?",
+     "a": "Yas Park Place has a landscaped podium inspired by desert oases: an Aqua Garden with a kids' splash pad, a Reflective Garden with a plunge pool, a Zen Garden with yoga decks and co-working gardens. Residents also get a swimming pool, an infinity pool, a gym and wellness studio, an outdoor cinema, a sensory garden, and retail and dining.",
+     "q_ar": "ما المرافق المتوفرة في مشروع ياس بارك بليس؟",
+     "a_ar": "يضم مشروع ياس بارك بليس منصة مزروعة مستوحاة من واحات الصحراء: حديقة مائية مع منطقة رذاذ للأطفال، وحديقة للتأمل مع مسبح غطس، وحديقة زِن مع منصات لليوغا، وحدائق للعمل المشترك. كما يحصل السكان على مسبح ومسبح لا متناهٍ وصالة رياضية واستوديو للعافية وسينما خارجية وحديقة حسية ومتاجر ومطاعم."
+    },
+    {
+     "q": "Can I resell a Yas Park Place apartment before handover?",
+     "a": "Usually yes, once you have paid the minimum share of the price set in your sale and purchase agreement. Aldar then issues a no-objection certificate, the assignment is registered through DARI and the buyer takes over the remaining instalments, including the 50% due on handover.",
+     "q_ar": "هل يمكنني إعادة بيع شقة في ياس بارك بليس قبل التسليم؟",
+     "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر الدار عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الأقساط المتبقية، ومنها الـ50% المستحقة عند التسليم."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "yas-riva-reserve",
+   "name": "Yas Riva Reserve",
+   "sources": [
+    "DB: developments row yas-riva-reserve (price, handover, units, payment plan, feature blocks), development_unit_types (sizes), subpage/area/yas-island nearby band",
+    "zawya.com (Aldar press release, Sept 2026) / gulfnews.com — gated community of 292 villas opposite Yas Riva, 45 waterfront homes with pontoon option, new bridge, clubhouse, padel, mosque, from AED 7.9m, sales from 26 Sept; Yas Riva launched 2024",
+    "u.ae — Yas Island investment area; adro.gov.ae — Golden Visa; gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage, 50% paid"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of Yas Riva Reserve?",
+     "a": "Yas Riva Reserve is developed by Aldar Properties, Abu Dhabi's largest listed developer. Aldar launched it in September 2026 as the next chapter of Yas Riva, the canal-front villa community it launched in 2024, which is now under construction directly opposite.",
+     "q_ar": "من هو مطوّر مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "يطوّر مشروع ياس ريفا ريزيرف شركة الدار العقارية، أكبر مطوّر مدرج في أبوظبي. وأطلقته الدار في سبتمبر 2026 فصلًا جديدًا من ياس ريفا، مجتمع الفلل على القناة الذي أطلقته في 2024 ويجري إنشاؤه حاليًا في الجهة المقابلة مباشرة."
+    },
+    {
+     "q": "Where is Yas Riva Reserve located?",
+     "a": "Yas Riva Reserve is on the northeast waterfront of Yas Island, Abu Dhabi, opposite Yas Riva and near Yas Acres, SeaWorld Abu Dhabi and Warner Bros. World. A new bridge gives it its own entry to the island; Zayed International Airport is less than 10 minutes away and Downtown Abu Dhabi about 20 minutes.",
+     "q_ar": "أين يقع مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "يقع مشروع ياس ريفا ريزيرف على الواجهة المائية الشمالية الشرقية لجزيرة ياس في أبوظبي، مقابل ياس ريفا وبالقرب من ياس إيكرز وسي وورلد أبوظبي وعالم وارنر براذرز. ويمنحه جسر جديد مدخلًا خاصًا إلى الجزيرة، ويبعد مطار زايد الدولي أقل من 10 دقائق، ووسط مدينة أبوظبي نحو 20 دقيقة."
+    },
+    {
+     "q": "What is the starting price of Yas Riva Reserve?",
+     "a": "Yas Riva Reserve starts from AED 7,900,000 for a four-bedroom inland villa. Waterfront villas and the six-bedroom homes are priced well above that; ask a Bazar advisor for the current price list, as waterfront plots are limited.",
+     "q_ar": "ما سعر البداية في مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "تبدأ الأسعار في مشروع ياس ريفا ريزيرف من 7,900,000 درهم لفيلا داخلية بأربع غرف نوم. وتُسعَّر الفلل على الواجهة المائية والمنازل بست غرف بأسعار أعلى بكثير، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار، إذ إن القطع المطلة على الماء محدودة."
+    },
+    {
+     "q": "What villa types and sizes are available at Yas Riva Reserve?",
+     "a": "Yas Riva Reserve is a gated community of 292 villas with four to six bedrooms. Four-bedroom inland villas measure about 7,650 sq ft, five-bedroom villas about 8,630 sq ft on the water and 8,910 sq ft inland, and six-bedroom villas about 10,072 sq ft inland and 13,927 sq ft on the water.",
+     "q_ar": "ما أنواع الفلل ومساحاتها في مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "مشروع ياس ريفا ريزيرف مجتمع مسوّر يضم 292 فيلا من أربع إلى ست غرف نوم. وتبلغ مساحة الفلل الداخلية بأربع غرف نحو 7,650 قدمًا مربعًا، والفلل بخمس غرف نحو 8,630 قدمًا مربعًا على الواجهة المائية و8,910 أقدام مربعة في الداخل، والفلل بست غرف نحو 10,072 قدمًا مربعًا في الداخل و13,927 قدمًا مربعًا على الواجهة المائية."
+    },
+    {
+     "q": "What is the payment plan for Yas Riva Reserve?",
+     "a": "Yas Riva Reserve is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. On the AED 7,900,000 entry villa that means AED 395,000 on booking. The 2% Abu Dhabi registration fee is paid on top unless a launch offer waives it.",
+     "q_ar": "ما خطة السداد في مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "يُباع مشروع ياس ريفا ريزيرف بخطة سداد 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. وعلى الفيلا الأدنى سعرًا البالغة 7,900,000 درهم يعني ذلك 395,000 درهم عند الحجز. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك ما لم يُعفَ منها ضمن عرض الإطلاق."
+    },
+    {
+     "q": "When is the handover date for Yas Riva Reserve?",
+     "a": "Yas Riva Reserve is scheduled for handover in Q3 2030, in August 2030 on the current schedule, after its sister community Yas Riva across the water. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "من المقرر تسليم مشروع ياس ريفا ريزيرف في الربع الثالث من 2030، أي في أغسطس 2030 وفق الجدول الحالي، بعد مجتمعه الشقيق ياس ريفا على الضفة المقابلة. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at Yas Riva Reserve?",
+     "a": "Yes. Yas Riva Reserve is on Yas Island, a designated investment area, so buyers of every nationality can own a villa and its plot freehold. Non-residents can buy without a UAE visa, and the sale is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع ياس ريفا ريزيرف؟",
+     "a_ar": "نعم. يقع مشروع ياس ريفا ريزيرف في جزيرة ياس، وهي منطقة استثمار محددة، لذا يحق للمشترين من جميع الجنسيات تملّك الفيلا وأرضها بنظام التملك الحر. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل البيع لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at Yas Riva Reserve?",
+     "a": "Yes, every villa at Yas Riva Reserve is priced far above the AED 2 million threshold, from AED 7,900,000. Off-plan buyers must have paid AED 2 million, and on the 5/45/50 plan an entry villa reaches that partway through the construction instalments, years before handover. Mortgaged owners need AED 2 million of equity.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في ياس ريفا ريزيرف؟",
+     "a_ar": "نعم، فجميع الفلل في ياس ريفا ريزيرف تتجاوز حد المليوني درهم بفارق كبير، إذ تبدأ من 7,900,000 درهم. ويجب على مشتري العقارات على الخريطة سداد مليوني درهم، ووفق خطة 5/45/50 تبلغ الفيلا الأدنى سعرًا هذا المبلغ في منتصف أقساط الإنشاء تقريبًا، قبل التسليم بسنوات. ويحتاج المالكون بالتمويل إلى حصة لا تقل عن مليوني درهم."
+    },
+    {
+     "q": "What makes the waterfront villas at Yas Riva Reserve different?",
+     "a": "Only 45 of the 292 villas at Yas Riva Reserve sit directly on the water, and each can add a private pontoon for mooring a boat. The rest are inland villas on linear parks and pocket gardens, sharing a clubhouse, pools, padel and sports courts, children's play areas, community retail and a mosque.",
+     "q_ar": "ما الذي يميز الفلل المطلة على الماء في ياس ريفا ريزيرف؟",
+     "a_ar": "لا تقع على الماء مباشرة سوى 45 فيلا من أصل 292 فيلا في ياس ريفا ريزيرف، ويمكن إضافة رصيف عائم خاص لكل منها لرسو قارب. أما البقية ففلل داخلية تطل على حدائق طولية وحدائق صغيرة، وتتشارك ناديًا مجتمعيًا ومسابح وملاعب بادل ورياضة ومناطق لعب للأطفال ومتاجر ومسجدًا."
+    },
+    {
+     "q": "Can I get a mortgage on a Yas Riva Reserve villa before handover?",
+     "a": "Yes, after half the price is paid. ADREC's off-plan mortgage framework requires 50% paid before a bank can lend; on this plan that is reached once the construction instalments are complete, so the 50% due on handover, AED 3,950,000 on the entry villa, can be financed subject to bank approval.",
+     "q_ar": "هل يمكنني الحصول على تمويل عقاري لفيلا في ياس ريفا ريزيرف قبل التسليم؟",
+     "a_ar": "نعم، بعد سداد نصف السعر. إذ يشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة سداد 50% قبل أن يقرض البنك، ووفق هذه الخطة تتحقق هذه النسبة بعد اكتمال أقساط الإنشاء، فيمكن تمويل الـ50% المستحقة عند التسليم، أي 3,950,000 درهم على الفيلا الأدنى سعرًا، رهنًا بموافقة البنك."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "brabus-island",
+   "name": "Brabus Island",
+   "sources": [
+    "DB: developments row brabus-island (price, handover, units, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-raha nearby band",
+    "zawya.com (BRABUS press release, Apr 2025) — first BRABUS-branded residences, developed with Cosmo Developments and powered by Reportage Group, Al Seef District, four towers, 352 units across 13 floors, Gulf views",
+    "propertyfinder.ae / bayut.com — Al Seef on Al Raha Beach, Q1 2029 handover",
+    "u.ae — Al Raha Beach investment area; adro.gov.ae — Golden Visa; Abu Dhabi Law No. 3 of 2015 — escrow"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of Brabus Island?",
+     "a": "Brabus Island is developed by Cosmo Developments and powered by Reportage Group, in partnership with BRABUS, the German luxury car tuner. It is the first BRABUS-branded residential project anywhere, and was unveiled in Abu Dhabi in April 2025.",
+     "q_ar": "من هو مطوّر مشروع برابوس آيلاند؟",
+     "a_ar": "يطوّر مشروع برابوس آيلاند شركة كوزمو للتطوير بدعم من مجموعة ريبورتاج، بالشراكة مع برابوس، العلامة الألمانية الفاخرة لتعديل السيارات. وهو أول مشروع سكني يحمل علامة برابوس في العالم، وكُشف عنه في أبوظبي في أبريل 2025."
+    },
+    {
+     "q": "Where is Brabus Island located?",
+     "a": "Brabus Island is in the Al Seef district on Al Raha Beach, Abu Dhabi, with panoramic views over the Arabian Gulf. Yas Island and Zayed International Airport are each about 10 minutes away by car, and Downtown Abu Dhabi about 25 minutes.",
+     "q_ar": "أين يقع مشروع برابوس آيلاند؟",
+     "a_ar": "يقع مشروع برابوس آيلاند في منطقة السيف على شاطئ الراحة بأبوظبي، مع إطلالات بانورامية على الخليج العربي. وتبعد جزيرة ياس ومطار زايد الدولي كلٌّ منهما نحو 10 دقائق بالسيارة، ووسط مدينة أبوظبي نحو 25 دقيقة."
+    },
+    {
+     "q": "What is the starting price of Brabus Island?",
+     "a": "Brabus Island starts from AED 2,800,000 for a two-bedroom apartment. Three- and four-bedroom residences are priced well above that, by size, height and sea view; ask a Bazar advisor for the current price list, as Reportage releases the towers in chapters.",
+     "q_ar": "ما سعر البداية في مشروع برابوس آيلاند؟",
+     "a_ar": "تبدأ الأسعار في مشروع برابوس آيلاند من 2,800,000 درهم لشقة بغرفتي نوم. وتُسعَّر الوحدات بثلاث وأربع غرف بأسعار أعلى بكثير بحسب المساحة والارتفاع والإطلالة البحرية، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار، إذ تطرح ريبورتاج الأبراج على مراحل."
+    },
+    {
+     "q": "What unit types and sizes are available at Brabus Island?",
+     "a": "Brabus Island has 352 residences in four towers of 13 floors, from two to four bedrooms. Two-bedroom apartments measure about 1,106–1,981 sq ft, three-bedrooms about 3,233 sq ft and four-bedrooms about 6,001–6,033 sq ft.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع برابوس آيلاند؟",
+     "a_ar": "يضم مشروع برابوس آيلاند 352 وحدة سكنية في أربعة أبراج من 13 طابقًا، من غرفتين إلى أربع غرف نوم. وتبلغ مساحة شقق الغرفتين نحو 1,106 إلى 1,981 قدمًا مربعًا، والثلاث غرف نحو 3,233 قدمًا مربعًا، والأربع غرف نحو 6,001 إلى 6,033 قدمًا مربعًا."
+    },
+    {
+     "q": "What is the payment plan for Brabus Island?",
+     "a": "Brabus Island is sold on a 30/70 payment plan: 10% on booking, 20% during construction and 70% on handover. On the AED 2,800,000 entry apartment, that is AED 840,000 before completion. The 2% Abu Dhabi registration fee is paid on top; Reportage has also offered other plans, so confirm yours in the contract.",
+     "q_ar": "ما خطة السداد في مشروع برابوس آيلاند؟",
+     "a_ar": "يُباع مشروع برابوس آيلاند بخطة سداد 30/70: 10% عند الحجز، و20% خلال الإنشاء، و70% عند التسليم. وعلى الشقة الأدنى سعرًا البالغة 2,800,000 درهم يعني ذلك 840,000 درهم قبل الإنجاز. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، وقد طرحت ريبورتاج خططًا أخرى أيضًا، لذا تحقق من خطتك في العقد."
+    },
+    {
+     "q": "When is the handover date for Brabus Island?",
+     "a": "Brabus Island is scheduled for handover in Q1 2029, in February 2029 on the current schedule. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع برابوس آيلاند؟",
+     "a_ar": "من المقرر تسليم مشروع برابوس آيلاند في الربع الأول من 2029، أي في فبراير 2029 وفق الجدول الحالي. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at Brabus Island?",
+     "a": "Yes. Brabus Island is on Al Raha Beach, one of Abu Dhabi's designated investment areas, and is sold to buyers of every nationality on a freehold basis. As with any off-plan unit, confirm the title type on the sale contract and check registration on DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع برابوس آيلاند؟",
+     "a_ar": "نعم. يقع مشروع برابوس آيلاند على شاطئ الراحة، وهو من مناطق الاستثمار المحددة في أبوظبي، ويُباع للمشترين من جميع الجنسيات بنظام التملك الحر. وكما في أي وحدة على الخريطة، تحقق من نوع سند الملكية في عقد البيع ومن التسجيل عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at Brabus Island?",
+     "a": "Yes, as every residence at Brabus Island starts above the AED 2 million threshold, from AED 2,800,000. Off-plan buyers must have paid AED 2 million, though, and with only 30% due before handover, most two-bedroom buyers qualify at completion; larger units reach it sooner.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في برابوس آيلاند؟",
+     "a_ar": "نعم، فجميع الوحدات في برابوس آيلاند تبدأ فوق حد المليوني درهم، من 2,800,000 درهم. لكن يجب على مشتري العقارات على الخريطة سداد مليوني درهم، ولأن 30% فقط تُستحق قبل التسليم، يتأهل معظم مشتري الشقق بغرفتين عند الإنجاز، بينما تبلغ الوحدات الأكبر هذا الحد في وقت أبكر."
+    },
+    {
+     "q": "What does the BRABUS brand bring to Brabus Island?",
+     "a": "BRABUS brings the minimalist, high-performance design language of its cars to the architecture and interiors of Brabus Island's four towers, marketed as the 'Home of the Wow'. Residents get private beach access, a concierge service and a designed arrival lobby, with Arabian Gulf views from the upper floors.",
+     "q_ar": "ما الذي تضيفه علامة برابوس إلى مشروع برابوس آيلاند؟",
+     "a_ar": "تنقل برابوس لغة التصميم البسيطة وعالية الأداء التي تميز سياراتها إلى العمارة والتصميم الداخلي لأبراج برابوس آيلاند الأربعة، ويُسوَّق المشروع بوصفه «موطن الإبهار». ويحصل السكان على وصول إلى شاطئ خاص وخدمة كونسيرج وردهة استقبال مصممة بعناية، مع إطلالات على الخليج العربي من الطوابق العليا."
+    },
+    {
+     "q": "How are my off-plan payments protected at Brabus Island?",
+     "a": "Your instalments go into the project escrow account. Abu Dhabi Law No. 3 of 2015 regulating the real estate sector requires off-plan payments to be held in escrow, overseen by ADREC, and released to the developer only against construction progress. Pay only into the account named in your sale and purchase agreement.",
+     "q_ar": "كيف تُحمى دفعاتي على الخريطة في برابوس آيلاند؟",
+     "a_ar": "تُودَع أقساطك في حساب الضمان الخاص بالمشروع. إذ يُلزم قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري بحفظ دفعات العقارات على الخريطة في حساب ضمان يشرف عليه مركز أبوظبي العقاري، ولا تُصرف للمطوّر إلا وفق تقدّم الإنشاء. لذا لا تدفع إلا إلى الحساب المذكور في عقد البيع والشراء."
+    }
+   ]
+  },
+  {
+   "kind": "development",
+   "slug": "fay-hills",
+   "name": "Fay Hills",
+   "sources": [
+    "DB: developments row fay-hills (price, handover, units, payment plan, feature blocks), development_unit_types (sizes); subpage/area/masdar-city nearby band (drive times)",
+    "zawya.com / wam.ae (Taraf + Masdar City press release) — 153-acre Fay Hills masterplan in Masdar City, four villages, first village Fay Gardens",
+    "metropolitan.realestate / propertyfinder.ae — Fay Valley release: 381 villas and townhouses, 2–6 bedrooms, from AED 3.14m, 6-bed villas from AED 7.71m, 40/60, Q2 2030",
+    "u.ae — Masdar City investment area; adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Who is the developer of Fay Hills?",
+     "a": "Fay Hills is developed by Taraf, the real estate arm of Yas Holding, in a joint venture with Masdar City. The 153-acre masterplan is built as four villages linked by green corridors, starting with Fay Gardens; the 381 homes on this page are the latest release, also marketed as Fay Valley.",
+     "q_ar": "من هو مطوّر مشروع فاي هيلز؟",
+     "a_ar": "يطوّر مشروع فاي هيلز شركة ترف، الذراع العقارية لمجموعة ياس القابضة، في مشروع مشترك مع مدينة مصدر. ويمتد المخطط على 153 فدانًا ويُنفَّذ في أربع قرى تربطها ممرات خضراء، أولها فاي غاردنز؛ أما المنازل الـ381 في هذه الصفحة فهي أحدث طرح، ويُسوَّق أيضًا باسم فاي فالي."
+    },
+    {
+     "q": "Where is Fay Hills located?",
+     "a": "Fay Hills is in Masdar City, Abu Dhabi, beside Zayed International Airport and next to Khalifa City and Al Raha. The airport is about 5 minutes away by car and Downtown Abu Dhabi about 20 minutes, with Yas Island a short drive along the E10.",
+     "q_ar": "أين يقع مشروع فاي هيلز؟",
+     "a_ar": "يقع مشروع فاي هيلز في مدينة مصدر بأبوظبي، بجوار مطار زايد الدولي وبالقرب من مدينة خليفة والراحة. ويبعد المطار نحو 5 دقائق بالسيارة، ووسط مدينة أبوظبي نحو 20 دقيقة، وجزيرة ياس مسافة قصيرة عبر طريق E10."
+    },
+    {
+     "q": "What is the starting price of Fay Hills?",
+     "a": "Fay Hills starts from AED 3,140,000 for a two-bedroom townhouse. Villas are priced higher by size and plot, with six-bedroom villas listed from about AED 7,710,000; ask a Bazar advisor for the current price list and plot availability.",
+     "q_ar": "ما سعر البداية في مشروع فاي هيلز؟",
+     "a_ar": "تبدأ الأسعار في مشروع فاي هيلز من 3,140,000 درهم لتاون هاوس بغرفتي نوم. وتُسعَّر الفلل بأسعار أعلى بحسب المساحة والقطعة، إذ تُعرض الفلل بست غرف بدءًا من نحو 7,710,000 درهم، ويمكنك طلب قائمة الأسعار الحالية والقطع المتاحة من مستشار بازار."
+    },
+    {
+     "q": "What unit types and sizes are available at Fay Hills?",
+     "a": "This Fay Hills release has 381 homes: two- and three-bedroom townhouses and four- to six-bedroom villas. Two-bedroom townhouses measure about 2,249 sq ft and three-bedrooms 2,490 sq ft; four-bedroom villas run 3,063–3,641 sq ft, five-bedroom villas about 4,546 sq ft and six-bedroom villas about 5,514 sq ft.",
+     "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع فاي هيلز؟",
+     "a_ar": "يضم هذا الطرح من فاي هيلز 381 منزلًا: منازل تاون هاوس بغرفتين وثلاث غرف، وفللًا من أربع إلى ست غرف نوم. وتبلغ مساحة التاون هاوس بغرفتين نحو 2,249 قدمًا مربعًا، وبثلاث غرف 2,490 قدمًا مربعًا؛ والفلل بأربع غرف من 3,063 إلى 3,641 قدمًا مربعًا، وبخمس غرف نحو 4,546 قدمًا مربعًا، وبست غرف نحو 5,514 قدمًا مربعًا."
+    },
+    {
+     "q": "What is the payment plan for Fay Hills?",
+     "a": "Fay Hills is sold on a 40/60 payment plan: 5% on booking, 35% during construction and 60% on handover. On the AED 3,140,000 entry townhouse, that is AED 1,256,000 before completion. The 2% Abu Dhabi registration fee is paid on top.",
+     "q_ar": "ما خطة السداد في مشروع فاي هيلز؟",
+     "a_ar": "يُباع مشروع فاي هيلز بخطة سداد 40/60: 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم. وعلى التاون هاوس الأدنى سعرًا البالغ 3,140,000 درهم يعني ذلك 1,256,000 درهم قبل الإنجاز. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك."
+    },
+    {
+     "q": "When is the handover date for Fay Hills?",
+     "a": "This Fay Hills release is scheduled for handover in Q2 2030, in May 2030 on the current schedule; the first village, Fay Gardens, follows its own timeline. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+     "q_ar": "متى موعد تسليم مشروع فاي هيلز؟",
+     "a_ar": "من المقرر تسليم هذا الطرح من فاي هيلز في الربع الثاني من 2030، أي في مايو 2030 وفق الجدول الحالي، بينما تتبع القرية الأولى فاي غاردنز جدولها الخاص. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+    },
+    {
+     "q": "Can foreigners buy at Fay Hills?",
+     "a": "Yes. Fay Hills is in Masdar City, one of Abu Dhabi's designated investment areas, so buyers of every nationality can own its townhouses and villas freehold. That sets it apart from most of neighbouring Khalifa City, where villa plots are largely held by UAE nationals; register the sale through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء في مشروع فاي هيلز؟",
+     "a_ar": "نعم. يقع مشروع فاي هيلز في مدينة مصدر، وهي من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من جميع الجنسيات تملّك منازل التاون هاوس والفلل فيه بنظام التملك الحر. وهذا ما يميزه عن معظم مدينة خليفة المجاورة، حيث تعود ملكية قطع الفلل في الغالب إلى مواطنين إماراتيين؛ ويُسجَّل البيع عبر منصة «داري»."
+    },
+    {
+     "q": "Can I get a Golden Visa by buying at Fay Hills?",
+     "a": "Yes, every home at Fay Hills is priced above the AED 2 million threshold, from AED 3,140,000. Off-plan buyers must have paid AED 2 million: on the 40/60 plan a townhouse buyer reaches that at handover, while a six-bedroom villa from AED 7,710,000 passes it during construction.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء منزل في فاي هيلز؟",
+     "a_ar": "نعم، فجميع المنازل في فاي هيلز تتجاوز حد المليوني درهم، إذ تبدأ من 3,140,000 درهم. ويجب على مشتري العقارات على الخريطة سداد مليوني درهم: ووفق خطة 40/60 يبلغ مشتري التاون هاوس هذا المبلغ عند التسليم، بينما تتجاوزه الفيلا بست غرف التي تبدأ من 7,710,000 درهم خلال الإنشاء."
+    },
+    {
+     "q": "What is the Fay Hills masterplan like?",
+     "a": "Fay Hills is planned around sustainability and wellness: four villages of villas and townhouses in walkable clusters, linked by shaded green corridors, landscaped parks and water features. Residents share a clubhouse, swimming pools and open green spaces, with Masdar City's offices, schools and retail close by.",
+     "q_ar": "كيف يبدو المخطط العام لمشروع فاي هيلز؟",
+     "a_ar": "صُمّم مشروع فاي هيلز حول الاستدامة والعافية: أربع قرى من الفلل ومنازل التاون هاوس في مجموعات يسهل التنقل فيها سيرًا، تربطها ممرات خضراء مظللة وحدائق ومسطحات مائية. ويتشارك السكان ناديًا مجتمعيًا ومسابح ومساحات خضراء مفتوحة، مع قرب مكاتب مدينة مصدر ومدارسها ومتاجرها."
+    },
+    {
+     "q": "Can I resell a Fay Hills home before handover?",
+     "a": "Usually yes, once you have paid the minimum share of the price set in your sale and purchase agreement. Taraf then issues a no-objection certificate, the assignment is registered through DARI and the new buyer takes on the remaining payments, including the 60% due on handover.",
+     "q_ar": "هل يمكنني إعادة بيع منزل في فاي هيلز قبل التسليم؟",
+     "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر ترف عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الدفعات المتبقية، ومنها الـ60% المستحقة عند التسليم."
+    }
+   ]
+  }
+ ]
+}

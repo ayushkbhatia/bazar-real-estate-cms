@@ -1,0 +1,781 @@
+{
+  "wave": "2",
+  "batch": "batch-d",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    "2025",
+    "2026",
+    "2031",
+    "2019",
+    "2015",
+    "3",
+    "2",
+    "20",
+    "6",
+    "37",
+    "310000",
+    "67",
+    "275",
+    "360",
+    "11",
+    "25",
+    "100",
+    "17534",
+    "92",
+    "650",
+    "13",
+    "73",
+    "3.5",
+    "27",
+    "4.4",
+    "14",
+    "94000",
+    "470000",
+    "79000",
+    "1580000",
+    "5",
+    "44000",
+    "1100000",
+    "4000000",
+    "36600",
+    "3340000",
+    "30000",
+    "30",
+    "1050000",
+    "70000",
+    "1225000",
+    "65",
+    "50",
+    "72000",
+    "360000",
+    "62000",
+    "1550000"
+  ],
+  "sourcedNotes": {
+    "2025": "SAAS unveiled the project at Abu Dhabi Finance Week, Dec 2025 (adgm.com); Fahid Beach Residences launch June 2025 (wam.ae); Fahid Beach Terraces sales from 27 Aug 2025 (zawya.com); Law No. 2 of 2025 amending Law No. 3 of 2015 (aoshearman.com)",
+    "2026": "Jumeirah agreement Jan 2026 (gulfnews.com); LIVEX 2026 (zawya.com); first off-plan mortgage Sept 2026 (gulfnews.com); Bristol construction from April 2026 (propertyfinder.ae)",
+    "2031": "Jumeirah Residences opening 2031 per launch coverage (aeworld.com, ceo-middleeast.com); Bab Al Qasr 77 Q4 2031 (zawya.com)",
+    "2019": "Abu Dhabi freehold opened to foreigners, Law No. 13 of 2019 (u.ae, Wave 1)",
+    "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (aoshearman.com / kslaw.com)",
+    "3": "Law No. 3 of 2015; Estidama 3 Pearl (aldar.com); Q3 2029 from DB handover month",
+    "2": "Law No. 2 of 2025; 2% registration fee; Fitwel 2-star target (zawya.com)",
+    "20": "escrow: developer withdrawals after 20% of construction (aoshearman.com / kslaw.com)",
+    "6": "Burtville reports 6% progress at Garden Residence 66 (zawya.com); Aldar Home Finance > 6 banks (gulfnews.com)",
+    "37": "W Residences 37 storeys (zawya.com, Taraf release)",
+    "310000": "Garden Residence 65 plot > 310,000 sq ft (zawya.com, Burtville release)",
+    "67": "67% landscaped at Garden Residences 65/66 (zawya.com); 67% expatriate/overseas buyers at Fahid launch (wam.ae)",
+    "275": "275 m water canal at Garden Residence 65 (zawya.com)",
+    "360": "360 m jogging track at Garden Residence 65 (zawya.com)",
+    "11": "11 retail outlets at Garden Residence 65 (zawya.com)",
+    "25": "25% off Bab Al Qasr hotel services (zawya.com); three 25 m infinity pools at Fahid Beach Terraces (zawya.com)",
+    "100": "~100 sq ft private garden per unit at Garden Residence 66 (zawya.com)",
+    "17534": "Bab Al Qasr 77 plot 17,534 sq m (zawya.com / gulfnews.com)",
+    "92": "~92% of Residence 77 homes with direct sea views (zawya.com / gulfnews.com)",
+    "650": "650 m jogging track at Residence 77 (zawya.com)",
+    "13": "13 retail units at Residence 77 (zawya.com)",
+    "73": "73% of Residence 77 site landscaped (zawya.com)",
+    "3.5": "AED 3.5 billion launch-week sales, Fahid Beach Residences + The Beach House (wam.ae)",
+    "27": "Fahid Beach Terraces sales opened 27 Aug 2025 (zawya.com)",
+    "4.4": "The Bristol Residences 2-bed from AED 4.4M (propertyfinder.ae)",
+    "14": "The Bristol Residences 4-bed from AED 14M (propertyfinder.ae)",
+    "94000": "2% of DB starting price 4,700,000 (Jumeirah Residences)",
+    "470000": "10% booking on DB starting price 4,700,000",
+    "79000": "2% of DB starting price 3,950,000 (Ritz-Carlton)",
+    "1580000": "40% of 3,950,000 (DB price × DB pre-handover share)",
+    "5": "AED 5M: price at which 40% pre-handover = AED 2M (arithmetic)",
+    "44000": "2% of DB starting price 2,200,000 (W Residences, Bab Al Qasr 77)",
+    "1100000": "50% of DB starting price 2,200,000",
+    "4000000": "price at which 50% pre-handover = AED 2M (arithmetic)",
+    "36600": "2% of DB starting price 1,830,000 (Garden Residence 65)",
+    "3340000": "price at which 60% pre-handover ≈ AED 2M (2,000,000 / 0.6, rounded)",
+    "30000": "2% of DB starting price 1,500,000 (Garden Residence 66)",
+    "30": "sum of DB milestones 10% booking + 20% construction (Garden Residence 66)",
+    "1050000": "70% of DB starting price 1,500,000 (Garden Residence 66)",
+    "70000": "2% of DB starting price 3,500,000 (Fahid Beach Residences)",
+    "1225000": "35% of DB starting price 3,500,000",
+    "65": "DB plan 65/35 (10 + 55)",
+    "50": "ADREC off-plan mortgage framework: 50% of price paid (gulfnews.com, Sept 2026)",
+    "72000": "2% of DB starting price 3,600,000 (Fahid Beach Terraces)",
+    "360000": "10% booking on DB starting price 3,600,000",
+    "62000": "2% of DB starting price 3,100,000 (The Bristol Residences)",
+    "1550000": "50% of DB starting price 3,100,000"
+  },
+  "pages": [
+    {
+      "kind": "development",
+      "slug": "jumeirah-residences",
+      "name": "Jumeirah Residences",
+      "sources": [
+        "DB: developments row jumeirah-residences (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-maryah nearby band",
+        "gulfnews.com (19 Jan 2026) — Emirates Developments x Jumeirah agreement, 253 apartments, next to The Galleria, Jumeirah's second Abu Dhabi property",
+        "aeworld.com (Jan 2026) — launch at Louvre Abu Dhabi, Killa Design, sky gardens, floating terraces, elevated pool, Jumeirah services, opening 2031",
+        "propertyfinder.ae — launch price AED 4.7M, Q4 2030 delivery",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "aoshearman.com / kslaw.com (2025–2026) — Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025: project escrow accounts, 20% construction threshold, ADREC early-release via bank guarantee (Admin. Decision 24/2025)",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Jumeirah Residences?",
+          "a": "Jumeirah Residences is developed by Emirates Developments in partnership with Jumeirah, the Dubai Holding hospitality group. The two signed the agreement in January 2026, and the tower is designed by Killa Design, the studio led by architect Shaun Killa. It is Jumeirah's second property in Abu Dhabi.",
+          "q_ar": "من هو مطوّر مشروع جميرا ريزيدنسز؟",
+          "a_ar": "يطوّر مشروع جميرا ريزيدنسز شركة الإمارات للتطوير العقاري بالشراكة مع جميرا، مجموعة الضيافة التابعة لدبي القابضة. ووقّع الطرفان الاتفاقية في يناير 2026، ويحمل تصميم البرج توقيع كيلا ديزاين، الاستوديو الذي يقوده المعماري شون كيلا. وهو ثاني عقار لجميرا في أبوظبي."
+        },
+        {
+          "q": "Where is Jumeirah Residences located?",
+          "a": "Jumeirah Residences is on Al Maryah Island, Abu Dhabi's financial district, right next to The Galleria and overlooking the waterfront canal towards Al Reem Island. ADGM is about 4 minutes away by car, Downtown Abu Dhabi about 10 minutes and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع جميرا ريزيدنسز؟",
+          "a_ar": "يقع مشروع جميرا ريزيدنسز في جزيرة المارية، المنطقة المالية في أبوظبي، بجوار ذا غاليريا مباشرةً، ويطل على القناة المائية باتجاه جزيرة الريم. ويبعد نحو 4 دقائق بالسيارة عن سوق أبوظبي العالمي، ونحو 10 دقائق عن وسط مدينة أبوظبي، ونحو 25 دقيقة عن مطار زايد الدولي."
+        },
+        {
+          "q": "What is the starting price of Jumeirah Residences?",
+          "a": "Jumeirah Residences starts from AED 4,700,000. Prices rise with size, floor and the canal or skyline view, and the 2% Abu Dhabi registration fee, AED 94,000 at the starting price, is paid on top. Ask a Bazar advisor for the current price list, as availability changes between release phases.",
+          "q_ar": "ما سعر البداية في مشروع جميرا ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في مشروع جميرا ريزيدنسز من 4,700,000 درهم. وترتفع الأسعار بحسب المساحة والطابق والإطلالة على القناة أو أفق المدينة، وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 94,000 درهم عند سعر البداية. ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار، إذ يتغير التوافر بين مراحل الطرح."
+        },
+        {
+          "q": "What unit types and sizes are available at Jumeirah Residences?",
+          "a": "Jumeirah Residences has 253 apartments with one to four bedrooms. One-bedroom units measure about 1,115–1,600 sq ft, two-bedrooms 1,875–1,941 sq ft, three-bedrooms 2,901–2,967 sq ft and four-bedrooms 4,259–4,467 sq ft. Launch coverage also mentions five-bedroom homes, so confirm the current mix with a Bazar advisor.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع جميرا ريزيدنسز؟",
+          "a_ar": "يضم مشروع جميرا ريزيدنسز 253 شقة من غرفة إلى أربع غرف نوم. وتبلغ مساحة شقق الغرفة الواحدة نحو 1,115 إلى 1,600 قدم مربع، وشقق الغرفتين من 1,875 إلى 1,941 قدمًا مربعًا، وشقق الثلاث غرف من 2,901 إلى 2,967 قدمًا مربعًا، وشقق الأربع غرف من 4,259 إلى 4,467 قدمًا مربعًا. وتشير تغطية الإطلاق أيضًا إلى منازل بخمس غرف نوم، لذا يُنصح بتأكيد التشكيلة الحالية مع مستشار بازار."
+        },
+        {
+          "q": "What is the payment plan for Jumeirah Residences?",
+          "a": "Jumeirah Residences is sold on a 50/50 payment plan: 10% on booking, 40% during construction and 50% on handover. On the AED 4,700,000 starting price that means AED 470,000 to reserve. The 2% registration fee is paid on top; confirm the schedule for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع جميرا ريزيدنسز؟",
+          "a_ar": "يُباع مشروع جميرا ريزيدنسز بخطة سداد 50/50: 10% عند الحجز، و40% خلال فترة الإنشاء، و50% عند التسليم. وعند سعر البداية البالغ 4,700,000 درهم يعني ذلك 470,000 درهم للحجز. وتُدفع رسوم التسجيل البالغة 2% إضافةً إلى ذلك، ويُنصح بتأكيد جدول الدفعات الخاص بوحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Jumeirah Residences?",
+          "a": "Jumeirah Residences is scheduled for handover in Q4 2030. Some launch coverage speaks of the tower opening in 2031, so read the anticipated completion date in the sale and purchase agreement, which also sets out what happens if the date moves.",
+          "q_ar": "متى موعد تسليم مشروع جميرا ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع جميرا ريزيدنسز في الربع الرابع من 2030. وتتحدث بعض تغطيات الإطلاق عن افتتاح البرج في 2031، لذا يُنصح بمراجعة تاريخ الإنجاز المتوقع في عقد البيع والشراء، الذي يحدد أيضًا ما يترتب على أي تغيير في الموعد."
+        },
+        {
+          "q": "Can foreigners buy at Jumeirah Residences?",
+          "a": "Yes. Al Maryah Island is one of the nine Abu Dhabi investment areas where foreigners may own property, listed by the UAE government as Mariya, so buyers of any nationality, resident in the UAE or not, can own at Jumeirah Residences freehold. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في جميرا ريزيدنسز؟",
+          "a_ar": "نعم. جزيرة المارية من المناطق الاستثمارية التسع في أبوظبي التي يحق للأجانب التملك فيها، وتذكرها البوابة الحكومية باسم «مارية»، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو غير مقيمين، تملّك الوحدات في جميرا ريزيدنسز بنظام التملك الحر. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Jumeirah Residences?",
+          "a": "Yes, as every home at Jumeirah Residences is priced from AED 4,700,000, well above the AED 2 million threshold. Because it is off-plan, the developer must confirm that at least AED 2 million has been paid; at the starting price that point falls partway through the 40% construction stage, and sooner on larger homes.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في جميرا ريزيدنسز؟",
+          "a_ar": "نعم، فجميع الوحدات في جميرا ريزيدنسز تبدأ من 4,700,000 درهم، أي أعلى بكثير من حد المليوني درهم. ولأن المشروع على الخريطة، يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل؛ وعند سعر البداية يتحقق ذلك في منتصف مرحلة دفعات الإنشاء البالغة 40% تقريبًا، وفي وقت أبكر للوحدات الأكبر."
+        },
+        {
+          "q": "What does the Jumeirah brand bring to Jumeirah Residences?",
+          "a": "Residents get Jumeirah's hospitality-led services at home: concierge support, personalised wellness experiences and private dining, run to the group's hotel standards. The amber-toned tower adds sky gardens, floating terraces and an elevated infinity pool, alongside a second pool, a gym, a residents' lounge and an outdoor dining terrace.",
+          "q_ar": "ما الذي تضيفه علامة جميرا إلى مشروع جميرا ريزيدنسز؟",
+          "a_ar": "يحصل السكان على خدمات الضيافة التي تشتهر بها جميرا في منازلهم: خدمة الكونسيرج، وتجارب العافية المخصصة، والطعام الخاص، وفق معايير فنادق المجموعة. ويضم البرج بلونه الكهرماني حدائق معلقة وشرفات عائمة ومسبحًا لا متناهيًا مرتفعًا، إلى جانب مسبح ثانٍ وصالة رياضية وصالة استراحة للسكان وتراس لتناول الطعام في الهواء الطلق."
+        },
+        {
+          "q": "Is my money protected when buying Jumeirah Residences off-plan?",
+          "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, as amended by Law No. 2 of 2025, off-plan instalments must go into an escrow account opened for the project with an approved bank and overseen by ADREC. The developer can draw on it only once 20% of the works are complete, unless ADREC approves an earlier release backed by a bank bond. Pay only into the escrow account named in your sale and purchase agreement.",
+          "q_ar": "هل أموالي محمية عند شراء وحدة في جميرا ريزيدنسز على الخريطة؟",
+          "a_ar": "نعم. بموجب قانون أبوظبي رقم 3 لسنة 2015 وتعديلاته بالقانون رقم 2 لسنة 2025، يجب إيداع دفعات المشاريع على الخريطة في حساب ضمان يُفتح للمشروع لدى بنك معتمد ويخضع لرقابة ADREC. ولا يحق للمطوّر السحب منه إلا بعد إنجاز 20% من الأعمال، ما لم يوافق المركز على صرف مبكر مقابل ضمان بنكي. ولا تسدد إلا في حساب الضمان المذكور في عقد البيع والشراء."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "the-ritz-carlton-residences",
+      "name": "The Ritz-Carlton Residences",
+      "sources": [
+        "DB: developments row the-ritz-carlton-residences (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-maryah nearby band",
+        "zawya.com / khaleejtimes.com (LIVEX 2026) — SAAS + Marriott, 165 homes, Killa Design, Tara Bernerd interiors, amenities, handover Q2 2030",
+        "adgm.com (Dec 2025) — unveiled at Abu Dhabi Finance Week 2025",
+        "engelvoelkers.com / luxhabitat.ae — AED 3.95M one-bedroom, 40:60, 926–5,802 sq ft, beside Cleveland Clinic",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "gulfnews.com / thenationalnews.com / khaleejtimes.com (Sept 2026) — ADREC off-plan mortgage framework, 50% paid, Aldar + ADCB first deal",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of The Ritz-Carlton Residences on Al Maryah Island?",
+          "a": "The Ritz-Carlton Residences, Al Maryah Island is developed by SAAS Properties in partnership with Marriott International, which licenses the Ritz-Carlton brand. SAAS unveiled it at Abu Dhabi Finance Week in December 2025 and launched sales at LIVEX 2026. Architecture is by Shaun Killa of Killa Design and interiors by Tara Bernerd & Partners.",
+          "q_ar": "من هو مطوّر مشروع ذا ريتز كارلتون ريزيدنسز في جزيرة المارية؟",
+          "a_ar": "يطوّر مشروع ذا ريتز كارلتون ريزيدنسز في جزيرة المارية شركة ساس العقارية بالشراكة مع ماريوت الدولية، التي تمنح ترخيص علامة ريتز كارلتون. وكشفت ساس عن المشروع خلال أسبوع أبوظبي المالي في ديسمبر 2025، وأطلقت مبيعاته في معرض ليفكس 2026. والتصميم المعماري لشون كيلا من كيلا ديزاين، والتصميم الداخلي لاستوديو تارا برنرد وشركاه."
+        },
+        {
+          "q": "Where is The Ritz-Carlton Residences located?",
+          "a": "The Ritz-Carlton Residences sits on the waterfront canal of Al Maryah Island, beside Cleveland Clinic Abu Dhabi and close to ADGM and The Galleria. ADGM is about 4 minutes away by car, the Louvre Abu Dhabi about 12 minutes and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "يقع مشروع ذا ريتز كارلتون ريزيدنسز على القناة المائية في جزيرة المارية، بجوار مستشفى كليفلاند كلينك أبوظبي وبالقرب من سوق أبوظبي العالمي وذا غاليريا. ويبعد نحو 4 دقائق بالسيارة عن سوق أبوظبي العالمي، ونحو 12 دقيقة عن اللوفر أبوظبي، ونحو 25 دقيقة عن مطار زايد الدولي."
+        },
+        {
+          "q": "What is the starting price of The Ritz-Carlton Residences?",
+          "a": "The Ritz-Carlton Residences starts from AED 3,950,000 for a one-bedroom residence. Duplexes, larger simplex homes and the signature penthouse are priced well above that. The 2% Abu Dhabi registration fee, AED 79,000 at the starting price, is paid on top; ask a Bazar advisor for the current price list.",
+          "q_ar": "ما سعر البداية في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في ذا ريتز كارلتون ريزيدنسز من 3,950,000 درهم لوحدة بغرفة نوم واحدة. وتُسعَّر الشقق المزدوجة والوحدات الأكبر والبنتهاوس المميز بأسعار أعلى بكثير. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 79,000 درهم عند سعر البداية، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at The Ritz-Carlton Residences?",
+          "a": "The Ritz-Carlton Residences has 165 homes with one to four bedrooms, in simplex and duplex layouts, topped by a signature penthouse. One-bedrooms measure about 926–1,109 sq ft, two-bedrooms 1,884–2,217 sq ft, three-bedrooms 2,961–4,672 sq ft and four-bedrooms about 5,801–5,802 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "يضم مشروع ذا ريتز كارلتون ريزيدنسز 165 وحدة سكنية من غرفة إلى أربع غرف نوم، بتصاميم أحادية الطابق ومزدوجة، يعلوها بنتهاوس مميز. وتبلغ مساحة وحدات الغرفة الواحدة نحو 926 إلى 1,109 أقدام مربعة، والغرفتين من 1,884 إلى 2,217 قدمًا مربعًا، والثلاث غرف من 2,961 إلى 4,672 قدمًا مربعًا، والأربع غرف نحو 5,801 إلى 5,802 قدم مربع."
+        },
+        {
+          "q": "What is the payment plan for The Ritz-Carlton Residences?",
+          "a": "The Ritz-Carlton Residences is sold on a 40/60 payment plan: 10% on booking, 30% during construction and 60% on handover. Most of the price is therefore due at completion, which suits buyers who plan to finance or sell another property at that point. Confirm the schedule in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "يُباع مشروع ذا ريتز كارلتون ريزيدنسز بخطة سداد 40/60: 10% عند الحجز، و30% خلال فترة الإنشاء، و60% عند التسليم. وبذلك يُستحق معظم السعر عند الإنجاز، وهو ما يناسب المشترين الذين يخططون للتمويل أو لبيع عقار آخر في ذلك الوقت. ويُنصح بتأكيد جدول الدفعات في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for The Ritz-Carlton Residences?",
+          "a": "The Ritz-Carlton Residences is scheduled for handover in Q1 2030, with construction already under way. SAAS's LIVEX 2026 launch release gives Q2 2030, so check the anticipated completion date in your sale and purchase agreement, which also sets out what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع ذا ريتز كارلتون ريزيدنسز في الربع الأول من 2030، وأعمال البناء جارية بالفعل. ويذكر بيان الإطلاق الصادر عن ساس في معرض ليفكس 2026 الربع الثاني من 2030، لذا يُنصح بمراجعة تاريخ الإنجاز المتوقع في عقد البيع والشراء، الذي يحدد أيضًا ما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at The Ritz-Carlton Residences?",
+          "a": "Yes. The Ritz-Carlton Residences is on Al Maryah Island, one of the nine Abu Dhabi investment areas open to foreign ownership, so buyers of any nationality can own a residence freehold, with or without UAE residency. Ownership is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "نعم. يقع مشروع ذا ريتز كارلتون ريزيدنسز في جزيرة المارية، إحدى المناطق الاستثمارية التسع في أبوظبي المفتوحة لتملك الأجانب، لذا يحق للمشترين من أي جنسية تملّك الوحدات بنظام التملك الحر، سواء كانت لديهم إقامة في الإمارات أم لا. ويُسجَّل التملك لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at The Ritz-Carlton Residences?",
+          "a": "Yes, since every residence starts above the AED 2 million threshold. Off-plan, the developer must confirm AED 2 million paid: on a AED 3,950,000 one-bedroom the 40% due before handover is AED 1,580,000, so buyers usually qualify at handover. On homes priced at AED 5 million or more, the pre-handover 40% already reaches AED 2 million.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "نعم، إذ تبدأ أسعار جميع الوحدات فوق حد المليوني درهم. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم: ففي وحدة بغرفة واحدة سعرها 3,950,000 درهم تبلغ نسبة 40% المستحقة قبل التسليم 1,580,000 درهم، لذا يتأهل المشترون عادةً عند التسليم. أما الوحدات التي يبلغ سعرها 5 ملايين درهم أو أكثر فتصل فيها نسبة 40% قبل التسليم إلى مليوني درهم."
+        },
+        {
+          "q": "What amenities does The Ritz-Carlton Residences offer?",
+          "a": "Residents of The Ritz-Carlton Residences get the brand's residential service and a full wellness and leisure floor. Facilities include an infinity pool and an indoor pool, a spa, a yoga room and gym, an indoor cinema, a golf simulator and executive golf lounge, a games room, and a co-working lounge with a boardroom, set around landscaped family areas.",
+          "q_ar": "ما المرافق المتوفرة في ذا ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "يحصل سكان ذا ريتز كارلتون ريزيدنسز على خدمات العلامة السكنية، إلى جانب مسبح لا متناهٍ ومسبح داخلي، ومرافق للسبا والعافية، وغرفة لليوغا وصالة رياضية، وسينما داخلية، ومحاكي جولف وصالة جولف تنفيذية، وغرفة ألعاب، وصالة عمل مشتركة مع قاعة اجتماعات، وكلها حول مساحات عائلية ذات مناظر طبيعية."
+        },
+        {
+          "q": "Can I get a mortgage on The Ritz-Carlton Residences before handover?",
+          "a": "Possibly, but not on the standard schedule. ADREC's off-plan mortgage framework, used for Abu Dhabi's first off-plan mortgage in September 2026, requires 50% of the price to be paid, while this 10/30/60 plan collects only 40% before handover. A buyer would need to pay a further 10% early, and the bank must accept the project; otherwise the 60% is financed at handover.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري في ذا ريتز كارلتون ريزيدنسز قبل التسليم؟",
+          "a_ar": "ربما، لكن ليس وفق الجدول المعتاد. يشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، الذي نُفِّذ بموجبه أول رهن عقاري على الخريطة في أبوظبي في سبتمبر 2026، سداد 50% من السعر، بينما تحصّل خطة 10/30/60 هذه 40% فقط قبل التسليم. لذا يحتاج المشتري إلى سداد 10% إضافية مبكرًا، مع قبول البنك للمشروع؛ وإلا فتُموَّل نسبة 60% عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "w-residences",
+      "name": "W Residences",
+      "sources": [
+        "DB: developments row w-residences (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-maryah nearby band",
+        "zawya.com — Taraf unveils W Residences: 37 storeys, 1–4 bed + duplexes + penthouse, dhow-inspired design, Whatever/Whenever concierge, near Galleria, ADGM, Cleveland Clinic; Marriott licence wording",
+        "zawya.com / arabianbusiness.com — Taraf (Yas Holding) groundbreaking; first W Hotels branded residences in Abu Dhabi",
+        "propertyfinder.ae / dubizzle.com — AED 2.2M, Q4 2027",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of W Residences Abu Dhabi on Al Maryah Island?",
+          "a": "W Residences is developed by Taraf, the real estate arm of Yas Holding, under licence from Marriott International. It is the first W Hotels branded residential project in Abu Dhabi. Marriott supplies the brand and residence services; Taraf develops and sells the homes, and has broken ground on the tower.",
+          "q_ar": "من هو مطوّر مشروع دبليو ريزيدنسز أبوظبي في جزيرة المارية؟",
+          "a_ar": "تطوّر مشروع دبليو ريزيدنسز شركة ترف، الذراع العقارية لمجموعة ياس القابضة، بموجب ترخيص من ماريوت الدولية. وهو أول مشروع سكني يحمل علامة فنادق دبليو في أبوظبي. وتوفر ماريوت العلامة وخدمات الإقامة، بينما تتولى ترف تطوير الوحدات وبيعها، وقد بدأت بالفعل أعمال بناء البرج."
+        },
+        {
+          "q": "Where is W Residences located?",
+          "a": "W Residences is on Al Maryah Island, Abu Dhabi's financial district, within walking distance of The Galleria, ADGM and Cleveland Clinic Abu Dhabi. Downtown Abu Dhabi is about 10 minutes away by car, the Louvre Abu Dhabi about 12 minutes and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع دبليو ريزيدنسز؟",
+          "a_ar": "يقع مشروع دبليو ريزيدنسز في جزيرة المارية، المنطقة المالية في أبوظبي، على مسافة سير من ذا غاليريا وسوق أبوظبي العالمي ومستشفى كليفلاند كلينك أبوظبي. ويبعد نحو 10 دقائق بالسيارة عن وسط مدينة أبوظبي، ونحو 12 دقيقة عن اللوفر أبوظبي، ونحو 25 دقيقة عن مطار زايد الدولي."
+        },
+        {
+          "q": "What is the starting price of W Residences?",
+          "a": "W Residences starts from AED 2,200,000, the entry point for one-bedroom apartments. Prices rise with size, floor and the skyline or water view; the 2% Abu Dhabi registration fee, AED 44,000 at the starting price, is paid on top. Ask a Bazar advisor for the current price list.",
+          "q_ar": "ما سعر البداية في مشروع دبليو ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في مشروع دبليو ريزيدنسز من 2,200,000 درهم، وهو سعر الدخول لشقق الغرفة الواحدة. وترتفع الأسعار بحسب المساحة والطابق والإطلالة على أفق المدينة أو الماء، وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 44,000 درهم عند سعر البداية. ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at W Residences?",
+          "a": "W Residences has 177 homes in a 37-storey tower. One-bedroom apartments measure about 909–924 sq ft, two-bedrooms 1,398–1,400 sq ft and three-bedrooms 2,073–2,176 sq ft. Taraf's launch material also lists four-bedroom apartments, four-bedroom duplexes and a penthouse; ask a Bazar advisor which are still available.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في دبليو ريزيدنسز؟",
+          "a_ar": "يضم مشروع دبليو ريزيدنسز 177 وحدة سكنية في برج من 37 طابقًا. وتبلغ مساحة شقق الغرفة الواحدة نحو 909 إلى 924 قدمًا مربعًا، والغرفتين من 1,398 إلى 1,400 قدم مربع، والثلاث غرف من 2,073 إلى 2,176 قدمًا مربعًا. وتذكر مواد الإطلاق الصادرة عن ترف أيضًا شققًا بأربع غرف وشققًا مزدوجة بأربع غرف وبنتهاوس، ويمكنك سؤال مستشار بازار عن المتاح منها."
+        },
+        {
+          "q": "What is the payment plan for W Residences?",
+          "a": "W Residences is sold on a 50/50 payment plan: 10% on booking, 40% during construction and 50% on handover. With handover due in Q4 2027, the construction instalments run over a relatively short period, so check their dates in the sale and purchase agreement. The 2% registration fee is paid on top.",
+          "q_ar": "ما خطة السداد في دبليو ريزيدنسز؟",
+          "a_ar": "يُباع مشروع دبليو ريزيدنسز بخطة سداد 50/50: 10% عند الحجز، و40% خلال فترة الإنشاء، و50% عند التسليم. ومع موعد التسليم في الربع الرابع من 2027، تُستحق دفعات الإنشاء خلال فترة قصيرة نسبيًا، لذا يُنصح بمراجعة مواعيدها في عقد البيع والشراء. وتُدفع رسوم التسجيل البالغة 2% إضافةً إلى ذلك."
+        },
+        {
+          "q": "When is the handover date for W Residences?",
+          "a": "W Residences is scheduled for handover in Q4 2027, which makes it one of the nearer-term branded launches on Al Maryah Island; Taraf has already broken ground. Completion dates can move, and the sale and purchase agreement states the anticipated date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم دبليو ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع دبليو ريزيدنسز في الربع الرابع من 2027، ما يجعله من المشاريع ذات العلامات التجارية الأقرب تسليمًا في جزيرة المارية، وقد بدأت ترف أعمال البناء بالفعل. وقد تتغير مواعيد الإنجاز، ويذكر عقد البيع والشراء التاريخ المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at W Residences?",
+          "a": "Yes. W Residences is on Al Maryah Island, which the UAE government lists as Mariya among Abu Dhabi's nine investment areas open to foreign buyers, so any nationality can own an apartment there freehold. Non-residents can buy without a UAE visa, and the title is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في دبليو ريزيدنسز؟",
+          "a_ar": "نعم. يقع مشروع دبليو ريزيدنسز في جزيرة المارية، التي تدرجها الحكومة باسم «مارية» ضمن المناطق الاستثمارية التسع في أبوظبي المفتوحة للمشترين الأجانب، لذا يحق لأي جنسية تملّك شقة فيها بنظام التملك الحر. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل السند عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at W Residences?",
+          "a": "Yes, as homes start at AED 2,200,000, just above the AED 2 million threshold. Off-plan, the developer must confirm AED 2 million paid, and the 50% due before handover on a starting-price unit is AED 1,100,000, so entry one-bedroom buyers qualify at handover. Homes priced at AED 4,000,000 or more reach AED 2 million by the end of construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في دبليو ريزيدنسز؟",
+          "a_ar": "نعم، إذ تبدأ الأسعار من 2,200,000 درهم، أي فوق حد المليوني درهم بقليل. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم، وتبلغ نسبة 50% المستحقة قبل التسليم في وحدة بسعر البداية 1,100,000 درهم، لذا يتأهل مشترو شقق الغرفة الواحدة عند التسليم. أما الوحدات التي يبلغ سعرها 4,000,000 درهم أو أكثر فتصل إلى مليوني درهم بنهاية الإنشاء."
+        },
+        {
+          "q": "What does the W Hotels brand offer at W Residences?",
+          "a": "W Residences comes with the W brand's signature residence concierge, which handles requests on demand, and a dhow-inspired tower with panoramic skyline views. Amenities include an infinity pool and wet pool deck, a second pool, a spa and wellness area, a gym and outdoor fitness space, a private cinema, a golf simulator, a games room and a residents' lounge.",
+          "q_ar": "ما الذي تقدمه علامة فنادق دبليو في دبليو ريزيدنسز؟",
+          "a_ar": "يأتي مشروع دبليو ريزيدنسز مع خدمة الكونسيرج المميزة لعلامة دبليو، التي تلبي طلبات السكان عند الحاجة، وبرج مستوحى من انحناءات قوارب الداو مع إطلالات بانورامية على أفق المدينة. وتشمل المرافق مسبحًا لا متناهيًا وسطحًا للمسبح، ومسبحًا ثانيًا، ومنطقة للسبا والعافية، وصالة رياضية ومساحة للياقة في الهواء الطلق، وسينما خاصة، ومحاكي غولف، وغرفة ألعاب، وصالة للسكان."
+        },
+        {
+          "q": "Can I resell a W Residences apartment before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price set in the sale and purchase agreement. Taraf then issues a no-objection certificate, the assignment is registered through DARI, and the new buyer takes over the remaining instalments, including the 50% due on handover in Q4 2027.",
+          "q_ar": "هل يمكنني إعادة بيع شقة في دبليو ريزيدنسز قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر ترف عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الدفعات المتبقية، ومنها نسبة 50% المستحقة عند التسليم في الربع الرابع من 2027."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "bab-al-qasr-garden-residence-65",
+      "name": "Bab Al Qasr Garden Residence 65",
+      "sources": [
+        "DB: developments row bab-al-qasr-garden-residence-65 (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/masdar-city nearby band",
+        "zawya.com — Burtville launches Bab Al Qasr Garden Residences 65 on Masdar City's largest residential plot: 310,000+ sq ft, 67% landscaped, 275 m canal, 360 m track, 11 retail outlets, hotel privileges, fully furnished, Q1 2030",
+        "tradearabia.com / meconstructionnews.com — opposite Central Park, private gardens for selected 1–2 bed, 405 units",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "gulfnews.com / thenationalnews.com / khaleejtimes.com (Sept 2026) — ADREC off-plan mortgage framework, 50% paid, Aldar + ADCB first deal",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Bab Al Qasr Garden Residence 65?",
+          "a": "Bab Al Qasr Garden Residence 65 is developed by Burtville Developments, the Abu Dhabi developer behind the Bab Al Qasr branded projects in Masdar City, Al Raha Beach, Khalifa City, Yas Bay and Al Reem Island. It sits on Masdar City's largest residential land plot, more than 310,000 sq ft, and carries the Bab Al Qasr hotel brand.",
+          "q_ar": "من هو مطوّر مشروع باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "يطوّر مشروع باب القصر غاردن ريزيدنس 65 شركة برتڤيل للتطوير العقاري، المطوّر الذي يقف وراء مشاريع باب القصر ذات العلامة التجارية في مدينة مصدر وشاطئ الراحة ومدينة خليفة وياس باي وجزيرة الريم. ويقع المشروع على أكبر قطعة أرض سكنية في مدينة مصدر، بمساحة تتجاوز 310,000 قدم مربع، ويحمل علامة فنادق باب القصر."
+        },
+        {
+          "q": "Where is Bab Al Qasr Garden Residence 65 located?",
+          "a": "Bab Al Qasr Garden Residence 65 is on the main boulevard of Masdar City, directly opposite Masdar City Central Park. Zayed International Airport is about 5 minutes away by car, Downtown Abu Dhabi about 20 minutes and Dubai about 45 minutes.",
+          "q_ar": "أين يقع مشروع باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "يقع مشروع باب القصر غاردن ريزيدنس 65 على الشارع الرئيسي في مدينة مصدر، مقابل الحديقة المركزية لمدينة مصدر مباشرةً. ويبعد نحو 5 دقائق بالسيارة عن مطار زايد الدولي، ونحو 20 دقيقة عن وسط مدينة أبوظبي، ونحو 45 دقيقة عن دبي."
+        },
+        {
+          "q": "What is the starting price of Bab Al Qasr Garden Residence 65?",
+          "a": "Bab Al Qasr Garden Residence 65 starts from AED 1,830,000, and every home is sold fully furnished. Larger apartments, duplexes and sky villas are priced well above the entry level. The 2% Abu Dhabi registration fee, AED 36,600 at the starting price, is paid on top; ask a Bazar advisor for current prices and any early-payment discounts.",
+          "q_ar": "ما سعر البداية في باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "تبدأ الأسعار في باب القصر غاردن ريزيدنس 65 من 1,830,000 درهم، وتُباع جميع الوحدات مفروشة بالكامل. وتُسعَّر الشقق الأكبر والوحدات المزدوجة والفلل المعلقة بأسعار أعلى بكثير من سعر الدخول. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 36,600 درهم عند سعر البداية، ويمكنك سؤال مستشار بازار عن الأسعار الحالية وأي خصومات على السداد المبكر."
+        },
+        {
+          "q": "What unit types and sizes are available at Bab Al Qasr Garden Residence 65?",
+          "a": "Bab Al Qasr Garden Residence 65 has 405 furnished homes from one to five bedrooms, including duplexes and sky villas. One-bedrooms measure about 928–998 sq ft, two-bedrooms 1,209–1,353 sq ft, three-bedrooms 1,523–1,541 sq ft, four-bedrooms 3,194–3,263 sq ft and five-bedrooms 3,459–3,560 sq ft. Selected one- and two-bedrooms have private gardens.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "يضم مشروع باب القصر غاردن ريزيدنس 65 عدد 405 وحدات مفروشة من غرفة إلى خمس غرف نوم، منها وحدات مزدوجة وفلل معلقة. وتبلغ مساحة وحدات الغرفة الواحدة نحو 928 إلى 998 قدمًا مربعًا، والغرفتين من 1,209 إلى 1,353 قدمًا مربعًا، والثلاث غرف من 1,523 إلى 1,541 قدمًا مربعًا، والأربع غرف من 3,194 إلى 3,263 قدمًا مربعًا، والخمس غرف من 3,459 إلى 3,560 قدمًا مربعًا. وتتميز وحدات مختارة بغرفة أو غرفتين بحدائق خاصة."
+        },
+        {
+          "q": "What is the payment plan for Bab Al Qasr Garden Residence 65?",
+          "a": "Bab Al Qasr Garden Residence 65 is sold on a 60/40 payment plan: 15% on booking, 45% during construction and 40% on handover. More of the price is paid while the building rises, which brings milestones such as the Golden Visa threshold forward. Confirm the plan and any discount in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "يُباع مشروع باب القصر غاردن ريزيدنس 65 بخطة سداد 60/40: 15% عند الحجز، و45% خلال فترة الإنشاء، و40% عند التسليم. ويُسدَّد الجزء الأكبر من السعر أثناء البناء، ما يقرّب مواعيد بعض المحطات مثل حد الإقامة الذهبية. ويُنصح بتأكيد الخطة وأي خصم في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Bab Al Qasr Garden Residence 65?",
+          "a": "Bab Al Qasr Garden Residence 65 is scheduled for handover in Q1 2030, the date Burtville gave when construction started. Off-plan completion dates can move; the sale and purchase agreement states the anticipated completion date and the remedies if it is delayed.",
+          "q_ar": "متى موعد تسليم باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "من المقرر تسليم مشروع باب القصر غاردن ريزيدنس 65 في الربع الأول من 2030، وهو الموعد الذي أعلنته برتڤيل عند بدء البناء. وقد تتغير مواعيد إنجاز المشاريع على الخريطة، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع والتدابير المتاحة في حال التأخير."
+        },
+        {
+          "q": "Can foreigners buy at Bab Al Qasr Garden Residence 65?",
+          "a": "Yes. Masdar City is one of Abu Dhabi's nine designated investment areas, so buyers of any nationality can own a home at Bab Al Qasr Garden Residence 65 freehold, as Burtville markets it to international buyers. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "نعم. مدينة مصدر من مناطق الاستثمار التسع المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك وحدة في باب القصر غاردن ريزيدنس 65 بنظام التملك الحر، وتسوّقه برتڤيل للمشترين الدوليين على هذا الأساس. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Bab Al Qasr Garden Residence 65?",
+          "a": "Only on the larger homes. The entry price of AED 1,830,000 is below the AED 2 million threshold, so a starting-price apartment does not qualify on its own; homes priced at AED 2 million or more do. Off-plan, AED 2 million must be paid, and with 60% due before handover, homes from about AED 3,340,000 reach it during construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "للوحدات الأكبر فقط. فسعر الدخول البالغ 1,830,000 درهم أقل من حد المليوني درهم، لذا لا تؤهل الشقة بسعر البداية وحدها؛ أما الوحدات التي يبلغ سعرها مليوني درهم أو أكثر فتؤهل. وفي العقارات على الخريطة يجب سداد مليوني درهم، ومع استحقاق 60% قبل التسليم تبلغ الوحدات التي يبدأ سعرها من نحو 3,340,000 درهم هذا الحد خلال الإنشاء."
+        },
+        {
+          "q": "What makes Bab Al Qasr Garden Residence 65 different?",
+          "a": "Bab Al Qasr Garden Residence 65 gives 67% of its land to gardens, water features and outdoor space, including a 275-metre water canal and a 360-metre jogging track, plus a pool, tennis court, gym and 11 retail outlets. For five years, owners also get the Bab Al Qasr Hotel's private beach and pool, 25% off hotel services and Yas Beach access for up to six family members.",
+          "q_ar": "ما الذي يميز باب القصر غاردن ريزيدنس 65؟",
+          "a_ar": "يخصص مشروع باب القصر غاردن ريزيدنس 65 نسبة 67% من أرضه للحدائق والمسطحات المائية والمساحات الخارجية، ومنها قناة مائية بطول 275 مترًا ومسار للجري بطول 360 مترًا، إلى جانب مسبح وملعب تنس وصالة رياضية و11 متجرًا. كما يحصل الملاك لمدة خمس سنوات على دخول الشاطئ الخاص والمسبح في فندق باب القصر، وخصم 25% على خدمات الفندق، ودخول شاطئ ياس لما يصل إلى ستة من أفراد الأسرة."
+        },
+        {
+          "q": "Can I get a mortgage on Bab Al Qasr Garden Residence 65 before handover?",
+          "a": "Potentially yes. ADREC's off-plan mortgage framework lets a buyer who has paid 50% of the price mortgage the balance before completion, and this 15/45/40 plan passes 50% during the construction instalments. Eligibility is confirmed project by project and bank by bank, so ask a Bazar advisor whether Burtville's project is registered with a lender.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري في باب القصر غاردن ريزيدنس 65 قبل التسليم؟",
+          "a_ar": "نعم على الأرجح. يتيح إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة للمشتري الذي سدد 50% من السعر رهن المبلغ المتبقي قبل الإنجاز، وتتجاوز خطة 15/45/40 هذه نسبة 50% خلال دفعات الإنشاء. ويُحدَّد التأهل لكل مشروع ولكل بنك على حدة، لذا يمكنك سؤال مستشار بازار عمّا إذا كان مشروع برتڤيل مسجلًا لدى أحد البنوك."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "bab-al-qasr-garden-residence-66",
+      "name": "Bab Al Qasr Garden Residence 66",
+      "sources": [
+        "DB: developments row bab-al-qasr-garden-residence-66 (developer, area, units, starting price, handover, payment plan milestones, feature blocks), development_unit_types (sizes), subpage/area/masdar-city nearby band",
+        "zawya.com — Burtville reports 6% progress at Bab Al Qasr Garden Residence 66: opposite Central Park, European countryside design, 67% landscaped, ~100 sq ft private gardens, ground-floor garden villas, ninth-floor duplexes, Estidama Pearl 3, EV-ready, amenities, 5 retail outlets, hotel privileges",
+        "propertyfinder.ae / dubizzle.com — Q2 2029 handover",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "aoshearman.com / kslaw.com (2025–2026) — Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025: project escrow accounts, 20% construction threshold, ADREC early-release via bank guarantee (Admin. Decision 24/2025)",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Bab Al Qasr Garden Residence 66?",
+          "a": "Bab Al Qasr Garden Residence 66 is developed by Burtville Developments in partnership with the Bab Al Qasr Hotel brand. It is the companion building to Garden Residence 65 in Masdar City, and Burtville reported construction 6% complete in its latest progress update.",
+          "q_ar": "من هو مطوّر مشروع باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "يطوّر مشروع باب القصر غاردن ريزيدنس 66 شركة برتڤيل للتطوير العقاري بالشراكة مع علامة فندق باب القصر. وهو المبنى المكمّل لمشروع غاردن ريزيدنس 65 في مدينة مصدر، وأعلنت برتڤيل في آخر تحديث لها إنجاز 6% من أعمال البناء."
+        },
+        {
+          "q": "Where is Bab Al Qasr Garden Residence 66 located?",
+          "a": "Bab Al Qasr Garden Residence 66 faces Masdar City Central Park, in the low-carbon district beside Zayed International Airport, which is about 5 minutes away by car. Downtown Abu Dhabi is about 20 minutes away and Dubai about 45 minutes, making it practical for frequent travellers and commuters to either city.",
+          "q_ar": "أين يقع مشروع باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "يطل مشروع باب القصر غاردن ريزيدنس 66 على الحديقة المركزية لمدينة مصدر، في المنطقة منخفضة الانبعاثات المجاورة لمطار زايد الدولي الذي يبعد نحو 5 دقائق بالسيارة. ويبعد نحو 20 دقيقة عن وسط مدينة أبوظبي ونحو 45 دقيقة عن دبي، ما يجعله عمليًا لكثيري السفر وللمتنقلين إلى المدينتين."
+        },
+        {
+          "q": "What is the starting price of Bab Al Qasr Garden Residence 66?",
+          "a": "Bab Al Qasr Garden Residence 66 starts from AED 1,500,000, one of the lower entry points for a branded project in Masdar City. Prices climb with size and garden or rooftop space. The 2% Abu Dhabi registration fee, AED 30,000 at the starting price, is paid on top; ask a Bazar advisor for the current price list.",
+          "q_ar": "ما سعر البداية في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "تبدأ الأسعار في باب القصر غاردن ريزيدنس 66 من 1,500,000 درهم، وهو من أسعار الدخول المنخفضة نسبيًا لمشروع يحمل علامة تجارية في مدينة مصدر. وترتفع الأسعار بحسب المساحة والحديقة أو المساحة على السطح. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 30,000 درهم عند سعر البداية، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Bab Al Qasr Garden Residence 66?",
+          "a": "Bab Al Qasr Garden Residence 66 has 240 apartments from one to four bedrooms: one-bedrooms of about 613–1,000 sq ft, two-bedrooms 1,060–1,455 sq ft, three-bedrooms 1,419–2,922 sq ft and four-bedrooms 1,808–3,798 sq ft. Ground-floor homes are garden villas, and ninth-floor duplexes have private rooftop gardens.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "يضم مشروع باب القصر غاردن ريزيدنس 66 عدد 240 شقة من غرفة إلى أربع غرف نوم: شقق الغرفة الواحدة بمساحة نحو 613 إلى 1,000 قدم مربع، والغرفتين من 1,060 إلى 1,455 قدمًا مربعًا، والثلاث غرف من 1,419 إلى 2,922 قدمًا مربعًا، والأربع غرف من 1,808 إلى 3,798 قدمًا مربعًا. ووحدات الطابق الأرضي فلل بحدائق، أما الشقق المزدوجة في الطابق التاسع فلها حدائق خاصة على السطح."
+        },
+        {
+          "q": "What is the payment plan for Bab Al Qasr Garden Residence 66?",
+          "a": "Bab Al Qasr Garden Residence 66 asks for 30% before handover: 10% on booking, 20% during construction and 70% on handover. That keeps payments low while the building rises, but leaves most of the price, AED 1,050,000 on a starting-price unit, due at completion. Confirm the schedule in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "يتطلب مشروع باب القصر غاردن ريزيدنس 66 سداد 30% قبل التسليم: 10% عند الحجز، و20% خلال فترة الإنشاء، و70% عند التسليم. ويُبقي ذلك الدفعات منخفضة أثناء البناء، لكنه يترك معظم السعر، أي 1,050,000 درهم لوحدة بسعر البداية، مستحقًا عند الإنجاز. ويُنصح بتأكيد جدول الدفعات في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Bab Al Qasr Garden Residence 66?",
+          "a": "Bab Al Qasr Garden Residence 66 is scheduled for handover in Q2 2029, earlier than its sister building, Garden Residence 65. Off-plan dates can move, so check the anticipated completion date in the sale and purchase agreement and Burtville's construction updates.",
+          "q_ar": "متى موعد تسليم باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "من المقرر تسليم مشروع باب القصر غاردن ريزيدنس 66 في الربع الثاني من 2029، قبل المبنى الشقيق غاردن ريزيدنس 65. وقد تتغير مواعيد المشاريع على الخريطة، لذا يُنصح بمراجعة تاريخ الإنجاز المتوقع في عقد البيع والشراء وتحديثات البناء الصادرة عن برتڤيل."
+        },
+        {
+          "q": "Can foreigners buy at Bab Al Qasr Garden Residence 66?",
+          "a": "Yes. Bab Al Qasr Garden Residence 66 is in Masdar City, one of the nine areas of Abu Dhabi where non-UAE nationals have been able to own freehold since the 2019 amendment to the emirate's property law. Buyers need no UAE residency, and ownership is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "نعم. يقع مشروع باب القصر غاردن ريزيدنس 66 في مدينة مصدر، إحدى المناطق التسع في أبوظبي التي يحق فيها لغير المواطنين التملك الحر منذ تعديل قانون العقارات في الإمارة عام 2019. ولا يحتاج المشتري إلى إقامة في الإمارات، ويُسجَّل التملك عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Bab Al Qasr Garden Residence 66?",
+          "a": "Not at the entry level: the AED 1,500,000 starting price is below the AED 2 million threshold, so only homes priced at AED 2 million or more can qualify. As an off-plan buyer you must also have paid AED 2 million, and with only 30% due before handover that usually happens at handover unless you pay ahead.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "ليس عند سعر الدخول: فسعر البداية البالغ 1,500,000 درهم أقل من حد المليوني درهم، لذا لا تتأهل إلا الوحدات التي يبلغ سعرها مليوني درهم أو أكثر. ويجب أيضًا على مشتري العقار على الخريطة أن يكون قد سدد مليوني درهم، ومع استحقاق 30% فقط قبل التسليم يتحقق ذلك عادةً عند التسليم ما لم تسدد دفعات مسبقة."
+        },
+        {
+          "q": "What amenities does Bab Al Qasr Garden Residence 66 have?",
+          "a": "Bab Al Qasr Garden Residence 66 is styled on the European countryside and certified Estidama Pearl 3, with EV-ready parking and a private garden of about 100 sq ft for each home. Residents get a sandy beach-style pool and a rooftop pool, a health club with sauna and spa, a private cinema, a tennis court, a community garden and five shops, plus Bab Al Qasr Hotel beach and pool access and 25% off hotel services.",
+          "q_ar": "ما المرافق المتوفرة في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "صُمّم مشروع باب القصر غاردن ريزيدنس 66 بطابق مستوحى من الريف الأوروبي، وحصل على تصنيف استدامة 3 لآلئ، مع مواقف مجهزة للسيارات الكهربائية وحديقة خاصة بمساحة نحو 100 قدم مربع لكل وحدة. ويحصل السكان على مسبح بطابع الشاطئ الرملي ومسبح على السطح، ونادٍ صحي مع ساونا وسبا، وسينما خاصة، وملعب تنس، وحديقة مجتمعية، وخمسة متاجر، إضافة إلى دخول شاطئ فندق باب القصر ومسبحه وخصم 25% على خدماته."
+        },
+        {
+          "q": "Are off-plan payments protected at Bab Al Qasr Garden Residence 66?",
+          "a": "Yes. Abu Dhabi Law No. 3 of 2015, as amended by Law No. 2 of 2025, requires off-plan instalments to be paid into an escrow account dedicated to the project and monitored by ADREC. The developer can withdraw only once 20% of the works are done, unless ADREC approves an earlier release backed by a bank bond, which matters at a building reported 6% complete. Pay only into the account named in your contract.",
+          "q_ar": "هل دفعات الشراء على الخريطة محمية في باب القصر غاردن ريزيدنس 66؟",
+          "a_ar": "نعم. يُلزم قانون أبوظبي رقم 3 لسنة 2015 وتعديلاته بالقانون رقم 2 لسنة 2025 بإيداع دفعات المشاريع على الخريطة في حساب ضمان مخصص للمشروع يخضع لرقابة ADREC. ولا يحق للمطوّر السحب إلا بعد إنجاز 20% من الأعمال، ما لم يوافق المركز على صرف مبكر مقابل ضمان بنكي، وهذا مهم في مبنى أُعلن إنجاز 6% منه. ولا تسدد إلا في الحساب المذكور في عقدك."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "bab-al-qasr-beach-resort-77",
+      "name": "Bab Al Qasr Beach Resort Residence 77",
+      "sources": [
+        "DB: developments row bab-al-qasr-beach-resort-77 (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/al-reem-island nearby band",
+        "zawya.com / gulfnews.com / tradearabia.com (2026) — Burtville launches Bab Al Qasr Beach Resort Residence 77: 17,534 sq m beachfront plot, ~92% sea views, 73% landscaped, Beach Club, infinity + sky pool, 650 m track, padel, 13 retail units, hotel privileges, 25% discount, fully furnished freehold, Q4 2031",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "gulfnews.com / thenationalnews.com / khaleejtimes.com (Sept 2026) — ADREC off-plan mortgage framework, 50% paid, Aldar + ADCB first deal",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 is developed by Burtville Developments under its Bab Al Qasr hospitality brand. It is Burtville's beachfront launch on Al Reem Island, set on a 17,534 sq m plot with several residential towers, a landscaped podium and a separate Beach Club building.",
+          "q_ar": "من هو مطوّر مشروع باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "يطوّر مشروع باب القصر بيتش ريزورت ريزيدنس 77 شركة برتڤيل للتطوير العقاري تحت علامة الضيافة باب القصر. وهو مشروع برتڤيل على الواجهة الشاطئية في جزيرة الريم، ويقوم على قطعة أرض مساحتها 17,534 مترًا مربعًا تضم عدة أبراج سكنية ومنصة ذات مناظر طبيعية ومبنى مستقلًا لنادي الشاطئ."
+        },
+        {
+          "q": "Where is Bab Al Qasr Beach Resort Residence 77 located?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 sits on a beachfront plot on Al Reem Island, facing the sea and mangroves, and about 92% of its homes have direct sea views. From central Reem, Downtown Abu Dhabi and ADGM on Al Maryah Island are each about 5 minutes away, and Zayed International Airport about 25 minutes.",
+          "q_ar": "أين يقع مشروع باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "يقع مشروع باب القصر بيتش ريزورت ريزيدنس 77 على قطعة أرض شاطئية في جزيرة الريم تطل على البحر وأشجار القرم، ويتمتع نحو 92% من وحداته بإطلالات مباشرة على البحر. ومن وسط الريم يبعد كل من وسط مدينة أبوظبي وسوق أبوظبي العالمي في جزيرة المارية نحو 5 دقائق، ومطار زايد الدولي نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 starts from AED 2,200,000, and homes are sold fully furnished. Prices rise with size, floor and how directly a unit faces the sea. The 2% Abu Dhabi registration fee, AED 44,000 at the starting price, is paid on top; ask a Bazar advisor for the current price list.",
+          "q_ar": "ما سعر البداية في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "تبدأ الأسعار في باب القصر بيتش ريزورت ريزيدنس 77 من 2,200,000 درهم، وتُباع الوحدات مفروشة بالكامل. وترتفع الأسعار بحسب المساحة والطابق ومدى مواجهة الوحدة للبحر. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 44,000 درهم عند سعر البداية، ويمكنك طلب قائمة الأسعار الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 has 400 furnished homes from one to five bedrooms, with four- and five-bedroom duplexes. One-bedrooms measure about 760–1,140 sq ft, two-bedrooms 1,230–1,623 sq ft, three-bedrooms 1,550–2,340 sq ft, four-bedrooms 2,010–2,120 sq ft and five-bedrooms 2,960–3,640 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "يضم مشروع باب القصر بيتش ريزورت ريزيدنس 77 عدد 400 وحدة مفروشة من غرفة إلى خمس غرف نوم، منها وحدات مزدوجة بأربع وخمس غرف. وتبلغ مساحة وحدات الغرفة الواحدة نحو 760 إلى 1,140 قدمًا مربعًا، والغرفتين من 1,230 إلى 1,623 قدمًا مربعًا، والثلاث غرف من 1,550 إلى 2,340 قدمًا مربعًا، والأربع غرف من 2,010 إلى 2,120 قدمًا مربعًا، والخمس غرف من 2,960 إلى 3,640 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 is offered on a 50/50 plan: 10% to book, 40% spread across construction and the remaining 50% at handover in Q4 2031. The long build period spreads the construction instalments over several years. Confirm their dates in the sale and purchase agreement; the 2% registration fee is extra.",
+          "q_ar": "ما خطة السداد في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "يُطرح مشروع باب القصر بيتش ريزورت ريزيدنس 77 بخطة 50/50: 10% للحجز، و40% موزعة على فترة الإنشاء، و50% المتبقية عند التسليم في الربع الرابع من 2031. وتوزّع فترة البناء الطويلة دفعات الإنشاء على عدة سنوات. ويُنصح بتأكيد مواعيدها في عقد البيع والشراء، مع العلم أن رسوم التسجيل البالغة 2% إضافية."
+        },
+        {
+          "q": "When is the handover date for Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 is scheduled for handover in Q4 2031, the date Burtville announced at launch. That is a longer wait than most Al Reem Island launches, so weigh it against your plans to live in or rent the home; the sale and purchase agreement sets out what happens if the date moves.",
+          "q_ar": "متى موعد تسليم باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "من المقرر تسليم مشروع باب القصر بيتش ريزورت ريزيدنس 77 في الربع الرابع من 2031، وهو الموعد الذي أعلنته برتڤيل عند الإطلاق. وهي فترة انتظار أطول من معظم المشاريع المطروحة في جزيرة الريم، لذا يُستحسن موازنتها مع خططك للسكن أو التأجير، ويحدد عقد البيع والشراء ما يترتب على أي تغيير في الموعد."
+        },
+        {
+          "q": "Can foreigners buy at Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Yes. Al Reem Island is one of the nine Abu Dhabi areas where foreigners may own property, and Burtville sells Residence 77 as freehold to buyers of any nationality, resident in the UAE or not. Ownership is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "نعم. جزيرة الريم من المناطق التسع في أبوظبي التي يحق للأجانب تملّك العقارات فيها، وتبيع برتڤيل وحدات باب القصر بيتش ريزورت ريزيدنس 77 بنظام التملك الحر للمشترين من أي جنسية، سواء كانوا مقيمين في الإمارات أم لا. ويُسجَّل التملك لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Yes, since prices start at AED 2,200,000, above the AED 2 million threshold. The catch is timing: off-plan, AED 2 million must already be paid, and a starting-price unit has only AED 1,100,000 paid before handover, so it qualifies at handover. Larger homes from AED 4,000,000 reach the threshold by the end of the construction instalments.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "نعم، إذ تبدأ الأسعار من 2,200,000 درهم، أي فوق حد المليوني درهم. لكن التوقيت مهم: ففي العقارات على الخريطة يجب أن يكون قد سُدد مليونا درهم، والوحدة بسعر البداية لا يُسدَّد منها قبل التسليم سوى 1,100,000 درهم، فتتأهل عند التسليم. أما الوحدات الأكبر بدءًا من 4,000,000 درهم فتبلغ الحد بنهاية دفعات الإنشاء."
+        },
+        {
+          "q": "What resort facilities are at Bab Al Qasr Beach Resort Residence 77?",
+          "a": "Bab Al Qasr Beach Resort Residence 77 has its own Beach Club with direct beach access, a beachfront infinity pool and a sky pool, a 650-metre jogging track, padel courts, co-working space and 13 retail units on a site that is 73% landscaped. Residents get hotel-style valet, housekeeping, laundry, childcare and in-residence dining, plus 25% off Bab Al Qasr hotel services.",
+          "q_ar": "ما مرافق المنتجع في باب القصر بيتش ريزورت ريزيدنس 77؟",
+          "a_ar": "يضم مشروع باب القصر بيتش ريزورت ريزيدنس 77 ناديًا شاطئيًا خاصًا بوصول مباشر إلى الشاطئ، ومسبحًا لا متناهيًا على الشاطئ ومسبحًا معلقًا، ومسارًا للجري بطول 650 مترًا، وملاعب بادل، ومساحات عمل مشتركة، و13 وحدة تجارية في موقع تغطي المساحات الخضراء 73% منه. ويحصل السكان على خدمات فندقية تشمل صف السيارات والتدبير المنزلي والغسيل ورعاية الأطفال وتقديم الطعام في الوحدة، إضافة إلى خصم 25% على خدمات فنادق باب القصر."
+        },
+        {
+          "q": "Can I get a mortgage on Bab Al Qasr Beach Resort Residence 77 before handover?",
+          "a": "Possibly, near the end of construction. ADREC's off-plan mortgage framework requires 50% of the price paid, which on this 10/40/50 plan is reached once the construction instalments are complete, so a lender could finance the final 50% before the keys are issued. The bank and the project must both be eligible; ask a Bazar advisor to check.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري في باب القصر بيتش ريزورت ريزيدنس 77 قبل التسليم؟",
+          "a_ar": "ربما، قرب نهاية الإنشاء. يشترط إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة سداد 50% من السعر، وتتحقق هذه النسبة في خطة 10/40/50 بعد إتمام دفعات الإنشاء، فيمكن لبنك تمويل الدفعة الأخيرة البالغة 50% قبل استلام المفاتيح. ويجب أن يكون البنك والمشروع مؤهلين، ويمكن لمستشار بازار التحقق من ذلك."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "fahid-beach-residences",
+      "name": "Fahid Beach Residences",
+      "sources": [
+        "DB: developments row fahid-beach-residences (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/fahid-island nearby band",
+        "wam.ae / zawya.com (20 Jun 2025) — Aldar AED 3.5bn launch-week sales at Fahid Beach Residences and The Beach House; 67% expatriate and overseas buyers",
+        "gulfnews.com (2025) — first release, seven buildings",
+        "aldar.com Fahid Beach Residences page — apartments, townhouses, penthouses; amenity list; Fitwel 3-Star island, LEED for Cities Platinum pre-certified, Estidama 3 Pearl; promenade and Coral Drive",
+        "propertyfinder.ae — launch price AED 3.5M, Q2 2029",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "gulfnews.com / thenationalnews.com / khaleejtimes.com (Sept 2026) — ADREC off-plan mortgage framework, 50% paid, Aldar + ADCB first deal",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Fahid Beach Residences?",
+          "a": "Fahid Beach Residences is developed by Aldar Properties, the master developer of Fahid Island. It was the island's first residential release in June 2025, and together with The Beach House it sold more than AED 3.5 billion of homes in launch week, 67% of it to expatriate and overseas buyers.",
+          "q_ar": "من هو مطوّر مشروع فاهد بيتش ريزيدنسز؟",
+          "a_ar": "يطوّر مشروع فاهد بيتش ريزيدنسز شركة الدار العقارية، المطوّر الرئيسي لجزيرة فاهد. وكان أول مشروع سكني يُطرح في الجزيرة في يونيو 2025، وحقق مع مشروع ذا بيتش هاوس مبيعات تجاوزت 3.5 مليار درهم في أسبوع الإطلاق، ذهب 67% منها إلى مقيمين أجانب ومشترين من الخارج."
+        },
+        {
+          "q": "Where is Fahid Beach Residences located?",
+          "a": "Fahid Beach Residences is on the shoreline of Fahid Island, the Aldar island between Yas and Saadiyat, with direct access to the waterfront promenade and the Coral Drive retail boulevard. Yas Island is about 5 minutes away by car, Saadiyat Island and Zayed International Airport about 15 minutes, and Dubai about 50 minutes.",
+          "q_ar": "أين يقع مشروع فاهد بيتش ريزيدنسز؟",
+          "a_ar": "يقع مشروع فاهد بيتش ريزيدنسز على ساحل جزيرة فاهد، جزيرة الدار الواقعة بين ياس والسعديات، مع وصول مباشر إلى الممشى البحري وشارع كورال درايف للتسوق. وتبعد جزيرة ياس نحو 5 دقائق بالسيارة، وجزيرة السعديات ومطار زايد الدولي نحو 15 دقيقة، ودبي نحو 50 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Fahid Beach Residences?",
+          "a": "Fahid Beach Residences starts from AED 3,500,000, the launch price Aldar set for the island's first release. Townhouses, larger apartments and penthouses are priced higher. The 2% Abu Dhabi registration fee, AED 70,000 at the starting price, is paid on top; ask a Bazar advisor which units remain, as much of the launch stock has sold.",
+          "q_ar": "ما سعر البداية في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في فاهد بيتش ريزيدنسز من 3,500,000 درهم، وهو سعر الإطلاق الذي حددته الدار لأول طرح في الجزيرة. وتُسعَّر منازل التاون هاوس والشقق الأكبر والبنتهاوس بأسعار أعلى. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 70,000 درهم عند سعر البداية، ويمكنك سؤال مستشار بازار عن الوحدات المتبقية، إذ بيع جزء كبير من مخزون الإطلاق."
+        },
+        {
+          "q": "What unit types and sizes are available at Fahid Beach Residences?",
+          "a": "Fahid Beach Residences has 464 homes across seven buildings: one- to four-bedroom apartments plus townhouses and penthouses. One-bedrooms measure about 980–990 sq ft, two-bedrooms 1,862–1,883 sq ft, three-bedrooms 2,507–2,540 sq ft and four-bedrooms about 2,992–2,993 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "يضم مشروع فاهد بيتش ريزيدنسز 464 وحدة سكنية في سبعة مبانٍ: شقق من غرفة إلى أربع غرف نوم، إضافة إلى منازل تاون هاوس وبنتهاوس. وتبلغ مساحة شقق الغرفة الواحدة نحو 980 إلى 990 قدمًا مربعًا، والغرفتين من 1,862 إلى 1,883 قدمًا مربعًا، والثلاث غرف من 2,507 إلى 2,540 قدمًا مربعًا، والأربع غرف نحو 2,992 إلى 2,993 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Fahid Beach Residences?",
+          "a": "Aldar sells Fahid Beach Residences on a 65/35 plan, front-loaded towards construction: 10% at booking, 55% in instalments while the buildings rise and 35% when the keys are handed over. On a AED 3,500,000 home, that leaves AED 1,225,000 due at handover. The 2% registration fee is paid separately.",
+          "q_ar": "ما خطة السداد في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "تبيع الدار مشروع فاهد بيتش ريزيدنسز بخطة 65/35 يتركز معظمها في فترة الإنشاء: 10% عند الحجز، و55% على دفعات أثناء بناء المباني، و35% عند تسليم المفاتيح. وفي وحدة سعرها 3,500,000 درهم يبقى 1,225,000 درهم مستحقًا عند التسليم. وتُدفع رسوم التسجيل البالغة 2% بشكل منفصل."
+        },
+        {
+          "q": "When is the handover date for Fahid Beach Residences?",
+          "a": "Fahid Beach Residences is scheduled for handover in August 2029, in Q3 2029; some listings give Q2 2029. As the island's first release, it is due to complete before Fahid Beach Terraces. The sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم فاهد بيتش ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع فاهد بيتش ريزيدنسز في أغسطس 2029، أي في الربع الثالث من 2029، بينما تذكر بعض الإعلانات الربع الثاني من 2029. وبصفته أول طرح في الجزيرة، يُتوقع إنجازه قبل مشروع فاهد بيتش تيراسز. ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at Fahid Beach Residences?",
+          "a": "Yes. Fahid Island was among the designated investment zones published when Abu Dhabi opened freehold to foreigners in 2019, listed as Fahed Island, and Aldar sells Fahid Beach Residences to every nationality. Most launch buyers were expatriates or overseas investors. Title is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "نعم. كانت جزيرة فاهد، المدرجة باسم «فاهد»، ضمن مناطق الاستثمار المحددة التي أُعلنت عندما فتحت أبوظبي التملك الحر للأجانب عام 2019، وتبيع الدار وحدات فاهد بيتش ريزيدنسز لجميع الجنسيات. وكان معظم مشتري الإطلاق من المقيمين الأجانب أو المستثمرين من الخارج. ويُسجَّل السند لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Fahid Beach Residences?",
+          "a": "Yes. Every home starts above the AED 2 million threshold, at AED 3,500,000. Because 65% of the price is paid before handover, an off-plan buyer at the starting price reaches the AED 2 million paid that Abu Dhabi requires partway through the 55% construction stage, so the visa can usually be applied for before completion.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "نعم. تبدأ أسعار جميع الوحدات فوق حد المليوني درهم، عند 3,500,000 درهم. ولأن 65% من السعر تُسدَّد قبل التسليم، يبلغ المشتري بسعر البداية شرط سداد مليوني درهم الذي تطلبه أبوظبي في منتصف مرحلة الإنشاء البالغة 55% تقريبًا، لذا يمكن عادةً التقدم بطلب الإقامة قبل الإنجاز."
+        },
+        {
+          "q": "What wellness amenities does Fahid Beach Residences offer?",
+          "a": "Fahid Beach Residences sits on the first island to earn Fitwel certification, also pre-certified LEED Platinum and rated Estidama 3 Pearl. Each podium has infinity pools, gyms, a steam room and sauna, a cinema room, squash courts, co-working lounges, kids' pools and a pet spa, with round-the-clock concierge, beach access and an infinity pool overlooking the water.",
+          "q_ar": "ما مرافق العافية في فاهد بيتش ريزيدنسز؟",
+          "a_ar": "يقع مشروع فاهد بيتش ريزيدنسز في أول جزيرة تحصل على شهادة فيتويل، وهي حاصلة أيضًا على شهادة ليد البلاتينية المبدئية وتصنيف استدامة 3 لآلئ. وتضم كل منصة مسابح لا متناهية وصالات رياضية وغرفة بخار وساونا وغرفة سينما وملاعب اسكواش وصالات عمل مشتركة ومسابح للأطفال وسبا للحيوانات الأليفة، مع خدمة كونسيرج على مدار الساعة ووصول إلى الشاطئ."
+        },
+        {
+          "q": "Can I get a mortgage on Fahid Beach Residences before handover?",
+          "a": "Yes, in principle. Aldar and ADCB completed Abu Dhabi's first off-plan mortgage under ADREC's framework in September 2026, which requires 50% of the price paid; this 10/55/35 plan passes that during construction, so the remaining balance can be financed before handover. Aldar's free home-finance service compares offers from more than 6 banks.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري في فاهد بيتش ريزيدنسز قبل التسليم؟",
+          "a_ar": "نعم من حيث المبدأ. أتمّت الدار وبنك أبوظبي التجاري أول رهن عقاري على الخريطة في أبوظبي وفق إطار مركز أبوظبي العقاري في سبتمبر 2026، الذي يشترط سداد 50% من السعر؛ وتتجاوز خطة 10/55/35 هذه النسبة خلال الإنشاء، فيمكن تمويل الرصيد المتبقي قبل التسليم. وتقارن خدمة التمويل المجانية لدى الدار العروض من أكثر من 6 بنوك."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "fahid-beach-terraces",
+      "name": "Fahid Beach Terraces",
+      "sources": [
+        "DB: developments row fahid-beach-terraces (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/fahid-island nearby band",
+        "zawya.com / wam.ae / arabianbusiness.com (Aug 2025) — Aldar launches Fahid Beach Terraces: six buildings, 501 homes, 1–4 bed + duplexes + six 5-bed penthouses, Koichi Takada, M&L interiors, The Club House, three 25 m infinity pools, Sports Plaza, Fitwel 2-star / Estidama 3 Pearl / LEED Gold targets, sales from 27 Aug 2025, all nationalities, near King's College School Wimbledon",
+        "propertyfinder.ae / dubizzle.com — AED 3.6M, Q4 2029",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Fahid Beach Terraces?",
+          "a": "Fahid Beach Terraces is developed by Aldar Properties. It is Aldar's third residential launch on Fahid Island, after Fahid Beach Residences and The Beach House, with sales opening on 27 August 2025. The six buildings are designed by architect Koichi Takada, with interiors by the studio M&L.",
+          "q_ar": "من هو مطوّر مشروع فاهد بيتش تيراسز؟",
+          "a_ar": "يطوّر مشروع فاهد بيتش تيراسز شركة الدار العقارية. وهو ثالث مشروع سكني تطلقه الدار في جزيرة فاهد، بعد فاهد بيتش ريزيدنسز وذا بيتش هاوس، وبدأت مبيعاته في 27 أغسطس 2025. وصمّم المباني الستة المعماري كويتشي تاكادا، فيما تولى استوديو إم آند إل التصميم الداخلي."
+        },
+        {
+          "q": "Where is Fahid Beach Terraces located?",
+          "a": "Fahid Beach Terraces stands on the Fahid Island shoreline, within walking distance of Fahid Event Plaza, the Coral Drive retail boulevard and King's College School Wimbledon. By car, Yas Island is about 5 minutes away, Zayed International Airport about 15 minutes and Abu Dhabi City about 20 minutes.",
+          "q_ar": "أين يقع مشروع فاهد بيتش تيراسز؟",
+          "a_ar": "يقع مشروع فاهد بيتش تيراسز على ساحل جزيرة فاهد، على مسافة سير من ساحة فاهد للفعاليات وشارع كورال درايف للتسوق ومدرسة كينغز كوليدج ويمبلدون. وبالسيارة تبعد جزيرة ياس نحو 5 دقائق، ومطار زايد الدولي نحو 15 دقيقة، ومدينة أبوظبي نحو 20 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Fahid Beach Terraces?",
+          "a": "Fahid Beach Terraces starts from AED 3,600,000. Duplexes and the six five-bedroom penthouses sit at the top of the range. Add the 2% Abu Dhabi registration fee, AED 72,000 at the starting price, and ask a Bazar advisor for the units still available in this final beachfront release.",
+          "q_ar": "ما سعر البداية في فاهد بيتش تيراسز؟",
+          "a_ar": "تبدأ الأسعار في فاهد بيتش تيراسز من 3,600,000 درهم. وتقع الشقق المزدوجة ووحدات البنتهاوس الست بخمس غرف نوم في أعلى الفئة السعرية. ويُضاف إلى ذلك رسوم التسجيل في أبوظبي البالغة 2%، أي 72,000 درهم عند سعر البداية، ويمكنك سؤال مستشار بازار عن الوحدات المتاحة في هذا الطرح الشاطئي الأخير."
+        },
+        {
+          "q": "What unit types and sizes are available at Fahid Beach Terraces?",
+          "a": "Fahid Beach Terraces has 501 homes in six buildings, from one- to four-bedroom apartments to duplexes and six five-bedroom penthouses. One-bedrooms measure about 940–970 sq ft, two-bedrooms 1,668–2,153 sq ft, three-bedrooms 2,617–2,659 sq ft and four-bedrooms about 3,261–3,262 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في فاهد بيتش تيراسز؟",
+          "a_ar": "يضم مشروع فاهد بيتش تيراسز 501 وحدة سكنية في ستة مبانٍ، من شقق بغرفة إلى أربع غرف نوم إلى شقق مزدوجة وست وحدات بنتهاوس بخمس غرف نوم. وتبلغ مساحة شقق الغرفة الواحدة نحو 940 إلى 970 قدمًا مربعًا، والغرفتين من 1,668 إلى 2,153 قدمًا مربعًا، والثلاث غرف من 2,617 إلى 2,659 قدمًا مربعًا، والأربع غرف نحو 3,261 إلى 3,262 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Fahid Beach Terraces?",
+          "a": "Buyers at Fahid Beach Terraces pay 10% to reserve, then 55% over the construction period and the last 35% at completion, a 65/35 split. At the AED 3,600,000 starting price the booking payment is AED 360,000. Check the instalment dates in the sale and purchase agreement and budget separately for the 2% registration fee.",
+          "q_ar": "ما خطة السداد في فاهد بيتش تيراسز؟",
+          "a_ar": "يسدد المشترون في فاهد بيتش تيراسز 10% للحجز، ثم 55% على مدى فترة الإنشاء، و35% الأخيرة عند الإنجاز، أي بتقسيم 65/35. وعند سعر البداية البالغ 3,600,000 درهم تبلغ دفعة الحجز 360,000 درهم. ويُنصح بمراجعة مواعيد الدفعات في عقد البيع والشراء وتخصيص ميزانية منفصلة لرسوم التسجيل البالغة 2%."
+        },
+        {
+          "q": "When is the handover date for Fahid Beach Terraces?",
+          "a": "Fahid Beach Terraces is scheduled for handover in November 2029, in Q4 2029, a few months after Fahid Beach Residences next door. Completion dates for off-plan homes can change; your sale and purchase agreement sets the anticipated date and the remedies if it slips.",
+          "q_ar": "متى موعد تسليم فاهد بيتش تيراسز؟",
+          "a_ar": "من المقرر تسليم مشروع فاهد بيتش تيراسز في نوفمبر 2029، أي في الربع الرابع من 2029، بعد أشهر قليلة من مشروع فاهد بيتش ريزيدنسز المجاور. وقد تتغير مواعيد إنجاز العقارات على الخريطة، ويحدد عقد البيع والشراء التاريخ المتوقع والتدابير المتاحة في حال التأخير."
+        },
+        {
+          "q": "Can foreigners buy at Fahid Beach Terraces?",
+          "a": "Yes. Aldar opened Fahid Beach Terraces to buyers of all nationalities, as Fahid Island is a designated investment zone where foreigners can hold freehold title. Overseas buyers can purchase without UAE residency through Aldar's sales centres on Yas Island and in Dubai, and the sale is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في فاهد بيتش تيراسز؟",
+          "a_ar": "نعم. فتحت الدار باب الشراء في فاهد بيتش تيراسز للمشترين من جميع الجنسيات، إذ إن جزيرة فاهد منطقة استثمار محددة يحق فيها للأجانب التملك الحر. ويمكن للمشترين من الخارج الشراء من دون إقامة في الإمارات عبر مراكز مبيعات الدار في جزيرة ياس ودبي، ويُسجَّل البيع عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Fahid Beach Terraces?",
+          "a": "Yes, as the AED 3,600,000 starting price is well above the AED 2 million threshold. Off-plan, the developer must confirm AED 2 million paid; with 10% at booking and 55% during construction, a starting-price buyer reaches it before handover, and buyers of larger homes sooner still.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في فاهد بيتش تيراسز؟",
+          "a_ar": "نعم، إذ يتجاوز سعر البداية البالغ 3,600,000 درهم حد المليوني درهم بكثير. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم؛ ومع سداد 10% عند الحجز و55% خلال الإنشاء، يبلغ المشتري بسعر البداية هذا الحد قبل التسليم، ويبلغه مشترو الوحدات الأكبر في وقت أبكر."
+        },
+        {
+          "q": "What is The Club House at Fahid Beach Terraces?",
+          "a": "The Club House is the residents-only clubhouse at Fahid Beach Terraces, with a sea-facing gym, fitness studios, a spa with salt relaxation zones and cold plunge pools, a cinema and a private dining room. Outside are three 25-metre infinity pools, yoga pavilions, children's play zones and a Waterfront Sports Plaza with volleyball and padel courts.",
+          "q_ar": "ما هو ذا كلوب هاوس في فاهد بيتش تيراسز؟",
+          "a_ar": "ذا كلوب هاوس هو النادي المخصص لسكان فاهد بيتش تيراسز، ويضم صالة رياضية مطلة على البحر واستوديوهات للياقة وسبا بمناطق استرخاء ملحية وأحواض غطس باردة وسينما وغرفة طعام خاصة. وفي الخارج ثلاثة مسابح لا متناهية بطول 25 مترًا وأجنحة لليوغا ومناطق لعب للأطفال وساحة رياضية على الواجهة المائية بملاعب للكرة الطائرة والبادل."
+        },
+        {
+          "q": "Can I resell a Fahid Beach Terraces apartment before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price Aldar sets in the sale and purchase agreement. Aldar then issues a no-objection certificate, the assignment is registered through DARI, and the new buyer takes over the remaining construction instalments and the 35% due on handover.",
+          "q_ar": "هل يمكنني إعادة بيع شقة في فاهد بيتش تيراسز قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر الذي تحدده الدار في عقد البيع والشراء. وتصدر الدار عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد دفعات الإنشاء المتبقية ونسبة 35% المستحقة عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "the-bristol-residences",
+      "name": "The Bristol Residences",
+      "sources": [
+        "DB: developments row the-bristol-residences (developer, area, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), subpage/area/ramhan-island nearby band",
+        "propertyfinder.ae / luxhabitat.ae / metropolitan.realestate (2026) — 125 residences beside The Bristol hotel, single building, prices by type (3.1M / 4.4M / 6M / 14M), Q4 2028, freehold, hotel-team concierge, housekeeping and dining, construction from April 2026",
+        "karlobag.eu / total-croatia-news.com (2026) — The Bristol Hotels & Resorts, Eagle Hills' hotel brand, begun in Belgrade, The Bristol Bol in Croatia",
+        "adro.gov.ae — Golden Visa AED 2M property threshold; off-plan needs AED 2M paid, mortgaged needs AED 2M equity",
+        "Wave 1 area FAQ (u.ae list of Abu Dhabi investment areas)"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of The Bristol Residences on Ramhan Island?",
+          "a": "The Bristol Residences is developed by Eagle Hills, the Abu Dhabi developer behind the Ramhan Island masterplan. The Bristol is Eagle Hills' own luxury hotel brand, which began in Belgrade and has since opened in Bol, Croatia; on Ramhan, the residences are planned beside a Bristol hotel.",
+          "q_ar": "من هو مطوّر مشروع ذا بريستول ريزيدنسز في جزيرة رمحان؟",
+          "a_ar": "يطوّر مشروع ذا بريستول ريزيدنسز شركة إيجل هيلز، مطوّر المخطط الرئيسي لجزيرة رمحان في أبوظبي. وبريستول علامة فندقية فاخرة تملكها إيجل هيلز، انطلقت في بلغراد ثم افتتحت في بول بكرواتيا؛ وفي رمحان يُخطَّط لإقامة الوحدات السكنية بجوار فندق بريستول."
+        },
+        {
+          "q": "Where is The Bristol Residences located?",
+          "a": "The Bristol Residences is on Ramhan Island, a natural island of beaches, waterways and mangroves off Abu Dhabi, with the project facing its marina. Yas Island is about 10 minutes away, Zayed International Airport about 15 minutes, Saadiyat Island about 18 minutes and Abu Dhabi City about 20 minutes.",
+          "q_ar": "أين يقع مشروع ذا بريستول ريزيدنسز؟",
+          "a_ar": "يقع مشروع ذا بريستول ريزيدنسز في جزيرة رمحان، وهي جزيرة طبيعية قبالة أبوظبي تحيط بها الشواطئ والممرات المائية وأشجار القرم، ويطل المشروع على مرسى الجزيرة. وتبعد جزيرة ياس نحو 10 دقائق، ومطار زايد الدولي نحو 15 دقيقة، وجزيرة السعديات نحو 18 دقيقة، ومدينة أبوظبي نحو 20 دقيقة."
+        },
+        {
+          "q": "What is the starting price of The Bristol Residences?",
+          "a": "The Bristol Residences starts from AED 3,100,000 for a one-bedroom residence. Listings show two-bedrooms from about AED 4.4 million, three-bedrooms from about AED 6 million and four-bedrooms from about AED 14 million. The 2% Abu Dhabi registration fee, AED 62,000 at the starting price, is paid on top.",
+          "q_ar": "ما سعر البداية في ذا بريستول ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في ذا بريستول ريزيدنسز من 3,100,000 درهم لوحدة بغرفة نوم واحدة. وتُظهر الإعلانات وحدات الغرفتين بدءًا من نحو 4.4 مليون درهم، والثلاث غرف من نحو 6 ملايين درهم، والأربع غرف من نحو 14 مليون درهم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى السعر، أي 62,000 درهم عند سعر البداية."
+        },
+        {
+          "q": "What unit types and sizes are available at The Bristol Residences?",
+          "a": "The Bristol Residences is a single building of 125 apartments with one to four bedrooms. One-bedrooms measure about 738–740 sq ft, two-bedrooms 1,162–1,164 sq ft, three-bedrooms 2,008–2,011 sq ft and four-bedrooms about 2,561–2,570 sq ft, which makes it one of the smaller, more private addresses on Ramhan Island.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في ذا بريستول ريزيدنسز؟",
+          "a_ar": "مشروع ذا بريستول ريزيدنسز مبنى واحد يضم 125 شقة من غرفة إلى أربع غرف نوم. وتبلغ مساحة شقق الغرفة الواحدة نحو 738 إلى 740 قدمًا مربعًا، والغرفتين من 1,162 إلى 1,164 قدمًا مربعًا، والثلاث غرف من 2,008 إلى 2,011 قدمًا مربعًا، والأربع غرف نحو 2,561 إلى 2,570 قدمًا مربعًا، ما يجعله من العناوين الأصغر والأكثر خصوصية في جزيرة رمحان."
+        },
+        {
+          "q": "What is the payment plan for The Bristol Residences?",
+          "a": "The Bristol Residences is sold on a 50/50 payment plan: 10% on booking, 40% during construction and 50% on handover. Some listings show a different split, so confirm the schedule for your unit in the sale and purchase agreement before paying. The 2% registration fee is paid on top.",
+          "q_ar": "ما خطة السداد في ذا بريستول ريزيدنسز؟",
+          "a_ar": "يُباع مشروع ذا بريستول ريزيدنسز بخطة سداد 50/50: 10% عند الحجز، و40% خلال فترة الإنشاء، و50% عند التسليم. وتعرض بعض الإعلانات تقسيمًا مختلفًا، لذا يُنصح بتأكيد جدول الدفعات الخاص بوحدتك في عقد البيع والشراء قبل السداد. وتُدفع رسوم التسجيل البالغة 2% إضافةً إلى ذلك."
+        },
+        {
+          "q": "When is the handover date for The Bristol Residences?",
+          "a": "The Bristol Residences is scheduled for handover in Q4 2028, with construction under way since April 2026. That makes it one of the earlier completions on Ramhan Island. The sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم ذا بريستول ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم مشروع ذا بريستول ريزيدنسز في الربع الرابع من 2028، وأعمال البناء جارية منذ أبريل 2026. وهذا يجعله من المشاريع الأبكر إنجازًا في جزيرة رمحان. ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at The Bristol Residences?",
+          "a": "Yes, according to how it is sold: Eagle Hills markets The Bristol Residences as freehold to buyers of all nationalities. Ramhan Island does not appear on the older government list of nine investment areas, so ask for the plot's title status on DARI before you sign, as with any newer Abu Dhabi island.",
+          "q_ar": "هل يمكن للأجانب الشراء في ذا بريستول ريزيدنسز؟",
+          "a_ar": "نعم، وفق طريقة البيع المعلنة: إذ تسوّق إيجل هيلز مشروع ذا بريستول ريزيدنسز بنظام التملك الحر للمشترين من جميع الجنسيات. ولا تظهر جزيرة رمحان في القائمة الحكومية الأقدم لمناطق الاستثمار التسع، لذا يُستحسن طلب التحقق من وضع سند القطعة على منصة «داري» قبل التوقيع، كما هو الحال مع أي جزيرة جديدة في أبوظبي."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at The Bristol Residences?",
+          "a": "Yes, every residence starts above the AED 2 million threshold. Off-plan, AED 2 million must be paid: a AED 3,100,000 one-bedroom has AED 1,550,000 paid before handover, so it qualifies at handover, while two-bedrooms and larger, from about AED 4.4 million, reach AED 2 million by the end of construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في ذا بريستول ريزيدنسز؟",
+          "a_ar": "نعم، إذ تبدأ أسعار جميع الوحدات فوق حد المليوني درهم. وفي العقارات على الخريطة يجب سداد مليوني درهم: فالوحدة بغرفة واحدة بسعر 3,100,000 درهم يُسدَّد منها 1,550,000 درهم قبل التسليم، فتتأهل عند التسليم، أما وحدات الغرفتين فأكبر، بدءًا من نحو 4.4 مليون درهم، فتبلغ مليوني درهم بنهاية الإنشاء."
+        },
+        {
+          "q": "What hotel services and amenities come with The Bristol Residences?",
+          "a": "Owners at The Bristol Residences are promised hotel-style concierge, housekeeping and dining provided by the hotel team next door. The building opens onto Ramhan's marina and waterfront promenade, with a swimming pool, beach access, a spa and a gym, inside an island masterplan that also includes the UAE's first Ritz-Carlton Reserve.",
+          "q_ar": "ما الخدمات الفندقية والمرافق في ذا بريستول ريزيدنسز؟",
+          "a_ar": "يحصل ملاك ذا بريستول ريزيدنسز على خدمات كونسيرج وتدبير منزلي وطعام بطابع فندقي يقدمها فريق الفندق المجاور. ويطل المبنى على مرسى رمحان والممشى البحري، مع مسبح ووصول إلى الشاطئ وسبا وصالة رياضية، ضمن مخطط جزيرة يضم أيضًا أول منتجع ريتز كارلتون ريزيرف في الإمارات."
+        },
+        {
+          "q": "Can I resell a Bristol Residences apartment before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price set in your sale and purchase agreement. Eagle Hills then issues a no-objection certificate, the assignment is registered through DARI, and the buyer takes over the remaining payments. With only 125 homes in the building, resale supply is limited.",
+          "q_ar": "هل يمكنني إعادة بيع شقة في ذا بريستول ريزيدنسز قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر إيجل هيلز عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري سداد الدفعات المتبقية. ومع وجود 125 وحدة فقط في المبنى، يبقى المعروض في سوق إعادة البيع محدودًا."
+        }
+      ]
+    }
+  ]
+}

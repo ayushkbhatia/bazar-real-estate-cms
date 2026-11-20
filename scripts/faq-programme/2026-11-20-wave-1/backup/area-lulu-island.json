@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Lulu Island is located opposite Abu Dhabi Corniche.",
+        "q": "Where is Lulu Island located?",
+        "a_ar": "تقع جزيرة اللؤلؤ مقابل كورنيش أبوظبي.",
+        "q_ar": "أين تقع جزيرة اللؤلؤ؟"
+      },
+      {
+        "a": "Eagle Hills was identified in the previously reported redevelopment announcement. The current development arrangements should be verified.",
+        "q": "Who is developing Lulu Island?",
+        "a_ar": "ورد اسم إيجل هيلز ضمن إعلان إعادة التطوير المنشور سابقا، ويجب التحقق من ترتيبات التطوير الحالية.",
+        "q_ar": "من هو المطور العقاري لجزيرة اللؤلؤ؟"
+      },
+      {
+        "a": "Official residential inventory, launch prices and leasing availability have not been confirmed.",
+        "q": "Are residential properties available for purchase or rent?",
+        "a_ar": "لم يتم تأكيد الوحدات السكنية والأسعار وتوفر العقارات للبيع أو الإيجار رسميا.",
+        "q_ar": "هل تتوفر عقارات سكنية للبيع أو الإيجار؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Lulu Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة اللؤلؤ"
+  },
+  "enabled": true
+}

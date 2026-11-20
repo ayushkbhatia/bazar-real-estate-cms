@@ -74,37 +74,37 @@
       "revalidate": false
     },
     "/guides/for-landlords": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/for-tenants": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/golden-visa": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/how-to-rent-out": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/kyc-non-residents": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/property-linked-residency": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/property-management": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/rental-process": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/required-documents": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/tax-residency": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/guides/tenant-move-in": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/insights": {
       "revalidate": 300
@@ -132,6 +132,9 @@
     },
     "/legal/terms": {
       "revalidate": false
+    },
+    "/llms.txt": {
+      "revalidate": 86400
     },
     "/lp/[slug]": {
       "revalidate": 300
@@ -185,49 +188,49 @@
       "revalidate": 300
     },
     "/services/buy": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/consultation": {
       "revalidate": 3600
     },
     "/services/consulting": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/conveyancing": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/developer": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/handover": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/interior-design": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/invest": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/manage": {
       "revalidate": 3600
     },
     "/services/rental-finance": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/residency-visas": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/sales-leasing": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/sell": {
       "revalidate": 3600
     },
     "/services/snagging": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/services/tenant-matchmaking": {
-      "revalidate": false
+      "revalidate": 3600
     },
     "/sitemap": {
       "revalidate": false

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Falah is located in mainland Abu Dhabi, northeast of Zayed International Airport.",
+        "q": "Where is Al Falah located?",
+        "a_ar": "تقع الفلاح في بر أبوظبي شمال شرق مطار زايد الدولي.",
+        "q_ar": "أين تقع الفلاح؟"
+      },
+      {
+        "a": "The area is primarily known for spacious family villas.",
+        "q": "What properties are available in Al Falah?",
+        "a_ar": "تشتهر المنطقة بالفلل العائلية الواسعة.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الفلاح؟"
+      },
+      {
+        "a": "Ownership and leasing eligibility depend on the property's legal classification and applicable Abu Dhabi regulations.",
+        "q": "Can anyone buy or rent property in Al Falah?",
+        "a_ar": "تعتمد أهلية التملك والتأجير على التصنيف القانوني للعقار والأنظمة المعمول بها في أبوظبي.",
+        "q_ar": "هل يمكن للجميع شراء أو استئجار عقار في الفلاح؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Falah",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الفلاح"
+  },
+  "enabled": true
+}

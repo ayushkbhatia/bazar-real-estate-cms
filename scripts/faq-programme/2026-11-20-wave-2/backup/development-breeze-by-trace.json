@@ -1,0 +1,81 @@
+{
+  "faq": [
+    {
+      "a": "Radiant Breeze, officially known as Breeze by Trace, is a new residential development on Al Reem Island, Abu Dhabi. The project features 217 modern apartments designed for comfortable living, with convenient access to shopping, schools, parks, and lifestyle destinations.",
+      "q": "What is Radiant Breeze on Al Reem Island?",
+      "a_ar": "راديانت بريز، المعروف رسميا باسم بريز من تريس، هو مشروع سكني جديد في جزيرة الريم بأبوظبي. يضم المشروع 217 شقة عصرية مصممة لتوفير حياة مريحة، مع سهولة الوصول إلى مراكز التسوق والمدارس والحدائق والمرافق الترفيهية.",
+      "q_ar": "ما هو مشروع راديانت بريز في جزيرة الريم؟"
+    },
+    {
+      "a": "Radiant Breeze is located on Al Reem Island, Abu Dhabi, approximately 10 minutes from Downtown Abu Dhabi and major shopping destinations, including Reem Mall and The Galleria. The development also offers convenient access to Reem Central Park, Saadiyat Island, and Zayed International Airport.",
+      "q": "Where is Radiant Breeze located in Abu Dhabi?",
+      "a_ar": "يقع راديانت بريز في جزيرة الريم بأبوظبي، على بعد حوالي 10 دقائق من وسط أبوظبي ومراكز التسوق الرئيسية، بما في ذلك الريم مول والغاليريا. كما يتميز بسهولة الوصول إلى حديقة الريم المركزية وجزيرة السعديات ومطار زايد الدولي.",
+      "q_ar": "أين يقع مشروع راديانت بريز في أبوظبي؟"
+    },
+    {
+      "a": "Radiant Breeze offers a selection of 1, 2, 3, and 4-bedroom apartments on Al Reem Island. The residences feature practical layouts designed to maximise natural light and everyday comfort.",
+      "q": "What types of apartments are available at Radiant Breeze?",
+      "a_ar": "يوفر راديانت بريز شققا تتراوح من غرفة نوم واحدة إلى أربع غرف نوم في جزيرة الريم، بتصاميم عملية تستفيد من الإضاءة الطبيعية وتوفر الراحة في الحياة اليومية.",
+      "q_ar": "ما أنواع الشقق المتوفرة في راديانت بريز؟"
+    },
+    {
+      "a": "Breeze by Trace is developed by Trace Real Estate and marketed through Radiant Real Estate. The development introduces a new collection of contemporary residential apartments on Al Reem Island, Abu Dhabi.",
+      "q": "Who is the developer of Radiant Breeze?",
+      "a_ar": "يتم تطوير مشروع بريز من تريس من قبل شركة تريس العقارية، ويتم تسويقه من خلال راديانت العقارية. يقدم المشروع مجموعة جديدة من الشقق السكنية العصرية في جزيرة الريم بأبوظبي.",
+      "q_ar": "من هو المطور العقاري لمشروع راديانت بريز؟"
+    },
+    {
+      "a": "Published launch prices for Radiant Breeze start from approximately AED 1.23 million. Apartment prices vary depending on the number of bedrooms, floor level, layout, and availability. Contact Bazar Real Estate for the latest pricing and available units.",
+      "q": "What is the starting price of apartments at Radiant Breeze?",
+      "a_ar": "تبدأ الأسعار المعلنة لشقق راديانت بريز من حوالي 1.23 مليون درهم. تختلف الأسعار حسب عدد غرف النوم والطابق والتصميم والوحدات المتاحة. تواصل مع البازار العقارية لمعرفة أحدث الأسعار والشقق المتوفرة.",
+      "q_ar": "ما أسعار الشقق في راديانت بريز؟"
+    }
+  ],
+  "coords": {
+    "lat": 24.490869367609903,
+    "lng": 54.40438079463587
+  },
+  "nearby_ids": [
+    "46c08375-1776-4351-a07d-147059f12a15",
+    "8ca0b0cb-7423-469b-b28f-da935ae85a11",
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Unwind and enjoy a refreshing swim in a relaxing outdoor setting.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بالسباحة والاسترخاء في أجواء خارجية هادئة ومريحة.",
+      "media_id": "a9c9ec11-9f96-478a-9c29-60738a143535",
+      "title_ar": "حمام السباحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy your favourite movies under the stars in a unique outdoor setting.",
+      "title": "Outdoor Cinema",
+      "copy_ar": "استمتع بمشاهدة أفلامك المفضلة تحت النجوم في أجواء خارجية مميزة.",
+      "media_id": "dca0ef7e-3a8e-4573-9009-6a3550da2635",
+      "title_ar": "سينما خارجية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active and maintain your fitness routine in a fully equipped indoor gym.",
+      "title": "Indoor Gym",
+      "copy_ar": "حافظ على نشاطك ولياقتك البدنية في صالة رياضية داخلية مجهزة بالكامل.",
+      "media_id": "2bfb3631-1a89-4008-9073-ce915da840a9",
+      "title_ar": "صالة رياضية داخلية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A dedicated space where children can play, explore, and enjoy their time.",
+      "title": "Kids Play Area",
+      "copy_ar": "مساحة مخصصة للأطفال للعب والاستكشاف وقضاء أوقات ممتعة.",
+      "media_id": "517d5138-3621-4232-85ee-225dc1c7e6cc",
+      "title_ar": "منطقة ألعاب للأطفال"
+    }
+  ]
+}

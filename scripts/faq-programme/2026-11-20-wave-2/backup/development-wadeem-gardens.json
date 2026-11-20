@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.387466086510045,
+    "lng": 54.45208307126353
+  },
+  "nearby_ids": [
+    "869f998f-35b6-435a-9107-d8be81059202",
+    "7265ac49-5d39-48d3-974a-9a76135b9132",
+    "887fa798-561a-4b03-8336-f94c931910d8"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A convenient mix of dining and retail options designed to support everyday community living.",
+      "title": "Dining & Retail",
+      "copy_ar": "مجموعة متنوعة من المطاعم ومتاجر التجزئة لتلبية احتياجات السكان اليومية.",
+      "media_id": "0cff2de7-5e8a-4a42-a120-0a6c400815e9",
+      "title_ar": "المطاعم ومتاجر التجزئة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Dedicated tracks designed for walking, jogging, and cycling throughout the community.",
+      "title": "Jogging & Cycling Tracks",
+      "copy_ar": "مسارات مخصصة للمشي والجري وركوب الدراجات في مختلف أنحاء المجتمع.",
+      "media_id": "abcfb50f-681f-4257-93a5-2c6168713e14",
+      "title_ar": "مسارات الجري وركوب الدراجات"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Well-designed swimming pools offering residents spaces to relax, unwind, and stay active.",
+      "title": "Swimming Pools",
+      "copy_ar": "مسابح مصممة بعناية توفر للسكان مساحات للاسترخاء والاستمتاع والحفاظ على النشاط.",
+      "media_id": "184e3a75-a125-4d10-8356-ba8439f5c92c",
+      "title_ar": "المسابح"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A dedicated sports space created for fitness, recreation, and active community living.",
+      "title": "Sports Arena",
+      "copy_ar": "مساحة مخصصة للرياضة واللياقة البدنية والأنشطة الترفيهية ضمن المجتمع.",
+      "media_id": "c3b590ab-a00d-4079-9f12-862a615bac12",
+      "title_ar": "الساحة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Expansive landscaped green areas designed for relaxation, outdoor activities, and family time.",
+      "title": "Open Green Spaces",
+      "copy_ar": "مساحات خضراء واسعة ومنسقة للاسترخاء والأنشطة الخارجية وقضاء الوقت مع العائلة.",
+      "media_id": "f117580a-7bd6-4102-8e2a-4e93e503abe1",
+      "title_ar": "المساحات الخضراء المفتوحة"
+    }
+  ]
+}

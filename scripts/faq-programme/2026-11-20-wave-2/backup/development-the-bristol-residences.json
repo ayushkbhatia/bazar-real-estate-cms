@@ -1,0 +1,41 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.532797723111642,
+    "lng": 54.51610534227126
+  },
+  "nearby_ids": [
+    "339e6094-61a3-456f-acff-8518234c06e4",
+    "3891797d-b25c-403e-ac83-1785f168cacd",
+    "7662c290-a5dc-4605-a0e2-180f5714e30c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A vibrant marina offering direct access to the waterfront and a premium coastal lifestyle.",
+      "title": "Marina",
+      "copy_ar": "مرسى حيوي يوفر وصولا مباشرا إلى الواجهة البحرية ويقدم تجربة معيشية ساحلية مميزة.",
+      "media_id": "91faa669-6895-4c92-9518-cfea46ce5b59",
+      "title_ar": "المرسى"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A scenic waterfront promenade designed for leisurely walks, relaxation, and enjoying the surrounding views.",
+      "title": "Waterfront Promenade",
+      "copy_ar": "ممشى خلاب على الواجهة البحرية مصمم للتنزه والاسترخاء والاستمتاع بالإطلالات المحيطة.",
+      "media_id": "904633a3-8e5a-48b8-8c73-8d262dca10ce",
+      "title_ar": "الممشى البحري"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A beautifully designed swimming pool providing a relaxing space to unwind and enjoy the outdoors.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح مصمم بعناية يوفر مساحة مثالية للاسترخاء والاستمتاع بالأجواء الخارجية.",
+      "media_id": "4fef3b44-e5be-4203-ae32-5d9db01c08d6",
+      "title_ar": "المسبح"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.505168162129948,
+    "lng": 54.41345600783612
+  },
+  "nearby_ids": [
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A serene outdoor pool designed for relaxation, leisure, and everyday enjoyment.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح خارجي هادئ مصمم للاسترخاء والترفيه والاستمتاع اليومي.",
+      "media_id": "0e103713-9eb7-44c7-937c-b7513bc9c5a0",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A fully equipped fitness space designed to support an active and healthy lifestyle.",
+      "title": "Gym",
+      "copy_ar": "مساحة لياقة بدنية مجهزة بالكامل لدعم أسلوب حياة صحي ونشط.",
+      "media_id": "94a85da5-bd2c-4d23-a8fd-55606fe7c524",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A versatile sports court created for a variety of recreational and fitness activities.",
+      "title": "Multi-Purpose Court",
+      "copy_ar": "ملعب رياضي مرن مصمم لمجموعة متنوعة من الأنشطة الترفيهية والرياضية.",
+      "media_id": "f85047e9-6c7c-4dad-97e6-76cbbdd3365c",
+      "title_ar": "ملعب متعدد الاستخدامات"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "An open-air cinema offering a relaxed setting for entertainment under the sky.",
+      "title": "Outdoor Cinema",
+      "copy_ar": "تجربة سينمائية في الهواء الطلق ضمن أجواء مريحة تحت السماء.",
+      "media_id": "b0ad8516-b339-4db5-9013-d3051419f56b",
+      "title_ar": "سينما خارجية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A safe and engaging play space designed for younger residents to enjoy and explore.",
+      "title": "Kid's Play Area",
+      "copy_ar": "مساحة آمنة وممتعة مصممة للأطفال للعب والاستكشاف والاستمتاع بأوقاتهم.",
+      "media_id": "454064b8-cc24-431a-b980-33c72838fe15",
+      "title_ar": "منطقة لعب الأطفال"
+    }
+  ]
+}
