@@ -56,13 +56,14 @@ describe("developer page copy", () => {
     }
   });
 
-  it("puts the token where each language wants it, not where English does", () => {
+  it("puts the token inside the sentence, never as a possessive suffix", () => {
     const en = String(DEVELOPER_PAGE_SECTION.defaults.projects_heading);
     const ar = String(DEVELOPER_PAGE_SECTION.defaults.projects_heading_ar);
-    // English trails the name with a possessive; Arabic leads with the noun.
-    // A single "name + suffix" concatenation cannot produce both, which is
-    // the entire reason `fillTokens` exists.
-    expect(en.indexOf(NAME_TOKEN)).toBe(0);
+    // Both lead with the noun and place the name after it. The English used
+    // to be "{name}'s projects.", which printed "Emaar Properties's projects"
+    // on every profile: developer names are company names.
+    expect(en).not.toMatch(/\{name\}['’]s/);
+    expect(en.indexOf(NAME_TOKEN)).toBeGreaterThan(0);
     expect(ar.indexOf(NAME_TOKEN)).toBeGreaterThan(0);
   });
 

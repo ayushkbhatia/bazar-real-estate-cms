@@ -158,7 +158,7 @@
     "crumb": "Market reports",
     "eyebrow": "Market reports · {quarter}",
     "heading": "Abu Dhabi, by community",
-    "intro": "Closed-book residential resale, distilled per community and asset type. Sourced from DLD open-data records — published one quarter in arrears so every number is final.",
+    "intro": "Closed-book residential resale, distilled per community and asset type. Built from registered transactions and published one quarter in arrears so every number is final.",
     "empty": "No closed transactions surfaced for {quarter} yet. The dataset refreshes weekly — check back shortly.",
     "communityGuide": "Community guide →"
   }

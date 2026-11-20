@@ -487,8 +487,8 @@
   },
   "property.faq.verifyA": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "926c00216502",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ae310e417aa1",
     "reviewed": false
   },
   "property.faq.includesQ": {
@@ -586,8 +586,8 @@
   },
   "development.facts.rera_escrow": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "a34910081122",
+    "model": "claude-opus-5-5",
+    "sourceHash": "6208cdfc5d5c",
     "reviewed": false
   },
   "development.facts.service_charge_estimate": {
@@ -961,8 +961,8 @@
   },
   "editorial.eyebrow.whatsSelling": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "f4db6f8a2be6",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c9db5c6ec924",
     "reviewed": false
   },
   "editorial.article.share": {
@@ -1015,8 +1015,8 @@
   },
   "editorial.report.closedTransactions": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "c9d12df5605c",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a3fa1d59236b",
     "reviewed": false
   },
   "tools.mortgage.eyebrow": {
@@ -1319,11 +1319,9 @@
   },
   "tools.mortgage.cashPegNote": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "2832daeca3f3",
-    "reviewed": false,
-    "editedBy": "human",
-    "editNote": "money localised: AED 2M -> 2 مليون درهم"
+    "model": "claude-opus-5-5",
+    "sourceHash": "1bf76c1d2774",
+    "reviewed": false
   },
   "tools.mortgage.cashLine.down_payment": {
     "by": "machine",
@@ -1333,8 +1331,8 @@
   },
   "tools.mortgage.cashLine.dld_transfer": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "230ab644a1ba",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d197f48e966b",
     "reviewed": false
   },
   "tools.mortgage.cashLine.trustee_office": {
@@ -1393,8 +1391,8 @@
   },
   "tools.mortgage.cashNote.mortgage_registration": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "9920629c0b80",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b302b939d6ed",
     "reviewed": false
   },
   "tools.mortgage.cashNote.bank_arrangement": {
@@ -1699,15 +1697,15 @@
   },
   "tools.valuation.badgeDmt": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "107b48863761",
+    "model": "claude-opus-5-5",
+    "sourceHash": "2d278cf65041",
     "reviewed": false
   },
   "tools.valuation.badgeDmtSub": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "4a2f6a88b631",
-    "reviewed": true
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "a999bb948862",
+    "reviewed": false
   },
   "tools.valuation.badgeReviewed": {
     "by": "human",
@@ -3011,78 +3009,6 @@
     "sourceHash": "0cbdc4211d62",
     "reviewed": false
   },
-  "tools.compare.metricsReference": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "71bf90935fc2",
-    "reviewed": false
-  },
-  "tools.compare.metricsYield": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "78702296a870",
-    "reviewed": false
-  },
-  "tools.compare.metricsForeign": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "990ec0cbe656",
-    "reviewed": true
-  },
-  "tools.compare.metricsMortgageable": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "ae1bc985b04d",
-    "reviewed": false
-  },
-  "tools.compare.foreignYes": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "0a50b11ff1ec",
-    "reviewed": false
-  },
-  "tools.compare.foreignRestricted": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "a00571bcb257",
-    "reviewed": false
-  },
-  "tools.compare.mortgageableCash": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "8a254151f3ea",
-    "reviewed": true
-  },
-  "tools.compare.metricsHeading": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "fe7f2114d572",
-    "reviewed": true
-  },
-  "tools.compare.metricsGrowth": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "6055d0dc6c55",
-    "reviewed": false
-  },
-  "tools.compare.verdictEyebrow": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "c15f685665e9",
-    "reviewed": true
-  },
-  "tools.compare.verdictBody": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "436536b19e7a",
-    "reviewed": false
-  },
-  "tools.compare.verdictNote": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "03f4ec3eefd6",
-    "reviewed": false
-  },
   "tools.picker.addToCompare": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -3557,8 +3483,8 @@
   },
   "guides.index.card.kyc-non-residents.intro": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "e2c9f04a1fcc",
+    "model": "claude-opus-5-5",
+    "sourceHash": "84c51244e6ba",
     "reviewed": false
   },
   "guides.index.card.for-tenants.eyebrow": {
@@ -3757,11 +3683,9 @@
   },
   "guides.goldenVisa.block.qualifyingProperty.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "1230158adf91",
-    "reviewed": false,
-    "editedBy": "human",
-    "editNote": "money localised: AED 2M -> 2 مليون درهم"
+    "model": "claude-opus-5-5",
+    "sourceHash": "336f395a942c",
+    "reviewed": false
   },
   "guides.goldenVisa.block.dependants.heading": {
     "by": "machine",
@@ -3771,8 +3695,8 @@
   },
   "guides.goldenVisa.block.dependants.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "2a9c09950e54",
+    "model": "claude-opus-5-5",
+    "sourceHash": "84a38fa17439",
     "reviewed": false
   },
   "guides.goldenVisa.block.timeline.heading": {
@@ -4073,8 +3997,8 @@
   },
   "guides.kycNonResidents.block.identity.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "d8e89f5381c8",
+    "model": "claude-opus-5-5",
+    "sourceHash": "0b9e30e41500",
     "reviewed": false
   },
   "guides.kycNonResidents.block.address.heading": {
@@ -4097,11 +4021,9 @@
   },
   "guides.kycNonResidents.block.sourceFunds.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "9c0f6f163c8b",
-    "reviewed": false,
-    "editedBy": "human",
-    "editNote": "money localised: AED 2M -> 2 مليون درهم"
+    "model": "claude-opus-5-5",
+    "sourceHash": "4a49cf5b461b",
+    "reviewed": false
   },
   "guides.kycNonResidents.block.banking.heading": {
     "by": "human",
@@ -4111,8 +4033,8 @@
   },
   "guides.kycNonResidents.block.banking.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "a5a7dd6f2012",
+    "model": "claude-opus-5-5",
+    "sourceHash": "f5681693524a",
     "reviewed": false
   },
   "guides.kycNonResidents.block.ifYoullLetProperty.heading": {
@@ -4123,8 +4045,8 @@
   },
   "guides.kycNonResidents.block.ifYoullLetProperty.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "be078edf7a82",
+    "model": "claude-opus-5-5",
+    "sourceHash": "c4812b852745",
     "reviewed": false
   },
   "guides.propertyLinkedResidency.eyebrow": {
@@ -4169,8 +4091,8 @@
   },
   "guides.propertyLinkedResidency.block.doesntCover.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "c0c4e3d4c55f",
+    "model": "claude-opus-5-5",
+    "sourceHash": "14dc44770c96",
     "reviewed": false
   },
   "guides.propertyLinkedResidency.block.mortgageRules.heading": {
@@ -4499,8 +4421,8 @@
   },
   "guides.rentalProcess.step.understandRenewalEndTenancy.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "9c651b247090",
+    "model": "claude-opus-5-5",
+    "sourceHash": "7b1fafdc80f7",
     "reviewed": false
   },
   "guides.rentalProcess.block.rentalProcessChecklist.heading": {
@@ -5357,14 +5279,14 @@
   },
   "guides.checker.goldenVisa.step.stage.choice.off_plan_50pct.label": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "6771e1ea1ad0",
+    "model": "claude-opus-5-5",
+    "sourceHash": "ddcec048fbe1",
     "reviewed": false
   },
   "guides.checker.goldenVisa.step.stage.choice.off_plan_below50.label": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "dc930d0540b8",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d906762c467a",
     "reviewed": false
   },
   "guides.checker.goldenVisa.outcome.belowThreshold.title": {
@@ -5460,16 +5382,16 @@
     "reviewed": false
   },
   "guides.checker.goldenVisa.outcome.offPlanUnder50.title": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "ec9e9a747b95",
-    "reviewed": true
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "83097d8572a3",
+    "reviewed": false
   },
   "guides.checker.goldenVisa.outcome.offPlanUnder50.next.1": {
-    "by": "human",
-    "model": null,
-    "sourceHash": "12844045dd6a",
-    "reviewed": true
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "d9d38c60a48e",
+    "reviewed": false
   },
   "guides.checker.goldenVisa.outcome.offPlanUnder50.next.2": {
     "by": "machine",
@@ -5485,11 +5407,9 @@
   },
   "guides.checker.goldenVisa.outcome.eligible.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "ac7eee5d38fd",
-    "reviewed": false,
-    "editedBy": "human",
-    "editNote": "money localised: AED 2M -> 2 مليون درهم"
+    "model": "claude-opus-5-5",
+    "sourceHash": "1b6e44f3eb2a",
+    "reviewed": false
   },
   "guides.checker.goldenVisa.outcome.eligible.cta": {
     "by": "machine",
@@ -5643,8 +5563,8 @@
   },
   "guides.checker.taxResidency.outcome.via183.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "f933f2f01c5f",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b062e9605456",
     "reviewed": false
   },
   "guides.checker.taxResidency.outcome.via183.cta": {
@@ -5879,8 +5799,8 @@
   },
   "guides.checker.goldenVisa.outcome.offPlanUnder50.copy": {
     "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "5b84f81103c1",
+    "model": "claude-opus-5-5",
+    "sourceHash": "9a094062aa79",
     "reviewed": false
   },
   "guides.checker.taxResidency.outcome.via90Anchor.cta": {
@@ -8219,5 +8139,23 @@
     "sourceHash": "3844a74c3adc",
     "reviewed": false,
     "note": "Off-plan map rail header and arrows; {name} is the area, already Arabic on /ar."
+  },
+  "property.spec.dldPlot": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "67788e8341af",
+    "reviewed": false
+  },
+  "pages.marketReports.intro": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "73bc485818fb",
+    "reviewed": false
+  },
+  "development.faq.escrowA": {
+    "by": "machine",
+    "model": "claude-opus-5-5",
+    "sourceHash": "b99c101b49b3",
+    "reviewed": false
   }
 }

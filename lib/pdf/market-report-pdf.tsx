@@ -47,7 +47,7 @@ export function MarketReportPDF({ snapshot, trend, comparables, prefs }: Props) 
   return (
     <Shell
       title={`${snapshot.area_name} ${propertyTypeLabel(snapshot.property_type)} report`}
-      subtitle={`${quarterLabel(snapshot.quarter)} · Closed transactions on DLD record. Compiled ${new Date().toLocaleDateString("en-GB")}.`}
+      subtitle={`${quarterLabel(snapshot.quarter)} · Registered transactions. Compiled ${new Date().toLocaleDateString("en-GB")}.`}
       meta={`${quarterLabel(snapshot.quarter)} report`}
     >
       <Text style={styles.eyebrow}>Snapshot</Text>

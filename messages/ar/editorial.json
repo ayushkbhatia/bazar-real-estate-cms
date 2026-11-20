@@ -9,7 +9,7 @@
     "developments": "المشاريع العقارية",
     "talkToAuthor": "تحدث إلى المُعلِن",
     "trend": "التغير",
-    "whatsSelling": "ما يُباع فعلاً · مسجّل لدى دائرة الأراضي والأملاك"
+    "whatsSelling": "ما يُباع فعلاً · صفقات مسجّلة"
   },
   "article": {
     "share": "مشاركة",
@@ -33,7 +33,7 @@
     "viewAllCategories": "عرض جميع الفئات"
   },
   "report": {
-    "closedTransactions": "{count, plural, zero {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} one {صفقة {type} مغلقة واحدة في سجلات دائرة الأراضي والأملاك في {quarter}.} two {# صفقتان {type} مغلقتان في سجلات دائرة الأراضي والأملاك في {quarter}.} few {# صفقات {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} many {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} other {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.}}",
+    "closedTransactions": "{count, plural, zero {# صفقة {type} مسجّلة في {quarter}.} one {صفقة {type} مسجّلة واحدة في {quarter}.} two {# صفقتان {type} مسجّلتان في {quarter}.} few {# صفقات {type} مسجّلة في {quarter}.} many {# صفقة {type} مسجّلة في {quarter}.} other {# صفقة {type} مسجّلة في {quarter}.}}",
     "noTransactions": "لم تُسجَّل بعد أي صفقات {type} مكتملة في {area} خلال هذا الربع."
   },
   "internalLink": {

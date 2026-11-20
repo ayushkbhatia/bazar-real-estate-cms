@@ -169,7 +169,9 @@ export const DEVELOPER_PAGE_SECTION: SectionDef = {
     back_label_ar: "كل المطورين",
     // English puts the possessive after the name; Arabic puts the noun first.
     // This is the pair the token exists for.
-    projects_heading: `${NAME_TOKEN}'s projects.`,
+    // Not "{name}'s projects.": every developer name here is a company
+    // name, and "Emaar Properties's projects" was on all 38 profiles.
+    projects_heading: `Projects by ${NAME_TOKEN}.`,
     projects_heading_ar: `مشاريع ${NAME_TOKEN}.`,
     projects_cta_label: "Browse all off-plan",
     projects_cta_label_ar: "تصفح كل المشاريع على الخارطة",

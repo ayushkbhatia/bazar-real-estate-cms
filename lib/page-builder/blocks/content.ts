@@ -521,7 +521,7 @@ export const statsBand: BlockDef = {
       kind: "text",
       max: 240,
       optional: true,
-      placeholder: "Source: DLD transactions, Q3 2026",
+      placeholder: "Source: ADREC transactions, Q3 2026",
     },
   ],
   // The figures are the campaign's own claims; no default could be true.

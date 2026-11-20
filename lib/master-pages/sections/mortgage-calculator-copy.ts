@@ -118,7 +118,7 @@ const WORDS: Record<string, string> = {
   aria: "screen-reader text",
   slider: "slider (screen-reader text)",
   dbr: "DBR",
-  dld: "DLD",
+  dld: "registration",
   noc: "NOC",
   pdf: "PDF",
   amort: "chart",

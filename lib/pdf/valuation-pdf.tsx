@@ -146,11 +146,10 @@ export function ValuationReportPdf({
           How this estimate was prepared
         </Text>
         <Text style={{ color: palette.ink2, fontSize: 10, lineHeight: 1.6 }}>
-          Range derived from DLD transactions in the last 12 months adjusted
-          for floor, view, finish quality, and tenancy status. Where DLD
-          coverage is thin (off-plan handovers, niche communities) we
-          supplement with broker-channel comparables and Bazar advisor
-          judgement.
+          An indicative range from Bazar&apos;s area price model: a price per
+          square foot for the area and property type, adjusted for floor,
+          view, finish quality and tenancy. A Bazar advisor then refines it
+          against recent comparable sales before you rely on it.
         </Text>
 
         <Text style={[styles.eyebrow, { marginTop: 24 }]}>What to do next</Text>

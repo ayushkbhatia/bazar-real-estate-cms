@@ -45,7 +45,7 @@ export const SEED_SERVICES: SeedService[] = [
       { title: "Valuation", body: "We model the property against DMT and DARI comparables and propose a private price." },
       { title: "Off-market window", body: "60-day silent listing to our buyer book and the wider Bazar advisor network." },
       { title: "Public listing (only if needed)", body: "If the off-market window closes without an offer, we move to Property Finder + Bayut with photography, virtual tour, and a public price." },
-      { title: "Offer & close", body: "One advisor leads the negotiation. KYC and conveyancing handled in-house. DLD transfer scheduled with the buyer." },
+      { title: "Offer & close", body: "One advisor leads the negotiation. KYC and conveyancing handled in-house. Transfer registered on DARI with the buyer." },
     ],
     pricing: "1.5% of sale price · paid on transfer · no upfront fees",
     contact_cta: "Book a valuation",
@@ -62,7 +62,7 @@ export const SEED_SERVICES: SeedService[] = [
       { title: "Brief", body: "A 45-minute session to capture intent, budget, timeline, and constraints. Output: a written brief you sign off on." },
       { title: "Shortlist", body: "Off-market + public stock filtered against the brief. Typically 4–8 properties per round; you see the rationale, not the noise." },
       { title: "Viewings", body: "We attend with you. After each viewing, a one-page debrief — what's right, what's wrong, what comes next." },
-      { title: "Offer & close", body: "We negotiate price, snags, and terms. KYC + DLD handled in-house. Mortgage broker referral if needed." },
+      { title: "Offer & close", body: "We negotiate price, snags, and terms. KYC and DARI registration handled in-house. Mortgage broker referral if needed." },
     ],
     pricing: "1% of purchase price · paid on transfer · or AED 25,000 retainer credited against final fee",
     contact_cta: "Engage an advisor",
@@ -76,9 +76,9 @@ export const SEED_SERVICES: SeedService[] = [
       "We manage residential and small-portfolio commercial assets for owners who don't live in Abu Dhabi. One point of contact, monthly statements, end-to-end tenant relations, snags, and renewals.",
     for_whom: "Non-resident landlords with one or more units in Abu Dhabi.",
     process_steps: [
-      { title: "Onboarding", body: "Property condition report, photography, tenancy contract template, DLD/RERA registration." },
+      { title: "Onboarding", body: "Property condition report, photography, tenancy contract template, Tawtheeq registration." },
       { title: "Listing & let", body: "Marketing across portals + our tenant book. Tenant screening, contract negotiation, deposit handling." },
-      { title: "Ongoing management", body: "Rent collection, repair coordination, annual inspection, utility transfer, ADJD compliance." },
+      { title: "Ongoing management", body: "Rent collection, repair coordination, annual inspection, utility transfer, Tawtheeq renewals and rental-dispute support." },
       { title: "Renewal & exit", body: "90-day renewal cycle, market re-pricing, move-out inspection, deposit reconciliation." },
     ],
     pricing: "8% of annual rent · minimum AED 10,000 · 2-year initial term",
@@ -90,15 +90,15 @@ export const SEED_SERVICES: SeedService[] = [
     name: "Conveyancing",
     one_liner: "Standalone conveyancing for transactions you bring to us.",
     intro:
-      "If you've negotiated a deal without an advisor, Bazar's conveyancing desk handles the DLD-side process: title search, NOC, mortgage discharge, transfer, and trustee booking. Flat fee per transaction.",
-    for_whom: "Buyers and sellers who've already agreed terms and need DLD process support.",
+      "If you've negotiated a deal without an advisor, Bazar's conveyancing desk handles the transfer on DARI: title search, NOC, mortgage discharge and registration. Flat fee per transaction.",
+    for_whom: "Buyers and sellers who've already agreed terms and need help with the DARI transfer.",
     process_steps: [
-      { title: "Title & permit check", body: "Verify ORN, Trakheesi/DARI permit, title deed, mortgage status, service-charge clearance." },
-      { title: "MoU & deposit", body: "Drafting + escrow management of the 10% MoU deposit at the DLD-approved trustee." },
+      { title: "Title & permit check", body: "Verify the broker's ADREC licence, the Madhmoun listing permit, title deed, mortgage status, service-charge clearance." },
+      { title: "MoU & deposit", body: "Drafting the memorandum of understanding and agreeing how the deposit is held until transfer." },
       { title: "NOC & clearance", body: "Coordinate developer NOC, master-community clearance, utility transfer." },
-      { title: "Transfer", body: "Book trustee appointment, attend with parties, file with DLD, deliver title deed." },
+      { title: "Transfer", body: "Register the transfer on DARI with both parties and deliver the title deed." },
     ],
-    pricing: "AED 18,000 flat · payable at MoU signing · all DLD fees on the parties",
+    pricing: "AED 18,000 flat · payable at MoU signing · registration fees on the parties",
     contact_cta: "Engage conveyancing",
     related_tool: null,
   },
@@ -107,7 +107,7 @@ export const SEED_SERVICES: SeedService[] = [
     name: "Investment advisory",
     one_liner: "Yield-modelled investment selection — we close on numbers, not stories.",
     intro:
-      "For investors evaluating Abu Dhabi residential for yield. We model gross + net yield, vacancy, service charge, and 10-year DLD area trend against your target IRR. If the model doesn't clear, we don't show the property.",
+      "For investors evaluating Abu Dhabi residential for yield. We model gross + net yield, vacancy, service charge, and 10-year area price trend against your target IRR. If the model doesn't clear, we don't show the property.",
     for_whom: "Buy-to-let investors targeting AED 2M+ units or block-buy opportunities.",
     process_steps: [
       { title: "Investment thesis", body: "Capture your target IRR, hold period, leverage, and risk tolerance. Output: a one-page thesis." },
@@ -128,7 +128,7 @@ export const SEED_SERVICES: SeedService[] = [
     slug: "snagging",
     name: "Snagging inspection",
     one_liner:
-      "Independent pre-handover and DLW inspection so your developer doesn't hand over a defect list.",
+      "Independent pre-handover and defect-liability inspection so your developer doesn't hand over a defect list.",
     intro:
       "Every off-plan handover should be inspected by someone who isn't on the developer's payroll. Bazar's snagging team walks the unit with a structured 200-point checklist — finishes, MEP, fit-out tolerances, smart-home commissioning — and files a defect schedule the developer is contractually obligated to remediate before you sign off.",
     for_whom:
@@ -147,18 +147,18 @@ export const SEED_SERVICES: SeedService[] = [
     slug: "handover",
     name: "Handover support",
     one_liner:
-      "End-to-end handover concierge — DLD title transfer, utility activation, keys in your hand.",
+      "End-to-end handover concierge — title registration on DARI, utility activation, keys in your hand.",
     intro:
-      "The two weeks between handover notice and move-in are administrative chaos: DLD title transfer, escrow release, Etisalat / DEWA / TAQA / ADDC activation, community access cards, parking allocation. Bazar's handover desk runs the whole sequence on your behalf so the only thing you do is collect the keys.",
+      "The two weeks between handover notice and move-in are administrative chaos: title registration on DARI, the final developer payments, TAQA Distribution, district-cooling and internet activation, community access cards, parking allocation. Bazar's handover desk runs the whole sequence on your behalf so the only thing you do is collect the keys.",
     for_whom:
       "Off-plan buyers handing over remotely or domestically — particularly non-residents who can't be onsite for two consecutive weeks.",
     process_steps: [
       { title: "Pre-handover audit", body: "Verify outstanding balance, escrow status, developer NOC, snagging closure. We surface blockers before they delay the transfer." },
-      { title: "DLD transfer", body: "Book the trustee slot, attend with the developer, deliver the title deed in your name or your nominee's." },
-      { title: "Utility + community", body: "Open Etisalat / DEWA / TAQA / ADDC accounts, register on the community portal, collect access cards and parking remotes." },
+      { title: "Title registration", body: "Register the title on DARI with the developer and deliver the title deed in your name or your nominee's." },
+      { title: "Utility + community", body: "Open TAQA Distribution, district-cooling and internet accounts, register on the community portal, collect access cards and parking remotes." },
       { title: "Key handover", body: "Final walkthrough with the developer, keys handed over, fob count verified, photographic record filed." },
     ],
-    pricing: "AED 6,500 flat · payable on title-transfer day · all DLD fees on the purchaser",
+    pricing: "AED 6,500 flat · payable on title-transfer day · registration fees on the purchaser",
     contact_cta: "Engage the handover desk",
     related_tool: null,
   },
@@ -189,7 +189,7 @@ export const SEED_SERVICES: SeedService[] = [
     intro:
       "Buying property in the UAE doesn't automatically grant residency — but the right purchase makes you eligible. Bazar's visa desk handles the application: eligibility check, documentation, medical, Emirates ID, and dependants. We work to a fixed fee with a published timeline.",
     for_whom:
-      "Non-resident purchasers eyeing the 10-year Golden Visa (AED 2M+ property) or the 2-year property-linked residency (AED 750K+).",
+      "Non-resident purchasers eyeing the 10-year Golden Visa (AED 2M+ property) or the 2-year property-linked residency.",
     process_steps: [
       { title: "Eligibility check", body: "30-minute consultation to confirm property qualifies, family structure, prior UAE visas, fingerprint clearance." },
       { title: "Documentation", body: "We compile title deed, valuation, mortgage NOC, passport, medical, photos, and dependants paperwork — and check every requirement against the latest ICP rules." },
@@ -293,7 +293,7 @@ export const SEED_SERVICES: SeedService[] = [
       { title: "Unit brief", body: "Property walk + a one-page brief that captures price, term, audience, and what would make this tenant the right one. No portal photos, no public listing." },
       { title: "Targeted outreach", body: "We approach 8-12 known families or corporate tenants who match the brief. All confidential — your address is never in a portal feed." },
       { title: "Viewings", body: "Two-three private viewings per week with pre-qualified tenants. We're onsite for each one." },
-      { title: "Negotiation & contract", body: "We handle the tenancy contract, security deposit, post-dated cheques, and the Ejari registration once signed." },
+      { title: "Negotiation & contract", body: "We handle the tenancy contract, security deposit, post-dated cheques, and the Tawtheeq registration once signed." },
     ],
     pricing: "Half-month rent · capped at AED 50K · paid on signed tenancy contract",
     contact_cta: "Brief the matchmaking desk",

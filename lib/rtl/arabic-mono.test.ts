@@ -48,8 +48,6 @@ function publicTsx(): string[] {
  * Keyed `file:line`-free (by the line's text) so unrelated edits don't churn it.
  */
 const LATIN_ON_PURPOSE: { file: string; contains: string; why: string }[] = [
-  { file: "investment-metrics.tsx", contains: "{r.ref}", why: "listing reference" },
-  { file: "investment-metrics.tsx", contains: 'className="mono text-bz-ink">', why: "a percentage" },
   { file: "valuation-wizard.tsx", contains: '<span className="mono">', why: "AED/ft² rate and × multipliers" },
   { file: "lead-gate.tsx", contains: "bg-bz-surface-2 p-2 mono", why: "the email address the code went to" },
   { file: "hero-variants.tsx", contains: "AED 6–9M", why: "sample budget, English-only variant" },
