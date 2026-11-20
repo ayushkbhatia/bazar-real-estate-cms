@@ -1,0 +1,178 @@
+{
+  "wave": "2",
+  "batch": "batch-a",
+  "written": "2026-11-20",
+  "sourcedNumbers": ["2019", "2024", "2025", "72", "300", "200", "480", "13", "2015000", "50", "23", "8", "5.6", "100", "6.4", "140", "46", "58000", "675000", "2015"],
+  "sourcedNotes": {
+    "2019": "u.ae — 2019 amendment opening Abu Dhabi investment areas to foreign freehold",
+    "2024": "Mamsha Gardens launched November 2024 (Zawya / Gulf Business / Aldar press release 4 Nov 2024)",
+    "2025/72/300": "Final phase of 72 homes released 3 March 2025 after more than 300 sold (Zawya / Aldar)",
+    "200": "Mamsha Gardens about 200 m from Mamsha Beach (Aldar final-phase release, Zawya)",
+    "480/13": "493 homes = 480 apartments + 13 townhouses (acme.ac project page; Aldar launch release)",
+    "2015000": "worked example: 65% of DB starting price AED 3,100,000",
+    "50": "ADREC off-plan mortgage framework: 50% of price paid (Gulf News / WAM, Sept 2026; pilot)",
+    "23": "Talay sales opened 23 September 2026 (Zawya / Aldar)",
+    "8/5.6/100/6.4/140/46/58000": "Marsa Al Saadiyat: 8 km coastline, 5.6 km beaches, AED 100bn, 6.4m sq m, 140 km paths, 46 km cycle loop, 58,000+ residents (Zawya / Aldar, Sept 2026)",
+    "675000": "worked example: 5% of DB starting price AED 13,500,000",
+    "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (escrow for off-plan sales)"
+  },
+  "pages": [
+    {
+      "kind": "development",
+      "slug": "mamsha-gardens",
+      "name": "Mamsha Gardens",
+      "sources": [
+        "DB: developments row mamsha-gardens (developer, area, 493 units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), area page subpage/area/saadiyat-island (nearby band, Wave 0 freehold FAQ)",
+        "https://www.zawya.com/en/business/real-estate/abu-dhabi-aldar-launches-493-unit-mixed-use-project-on-saadiyat-island-px5v9m9d — launch, 493 homes, seven buildings (Nov 2024)",
+        "https://zawya.com/en/press-release/companies-news/aldar-releases-72-exceptional-homes-in-final-phase-of-mamsha-gardens-community-on-saadiyat-island-b6ggq3oz — final phase, 200 m to Mamsha Beach, Mustard and Linen, ACME, amenities, Estidama/Fitwel",
+        "https://acme.ac/blogs/projects/mamsha-gardens — 480 apartments + 13 townhouses",
+        "https://propertyfinder.ae/en/new-projects/aldar-properties-pjsc/mamsha-gardens — AED 3.1M from, 10/55/35, Q2 2028, developer stock sold out",
+        "adro.gov.ae — Golden Visa off-plan and mortgage rules",
+        "gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage framework, 50% paid"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Mamsha Gardens?",
+          "a": "Mamsha Gardens is developed by Aldar Properties, the Abu Dhabi developer behind Mamsha Al Saadiyat and much of Saadiyat Island. Aldar launched it in November 2024, with architecture by ACME and interiors by Mustard and Linen, and released its final phase of 72 homes in March 2025.",
+          "q_ar": "من هو مطوّر مشروع ممشى غاردنز؟",
+          "a_ar": "يطوّر مشروع ممشى غاردنز شركة الدار العقارية، المطوّر الذي يقف وراء ممشى السعديات وجزء كبير من جزيرة السعديات. وأطلقت الدار المشروع في نوفمبر 2024، بتصميم معماري من استوديو أكمي وتصميم داخلي من ماسترد آند لينن، ثم طرحت مرحلته الأخيرة التي تضم 72 وحدة سكنية في مارس 2025."
+        },
+        {
+          "q": "Where is Mamsha Gardens located?",
+          "a": "Mamsha Gardens is in the Saadiyat Cultural District on Saadiyat Island, Abu Dhabi, about 200 metres from Mamsha Beach, with views of the Zayed National Museum and the Arabian Gulf. A walkway links it to Saadiyat Grove; Downtown Abu Dhabi is about 10 minutes by car and Zayed International Airport about 20–30 minutes.",
+          "q_ar": "أين يقع مشروع ممشى غاردنز؟",
+          "a_ar": "يقع مشروع ممشى غاردنز في المنطقة الثقافية بجزيرة السعديات في أبوظبي، على بُعد نحو 200 متر من شاطئ ممشى، ويطل على متحف زايد الوطني والخليج العربي. ويربطه ممر للمشاة بالسعديات غروف، ويبعد نحو 10 دقائق بالسيارة عن وسط مدينة أبوظبي، ومن 20 إلى 30 دقيقة عن مطار زايد الدولي."
+        },
+        {
+          "q": "What is the starting price of Mamsha Gardens?",
+          "a": "Mamsha Gardens starts from AED 3,100,000 for a one-bedroom apartment. Aldar's own allocation has largely sold, so most homes are now bought on resale, where prices rise with size, floor and view; ask a Bazar advisor for current availability and asking prices.",
+          "q_ar": "ما سعر البداية في مشروع ممشى غاردنز؟",
+          "a_ar": "تبدأ الأسعار في مشروع ممشى غاردنز من 3,100,000 درهم لشقة بغرفة نوم واحدة. وقد بيعت معظم الوحدات التي طرحتها الدار، لذا يُشترى أغلب المعروض الآن عبر إعادة البيع، وترتفع الأسعار بحسب المساحة والطابق والإطلالة، ويمكنك طلب التوافر والأسعار الحالية من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Mamsha Gardens?",
+          "a": "Mamsha Gardens has 493 homes across seven buildings: 480 apartments and 13 townhouses. One-bedroom apartments measure about 1,060–1,065 sq ft, two-bedrooms 2,098–2,325 sq ft and three-bedrooms about 2,819–2,820 sq ft; most two- and three-bedroom homes add a study or maid's room.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع ممشى غاردنز؟",
+          "a_ar": "يضم مشروع ممشى غاردنز 493 وحدة سكنية موزعة على سبعة مبانٍ: 480 شقة و13 منزلًا من نوع تاون هاوس. وتبلغ مساحة شقق الغرفة الواحدة نحو 1,060 إلى 1,065 قدمًا مربعًا، وشقق الغرفتين من 2,098 إلى 2,325 قدمًا مربعًا، وشقق الثلاث غرف نحو 2,819 إلى 2,820 قدمًا مربعًا، وتضم معظم وحدات الغرفتين والثلاث غرف مكتبًا أو غرفة خادمة."
+        },
+        {
+          "q": "What is the payment plan for Mamsha Gardens?",
+          "a": "Mamsha Gardens is sold on a 65/35 payment plan: 10% on booking, 55% during construction and 35% on handover. The 2% Abu Dhabi registration fee is paid on top. A resale buyer takes over the instalments still due, so confirm what remains in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع ممشى غاردنز؟",
+          "a_ar": "يُباع مشروع ممشى غاردنز بخطة سداد 65/35: 10% عند الحجز، و55% خلال فترة الإنشاء، و35% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويتولى المشتري في إعادة البيع سداد الدفعات المتبقية، لذا يُنصح بالتحقق مما تبقى منها في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Mamsha Gardens?",
+          "a": "Mamsha Gardens is scheduled for handover in Q2 2028, around May 2028. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع ممشى غاردنز؟",
+          "a_ar": "من المقرر تسليم مشروع ممشى غاردنز في الربع الثاني من 2028، في مايو 2028 تقريبًا. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at Mamsha Gardens?",
+          "a": "Yes. Saadiyat Island is one of Abu Dhabi's designated investment areas, so buyers of any nationality can own a Mamsha Gardens apartment or townhouse freehold, as they have since the 2019 amendment to the emirate's real estate law. Non-residents can buy without a UAE visa, and the purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع ممشى غاردنز؟",
+          "a_ar": "نعم. جزيرة السعديات من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك شقة أو تاون هاوس في ممشى غاردنز بنظام التملك الحر، وذلك منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة DARI."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Mamsha Gardens?",
+          "a": "Yes, as every Mamsha Gardens home is priced above the AED 2 million threshold, from AED 3,100,000 for a one-bedroom. Off-plan, the developer must confirm at least AED 2 million has been paid: on the 65/35 plan, a AED 3,100,000 buyer has paid about AED 2,015,000 once the construction instalments are complete. A mortgaged home needs at least AED 2 million of equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء وحدة في ممشى غاردنز؟",
+          "a_ar": "نعم، فجميع الوحدات في ممشى غاردنز تتجاوز أسعارها حد المليوني درهم، إذ تبدأ من 3,100,000 درهم لشقة بغرفة واحدة. لكن في العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل: ووفق خطة 65/35 يكون مشتري وحدة بسعر 3,100,000 درهم قد سدد نحو 2,015,000 درهم بعد اكتمال دفعات الإنشاء. أما العقار المرهون فيجب ألا تقل حصة المالك فيه عن مليوني درهم."
+        },
+        {
+          "q": "What amenities does Mamsha Gardens have?",
+          "a": "Mamsha Gardens offers resort-style services, including concierge, housekeeping, pet-sitting and valet. Residents get swimming pools, a podium garden, a clubhouse, wellness pavilions, meditation spaces, gyms, yoga rooms and kids' play areas, plus retail, lounges with workspaces and underground parking. The project targets a 3 Pearl Estidama rating.",
+          "q_ar": "ما المرافق المتوفرة في مشروع ممشى غاردنز؟",
+          "a_ar": "يقدّم مشروع ممشى غاردنز خدمات على طراز المنتجعات، منها الكونسيرج والتدبير المنزلي ورعاية الحيوانات الأليفة وخدمة صف السيارات. ويحصل السكان على مسابح وحديقة بوديوم ونادٍ اجتماعي وأجنحة للعافية ومساحات للتأمل وصالات رياضية وغرف لليوغا ومناطق لعب للأطفال، إضافة إلى متاجر وصالات مع مساحات عمل ومواقف سيارات تحت الأرض. ويستهدف المشروع تصنيف 3 لآلئ وفق نظام استدامة."
+        },
+        {
+          "q": "Can I get a mortgage on Mamsha Gardens before handover?",
+          "a": "Yes. Under ADREC's off-plan mortgage framework, buyers must have paid 50% of the price before a bank will finance the rest; Aldar and ADCB completed Abu Dhabi's first such mortgage in September 2026. On Mamsha Gardens' 10/55/35 plan that point is passed during construction, so buyers can finance the 35% due on handover.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري لوحدة في ممشى غاردنز قبل التسليم؟",
+          "a_ar": "نعم. وفق إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، يجب أن يكون المشتري قد سدد 50% من السعر قبل أن يموّل البنك المبلغ المتبقي، وقد أتمّت الدار وبنك أبوظبي التجاري أول رهن من هذا النوع في أبوظبي في سبتمبر 2026. ووفق خطة ممشى غاردنز 10/55/35 تتجاوز هذه النسبة خلال فترة الإنشاء، فيمكن للمشترين تمويل دفعة الـ35% المستحقة عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "talay-at-marsa-al-saadiyat",
+      "name": "Talay at Marsa Al Saadiyat",
+      "sources": [
+        "DB: developments row talay-at-marsa-al-saadiyat (developer, area, 351 units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes), area page subpage/area/saadiyat-island (nearby band, Wave 0 freehold FAQ)",
+        "https://www.zawya.com/en/press-release/companies-news/aldar-launches-first-homes-at-marsa-al-saadiyat-with-351-exclusive-villas-at-talay-890950 — launch, 351 villas, 4–6 bed, sales from 23 September, amenities, Abdalla Almulla, Marsa Al Saadiyat facts",
+        "https://www.zawya.com/en/business/construction/aldar-launches-talay-first-residential-community-at-marsa-al-saadiyat-892490 — AED 100bn, 6.4m sq m, Etihad Rail station",
+        "https://www.propertyfinder.ae/en/new-projects/aldar-properties-pjsc/talay — 5/45/50, December 2029, AED 13.5–14M from",
+        "adro.gov.ae — Golden Visa off-plan and mortgage rules",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector) — off-plan escrow"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Talay at Marsa Al Saadiyat?",
+          "a": "Talay at Marsa Al Saadiyat is developed by Aldar Properties. It is the first residential community at Marsa Al Saadiyat, the final phase of the Saadiyat Island masterplan, and went on sale on 23 September 2026 as a collection of 351 standalone villas.",
+          "q_ar": "من هو مطوّر مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "يطوّر مشروع تالاي في مرسى السعديات شركة الدار العقارية. وهو أول مجتمع سكني في مرسى السعديات، المرحلة الأخيرة من المخطط الرئيسي لجزيرة السعديات، وطُرح للبيع في 23 سبتمبر 2026 كمجموعة من 351 فيلا مستقلة."
+        },
+        {
+          "q": "Where is Talay at Marsa Al Saadiyat located?",
+          "a": "Talay is in Marsa Al Saadiyat on Saadiyat Island, Abu Dhabi, a waterfront district with 8 km of coastline, 5.6 km of beaches and a direct link to the Saadiyat Cultural District. Downtown Abu Dhabi is about 10 minutes away by car and Zayed International Airport about 20–30 minutes.",
+          "q_ar": "أين يقع مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "يقع مشروع تالاي في مرسى السعديات بجزيرة السعديات في أبوظبي، وهي منطقة على الواجهة المائية تضم 8 كيلومترات من السواحل و5.6 كيلومتر من الشواطئ، وترتبط مباشرة بالمنطقة الثقافية في السعديات. ويبعد المشروع نحو 10 دقائق بالسيارة عن وسط مدينة أبوظبي، ومن 20 إلى 30 دقيقة عن مطار زايد الدولي."
+        },
+        {
+          "q": "What is the starting price of Talay at Marsa Al Saadiyat?",
+          "a": "Talay at Marsa Al Saadiyat starts from AED 13,500,000 for a four-bedroom villa. Five- and six-bedroom villas are priced higher, and prices also vary with plot position and orientation; ask a Bazar advisor for the current price list and availability, as launch pricing changes between release phases.",
+          "q_ar": "ما سعر البداية في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "تبدأ الأسعار في مشروع تالاي في مرسى السعديات من 13,500,000 درهم لفيلا بأربع غرف نوم. وتُسعَّر الفلل بخمس وست غرف بأسعار أعلى، كما تختلف الأسعار بحسب موقع القطعة واتجاهها، ويمكنك طلب قائمة الأسعار والتوافر الحالية من مستشار بازار، إذ تتغير أسعار الإطلاق بين مراحل الطرح."
+        },
+        {
+          "q": "What villa types and sizes are available at Talay at Marsa Al Saadiyat?",
+          "a": "Talay has 351 standalone villas with four, five or six bedrooms, each with a private garden. Its floor plans list four-bedroom villas at about 7,922–7,944 sq ft, five-bedrooms at 9,052–9,225 sq ft and six-bedrooms at 9,257–9,504 sq ft. There are no apartments or townhouses in this collection.",
+          "q_ar": "ما أنواع الفلل ومساحاتها في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "يضم مشروع تالاي 351 فيلا مستقلة بأربع أو خمس أو ست غرف نوم، لكل منها حديقة خاصة. وتُظهر مخططات المشروع فلل الأربع غرف بمساحة نحو 7,922 إلى 7,944 قدمًا مربعًا، وفلل الخمس غرف من 9,052 إلى 9,225 قدمًا مربعًا، وفلل الست غرف من 9,257 إلى 9,504 أقدام مربعة. ولا تضم هذه المجموعة شققًا أو منازل تاون هاوس."
+        },
+        {
+          "q": "What is the payment plan for Talay at Marsa Al Saadiyat?",
+          "a": "Talay at Marsa Al Saadiyat is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top. Confirm the plan for your villa in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "يُباع مشروع تالاي في مرسى السعديات بخطة سداد 50/50: 5% عند الحجز، و45% خلال فترة الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بتأكيد الخطة الخاصة بفيلتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Talay at Marsa Al Saadiyat?",
+          "a": "Talay at Marsa Al Saadiyat is scheduled for handover in Q4 2029, in December 2029. Off-plan completion dates are set by the developer and can move; the sale and purchase agreement states the anticipated completion date and what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "من المقرر تسليم مشروع تالاي في مرسى السعديات في الربع الرابع من 2029، في ديسمبر 2029. ويحدد المطوّر مواعيد إنجاز المشاريع على الخريطة وقد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy a villa at Talay at Marsa Al Saadiyat?",
+          "a": "Yes. Saadiyat Island, including Marsa Al Saadiyat, is one of Abu Dhabi's designated investment areas, so buyers of any nationality can own a Talay villa and its plot freehold, as they have since the 2019 amendment to the emirate's real estate law. Non-residents can buy without a UAE visa; the purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء فيلا في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "نعم. جزيرة السعديات، ومنها مرسى السعديات، من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك فيلا في تالاي مع أرضها بنظام التملك الحر، وذلك منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة DARI."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Talay at Marsa Al Saadiyat?",
+          "a": "Yes, as every Talay villa is priced well above the AED 2 million threshold, from AED 13,500,000. For an off-plan villa the developer must confirm that at least AED 2 million has been paid; on the 5/45/50 plan that is reached early in the construction instalments, since the 5% booking alone is AED 675,000. A mortgaged villa needs at least AED 2 million of equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في تالاي في مرسى السعديات؟",
+          "a_ar": "نعم، فجميع فلل تالاي تتجاوز أسعارها حد المليوني درهم بكثير، إذ تبدأ من 13,500,000 درهم. لكن في العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل، ووفق خطة 5/45/50 يتحقق ذلك في بداية دفعات الإنشاء، إذ تبلغ دفعة الحجز البالغة 5% وحدها 675,000 درهم. أما الفيلا المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+        },
+        {
+          "q": "What is Marsa Al Saadiyat, the masterplan around Talay?",
+          "a": "Marsa Al Saadiyat is Aldar's AED 100 billion waterfront district covering about 6.4 million sq m, the last phase of the Saadiyat Island masterplan. It is planned around Abu Dhabi's largest marina, 140 km of walking paths, a 46 km cycling loop, three schools and an underground Etihad Rail high-speed station, for more than 58,000 future residents.",
+          "q_ar": "ما هو مرسى السعديات، المخطط الرئيسي الذي يضم تالاي؟",
+          "a_ar": "مرسى السعديات منطقة على الواجهة المائية تطوّرها الدار بقيمة 100 مليار درهم وعلى مساحة نحو 6.4 مليون متر مربع، وهي المرحلة الأخيرة من المخطط الرئيسي لجزيرة السعديات. وتُخطَّط حول أكبر مرسى لليخوت في أبوظبي، مع 140 كيلومترًا من ممرات المشي، ومسار للدراجات بطول 46 كيلومترًا، وثلاث مدارس، ومحطة قطار فائق السرعة تحت الأرض ضمن شبكة قطارات الاتحاد، لأكثر من 58,000 ساكن مستقبلي."
+        },
+        {
+          "q": "What amenities does Talay at Marsa Al Saadiyat have?",
+          "a": "Talay is laid out around a landscaped green spine with falaj-inspired water channels, shaded seating, an outdoor majlis pavilion, picnic areas and maritime-themed children's play spaces. Emirati artist Abdalla Almulla designed its louvre details and a commissioned fountain, and residents also get beach access, dining, a gym, a pool and wellness facilities.",
+          "q_ar": "ما المرافق المتوفرة في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "صُمّم مشروع تالاي حول محور أخضر منسّق تتخلله قنوات مياه مستوحاة من الأفلاج، مع جلسات مظللة ومجلس خارجي ومناطق للنزهات ومساحات لعب للأطفال مستوحاة من البحر. وصمّم الفنان الإماراتي عبدالله الملا تفاصيل الواجهات المشبّكة ونافورة خاصة بالمشروع، كما يحصل السكان على إمكانية الوصول إلى الشاطئ ومطاعم وصالة رياضية ومسبح ومرافق للعافية."
+        },
+        {
+          "q": "How are off-plan payments protected at Talay at Marsa Al Saadiyat?",
+          "a": "Payments for a Talay villa go into the project's escrow account, as Abu Dhabi Law No. 3 of 2015 requires for every off-plan sale, under the supervision of ADREC. Aldar can draw on the account only as construction progresses, and each sale is recorded on the off-plan register through DARI, so check that your instalments are paid to the escrow account named in the agreement.",
+          "q_ar": "كيف تُحمى دفعات الشراء على الخريطة في مشروع تالاي في مرسى السعديات؟",
+          "a_ar": "تُودَع دفعات شراء فيلا في تالاي في حساب الضمان الخاص بالمشروع، كما يشترط قانون أبوظبي رقم 3 لسنة 2015 لكل عملية بيع على الخريطة، وتحت إشراف ADREC. ولا يحق للدار السحب من الحساب إلا وفق تقدّم أعمال الإنشاء، وتُسجَّل كل عملية بيع في سجل البيع على الخريطة عبر منصة DARI، لذا تأكد من سداد دفعاتك إلى حساب الضمان المذكور في العقد."
+        }
+      ]
+    }
+  ]
+}

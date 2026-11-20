@@ -1,0 +1,99 @@
+{
+  "faq": [
+    {
+      "a": "Radiant Legacy is a new commercial development by Radiant Real Estate on Al Reem Island, Abu Dhabi, offering modern office spaces, waterfront views, and premium business facilities.",
+      "q": "What is Radiant Legacy in Abu Dhabi?",
+      "a_ar": "راديانت ليجاسي هو مشروع تجاري جديد من راديانت العقارية في جزيرة الريم بأبوظبي، يوفر مكاتب عصرية بإطلالات على الواجهة البحرية ومرافق أعمال متميزة.",
+      "q_ar": "ما هو مشروع راديانت ليجاسي في أبوظبي؟"
+    },
+    {
+      "a": "Radiant Legacy is located on Al Reem Island, Abu Dhabi, providing convenient access to the city centre, major business districts, and surrounding residential communities.",
+      "q": "Where is Radiant Legacy located?",
+      "a_ar": "يقع مشروع راديانت ليجاسي في جزيرة الريم بأبوظبي، ويوفر سهولة الوصول إلى وسط المدينة ومناطق الأعمال الرئيسية والمجمعات السكنية المحيطة.",
+      "q_ar": "أين يقع مشروع راديانت ليجاسي؟"
+    },
+    {
+      "a": "Radiant Legacy is developed by Radiant Real Estate, a property developer responsible for several residential and commercial developments in Abu Dhabi.",
+      "q": "Who is the developer of Radiant Legacy?",
+      "a_ar": "يتم تطوير مشروع راديانت ليجاسي من قبل شركة راديانت العقارية، التي تقدم مجموعة من المشاريع السكنية والتجارية في أبوظبي.",
+      "q_ar": "من هو المطور العقاري لمشروع راديانت ليجاسي؟"
+    },
+    {
+      "a": "Radiant Legacy features 158 commercial office units across a 36-storey tower, offering various office layouts to accommodate different business requirements.",
+      "q": "How many office units are available in Radiant Legacy?",
+      "a_ar": "يضم مشروع راديانت ليجاسي 158 مكتبا تجاريا ضمن برج مكون من 36 طابقا، مع تصاميم ومساحات متنوعة تلبي احتياجات مختلف الشركات.",
+      "q_ar": "كم عدد المكاتب في مشروع راديانت ليجاسي؟"
+    },
+    {
+      "a": "Radiant Legacy offers commercial office spaces starting from approximately 1,544 sq. ft., with larger office configurations and full-floor options available for businesses.",
+      "q": "What office sizes are available in Radiant Legacy?",
+      "a_ar": "يوفر راديانت ليجاسي مكاتب تجارية بمساحات تبدأ من حوالي 1,544 قدم مربع، بالإضافة إلى مكاتب أكبر وخيارات لشراء طوابق مكتبية كاملة.",
+      "q_ar": "ما هي مساحات المكاتب المتاحة في راديانت ليجاسي؟"
+    }
+  ],
+  "coords": {
+    "lat": 24.506490468022434,
+    "lng": 54.41288414184268
+  },
+  "nearby_ids": [
+    "4fc1a6a5-d145-4728-beef-b37d04527ece",
+    "a7b50903-72a0-48cd-a992-4d66316c937b",
+    "46c08375-1776-4351-a07d-147059f12a15"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy stunning waterfront views that create an inspiring and prestigious working environment.",
+      "title": "Exclusive Waterfront Views",
+      "copy_ar": "استمتع بإطلالات خلابة على الواجهة البحرية توفر بيئة عمل ملهمة وراقية.",
+      "media_id": "d13c2ce4-c3c2-4de4-a61c-69d1c5516dbc",
+      "title_ar": "إطلالات حصرية على الواجهة البحرية"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Benefit from secure underground parking, providing convenient access for office owners and visitors.",
+      "title": "Private Underground Parking",
+      "copy_ar": "استفد من مواقف سيارات آمنة تحت الأرض توفر سهولة الوصول لأصحاب المكاتب والزوار.",
+      "media_id": "7d1d5f2c-547b-4666-92e4-0814daae9c6d",
+      "title_ar": "مواقف سيارات خاصة تحت الأرض"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Welcome clients and guests through an elegant lobby and reception area designed to create a professional first impression.",
+      "title": "Lobby & Reception",
+      "copy_ar": "استقبل العملاء والزوار في ردهة استقبال أنيقة مصممة لتعكس صورة احترافية ومميزة.",
+      "media_id": "0b02beb9-1815-4cee-b1fd-e2bf2bf4ded4",
+      "title_ar": "ردهة استقبال فاخرة"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Maintain a healthy work-life balance with access to a private gym equipped for daily fitness and wellness.",
+      "title": "Private Gym",
+      "copy_ar": "حافظ على التوازن بين العمل والحياة الصحية مع صالة رياضية خاصة مجهزة لممارسة التمارين اليومية.",
+      "media_id": "3f7bdef4-e38e-43a7-8360-ac547186ade3",
+      "title_ar": "صالة رياضية خاصة"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Enjoy convenient and efficient access to office floors through dedicated elevators.",
+      "title": "Dedicated Elevators",
+      "copy_ar": "استمتع بسهولة وسرعة الوصول إلى طوابق المكاتب من خلال مصاعد مخصصة.",
+      "media_id": "88cd434e-1a2a-4c42-88c2-8c16248f0bed",
+      "title_ar": "مصاعد مخصصة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Take advantage of a private outdoor terrace, offering a relaxing space to unwind and enjoy the surrounding views.",
+      "title": "Private Terrace",
+      "copy_ar": "استمتع بتراس خارجي خاص يوفر مساحة مثالية للاسترخاء والاستمتاع بالإطلالات المحيطة.",
+      "media_id": "790a17f9-2a51-44e1-a787-6cb13b1dea6f",
+      "title_ar": "تراس خاص"
+    }
+  ]
+}

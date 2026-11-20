@@ -1,0 +1,76 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.507122656345715,
+    "lng": 54.63606951784806
+  },
+  "nearby_ids": [
+    "a290c4e2-28e0-4b14-8012-02e9a17c974c",
+    "151a3b6b-00b4-456b-bd11-61f12766afe0"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy scenic fairways and an exceptional golfing experience within a beautifully landscaped setting.",
+      "title": "Golf Course",
+      "copy_ar": "استمتع بممرات خضراء خلابة وتجربة غولف مميزة ضمن بيئة طبيعية منسقة بعناية.",
+      "media_id": "98a5ed41-9c62-4934-b40b-bab0a6f7c99f",
+      "title_ar": "ملعب الغولف"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Stroll, relax and enjoy waterfront views along a beautifully designed boardwalk.",
+      "title": "Boardwalk",
+      "copy_ar": "استمتع بالمشي والاسترخاء وإطلالات الواجهة المائية على ممشى مصمم بعناية.",
+      "media_id": "2eaed9aa-fc54-4ffa-b308-31e652431d69",
+      "title_ar": "الممشى الخشبي"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stroll, dine and unwind along a vibrant promenade designed for leisure and waterfront living.",
+      "title": "Promenade",
+      "copy_ar": "استمتع بالمشي وتناول الطعام والاسترخاء على ممشى نابض بالحياة مصمم للترفيه والحياة على الواجهة المائية.",
+      "media_id": "c763334a-6e9f-421d-a85f-e7859662490a",
+      "title_ar": "الممشى"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Explore and play in a nature-inspired playground designed for creativity, discovery and outdoor adventure.",
+      "title": "Nature Playground",
+      "copy_ar": "مساحة لعب مستوحاة من الطبيعة تشجع على الإبداع والاستكشاف والمغامرات الخارجية.",
+      "media_id": "7c9cc862-f95a-41d9-9662-6e5ac7ff8cba",
+      "title_ar": "ملعب مستوحى من الطبيعة"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A dedicated pet garden offering a safe and welcoming space for pets to play, explore and socialise.",
+      "title": "Pet Garden",
+      "copy_ar": "مساحة آمنة ومرحبة مخصصة للحيوانات الأليفة للعب والاستكشاف والتفاعل.",
+      "media_id": "cc4ee316-f846-4288-bc32-7f85905cc45c",
+      "title_ar": "حديقة الحيوانات الأليفة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Find balance and reconnect in a peaceful yoga deck designed for movement, mindfulness and relaxation.",
+      "title": "Yoga Deck",
+      "copy_ar": "مساحة هادئة مصممة للحركة والتأمل والاسترخاء واستعادة التوازن.",
+      "media_id": "2b2edf9d-35d5-445c-81b4-d7020cd06dba",
+      "title_ar": "منصة اليوغا"
+    },
+    {
+      "alt": null,
+      "key": "feature_7",
+      "copy": "A safe and engaging play area designed for fun, creativity and active play.",
+      "title": "Kid's Play Area",
+      "copy_ar": "مساحة آمنة وممتعة مصممة للمرح والإبداع واللعب النشط.",
+      "media_id": "7460d05a-903c-4256-892b-647a7c7b0a0e",
+      "title_ar": "منطقة لعب الأطفال"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Jurf is a coastal residential destination located in Ghantoot, between Abu Dhabi and Dubai. It offers convenient access to both emirates via Sheikh Maktoum Bin Rashid Road (E11).",
+        "q": "Where is Al Jurf located?",
+        "a_ar": "الجرف هو مجتمع سكني ساحلي يقع في منطقة غنتوت، بين أبوظبي ودبي. ويتميز بسهولة الوصول إلى كلتا الإمارتين عبر شارع الشيخ مكتوم بن راشد (E11).",
+        "q_ar": "أين يقع الجرف؟"
+      },
+      {
+        "a": "Al Jurf is developed by IMKAN Properties, an Abu Dhabi-based real estate developer specialising in residential communities, lifestyle destinations and innovative urban developments.",
+        "q": "Who is the developer of Al Jurf?",
+        "a_ar": "تتولى شركة إمكان العقارية تطوير مشروع الجرف، وهي شركة تطوير عقاري مقرها أبوظبي، متخصصة في إنشاء المجتمعات السكنية والوجهات العصرية والمشاريع العمرانية المبتكرة.",
+        "q_ar": "من هو المطور العقاري لمشروع الجرف؟"
+      },
+      {
+        "a": "Al Jurf offers luxury villas, townhouses, waterfront apartments and residential plots. Major communities include Al Jurf Gardens, Kayan Al Jurf and Naseem Al Jurf.",
+        "q": "What types of properties are available in Al Jurf?",
+        "a_ar": "يوفر الجرف مجموعة متنوعة من الفلل الفاخرة ومنازل التاون هاوس والشقق المطلة على الواجهة البحرية وقطع الأراضي السكنية. وتشمل أبرز المجتمعات السكنية حدائق الجرف وكيان الجرف ونسيم الجرف.",
+        "q_ar": "ما أنواع العقارات المتاحة في الجرف؟"
+      },
+      {
+        "a": "According to Bayut's August 2026 property sale index, the area recorded AED 1,529 per sq. ft. Property Finder also reported a median advertised property price of approximately AED 5 million. Actual prices vary by property type, size and location.",
+        "q": "What is the average property price in Al Jurf?",
+        "a_ar": "وفقاً لمؤشر أسعار بيع العقارات الصادر عن بيوت في أغسطس 2026، بلغ متوسط سعر القدم المربع في الجرف 1,529 درهماً. كما أظهرت بيانات بروبرتي فايندر أن السعر الوسيط للعقارات المعروضة للبيع يبلغ حوالي 5 ملايين درهم. وتختلف الأسعار الفعلية حسب نوع العقار ومساحته وموقعه.",
+        "q_ar": "ما هو متوسط أسعار العقارات في الجرف؟"
+      },
+      {
+        "a": "Al Jurf is located between Abu Dhabi and Dubai, approximately 25 minutes from Yas Island, 30 minutes from Zayed International Airport and 30 minutes from Al Maktoum International Airport. Travel times depend on traffic and the exact destination.",
+        "q": "How far is Al Jurf from Abu Dhabi and Dubai?",
+        "a_ar": "يقع الجرف في موقع استراتيجي بين أبوظبي ودبي، على بعد حوالي 25 دقيقة من جزيرة ياس، و30 دقيقة من مطار زايد الدولي، و30 دقيقة من مطار آل مكتوم الدولي. وقد تختلف أوقات الوصول حسب حركة المرور والوجهة المحددة.",
+        "q_ar": "كم يبعد الجرف عن أبوظبي ودبي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Jurf",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الجرف"
+  },
+  "enabled": true
+}

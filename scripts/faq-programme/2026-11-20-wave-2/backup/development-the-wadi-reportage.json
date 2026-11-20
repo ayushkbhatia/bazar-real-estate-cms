@@ -1,0 +1,68 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.469519016166785,
+    "lng": 54.61408351709002
+  },
+  "nearby_ids": [
+    "61077776-5ef8-474d-9a49-9e5017a89a4c",
+    "c8fc6f5d-2854-477a-86d8-c33416dcb333",
+    "151a3b6b-00b4-456b-bd11-61f12766afe0"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A private marina offering residents direct access to the waterfront and a premium yachting lifestyle.",
+      "title": "Private Marina",
+      "copy_ar": "مرسى خاص يوفر للسكان وصولا مباشرا إلى الواجهة البحرية وتجربة مميزة لليخوت.",
+      "media_id": "e78c05e3-e4b0-4cf4-89b7-def99aa25724",
+      "title_ar": "مرسى خاص"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A dedicated private dock providing convenient access to boats directly from the waterfront.",
+      "title": "Private Dock",
+      "copy_ar": "رصيف خاص يوفر وصولا سهلا ومباشرا إلى القوارب من الواجهة البحرية.",
+      "media_id": "7416c388-4957-43c4-b23d-7b7a59d2e02a",
+      "title_ar": "رصيف خاص"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A beautifully designed swimming pool offering a relaxing space to unwind and enjoy the surroundings.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح مصمم بعناية يوفر مساحة مثالية للاسترخاء والاستمتاع بالأجواء المحيطة.",
+      "media_id": "7e4f0ce0-43e5-4aeb-a019-f5abf5707695",
+      "title_ar": "مسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Waterfront dining destinations offering a selection of restaurants and cafés overlooking the water.",
+      "title": " Waterfront Dining",
+      "copy_ar": "مجموعة من المطاعم والمقاهي على الواجهة البحرية بإطلالات مباشرة على المياه.",
+      "media_id": "43155ba9-6833-414f-941c-50fb43d82f3e",
+      "title_ar": "مطاعم على الواجهة البحرية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Landscaped private gardens designed to provide residents with peaceful green spaces close to home.",
+      "title": "Private Gardens",
+      "copy_ar": "حدائق خاصة بتنسيق طبيعي توفر للسكان مساحات خضراء هادئة بالقرب من منازلهم.",
+      "media_id": "fb28060f-61eb-4abe-bfac-6ddd7f28c3bb",
+      "title_ar": "حدائق خاصة"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Connected pedestrian pathways designed for comfortable walking and easy movement throughout the community.",
+      "title": "Integrated Pathways",
+      "copy_ar": "مسارات مترابطة للمشاة مصممة لتسهيل التنقل والمشي براحة في جميع أنحاء المجتمع.",
+      "media_id": "e0a8529d-750e-4c1d-b1f3-9808d66d5f19",
+      "title_ar": "مسارات متكاملة"
+    }
+  ]
+}

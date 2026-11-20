@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Shawamekh is in mainland Abu Dhabi, near Shakhbout City and Baniyas.",
+        "q": "Where is Al Shawamekh located?",
+        "a_ar": "تقع في بر أبوظبي بالقرب من مدينة شخبوط وبني ياس.",
+        "q_ar": "أين تقع الشوامخ؟"
+      },
+      {
+        "a": "Villas are the main residential property type, alongside selected apartments and compounds.",
+        "q": "What properties are available in Al Shawamekh?",
+        "a_ar": "تتوفر بشكل رئيسي الفلل، إلى جانب بعض الشقق والمجمعات السكنية.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الشوامخ؟"
+      },
+      {
+        "a": "Yes. It offers spacious homes, peaceful surroundings and access to local amenities.",
+        "q": "Is Al Shawamekh suitable for families?",
+        "a_ar": "نعم، توفر منازل واسعة وأجواء هادئة وخدمات محلية.",
+        "q_ar": "هل الشوامخ مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Shawamekh",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الشوامخ"
+  },
+  "enabled": true
+}

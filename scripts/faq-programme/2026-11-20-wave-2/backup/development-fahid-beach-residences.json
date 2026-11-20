@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.510610890961075,
+    "lng": 54.56179552271183
+  },
+  "nearby_ids": [
+    "3891797d-b25c-403e-ac83-1785f168cacd",
+    "151a3b6b-00b4-456b-bd11-61f12766afe0",
+    "a290c4e2-28e0-4b14-8012-02e9a17c974c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Dedicated concierge services offering everyday assistance and added convenience for residents.",
+      "title": "Conceirge",
+      "copy_ar": "خدمات مخصصة لتقديم المساعدة اليومية وتعزيز راحة السكان.",
+      "media_id": "72054daf-f939-4709-95b7-dd066a35b2f2",
+      "title_ar": "خدمة الكونسيرج"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Direct access to the beach for a relaxed waterfront lifestyle just steps from home.",
+      "title": "Beach Access",
+      "copy_ar": "وصول مباشر إلى الشاطئ للاستمتاع بأسلوب حياة هادئ على الواجهة المائية على بُعد خطوات من المنزل.",
+      "media_id": "e6596272-f3bc-4d5c-a25a-47d5c8ce73c6",
+      "title_ar": "الوصول إلى الشاطئ"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A stunning infinity pool designed for relaxation with uninterrupted views of the surroundings.",
+      "title": "Infinity Pool",
+      "copy_ar": "مسبح لامتناهٍ مميز مصمم للاسترخاء والاستمتاع بإطلالات مفتوحة على المحيط.",
+      "media_id": "46c1b847-0ee4-4e10-9121-5db979547fac",
+      "title_ar": "المسبح اللامتناهي"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A dedicated swimming pool offering a refreshing space for leisure and recreation.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح مخصص يوفر مساحة منعشة للترفيه والاستجمام.",
+      "media_id": "a7502824-7ef4-446a-a265-b583828ebad2",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A safe and engaging space designed for children to play, explore, and enjoy.",
+      "title": "Kid's Play Area",
+      "copy_ar": "مساحة آمنة وممتعة مصممة للأطفال للعب والاستكشاف والاستمتاع.",
+      "media_id": "8d3605d0-b275-4541-9f78-56bf0755cc22",
+      "title_ar": "منطقة لعب الأطفال"
+    }
+  ]
+}

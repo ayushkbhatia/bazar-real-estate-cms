@@ -1,0 +1,66 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.406409063151216,
+    "lng": 54.4088558532097
+  },
+  "nearby_ids": [
+    "887fa798-561a-4b03-8336-f94c931910d8"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy leisurely walks and waterfront views along a beautifully designed promenade.",
+      "title": "Promenade",
+      "copy_ar": "استمتع بنزهات هادئة وإطلالات مميزة على الواجهة المائية ضمن ممشى مصمم بعناية.",
+      "media_id": "4ca70d9c-a19b-43a7-9cf8-19f9b97a8105",
+      "title_ar": "الممشى"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Relax and refresh in a beautifully designed swimming pool created for leisure and everyday enjoyment.",
+      "title": "Swimming Pool",
+      "copy_ar": "استرخِ واستمتع بأجواء منعشة في مسبح مصمم للترفيه والاستمتاع اليومي.",
+      "media_id": "5bb3890a-3a0f-4571-b800-966ac132266f",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A safe and engaging playground designed for fun, creativity and active play.",
+      "title": "Playground",
+      "copy_ar": "مساحة آمنة وممتعة مصممة للمرح والإبداع واللعب النشط.",
+      "media_id": "f027301b-5df3-40a1-a0f0-1301277694d6",
+      "title_ar": "منطقة اللعب"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Stay active in a modern, fully equipped gym designed for strength, fitness and well-being.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك في صالة حديثة ومجهزة بالكامل لدعم اللياقة والقوة والعافية.",
+      "media_id": "281f4ff2-8b73-4c9c-91f6-2881155b169a",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A fun and welcoming kids’ room designed for safe play, creativity and memorable moments.",
+      "title": "Kid's Room",
+      "copy_ar": "مساحة ممتعة ومرحبة مصممة للعب الآمن والإبداع وصنع لحظات مميزة.",
+      "media_id": "a2b2c830-8700-45a0-bac7-b4618fcdd6cf",
+      "title_ar": "غرفة الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Enjoy immersive entertainment and friendly competition in a modern gaming room designed for all ages.",
+      "title": "Gaming Room",
+      "copy_ar": "استمتع بالترفيه والتحديات الودية في غرفة ألعاب عصرية مناسبة لمختلف الأعمار.",
+      "media_id": "4c57d422-777c-4cab-9e47-023841181506",
+      "title_ar": "غرفة الألعاب"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is internationally recognised for sustainable urban development, clean technology, innovation and research.",
+        "q": "What is Masdar City known for?",
+        "a_ar": "تُعرف عالميًا بتطوير المدن المستدامة، والتكنولوجيا النظيفة، والابتكار، والبحث.",
+        "q_ar": "بماذا تشتهر مدينة مصدر؟"
+      },
+      {
+        "a": "Masdar City states that its buildings use around 40% less energy and water than comparable buildings.",
+        "q": "How sustainable are its buildings?",
+        "a_ar": "تشير مدينة مصدر إلى أن مبانيها تستهلك طاقة ومياه أقل بنحو 40% مقارنةً بالمباني المماثلة.",
+        "q_ar": "ما مدى استدامة مبانيها؟"
+      },
+      {
+        "a": "Approximately five minutes from Zayed International Airport.",
+        "q": "How close is Masdar City to the airport?",
+        "a_ar": "تقع على بُعد حوالي 5 دقائق من مطار زايد الدولي.",
+        "q_ar": "ما مدى قرب مدينة مصدر من المطار؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Masdar City",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مدينة مصدر"
+  },
+  "enabled": true
+}

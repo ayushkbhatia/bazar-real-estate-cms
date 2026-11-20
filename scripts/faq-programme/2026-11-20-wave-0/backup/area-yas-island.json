@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Yas Island is internationally recognised for entertainment, motorsport, leisure and residential living.",
+        "q": "What is Yas Island known for?",
+        "a_ar": "تشتهر جزيرة ياس عالميًا بالترفيه ورياضة المحركات والأنشطة الترفيهية والحياة السكنية.",
+        "q_ar": "بماذا تشتهر جزيرة ياس؟"
+      },
+      {
+        "a": "The market includes apartments, townhouses, villas and premium waterfront residences.",
+        "q": "What properties are available on Yas Island?",
+        "a_ar": "يشمل السوق الشقق والتاون هاوس والفلل والمساكن الفاخرة على الواجهة البحرية.",
+        "q_ar": "ما العقارات المتاحة في جزيرة ياس؟"
+      },
+      {
+        "a": "Approximately 20 minutes by road.",
+        "q": "How far is Yas Island from Downtown Abu Dhabi?",
+        "a_ar": "تبعد حوالي 20 دقيقة بالسيارة.",
+        "q_ar": "كم تبعد جزيرة ياس عن وسط مدينة أبوظبي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Yas Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة ياس"
+  },
+  "enabled": true
+}

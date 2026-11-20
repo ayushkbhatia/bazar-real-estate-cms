@@ -1,0 +1,73 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.505709016841678,
+    "lng": 54.62679132315748
+  },
+  "nearby_ids": [],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Relax and refresh in a beautifully designed swimming pool made for leisure and everyday enjoyment.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بالاسترخاء والانتعاش في مسبح مصمم بعناية للترفيه والاستمتاع اليومي.",
+      "media_id": "0506d423-1e53-4ef9-b16e-b55a0c9cdc81",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Unwind in an infinity pool with uninterrupted views and a seamless sense of relaxation.",
+      "title": "Infinity Pool",
+      "copy_ar": "استرخِ في مسبح لامتناهٍ بإطلالات مفتوحة وإحساس متواصل بالهدوء والراحة.",
+      "media_id": "1f0abbc3-6ca2-4499-8bef-309c0aef08d7",
+      "title_ar": "المسبح اللامتناهي"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active and recharge in a modern gym and wellness studio designed for fitness, balance and well-being.",
+      "title": "Gym & Wellness Studio",
+      "copy_ar": "حافظ على نشاطك واستعد توازنك في مساحة عصرية مصممة للياقة والعافية والصحة.",
+      "media_id": "04c463e5-a027-4d0f-a4e6-7b52a5eedc1c",
+      "title_ar": "الصالة الرياضية واستوديو العافية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Enjoy movies under the stars in a relaxed outdoor cinema setting.",
+      "title": "Outdoor Cinema",
+      "copy_ar": "استمتع بمشاهدة الأفلام تحت النجوم ضمن أجواء خارجية هادئة ومريحة.",
+      "media_id": "7807225c-612d-4bb3-9ed4-3054bf589045",
+      "title_ar": "السينما الخارجية"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Reconnect with nature in a calming sensory garden designed to inspire relaxation and discovery.",
+      "title": "Sensory Garden",
+      "copy_ar": "تواصل مع الطبيعة في حديقة هادئة مصممة لتحفيز الحواس وتعزيز الاسترخاء والاستكشاف.",
+      "media_id": "244a6c45-b203-4377-b15a-c99fe7f0eac0",
+      "title_ar": "الحديقة الحسية"
+    },
+    {
+      "alt": null,
+      "key": "feature_6",
+      "copy": "Splash, play and cool off in a fun-filled water area designed especially for children.",
+      "title": "Kid's Splash Pad",
+      "copy_ar": "مساحة مائية ممتعة مصممة خصيصًا للأطفال للعب والانتعاش والاستمتاع.",
+      "media_id": "0db0b50b-7e35-4351-a93b-e0d16514ec65",
+      "title_ar": "منطقة ألعاب مائية للأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_7",
+      "copy": "Enjoy convenient access to shops, cafés and restaurants designed for everyday living and social moments.",
+      "title": "Retail & Dining",
+      "copy_ar": "استمتع بسهولة الوصول إلى المتاجر والمقاهي والمطاعم للحياة اليومية واللقاءات الاجتماعية.",
+      "media_id": "3003931b-bb4e-4240-bf54-fa15277220aa",
+      "title_ar": "المتاجر والمطاعم"
+    }
+  ]
+}

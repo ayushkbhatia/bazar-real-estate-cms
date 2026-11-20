@@ -1,0 +1,528 @@
+{
+ "wave": "1",
+ "batch": "batch-c",
+ "written": "2026-11-20",
+ "sourcedNumbers": [
+  "2019",
+  "2",
+  "10",
+  "2000000",
+  "50000",
+  "98000",
+  "170000",
+  "62000",
+  "460000",
+  "20000",
+  "19000",
+  "76000",
+  "2691",
+  "2230",
+  "1000",
+  "2027",
+  "23",
+  "55",
+  "2022",
+  "3.5",
+  "5",
+  "271000",
+  "290000",
+  "2026",
+  "1"
+ ],
+ "sourcedNotes": {
+  "2019": "Abu Dhabi real estate law amendment opening investment areas to foreigners (u.ae; The National 2019)",
+  "2/2000000/10": "Abu Dhabi Golden Visa: AED 2m property, 10-year visa (adro.gov.ae); 2% DARI registration fee (broker guides)",
+  "50000/98000": "2% of DB starting prices Bashayer 2,500,000 and Hudayriyat Golf Estate 4,900,000",
+  "170000": "2% of RIMAS 8,500,000 (DB)",
+  "62000": "2% of The Bristol Residences 3,100,000 (DB)",
+  "460000/23/55": "Nurai Island villa asking range AED 23m–55m (bayut.com); 2% of 23,000,000",
+  "20000": "2% of Naseem AlJurf 1,000,000 (DB)",
+  "19000/76000": "2% of Al Hamra 950,000 and Marbella 3,800,000 (DB)",
+  "2691": "Saadiyat Island sale index, DB subpage/area/saadiyat-island stats",
+  "2230": "Yas Island sale index, DB subpage/area/yas-island stats (as cited in wave 0)",
+  "1000": "Jubail Island 1,000+ homes handed over (Gulf Today, 21 Apr 2026)",
+  "2027": "Gordonstoun Abu Dhabi first students September 2027 (Gulf News, Bayut)",
+  "1": "bedroom range 1 - 3 from DB developments.bedrooms_text (Bashayer Residences); the checker does not read that column",
+  "2026": "RIMAS launched at LIVEX 2026 (WAM, Sep 2026)",
+  "2022": "Bloom Living designated investment zone, July 2022 (Bloom Holding press release)",
+  "3.5/5": "Mangrove Village / Sea Shore Villas sale listings AED 3.5m–5m (Bayut, Property Finder)",
+  "271000/290000/170000": "Rabdan villa rents from 170,000, avg 271,000; Mangrove Village avg 290,000 (propertyfinder.ae)"
+ },
+ "pages": [
+  {
+   "kind": "area",
+   "slug": "hudayriyat-island",
+   "name": "Hudayriyat Island",
+   "pageSlug": "subpage/area/hudayriyat-island",
+   "sources": [
+    "DB: subpage/area/hudayriyat-island stats, nearby, landmarks footnote; developments (Bashayer Residences, Al Naseem, Hudayriyat Golf Estate, Wadeem Gardens)",
+    "modon.com/real-estate/hudayriyat-island — freehold open to all nationalities; Al Naseem and Wadeem open to all nationalities",
+    "gulfnews.com — Modon launches freehold communities on Hudayriyat Island (2024)",
+    "adro.gov.ae — Abu Dhabi Golden Visa for real-estate investors",
+    "modon.com blog / Sotheby's Realty journal 2026 — schools in nearby Al Bateen and Al Mushrif; on-island schools not yet open"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property on Hudayriyat Island?",
+     "a": "Yes. Modon sells Hudayriyat Island homes as freehold to buyers of all nationalities, covering both the unit and the land beneath it. That applies to its current communities, including Bashayer Residences, Al Naseem, Hudayriyat Golf Estate and Wadeem Gardens, and ownership is registered through DARI. Check the title status of any resale plot on DARI before you commit.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة الحديريات؟",
+     "a_ar": "نعم. تبيع شركة مدن المنازل في جزيرة الحديريات بنظام التملك الحر للمشترين من جميع الجنسيات، ويشمل التملك الوحدة والأرض المقامة عليها. وينطبق ذلك على مجتمعاتها الحالية، ومنها بشاير ريزيدنسز والنسيم وحديريات غولف إستيت وواديم جاردنز، ويُسجَّل التملك عبر منصة «داري». ويُستحسن التحقق من وضع سند أي قطعة معروضة لإعادة البيع على «داري» قبل الالتزام."
+    },
+    {
+     "q": "How much does property cost on Hudayriyat Island in 2026?",
+     "a": "Hudayriyat Island's sale price index is about AED 1,713 per sq ft, up 11.58% over 12 months, while apartments index higher at AED 2,208 per sq ft after a 30.66% rise. Off-plan entry points range from AED 2,500,000 at Bashayer Residences to AED 7,800,000 at Al Naseem and AED 8,700,000 at Wadeem Gardens.",
+     "q_ar": "كم تبلغ أسعار العقارات في جزيرة الحديريات في عام 2026؟",
+     "a_ar": "يبلغ مؤشر أسعار البيع في جزيرة الحديريات نحو 1,713 درهمًا للقدم المربع، بارتفاع 11.58% خلال 12 شهرًا، بينما يرتفع مؤشر الشقق إلى 2,208 دراهم للقدم المربع بعد زيادة بلغت 30.66%. وتتراوح أسعار البداية في المشاريع على الخريطة بين 2,500,000 درهم في بشاير ريزيدنسز و7,800,000 درهم في النسيم و8,700,000 درهم في واديم جاردنز."
+    },
+    {
+     "q": "Which off-plan projects are selling on Hudayriyat Island now?",
+     "a": "Modon is selling four communities on Hudayriyat Island. Bashayer Residences (1–3 bedroom apartments, 330 units, handover 2030), Al Naseem (4–6 bedroom villas, 700 units, handover 2027), Hudayriyat Golf Estate (3–6 bedroom homes, 1,322 units, handover 2030) and Wadeem Gardens (4–6 bedroom villas, 1,094 units, handover 2031).",
+     "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في جزيرة الحديريات؟",
+     "a_ar": "تُعرض للبيع حاليًا أربعة مجتمعات من تطوير مدن في جزيرة الحديريات: بشاير ريزيدنسز (شقق من 1 إلى 3 غرف نوم، 330 وحدة، التسليم 2030)، والنسيم (فلل من 4 إلى 6 غرف نوم، 700 وحدة، التسليم 2027)، وحديريات غولف إستيت (منازل من 3 إلى 6 غرف نوم، 1,322 وحدة، التسليم 2030)، وواديم جاردنز (فلل من 4 إلى 6 غرف نوم، 1,094 وحدة، التسليم 2031)."
+    },
+    {
+     "q": "Does buying on Hudayriyat Island qualify for a UAE Golden Visa?",
+     "a": "Usually yes: every project now selling on Hudayriyat Island starts at or above AED 2.5 million, over the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. Because these homes are off-plan, the developer must confirm that at least AED 2 million has been paid; a mortgaged home needs owner equity of at least AED 2 million.",
+     "q_ar": "هل يؤهّل الشراء في جزيرة الحديريات للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "في الغالب نعم: فكل المشاريع المعروضة حاليًا في جزيرة الحديريات تبدأ من 2.5 مليون درهم أو أكثر، أي فوق حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. ولأن هذه المنازل على الخريطة، يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل، أما المنزل المرهون فيجب ألا تقل حصة المالك فيه عن مليوني درهم."
+    },
+    {
+     "q": "What fees do you pay when buying on Hudayriyat Island?",
+     "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 2,500,000 Bashayer Residences apartment that is AED 50,000, and on a AED 4,900,000 Hudayriyat Golf Estate home it is AED 98,000. Buying off-plan direct from Modon normally carries no agency commission; resale and mortgage buyers pay further fees.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في جزيرة الحديريات؟",
+     "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»: فعلى شقة في بشاير ريزيدنسز بسعر 2,500,000 درهم تبلغ 50,000 درهم، وعلى منزل في حديريات غولف إستيت بسعر 4,900,000 درهم تبلغ 98,000 درهم. ولا يتحمل الشراء على الخريطة من مدن مباشرة عادةً أي عمولة وساطة، بينما يدفع مشترو إعادة البيع والمشترون بالتمويل رسومًا إضافية."
+    },
+    {
+     "q": "Is Hudayriyat Island good for families?",
+     "a": "Hudayriyat Island suits active families: its masterplan includes 53.5 km of coastline, 16 km of beaches and a planned 220 km cycling network, with Surf Abu Dhabi, the Velodrome and 321 Sports already open. Schools on the island are not yet open, so children currently attend schools in nearby Al Bateen and Al Mushrif on Abu Dhabi Island.",
+     "q_ar": "هل جزيرة الحديريات مناسبة للعائلات؟",
+     "a_ar": "تناسب جزيرة الحديريات العائلات التي تحب النشاط: إذ يشمل مخططها الرئيسي 53.5 كم من السواحل و16 كم من الشواطئ وشبكة دراجات مخططًا لها بطول 220 كم، مع افتتاح سيرف أبوظبي ومضمار أبوظبي للدراجات و321 سبورتس بالفعل. ولم تُفتتح مدارس على الجزيرة بعد، لذا يرتاد الأطفال حاليًا مدارس في البطين والمشرف القريبتين في جزيرة أبوظبي."
+    },
+    {
+     "q": "How far is Hudayriyat Island from Downtown Abu Dhabi and the airport?",
+     "a": "Hudayriyat Island is about 20 minutes by car from Downtown Abu Dhabi and around 30 minutes from Zayed International Airport. The island sits directly opposite Al Bateen and is linked to Abu Dhabi Island by bridge, so the city's western neighbourhoods are closer still; times depend on traffic and the community you live in.",
+     "q_ar": "كم تبعد جزيرة الحديريات عن وسط مدينة أبوظبي والمطار؟",
+     "a_ar": "تبعد جزيرة الحديريات نحو 20 دقيقة بالسيارة عن وسط مدينة أبوظبي، ونحو 30 دقيقة عن مطار زايد الدولي. وتقع الجزيرة مقابل البطين مباشرةً وترتبط بجزيرة أبوظبي عبر جسر، لذا تكون الأحياء الغربية من المدينة أقرب، وتختلف المدة بحسب حركة المرور والمجتمع الذي تسكن فيه."
+    },
+    {
+     "q": "What types of property can you buy on Hudayriyat Island?",
+     "a": "Hudayriyat Island offers apartments, townhouses, villas, mansions and residential plots. Apartments are concentrated in Bashayer Residences (1–3 bedrooms), large family villas of 4–6 bedrooms in Al Naseem and Wadeem Gardens, golf-side homes of 3–6 bedrooms in Hudayriyat Golf Estate, and serviced plots for self-build at Modon's Wadeem community.",
+     "q_ar": "ما أنواع العقارات التي يمكن شراؤها في جزيرة الحديريات؟",
+     "a_ar": "توفر جزيرة الحديريات شققًا ومنازل تاون هاوس وفللًا وقصورًا وقطع أراضٍ سكنية. وتتركز الشقق في بشاير ريزيدنسز (من 1 إلى 3 غرف نوم)، والفلل العائلية الكبيرة من 4 إلى 6 غرف نوم في النسيم وواديم جاردنز، ومنازل ملاعب الغولف من 3 إلى 6 غرف نوم في حديريات غولف إستيت، إضافة إلى قطع أراضٍ مخدومة للبناء الذاتي في مجتمع واديم من مدن."
+    },
+    {
+     "q": "Is Hudayriyat Island or Saadiyat Island better to buy in?",
+     "a": "Hudayriyat Island is the lower-cost, sport-led choice, with a sale index of about AED 1,713 per sq ft against roughly AED 2,691 on Saadiyat Island, and faster recent growth of 11.58%. Saadiyat is established, with schools, museums and finished beachfront communities; Hudayriyat is mostly off-plan, with handovers from 2027 to 2031.",
+     "q_ar": "أيهما أنسب للشراء: جزيرة الحديريات أم جزيرة السعديات؟",
+     "a_ar": "جزيرة الحديريات هي الخيار الأقل تكلفة ذو الطابع الرياضي، إذ يبلغ مؤشر أسعار البيع فيها نحو 1,713 درهمًا للقدم المربع مقابل نحو 2,691 درهمًا في جزيرة السعديات، مع نمو أسرع مؤخرًا بنسبة 11.58%. أما السعديات فمنطقة راسخة تضم مدارس ومتاحف ومجتمعات شاطئية مكتملة، بينما معظم عقارات الحديريات على الخريطة، وتمتد مواعيد تسليمها من 2027 إلى 2031."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "jubail-island",
+   "name": "Jubail Island",
+   "pageSlug": "subpage/area/jubail-island",
+   "sources": [
+    "DB: subpage/area/jubail-island stats (development value, island area, waterfront, planned residents), why, nearby, landmarks; developments (RIMAS)",
+    "thenationalnews.com (2019) — Abu Dhabi investment zones list incl. Jubail Island",
+    "gulftoday.ae (21 Apr 2026) / zawya.com — JIIC hands over 1,000+ homes; six villages named",
+    "wam.ae / zawya.com (Sep 2026) — LEAD Development launches RIMAS at LIVEX 2026",
+    "gulfnews.com / bayut.com — Gordonstoun Abu Dhabi on Jubail Island, first students September 2027",
+    "adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property on Jubail Island?",
+     "a": "Yes. Jubail Island is one of Abu Dhabi's designated investment zones, so buyers of any nationality can own villas, townhouses and plots there freehold under the 2019 amendment to the emirate's real estate law. The island is owned by Jubail Island Investment Company and developed by LEAD Development, and titles are registered through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة الجبيل؟",
+     "a_ar": "نعم. جزيرة الجبيل من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك الفلل ومنازل التاون هاوس وقطع الأراضي فيها بنظام التملك الحر بموجب تعديل قانون التنظيم العقاري في الإمارة عام 2019. وتملك الجزيرة شركة جزيرة الجبيل للاستثمار وتطورها شركة ليد للتطوير، ويُسجَّل التملك عبر منصة «داري»."
+    },
+    {
+     "q": "How much are villas on Jubail Island?",
+     "a": "Jubail Island is a villa-led market at the upper end of Abu Dhabi: RIMAS, the project LEAD Development is selling now, starts at AED 8,500,000 for a four-bedroom villa, with five- and six-bedroom homes priced well above that. Older Jubail villages also trade on the resale market, where prices depend on village, plot size and waterfront position.",
+     "q_ar": "كم تبلغ أسعار الفلل في جزيرة الجبيل؟",
+     "a_ar": "تُعد جزيرة الجبيل سوقًا قائمًا على الفلل في الشريحة العليا من أبوظبي: إذ يبدأ سعر مشروع ريماس، الذي تبيعه ليد للتطوير حاليًا، من 8,500,000 درهم لفيلا من أربع غرف نوم، بينما تتجاوز أسعار الفلل ذات الخمس والست غرف ذلك بكثير. كما تُتداول فلل القرى الأقدم في سوق إعادة البيع، وتختلف أسعارها بحسب القرية ومساحة الأرض والموقع على الواجهة المائية."
+    },
+    {
+     "q": "Which off-plan projects are selling on Jubail Island now?",
+     "a": "RIMAS, launched by LEAD Development at LIVEX 2026, is the off-plan project selling on Jubail Island now: four- to six-bedroom villas from AED 8,500,000 with handover scheduled for 2029. It is the first release in the island's second phase, following the six original villages, where more than 1,000 homes have already been handed over.",
+     "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في جزيرة الجبيل؟",
+     "a_ar": "مشروع ريماس، الذي أطلقته ليد للتطوير خلال معرض ليفكس 2026، هو المشروع على الخريطة المعروض للبيع حاليًا في جزيرة الجبيل: فلل من أربع إلى ست غرف نوم تبدأ من 8,500,000 درهم، ومن المقرر تسليمها في 2029. وهو أول إصدار في المرحلة الثانية من الجزيرة، بعد القرى الست الأصلية التي سُلِّم فيها أكثر من 1,000 منزل."
+    },
+    {
+     "q": "What are the villages on Jubail Island?",
+     "a": "Jubail Island's first phase is six residential villages: Marfaa Al Jubail, Nad Al Dhabi, Seef Al Jubail, Souk Al Jubail, Ain Al Maha and the beachfront Bada Al Jubail. Each has its own character, from mangrove-facing homes to beach plots, and four themed community centres serve them. RIMAS opens the island's second phase.",
+     "q_ar": "ما القرى الموجودة في جزيرة الجبيل؟",
+     "a_ar": "تضم المرحلة الأولى من جزيرة الجبيل ست قرى سكنية: مرفأ الجبيل، وند الظبي، وسيف الجبيل، وسوق الجبيل، وعين المها، وبدع الجبيل الشاطئية. ولكل قرية طابعها الخاص، من المنازل المطلة على أشجار القرم إلى قطع الأراضي الشاطئية، وتخدمها أربعة مراكز مجتمعية بطابع مختلف. ويفتتح مشروع ريماس المرحلة الثانية من الجزيرة."
+    },
+    {
+     "q": "Is Jubail Island good for families?",
+     "a": "Jubail Island is built for families who want space and nature: only about 20% of its 40 million sq m is planned for development, and more than 1,000 homes are already occupied. The planned Gordonstoun Abu Dhabi campus is due to take its first students in September 2027, alongside Jubail Mangrove Park, cycle paths and community centres.",
+     "q_ar": "هل جزيرة الجبيل مناسبة للعائلات؟",
+     "a_ar": "صُممت جزيرة الجبيل للعائلات الباحثة عن المساحة والطبيعة: إذ لا يُخطط لتطوير سوى نحو 20% من مساحتها البالغة 40 مليون متر مربع، وأصبح أكثر من 1,000 منزل مأهولًا بالفعل. ومن المقرر أن يستقبل حرم مدرسة جوردونستون أبوظبي أول طلابه في سبتمبر 2027، إلى جانب منتزه قرم الجبيل ومسارات الدراجات والمراكز المجتمعية."
+    },
+    {
+     "q": "How far is Jubail Island from Downtown Abu Dhabi and the airport?",
+     "a": "Jubail Island is about 15 minutes by car from both Downtown Abu Dhabi and Zayed International Airport. It sits between Saadiyat Island and Yas Island, so both neighbouring destinations, with their beaches, schools, retail and leisure, are a short drive away; actual times depend on traffic and which village you live in.",
+     "q_ar": "كم تبعد جزيرة الجبيل عن وسط مدينة أبوظبي والمطار؟",
+     "a_ar": "تبعد جزيرة الجبيل نحو 15 دقيقة بالسيارة عن كل من وسط مدينة أبوظبي ومطار زايد الدولي. وتقع بين جزيرة السعديات وجزيرة ياس، لذا تبعد هاتان الوجهتان المجاورتان، بشواطئهما ومدارسهما ومتاجرهما ومرافقهما الترفيهية، مسافة قصيرة بالسيارة، وتختلف المدة الفعلية بحسب حركة المرور والقرية التي تسكن فيها."
+    },
+    {
+     "q": "How big is Jubail Island?",
+     "a": "Jubail Island covers about 40 million sq m with more than 30 km of waterfront, yet only around 20% of it is planned for development; the rest is protected mangrove. The masterplan, valued at AED 15 billion, is planned for more than 10,000 residents, which keeps densities far lower than on neighbouring islands.",
+     "q_ar": "ما مساحة جزيرة الجبيل؟",
+     "a_ar": "تمتد جزيرة الجبيل على نحو 40 مليون متر مربع وتضم أكثر من 30 كم من الواجهة البحرية، لكن لا يُخطط لتطوير سوى نحو 20% منها، فيما يبقى الباقي غابات قرم محمية. ويُخطط للمخطط الرئيسي، البالغة قيمته 15 مليار درهم، أن يستوعب أكثر من 10,000 نسمة، ما يبقي الكثافة السكانية أقل بكثير من الجزر المجاورة."
+    },
+    {
+     "q": "Does a Jubail Island villa qualify for a UAE Golden Visa?",
+     "a": "Yes in almost every case: RIMAS starts at AED 8,500,000, far above the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, which covers spouse and children. For an off-plan villa the developer must confirm at least AED 2 million paid to date, and a mortgaged villa needs owner equity of at least AED 2 million.",
+     "q_ar": "هل تؤهّل فيلا في جزيرة الجبيل للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "نعم في جميع الحالات تقريبًا: إذ يبدأ سعر ريماس من 8,500,000 درهم، أي أعلى بكثير من حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، والتي تشمل الزوج والأبناء. وفي الفيلا على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل حتى تاريخه، أما الفيلا المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+    },
+    {
+     "q": "What fees do you pay when buying a villa on Jubail Island?",
+     "a": "Expect Abu Dhabi's 2% registration fee, paid through DARI: on a AED 8,500,000 RIMAS villa that comes to AED 170,000. Buying off-plan direct from LEAD Development normally means no agency commission, while resale buyers in the established villages usually add about 2% commission and a developer NOC fee.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء فيلا في جزيرة الجبيل؟",
+     "a_ar": "يدفع المشتري رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»: فعلى فيلا في ريماس بسعر 8,500,000 درهم تبلغ 170,000 درهم. ولا يتحمل الشراء على الخريطة من ليد للتطوير مباشرة عادةً أي عمولة وساطة، بينما يضيف مشترو إعادة البيع في القرى القائمة عادةً عمولة بنحو 2% ورسوم شهادة عدم ممانعة من المطوّر."
+    },
+    {
+     "q": "Is Jubail Island or Saadiyat Island better for a villa?",
+     "a": "Jubail Island suits buyers who want a low-density, mangrove setting with larger plots, about 15 minutes from Downtown and the airport. Saadiyat Island, with a sale index around AED 2,691 per sq ft, offers open-sea beaches, museums and more established schools, but denser communities. Many Jubail buyers use Saadiyat's amenities next door.",
+     "q_ar": "أيهما أنسب لشراء فيلا: جزيرة الجبيل أم جزيرة السعديات؟",
+     "a_ar": "تناسب جزيرة الجبيل المشترين الباحثين عن بيئة منخفضة الكثافة بين أشجار القرم وقطع أراضٍ أكبر، على بعد نحو 15 دقيقة من وسط المدينة والمطار. أما جزيرة السعديات، التي يبلغ مؤشر أسعار البيع فيها نحو 2,691 درهمًا للقدم المربع، فتوفر شواطئ مفتوحة على البحر ومتاحف ومدارس أكثر رسوخًا، لكن بمجتمعات أكثر كثافة. ويستفيد كثير من سكان الجبيل من مرافق السعديات المجاورة."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "ramhan-island",
+   "name": "Ramhan Island",
+   "pageSlug": "subpage/area/ramhan-island",
+   "sources": [
+    "DB: subpage/area/ramhan-island stats (sale index, median transaction, 12-month transactions), nearby, landmarks; developments (The Bristol Residences)",
+    "engelvoelkers.com (2026) — Abu Dhabi freehold areas list incl. Ramhan Island",
+    "propertyfinder.ae / binayah.com — The Bristol at Ramhan Island: freehold, all nationalities, 125 units",
+    "adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property on Ramhan Island?",
+     "a": "Yes. Ramhan Island, developed by Eagle Hills, is sold as freehold to buyers of all nationalities, and The Bristol Residences is marketed on that basis. Ramhan does not appear on the older government list of nine investment areas, so ask for the plot's title status on DARI before signing, as with any newer Abu Dhabi island.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة رمحان؟",
+     "a_ar": "نعم. تُباع العقارات في جزيرة رمحان، التي تطورها شركة إيجل هيلز، بنظام التملك الحر للمشترين من جميع الجنسيات، ويُسوَّق مشروع ذا بريستول ريزيدنسز على هذا الأساس. ولا تظهر رمحان في القائمة الحكومية الأقدم لمناطق الاستثمار التسع، لذا يُستحسن طلب التحقق من وضع سند القطعة على منصة «داري» قبل التوقيع، كما هو الحال مع أي جزيرة جديدة في أبوظبي."
+    },
+    {
+     "q": "How much does property cost on Ramhan Island?",
+     "a": "Ramhan Island's sale price index is about AED 2,618 per sq ft, and its median transaction price over the past 12 months is around AED 13.5 million, reflecting a market led by waterfront villas. Apartments are the entry point: The Bristol Residences starts at AED 3,100,000.",
+     "q_ar": "كم تبلغ أسعار العقارات في جزيرة رمحان؟",
+     "a_ar": "يبلغ مؤشر أسعار البيع في جزيرة رمحان نحو 2,618 درهمًا للقدم المربع، ويبلغ متوسط سعر الصفقات خلال الأشهر الـ12 الماضية نحو 13.5 مليون درهم، ما يعكس سوقًا تقوده الفلل على الواجهة البحرية. وتمثل الشقق نقطة الدخول، إذ يبدأ سعر ذا بريستول ريزيدنسز من 3,100,000 درهم."
+    },
+    {
+     "q": "How active is the Ramhan Island property market?",
+     "a": "Ramhan Island recorded about 300 sales transactions in the last 12 months, a sizeable figure for a single-developer island with a median deal of around AED 13.5 million. Most activity comes from Eagle Hills' villa phases and branded apartments. Past activity does not predict future prices, and returns are not guaranteed.",
+     "q_ar": "ما مدى نشاط سوق العقارات في جزيرة رمحان؟",
+     "a_ar": "سجلت جزيرة رمحان نحو 300 صفقة بيع خلال الأشهر الـ12 الماضية، وهو رقم كبير لجزيرة يطورها مطور واحد ويبلغ متوسط صفقاتها نحو 13.5 مليون درهم. ويأتي معظم النشاط من مراحل الفلل لدى إيجل هيلز والشقق ذات العلامة التجارية. ولا يدل النشاط السابق على الأسعار المستقبلية، ولا توجد عوائد مضمونة."
+    },
+    {
+     "q": "Which off-plan projects are selling on Ramhan Island now?",
+     "a": "The Bristol Residences by Eagle Hills is the off-plan project selling on Ramhan Island now: 125 apartments of one to four bedrooms beside The Bristol hotel, priced from AED 3,100,000, with handover scheduled for December 2028. Eagle Hills also releases waterfront villa phases on the island from time to time.",
+     "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في جزيرة رمحان؟",
+     "a_ar": "ذا بريستول ريزيدنسز من إيجل هيلز هو المشروع على الخريطة المعروض للبيع حاليًا في جزيرة رمحان: 125 شقة من غرفة إلى أربع غرف نوم بجوار فندق ذا بريستول، بأسعار تبدأ من 3,100,000 درهم، ومن المقرر تسليمها في ديسمبر 2028. كما تطرح إيجل هيلز مراحل من الفلل على الواجهة البحرية في الجزيرة من حين لآخر."
+    },
+    {
+     "q": "How far is Ramhan Island from Yas Island and the airport?",
+     "a": "Ramhan Island is about 10 minutes by car from Yas Island, 15 minutes from Zayed International Airport, 18 minutes from Saadiyat Island and 20 minutes from Abu Dhabi city. That makes it one of the closer island addresses to the airport, with Yas Island's retail, theme parks and schools close by; times vary with traffic.",
+     "q_ar": "كم تبعد جزيرة رمحان عن جزيرة ياس والمطار؟",
+     "a_ar": "تبعد جزيرة رمحان نحو 10 دقائق بالسيارة عن جزيرة ياس، و15 دقيقة عن مطار زايد الدولي، و18 دقيقة عن جزيرة السعديات، و20 دقيقة عن مدينة أبوظبي. وهذا يجعلها من العناوين الجزرية القريبة من المطار، مع قرب متاجر جزيرة ياس ومدنها الترفيهية ومدارسها، وتختلف المدة بحسب حركة المرور."
+    },
+    {
+     "q": "Does buying on Ramhan Island qualify for a UAE Golden Visa?",
+     "a": "Yes, in most cases: The Bristol Residences starts at AED 3,100,000 and Ramhan's villas sell well above that, all over the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. For off-plan homes the developer must confirm at least AED 2 million paid; mortgaged homes need owner equity of at least AED 2 million.",
+     "q_ar": "هل يؤهّل الشراء في جزيرة رمحان للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "نعم في معظم الحالات: إذ يبدأ سعر ذا بريستول ريزيدنسز من 3,100,000 درهم وتُباع فلل رمحان بأسعار أعلى من ذلك بكثير، وكلها فوق حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل، أما العقارات المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+    },
+    {
+     "q": "What fees do you pay when buying on Ramhan Island?",
+     "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 3,100,000 apartment at The Bristol Residences that is AED 62,000. Buying direct from Eagle Hills usually carries no agency commission, while villa resales typically add about 2% commission, a developer NOC fee and, with a mortgage, bank fees.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في جزيرة رمحان؟",
+     "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»: فعلى شقة في ذا بريستول ريزيدنسز بسعر 3,100,000 درهم تبلغ 62,000 درهم. ولا يتحمل الشراء من إيجل هيلز مباشرة عادةً أي عمولة وساطة، بينما تضيف إعادة بيع الفلل عادةً عمولة بنحو 2% ورسوم شهادة عدم ممانعة من المطوّر، ورسوم البنك عند التمويل."
+    },
+    {
+     "q": "What is there to do on Ramhan Island?",
+     "a": "Life on Ramhan Island centres on the water: the Ramhan Marina and Yacht Club, natural beaches and mangrove channels for kayaking and paddling. Waterfront dining, wellness facilities and The Bristol hotel complete the resort-style offer, and Yas Island's attractions are about 10 minutes away for everything else.",
+     "q_ar": "ماذا يمكن أن تفعل في جزيرة رمحان؟",
+     "a_ar": "تدور الحياة في جزيرة رمحان حول الماء: مرسى ونادي اليخوت في الجزيرة، والشواطئ الطبيعية، وقنوات أشجار القرم المناسبة للتجديف بالقوارب الصغيرة. وتكتمل تجربة المنتجع بالمطاعم المطلة على الواجهة البحرية ومرافق العافية وفندق ذا بريستول، بينما تبعد معالم جزيرة ياس نحو 10 دقائق لكل ما عدا ذلك."
+    },
+    {
+     "q": "What types of property can you buy on Ramhan Island?",
+     "a": "Ramhan Island offers two main formats: waterfront villas, many with private beach frontage, released by Eagle Hills in phases, and branded apartments at The Bristol Residences, from one-bedroom units to four-bedroom homes. There are no mid-market towers; supply is deliberately limited.",
+     "q_ar": "ما أنواع العقارات التي يمكن شراؤها في جزيرة رمحان؟",
+     "a_ar": "توفر جزيرة رمحان نوعين رئيسيين: فلل على الواجهة البحرية، كثير منها بواجهة شاطئية خاصة، تطرحها إيجل هيلز على مراحل، وشقق ذات علامة تجارية في ذا بريستول ريزيدنسز، من وحدات بغرفة نوم واحدة إلى منازل بأربع غرف. ولا توجد أبراج للفئة المتوسطة، فالمعروض محدود عن قصد."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "nurai-island",
+   "name": "Nurai Island",
+   "pageSlug": "subpage/area/nurai-island",
+   "sources": [
+    "DB: subpage/area/nurai-island stats (sale index, 12-month change), map, nearby; no developments in DB",
+    "thenationalnews.com (2019) — Abu Dhabi investment zones list incl. Nurai Island",
+    "bayut.com / propertyfinder.ae — Nurai Island villa listings (asking range AED 23m–55m)",
+    "adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property on Nurai Island?",
+     "a": "Yes. Nurai Island is one of Abu Dhabi's designated investment zones, so non-UAE nationals can buy its villas freehold under the 2019 amendment to the emirate's real estate law. Homes on the island are resale villas rather than new launches, and ownership is registered through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في جزيرة نوراي؟",
+     "a_ar": "نعم. جزيرة نوراي من مناطق الاستثمار المحددة في أبوظبي، لذا يحق لغير المواطنين شراء فللها بنظام التملك الحر بموجب تعديل قانون التنظيم العقاري في الإمارة عام 2019. والمنازل في الجزيرة فلل معروضة لإعادة البيع وليست مشاريع جديدة، ويُسجَّل التملك عبر منصة «داري»."
+    },
+    {
+     "q": "How much does a villa on Nurai Island cost?",
+     "a": "Nurai Island is one of Abu Dhabi's most expensive addresses: its sale price index stands at about AED 3,613 per sq ft, up 44.82% over 12 months. Villa asking prices on the main portals run from roughly AED 23 million to AED 55 million, depending on whether the home is a water villa or a beachfront estate.",
+     "q_ar": "كم يبلغ سعر الفيلا في جزيرة نوراي؟",
+     "a_ar": "تُعد جزيرة نوراي من أغلى العناوين في أبوظبي: إذ يبلغ مؤشر أسعار البيع فيها نحو 3,613 درهمًا للقدم المربع، بارتفاع 44.82% خلال 12 شهرًا. وتتراوح الأسعار المطلوبة للفلل في أبرز المنصات العقارية بين نحو 23 مليون درهم و55 مليون درهم، بحسب ما إذا كانت الفيلا فوق الماء أو عقارًا على الشاطئ."
+    },
+    {
+     "q": "How do you get to Nurai Island?",
+     "a": "Nurai Island is reached only by boat: residents and guests leave from a dedicated welcome centre on Saadiyat Island, and the crossing takes about 10–15 minutes. From the Saadiyat side, the Cultural District and Downtown Abu Dhabi are an onward drive, so owners keep a car on the mainland.",
+     "q_ar": "كيف يمكن الوصول إلى جزيرة نوراي؟",
+     "a_ar": "لا يمكن الوصول إلى جزيرة نوراي إلا بالقارب: إذ ينطلق السكان والضيوف من مركز استقبال مخصص في جزيرة السعديات، وتستغرق الرحلة نحو 10 إلى 15 دقيقة. ومن جهة السعديات يُستكمل الطريق بالسيارة إلى المنطقة الثقافية ووسط مدينة أبوظبي، لذا يحتفظ الملاك بسيارة على البر."
+    },
+    {
+     "q": "What types of property are on Nurai Island?",
+     "a": "Nurai Island has a small, fixed stock of villas: water villas set over the lagoon, beachfront villas and a few larger private estates, many sold furnished. There are no apartments or off-plan projects on the island, so buying means waiting for a resale villa to come to market.",
+     "q_ar": "ما أنواع العقارات الموجودة في جزيرة نوراي؟",
+     "a_ar": "تضم جزيرة نوراي عددًا صغيرًا وثابتًا من الفلل: فلل فوق الماء على البحيرة، وفلل على الشاطئ، وعدد قليل من العقارات الخاصة الأكبر، ويُباع كثير منها مفروشًا. ولا توجد في الجزيرة شقق أو مشاريع على الخريطة، لذا يعني الشراء انتظار طرح فيلا لإعادة البيع."
+    },
+    {
+     "q": "Does a Nurai Island villa qualify for a UAE Golden Visa?",
+     "a": "Yes: with asking prices starting around AED 23 million, any Nurai Island villa sits far above the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, which covers spouse and children. If the villa is mortgaged, the owner's equity must still be at least AED 2 million.",
+     "q_ar": "هل تؤهّل فيلا في جزيرة نوراي للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "نعم: فمع أسعار مطلوبة تبدأ من نحو 23 مليون درهم، تتجاوز أي فيلا في جزيرة نوراي بكثير حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، والتي تشمل الزوج والأبناء. وإذا كانت الفيلا مرهونة، فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+    },
+    {
+     "q": "Is Nurai Island a good place to live full time?",
+     "a": "Nurai Island suits owners who value privacy over convenience: it is a car-free private island with white-sand beaches, a resort and wellness facilities, but every school run, grocery trip or commute starts with a 10–15 minute boat ride to Saadiyat Island. Many owners use their villa as a second home.",
+     "q_ar": "هل جزيرة نوراي مناسبة للسكن الدائم؟",
+     "a_ar": "تناسب جزيرة نوراي الملاك الذين يقدّمون الخصوصية على سهولة التنقل: فهي جزيرة خاصة بلا سيارات، تضم شواطئ رملية بيضاء ومنتجعًا ومرافق للعافية، لكن كل رحلة إلى المدرسة أو التسوق أو العمل تبدأ برحلة بالقارب مدتها 10 إلى 15 دقيقة إلى جزيرة السعديات. ويستخدم كثير من الملاك فللهم منزلًا ثانيًا."
+    },
+    {
+     "q": "What fees do you pay when buying on Nurai Island?",
+     "a": "Expect Abu Dhabi's 2% registration fee through DARI, which on a villa priced at AED 23 million comes to AED 460,000, plus agency commission of about 2% because every sale on the island is a resale. Add a developer NOC fee and, for furnished villas, agree in writing which contents are included.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في جزيرة نوراي؟",
+     "a_ar": "يدفع المشتري رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»، وتبلغ على فيلا بسعر 23 مليون درهم نحو 460,000 درهم، إضافة إلى عمولة وساطة بنحو 2% لأن كل عمليات البيع في الجزيرة إعادة بيع. وتُضاف رسوم شهادة عدم الممانعة من المطوّر، وفي الفلل المفروشة يُستحسن الاتفاق كتابيًا على المحتويات المشمولة."
+    },
+    {
+     "q": "Is Nurai Island or Saadiyat Island better to buy in?",
+     "a": "Nurai Island is for buyers who want complete seclusion and a beach villa, at a sale index of about AED 3,613 per sq ft. Saadiyat Island, at roughly AED 2,691 per sq ft, offers road access, schools, museums and a far wider choice of apartments and villas, including off-plan projects; Nurai has no new supply.",
+     "q_ar": "أيهما أنسب للشراء: جزيرة نوراي أم جزيرة السعديات؟",
+     "a_ar": "جزيرة نوراي للمشترين الباحثين عن عزلة تامة وفيلا على الشاطئ، بمؤشر أسعار بيع يبلغ نحو 3,613 درهمًا للقدم المربع. أما جزيرة السعديات، بنحو 2,691 درهمًا للقدم المربع، فتوفر الوصول بالسيارة والمدارس والمتاحف وخيارات أوسع بكثير من الشقق والفلل، بما فيها مشاريع على الخريطة، بينما لا يوجد في نوراي معروض جديد."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "al-jurf",
+   "name": "Al Jurf",
+   "pageSlug": "subpage/area/al-jurf",
+   "sources": [
+    "DB: subpage/area/al-jurf stats (sale index, median price), nearby, map; developments (Naseem AlJurf)",
+    "thenationalnews.com (2019) — Abu Dhabi investment zones list incl. Al Jurf, Ghantoot",
+    "zawya.com — IMKAN launches Naseem AlJurf; AlJurf Gardens first phase handed over",
+    "gulfnews.com / tradingview PRESSR (2024) — SHA Residences Emirates at AlJurf, clinic opening planned",
+    "adro.gov.ae — Golden Visa"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property in Al Jurf?",
+     "a": "Yes. Al Jurf, in Ghantoot, is one of Abu Dhabi's designated investment zones, so buyers of any nationality can own property there freehold under the 2019 amendment to the emirate's real estate law. That covers IMKAN's communities, including AlJurf Gardens and Naseem AlJurf, registered through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في الجرف؟",
+     "a_ar": "نعم. يُعد الجرف، في منطقة غنتوت، من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك العقارات فيه بنظام التملك الحر بموجب تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويشمل ذلك مجتمعات إمكان، ومنها حدائق الجرف ونسيم الجرف، ويُسجَّل التملك عبر منصة «داري»."
+    },
+    {
+     "q": "How much does property cost in Al Jurf?",
+     "a": "Al Jurf's sale price index is about AED 1,529 per sq ft, and the median property price is around AED 5.0 million, reflecting a market dominated by villas and plots. Apartments are the cheaper way in: Naseem AlJurf starts from AED 1,000,000. Prices vary widely with beach frontage and plot size.",
+     "q_ar": "كم تبلغ أسعار العقارات في الجرف؟",
+     "a_ar": "يبلغ مؤشر أسعار البيع في الجرف نحو 1,529 درهمًا للقدم المربع، ويبلغ متوسط سعر العقار نحو 5.0 مليون درهم، ما يعكس سوقًا تهيمن عليه الفلل وقطع الأراضي. وتمثل الشقق المدخل الأقل تكلفة، إذ يبدأ سعر نسيم الجرف من 1,000,000 درهم. وتختلف الأسعار كثيرًا بحسب الواجهة الشاطئية ومساحة الأرض."
+    },
+    {
+     "q": "Which off-plan projects are selling in Al Jurf now?",
+     "a": "Naseem AlJurf by IMKAN is the off-plan project selling in Al Jurf now: 618 homes from studios to four-bedroom apartments, priced from AED 1,000,000, with handover scheduled for 2027. It follows AlJurf Gardens, whose first phase of villas has already been handed over to owners.",
+     "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في الجرف؟",
+     "a_ar": "نسيم الجرف من إمكان هو المشروع على الخريطة المعروض للبيع حاليًا في الجرف: 618 وحدة من الاستوديوهات إلى شقق بأربع غرف نوم، بأسعار تبدأ من 1,000,000 درهم، ومن المقرر تسليمها في 2027. ويأتي بعد حدائق الجرف التي سُلِّمت المرحلة الأولى من فللها إلى ملاكها بالفعل."
+    },
+    {
+     "q": "How far is Al Jurf from Abu Dhabi and Dubai?",
+     "a": "Al Jurf sits on the coast between the two cities, about 25 minutes from Yas Island, 30 minutes from both Zayed International Airport and Al Maktoum International Airport, and 45 minutes from Saadiyat Island and Dubai International Airport, via the E11. It suits households with work in both emirates.",
+     "q_ar": "كم يبعد الجرف عن أبوظبي ودبي؟",
+     "a_ar": "يقع الجرف على الساحل بين المدينتين، على بعد نحو 25 دقيقة من جزيرة ياس، و30 دقيقة من كل من مطار زايد الدولي ومطار آل مكتوم الدولي، و45 دقيقة من جزيرة السعديات ومطار دبي الدولي، عبر شارع E11. ويناسب الأسر التي تعمل في الإمارتين."
+    },
+    {
+     "q": "Does buying in Al Jurf qualify for a UAE Golden Visa?",
+     "a": "It depends on the home: many Al Jurf villas, with a median price around AED 5.0 million, clear the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, but most Naseem AlJurf apartments, from AED 1,000,000, do not on their own. Off-plan buyers need AED 2 million paid to the developer to qualify.",
+     "q_ar": "هل يؤهّل الشراء في الجرف للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "يعتمد ذلك على العقار: فكثير من فلل الجرف، التي يبلغ متوسط سعرها نحو 5.0 مليون درهم، تتجاوز حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، لكن معظم شقق نسيم الجرف، التي تبدأ من 1,000,000 درهم، لا تكفي وحدها. ويحتاج مشترو العقارات على الخريطة إلى سداد مليوني درهم للمطوّر للتأهل."
+    },
+    {
+     "q": "What fees do you pay when buying in Al Jurf?",
+     "a": "The main extra cost is Abu Dhabi's 2% registration fee through DARI, since Al Jurf falls within Abu Dhabi emirate: on a AED 1,000,000 Naseem AlJurf apartment that is AED 20,000. Buying direct from IMKAN normally carries no agency commission; villa resales add about 2% commission and a developer NOC fee.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في الجرف؟",
+     "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»، لأن الجرف يقع ضمن إمارة أبوظبي: فعلى شقة في نسيم الجرف بسعر 1,000,000 درهم تبلغ 20,000 درهم. ولا يتحمل الشراء من إمكان مباشرة عادةً أي عمولة وساطة، بينما تضيف إعادة بيع الفلل عمولة بنحو 2% ورسوم شهادة عدم ممانعة من المطوّر."
+    },
+    {
+     "q": "What types of property can you buy in Al Jurf?",
+     "a": "Al Jurf offers luxury villas and private estates in communities such as AlJurf Gardens and Qasr AlJurf, residential plots for custom builds, and apartments at Naseem AlJurf, from studios to four bedrooms. Planned branded homes at SHA Residences Emirates sit beside the SHA wellness clinic.",
+     "q_ar": "ما أنواع العقارات التي يمكن شراؤها في الجرف؟",
+     "a_ar": "يوفر الجرف فللًا فاخرة وعقارات خاصة في مجتمعات مثل حدائق الجرف وقصر الجرف، وقطع أراضٍ سكنية للبناء حسب الطلب، وشققًا في نسيم الجرف من الاستوديوهات إلى أربع غرف نوم. كما تقع المساكن ذات العلامة التجارية المخطط لها في شــا ريزيدنسز الإمارات بجوار منتجع شــا الصحي."
+    },
+    {
+     "q": "Is Al Jurf a good place to live?",
+     "a": "Al Jurf suits buyers who want a quiet beach home with mature trees and private marinas, and who can accept a 25–45 minute drive to most city amenities. Daily shopping and schools are mainly outside the community, so it works for second homes and for families commuting to either Abu Dhabi or Dubai.",
+     "q_ar": "هل الجرف مكان مناسب للسكن؟",
+     "a_ar": "يناسب الجرف المشترين الباحثين عن منزل هادئ على الشاطئ بين أشجار عريقة ومراسٍ خاصة، ممن يتقبلون القيادة بين 25 و45 دقيقة للوصول إلى معظم مرافق المدينة. ويقع التسوق اليومي والمدارس في الغالب خارج المجتمع، لذا يناسب المنازل الثانية والعائلات التي تتنقل يوميًا إلى أبوظبي أو دبي."
+    },
+    {
+     "q": "Is Al Jurf in Abu Dhabi or Dubai?",
+     "a": "Al Jurf is in Abu Dhabi emirate, in the Ghantoot area on the border with Dubai, so purchases are registered with the Abu Dhabi Real Estate Centre through DARI, not with Dubai Land Department. Its location means Al Maktoum International Airport is about 30 minutes away, the same as Zayed International Airport.",
+     "q_ar": "هل يقع الجرف في أبوظبي أم دبي؟",
+     "a_ar": "يقع الجرف في إمارة أبوظبي، في منطقة غنتوت على الحدود مع دبي، لذا تُسجَّل عمليات الشراء لدى مركز أبوظبي العقاري عبر منصة «داري» وليس لدى دائرة الأراضي والأملاك في دبي. وبفضل موقعه يبعد مطار آل مكتوم الدولي نحو 30 دقيقة، وهي المدة نفسها إلى مطار زايد الدولي."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "zayed-city",
+   "name": "Zayed City",
+   "pageSlug": "subpage/area/zayed-city",
+   "sources": [
+    "DB: subpage/area/zayed-city stats (sale, apartment, villa index, July 2026), nearby, why (masterplan scale), communities; developments (Al Hamra Bloom Living, Marbella Bloom Living)",
+    "bloomholding.com press release (4 Jul 2022) / zawya.com — Bloom Living designated an investment zone, units available to all nationalities",
+    "cm-today.com — Bloom Living designated as investment zone",
+    "adro.gov.ae — Golden Visa",
+    "DB: subpage/area/yas-island stats — Yas sale index used for comparison"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property in Zayed City?",
+     "a": "Only in designated parts of it. Bloom Living, Bloom Holding's community in Zayed City, was designated an investment zone in 2022, so buyers of all nationalities can own its villas, townhouses and apartments freehold. Most of the rest of Zayed City is government and national housing, so check any other plot's status on DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في مدينة زايد؟",
+     "a_ar": "في أجزاء محددة منها فقط. فقد صُنِّف بلوم ليفينغ، مجتمع شركة بلوم القابضة في مدينة زايد، منطقة استثمارية في عام 2022، لذا يحق للمشترين من جميع الجنسيات تملّك فلله ومنازل التاون هاوس والشقق فيه بنظام التملك الحر. ومعظم أجزاء مدينة زايد الأخرى مخصصة للمباني الحكومية وإسكان المواطنين، لذا يُستحسن التحقق من وضع أي قطعة أخرى على منصة «داري»."
+    },
+    {
+     "q": "How much does property cost in Zayed City?",
+     "a": "Zayed City's sale price index was about AED 1,324 per sq ft in July 2026, with apartments at AED 1,546 per sq ft and villas at AED 1,052. Off-plan prices start from AED 950,000 for an Al Hamra Bloom Living apartment and AED 3,800,000 for a Marbella Bloom Living villa.",
+     "q_ar": "كم تبلغ أسعار العقارات في مدينة زايد؟",
+     "a_ar": "بلغ مؤشر أسعار البيع في مدينة زايد نحو 1,324 درهمًا للقدم المربع في يوليو 2026، مع 1,546 درهمًا للقدم المربع للشقق و1,052 درهمًا للفلل. وتبدأ أسعار العقارات على الخريطة من 950,000 درهم لشقة في الحمراء بلوم ليفينغ و3,800,000 درهم لفيلا في ماربيا بلوم ليفينج."
+    },
+    {
+     "q": "Which off-plan projects are selling in Zayed City now?",
+     "a": "Two Bloom Living releases are selling in Zayed City: Al Hamra, with 385 studios and one- to three-bedroom apartments from AED 950,000 and handover in 2029, and Marbella, with 144 three- to six-bedroom villas from AED 3,800,000 and handover in December 2028. Both are by Bloom Holding.",
+     "q_ar": "ما المشاريع على الخريطة المعروضة للبيع حاليًا في مدينة زايد؟",
+     "a_ar": "يُعرض للبيع حاليًا إصداران من بلوم ليفينغ في مدينة زايد: الحمراء، ويضم 385 وحدة من الاستوديوهات والشقق من غرفة إلى ثلاث غرف نوم بأسعار تبدأ من 950,000 درهم والتسليم في 2029، وماربيا، ويضم 144 فيلا من ثلاث إلى ست غرف نوم بأسعار تبدأ من 3,800,000 درهم والتسليم في ديسمبر 2028. وكلاهما من تطوير بلوم القابضة."
+    },
+    {
+     "q": "Is Zayed City a good place to invest?",
+     "a": "Zayed City offers some of the lower entry prices among Abu Dhabi's freehold options, at about AED 1,324 per sq ft, inside a masterplan of more than 4,900 hectares planned for over 370,000 residents. Its value depends on that plan being delivered over many years, so treat it as a long-term hold; returns are not guaranteed.",
+     "q_ar": "هل مدينة زايد مكان مناسب للاستثمار؟",
+     "a_ar": "توفر مدينة زايد أسعار دخول من بين الأقل في خيارات التملك الحر في أبوظبي، بنحو 1,324 درهمًا للقدم المربع، ضمن مخطط رئيسي يمتد على أكثر من 4,900 هكتار ومخطط لأكثر من 370,000 نسمة. وتعتمد قيمتها على تنفيذ هذا المخطط على مدى سنوات طويلة، لذا يُنظر إليها كاستثمار طويل الأجل، ولا توجد عوائد مضمونة."
+    },
+    {
+     "q": "How far is Zayed City from the airport and Downtown Abu Dhabi?",
+     "a": "Zayed City is about 15 minutes by car from Zayed International Airport and from Masdar City, and around 25 minutes from both Downtown Abu Dhabi and Yas Island. It sits inland between Mohammed Bin Zayed City and the airport, and its masterplan is designed around future rail, metro, tram and bus links.",
+     "q_ar": "كم تبعد مدينة زايد عن المطار ووسط مدينة أبوظبي؟",
+     "a_ar": "تبعد مدينة زايد نحو 15 دقيقة بالسيارة عن مطار زايد الدولي وعن مدينة مصدر، ونحو 25 دقيقة عن كل من وسط مدينة أبوظبي وجزيرة ياس. وتقع في المنطقة الداخلية بين مدينة محمد بن زايد والمطار، وصُمم مخططها الرئيسي حول شبكات مستقبلية من القطارات والمترو والترام والحافلات."
+    },
+    {
+     "q": "Does buying in Zayed City qualify for a UAE Golden Visa?",
+     "a": "Some homes do: a Marbella Bloom Living villa from AED 3,800,000 clears the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, but Al Hamra apartments from AED 950,000 do not on their own. For off-plan homes the developer must confirm at least AED 2 million paid to date.",
+     "q_ar": "هل يؤهّل الشراء في مدينة زايد للحصول على الإقامة الذهبية في الإمارات؟",
+     "a_ar": "بعض العقارات فقط: فالفيلا في ماربيا بلوم ليفينج، التي تبدأ من 3,800,000 درهم، تتجاوز حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، أما شقق الحمراء التي تبدأ من 950,000 درهم فلا تكفي وحدها. وفي العقارات على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم على الأقل حتى تاريخه."
+    },
+    {
+     "q": "What fees do you pay when buying in Zayed City?",
+     "a": "The main extra cost is Abu Dhabi's 2% registration fee through DARI: AED 19,000 on a AED 950,000 Al Hamra apartment and AED 76,000 on a AED 3,800,000 Marbella villa. Buying off-plan direct from Bloom Holding normally carries no agency commission; resale buyers add about 2% commission and a developer NOC fee.",
+     "q_ar": "ما الرسوم التي يدفعها المشتري عند الشراء في مدينة زايد؟",
+     "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2% عبر منصة «داري»: 19,000 درهم على شقة في الحمراء بسعر 950,000 درهم، و76,000 درهم على فيلا في ماربيا بسعر 3,800,000 درهم. ولا يتحمل الشراء على الخريطة من بلوم القابضة مباشرة عادةً أي عمولة وساطة، بينما يضيف مشترو إعادة البيع عمولة بنحو 2% ورسوم شهادة عدم ممانعة من المطوّر."
+    },
+    {
+     "q": "Is Zayed City good for families?",
+     "a": "Zayed City is designed around family formats, with villas and townhouses alongside mid-rise apartments, and Bloom Living's walkable, Mediterranean-styled streets. The British International School Abu Dhabi, Abu Dhabi University and Zayed University's Abu Dhabi campus are nearby anchors, though much of the district is still being built.",
+     "q_ar": "هل مدينة زايد مناسبة للعائلات؟",
+     "a_ar": "صُممت مدينة زايد حول خيارات تناسب العائلات، من فلل ومنازل تاون هاوس إلى شقق في مبانٍ متوسطة الارتفاع، مع شوارع بلوم ليفينغ المصممة على الطراز المتوسطي والمناسبة للمشي. وتُعد المدرسة البريطانية الدولية أبوظبي وجامعة أبوظبي وجامعة زايد - فرع أبوظبي من أبرز المرافق القريبة، رغم أن جزءًا كبيرًا من المنطقة لا يزال قيد الإنشاء."
+    },
+    {
+     "q": "Is Zayed City or Yas Island better to buy in?",
+     "a": "Zayed City is the lower-cost, longer-horizon choice, at about AED 1,324 per sq ft against roughly AED 2,230 on Yas Island, with larger villas for the money. Yas Island is finished and amenity-rich, with theme parks, retail and schools in place; Zayed City trades today's convenience for space and an entry price that is still early-stage.",
+     "q_ar": "أيهما أنسب للشراء: مدينة زايد أم جزيرة ياس؟",
+     "a_ar": "مدينة زايد هي الخيار الأقل تكلفة والأطول أفقًا، بنحو 1,324 درهمًا للقدم المربع مقابل نحو 2,230 درهمًا في جزيرة ياس، مع فلل أكبر مقابل السعر نفسه. أما جزيرة ياس فمكتملة وغنية بالمرافق، من المدن الترفيهية إلى المتاجر والمدارس، بينما تقايض مدينة زايد سهولة اليوم بالمساحة وبسعر دخول لا يزال في مرحلة مبكرة."
+    }
+   ]
+  },
+  {
+   "kind": "area",
+   "slug": "rabdan",
+   "name": "Rabdan",
+   "pageSlug": "subpage/area/rabdan",
+   "sources": [
+    "DB: subpage/area/rabdan stats (sale index, 12-month change), nearby, landmarks, existing FAQ (communities); no developments in DB",
+    "u.ae — Expatriates buying a property in the UAE (Abu Dhabi investment areas; who may own; musataha 50 years, usufruct 99 years)",
+    "propertyfinder.ae — villas for rent in Rabdan / Mangrove Village (rent levels)",
+    "bayut.com / propertyfinder.ae listings — Mangrove Village sale listings, nationality eligibility stated inconsistently"
+   ],
+   "faq": [
+    {
+     "q": "Can foreigners buy property in Rabdan?",
+     "a": "Not as a rule. Rabdan is not on Abu Dhabi's published list of investment areas, and outside those areas outright ownership is reserved for UAE nationals, while foreigners can hold musataha or usufruct rights. Some Mangrove Village villas are advertised as open to all nationalities, so confirm the title status of the exact villa on DARI before paying anything.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في ربدان؟",
+     "a_ar": "ليس كقاعدة عامة. فربدان ليست ضمن القائمة المنشورة لمناطق الاستثمار في أبوظبي، وخارج تلك المناطق يقتصر التملك التام على مواطني الدولة، بينما يمكن للأجانب الحصول على حق المساطحة أو حق الانتفاع. وتُعرض بعض فلل قرية القرم على أنها متاحة لجميع الجنسيات، لذا يجب التحقق من وضع سند الفيلا المحددة على منصة «داري» قبل دفع أي مبلغ."
+    },
+    {
+     "q": "How much does property cost in Rabdan?",
+     "a": "Rabdan's sale price index is about AED 1,439 per sq ft, up 4.25% over 12 months, a steadier rise than on the islands. The market is almost entirely villas in established compounds such as Mangrove Village and Sea Shore Villas, where four- and five-bedroom homes are advertised from about AED 3.5 million to AED 5 million.",
+     "q_ar": "كم تبلغ أسعار العقارات في ربدان؟",
+     "a_ar": "يبلغ مؤشر أسعار البيع في ربدان نحو 1,439 درهمًا للقدم المربع، بارتفاع 4.25% خلال 12 شهرًا، وهو ارتفاع أكثر استقرارًا من الجزر. ويتكون السوق بالكامل تقريبًا من فلل في مجمعات قائمة مثل قرية القرم وفلل سي شور، حيث تُعرض المنازل ذات الأربع والخمس غرف نوم بأسعار تتراوح بين نحو 3.5 مليون درهم و5 ملايين درهم."
+    },
+    {
+     "q": "How much is rent in Rabdan?",
+     "a": "Villa rents in Rabdan start at about AED 170,000 a year and average around AED 271,000, according to Property Finder listings. Mangrove Village sits above that, at an average of about AED 290,000 a year, reflecting its waterfront setting; rents depend on the compound, villa size and whether it backs onto the water.",
+     "q_ar": "كم يبلغ الإيجار في ربدان؟",
+     "a_ar": "تبدأ إيجارات الفلل في ربدان من نحو 170,000 درهم سنويًا ويبلغ متوسطها نحو 271,000 درهم، وفقًا لإعلانات بروبرتي فايندر. وتأتي قرية القرم أعلى من ذلك بمتوسط يبلغ نحو 290,000 درهم سنويًا، ما يعكس موقعها على الواجهة المائية، وتختلف الإيجارات بحسب المجمع ومساحة الفيلا وإطلالتها على الماء."
+    },
+    {
+     "q": "What are the main communities in Rabdan?",
+     "a": "Rabdan's most established residential communities are Mangrove Village, a waterfront villa compound beside the Khor Al Maqta channel, and Sea Shore Villas. Both offer large four- and five-bedroom villas with shared pools and gardens, and there are no apartment towers or off-plan projects in the district.",
+     "q_ar": "ما أبرز المجتمعات السكنية في ربدان؟",
+     "a_ar": "أبرز المجتمعات السكنية في ربدان قرية القرم، وهي مجمع فلل على الواجهة المائية بجوار خور المقطع، وفلل سي شور. ويوفر كلاهما فللًا كبيرة بأربع وخمس غرف نوم مع مسابح وحدائق مشتركة، ولا توجد في المنطقة أبراج شقق أو مشاريع على الخريطة."
+    },
+    {
+     "q": "Is Rabdan a good place for families?",
+     "a": "Rabdan suits families who want an established villa compound rather than a new masterplan: homes are large, streets are quiet, and the Sheikh Zayed Grand Mosque and Wahat Al Karama are 5–10 minutes away. Khalifa City's schools and shops are around 10–20 minutes by car, so most families drive for school runs.",
+     "q_ar": "هل ربدان مناسبة للعائلات؟",
+     "a_ar": "تناسب ربدان العائلات التي تفضّل مجمع فلل قائمًا على مخطط رئيسي جديد: فالمنازل واسعة والشوارع هادئة، ويبعد جامع الشيخ زايد الكبير وواحة الكرامة بين 5 و10 دقائق. وتبعد مدارس مدينة خليفة ومتاجرها نحو 10 إلى 20 دقيقة بالسيارة، لذا تعتمد معظم العائلات على السيارة في رحلات المدرسة."
+    },
+    {
+     "q": "How far is Rabdan from Downtown Abu Dhabi?",
+     "a": "Rabdan is about 15–25 minutes by car from Downtown Abu Dhabi, depending on traffic, and 5–10 minutes from the Sheikh Zayed Grand Mosque. It sits near Al Maqta at the southern gateway to Abu Dhabi Island, so the mainland highways and Khalifa City, 10–20 minutes away, are easy to reach.",
+     "q_ar": "كم تبعد ربدان عن وسط مدينة أبوظبي؟",
+     "a_ar": "تبعد ربدان نحو 15 إلى 25 دقيقة بالسيارة عن وسط أبوظبي بحسب حركة المرور، ومن 5 إلى 10 دقائق عن جامع الشيخ زايد الكبير. وتقع بالقرب من المقطع عند المدخل الجنوبي لجزيرة أبوظبي، لذا يسهل الوصول إلى الطرق الرئيسية في البر ومدينة خليفة التي تبعد بين 10 و20 دقيقة."
+    },
+    {
+     "q": "What landmarks are near Rabdan?",
+     "a": "Rabdan sits beside some of Abu Dhabi's most recognisable landmarks: the Sheikh Zayed Grand Mosque, about 5–10 minutes away, Wahat Al Karama memorial opposite the mosque, and the historic Al Maqta Fort guarding the old crossing onto Abu Dhabi Island. The Khor Al Maqta waterfront runs along the district.",
+     "q_ar": "ما المعالم القريبة من ربدان؟",
+     "a_ar": "تقع ربدان بجوار بعض أبرز معالم أبوظبي: جامع الشيخ زايد الكبير على بعد نحو 5 إلى 10 دقائق، ونصب واحة الكرامة المقابل للجامع، وحصن المقطع التاريخي الذي يحرس المعبر القديم إلى جزيرة أبوظبي. ويمتد خور المقطع على طول المنطقة."
+    },
+    {
+     "q": "Should you rent or buy a villa in Rabdan?",
+     "a": "For most expatriates, renting is the simpler route in Rabdan, because the district is outside Abu Dhabi's investment areas and ownership is generally limited to UAE nationals. UAE nationals can buy outright, with villas advertised from about AED 3.5 million; a buyer of another nationality should only proceed once DARI confirms the villa can be sold to them.",
+     "q_ar": "هل يُستحسن استئجار فيلا في ربدان أم شراؤها؟",
+     "a_ar": "بالنسبة إلى معظم المقيمين الأجانب، يُعد الاستئجار الخيار الأبسط في ربدان، لأن المنطقة تقع خارج مناطق الاستثمار في أبوظبي، ويقتصر التملك عمومًا على مواطني الدولة. ويستطيع المواطنون الشراء مباشرة، مع فلل معروضة بأسعار تبدأ من نحو 3.5 مليون درهم، أما المشتري من جنسية أخرى فيجب ألا يمضي إلا بعد أن تؤكد منصة «داري» إمكانية بيع الفيلا له."
+    }
+   ]
+  }
+ ]
+}

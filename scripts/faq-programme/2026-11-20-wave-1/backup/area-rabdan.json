@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Rabdan is located near Al Maqta, at the southern gateway to Abu Dhabi Island.",
+        "q": "Where is Rabdan located?",
+        "a_ar": "تقع ربدان بالقرب من المقطع عند المدخل الجنوبي لجزيرة أبوظبي.",
+        "q_ar": "أين تقع ربدان؟"
+      },
+      {
+        "a": "The area is primarily known for villas and established residential compounds.",
+        "q": "What types of properties are available in Rabdan?",
+        "a_ar": "تشتهر المنطقة بالفلل والمجمعات السكنية القائمة.",
+        "q_ar": "ما أنواع العقارات المتوفرة في ربدان؟"
+      },
+      {
+        "a": "Mangrove Village and Sea Shore Villas are among its recognised residential communities.",
+        "q": "What are the main residential communities in Rabdan?",
+        "a_ar": "تعد قرية القرم وفلل سي شور من أبرز المجتمعات السكنية في المنطقة.",
+        "q_ar": "ما أبرز المجتمعات السكنية في ربدان؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Rabdan",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول ربدان"
+  },
+  "enabled": true
+}

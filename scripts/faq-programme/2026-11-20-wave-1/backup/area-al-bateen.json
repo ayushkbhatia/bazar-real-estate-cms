@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Bateen is on the western side of Abu Dhabi Island, near the Corniche.",
+        "q": "Where is Al Bateen located?",
+        "a_ar": "تقع البطين غرب جزيرة أبوظبي بالقرب من الكورنيش.",
+        "q_ar": "أين تقع البطين؟"
+      },
+      {
+        "a": "Luxury villas, apartments and selected waterfront residences.",
+        "q": "What properties are available in Al Bateen?",
+        "a_ar": "تتوفر الفلل الفاخرة والشقق وبعض العقارات المطلة على البحر.",
+        "q_ar": "ما أنواع العقارات المتوفرة في البطين؟"
+      },
+      {
+        "a": "It offers premium residential opportunities, although investment suitability depends on pricing, ownership eligibility and individual property performance.",
+        "q": "Is Al Bateen suitable for luxury property investment?",
+        "a_ar": "توفر فرصا عقارية راقية، لكن جدوى الاستثمار تعتمد على السعر وشروط التملك وأداء العقار.",
+        "q_ar": "هل البطين مناسبة للاستثمار العقاري الفاخر؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Bateen",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول البطين"
+  },
+  "enabled": true
+}

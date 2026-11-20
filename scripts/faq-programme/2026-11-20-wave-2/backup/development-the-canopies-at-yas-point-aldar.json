@@ -1,0 +1,58 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.518598098399337,
+    "lng": 54.60242147986676
+  },
+  "nearby_ids": [
+    "61077776-5ef8-474d-9a49-9e5017a89a4c",
+    "a290c4e2-28e0-4b14-8012-02e9a17c974c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Unwind beside a beautifully designed swimming pool created for relaxation, leisure and refreshing moments.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بأوقات هادئة بجانب مسبح مصمم بعناية للاسترخاء والترفيه والانتعاش.",
+      "media_id": "9bd8f531-4e20-4d59-9017-9aa9c8eec7bc",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Stay active in a modern, fully equipped gym designed for strength, fitness and well-being.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك في صالة حديثة ومجهزة بالكامل لدعم القوة واللياقة والعافية.",
+      "media_id": "4f5a1bc7-f095-4637-8f03-9f0d450c29d5",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Work comfortably and efficiently in flexible co-working spaces designed for focus, collaboration and productivity.",
+      "title": "Co-Working Spaces",
+      "copy_ar": "اعمل براحة وكفاءة في مساحات مرنة مصممة للتركيز والتعاون وتعزيز الإنتاجية.",
+      "media_id": "a1a547ba-4a34-4470-8656-3c4c50bbf68a",
+      "title_ar": "مساحات العمل المشتركة"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A fun and welcoming kids’ room designed for safe play, creativity and memorable moments.",
+      "title": "Kid's Room",
+      "copy_ar": "مساحة ممتعة ومرحبة مصممة للعب الآمن والإبداع وصنع لحظات مميزة.",
+      "media_id": "f27461a6-bba9-42a7-a719-f075c979fdb2",
+      "title_ar": "غرفة الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A versatile multi-purpose room designed for gatherings, activities, events and everyday community use.",
+      "title": "Multi-Purpose Room",
+      "copy_ar": "مساحة مرنة مصممة للتجمعات والأنشطة والفعاليات والاستخدامات اليومية للمجتمع.",
+      "media_id": "301c0aa9-0046-4535-9d93-6f16b992813b",
+      "title_ar": "غرفة متعددة الاستخدامات"
+    }
+  ]
+}

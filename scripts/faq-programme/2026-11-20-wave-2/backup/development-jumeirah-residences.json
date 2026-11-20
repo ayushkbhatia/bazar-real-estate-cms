@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.49209581083788,
+    "lng": 54.38938717544957
+  },
+  "nearby_ids": [
+    "88498700-c86b-4e68-8e5e-d839a0acecf4",
+    "26066402-c4d8-4a53-96b6-9ae2b2ca9ac1",
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Relax in a stunning infinity pool designed to offer a seamless sense of luxury and tranquility.",
+      "title": "Infinity Pool",
+      "copy_ar": "استرخِ في مسبح لامتناهٍ مميز يوفر أجواء راقية تجمع بين الفخامة والهدوء.",
+      "media_id": "65884c07-2be8-4ba5-90f8-c79cac1ea818",
+      "title_ar": "المسبح اللامتناهي"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy a beautifully designed swimming pool ideal for refreshing swims and everyday relaxation.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بمسبح مصمم بعناية للسباحة المنعشة والاسترخاء اليومي.",
+      "media_id": "204e4a1d-34b8-452b-9e73-fb6676d366c4",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Stay active in a fully equipped modern gym designed for strength, fitness, and wellbeing.",
+      "title": "Gym",
+      "copy_ar": "حافظ على نشاطك في صالة حديثة ومجهزة بالكامل لدعم القوة واللياقة والعافية.",
+      "media_id": "bc5f990c-7237-437c-b8bc-aa45659bb7c4",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "Unwind in an elegant lounge offering a comfortable setting for relaxation and socializing.",
+      "title": "Lounge",
+      "copy_ar": "استمتع بمساحة أنيقة ومريحة للاسترخاء والتواصل الاجتماعي.",
+      "media_id": "0fb8c349-c472-428f-b631-942172bd61be",
+      "title_ar": "الاستراحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "Enjoy al fresco dining in a beautifully designed outdoor setting made for memorable gatherings.",
+      "title": "Outdoor Dining",
+      "copy_ar": "استمتع بتجربة طعام خارجية ضمن أجواء مصممة بعناية للقاءات واللحظات المميزة.",
+      "media_id": "dc9e4a23-0fc9-4625-878e-18a9caf44252",
+      "title_ar": "تناول الطعام في الهواء الطلق"
+    }
+  ]
+}

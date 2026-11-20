@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is positioned close to the Abu Dhabi–Dubai border.",
+        "q": "Where is Al Ghadeer located?",
+        "a_ar": "تقع بالقرب من الحدود بين أبوظبي ودبي.",
+        "q_ar": "أين تقع الغدير؟"
+      },
+      {
+        "a": "The wider community offers apartments, townhouses and villas.",
+        "q": "What properties are available?",
+        "a_ar": "يوفر المجتمع مجموعة متنوعة من الشقق والتاون هاوس والفلل.",
+        "q_ar": "ما العقارات المتاحة؟"
+      },
+      {
+        "a": "It is Aldar’s new 437-home community comprising villas and townhouses within a walkable, nature-led masterplan.",
+        "q": "What is Al Ghadeer Gardens?",
+        "a_ar": "هو مجتمع سكني جديد من الدار يضم 437 منزلًا من الفلل والتاون هاوس، ضمن مخطط رئيسي يركز على سهولة المشي والطبيعة.",
+        "q_ar": "ما هو الغدير جاردنز؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Ghadeer",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الغدير"
+  },
+  "enabled": true
+}

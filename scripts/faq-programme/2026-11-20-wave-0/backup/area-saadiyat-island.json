@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Saadiyat is known for its beaches, luxury residences, resorts and globally recognised Cultural District.",
+        "q": "What is Saadiyat Island known for?",
+        "a_ar": "تشتهر جزيرة السعديات بشواطئها ومساكنها الفاخرة ومنتجعاتها والمنطقة الثقافية ذات الشهرة العالمية.",
+        "q_ar": "ما الذي تشتهر به جزيرة السعديات؟"
+      },
+      {
+        "a": "The island covers approximately 27 Sq. Km.",
+        "q": "How large is Saadiyat Island?",
+        "a_ar": "تبلغ مساحة الجزيرة حوالي 27 كيلومترًا مربعًا.",
+        "q_ar": "ما مساحة جزيرة السعديات؟"
+      },
+      {
+        "a": "Buyers can find apartments, villas, townhouses, branded residences and ultra-luxury homes across the island.",
+        "q": "What properties are available?",
+        "a_ar": "يمكن للمشترين العثور على شقق وفلل وتاون هاوس ومساكن ذات علامات تجارية ومنازل فائقة الفخامة في مختلف أنحاء الجزيرة.",
+        "q_ar": "ما العقارات المتاحة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Saadiyat Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة السعديات"
+  },
+  "enabled": true
+}

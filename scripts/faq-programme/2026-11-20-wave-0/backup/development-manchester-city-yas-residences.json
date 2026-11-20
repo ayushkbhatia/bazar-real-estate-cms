@@ -1,0 +1,48 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.483319711380076,
+    "lng": 54.63183640402187
+  },
+  "nearby_ids": [
+    "61077776-5ef8-474d-9a49-9e5017a89a4c"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Direct access to the beach for relaxed waterfront living and leisure.",
+      "title": "Beach Access",
+      "copy_ar": "وصول مباشر إلى الشاطئ للاستمتاع بأسلوب حياة هادئ على الواجهة المائية وأوقات الترفيه.",
+      "media_id": "97f1e4c3-cb71-4236-b6af-1db8c8c4e987",
+      "title_ar": "الوصول إلى الشاطئ"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A modern fitness space designed for everyday workouts and an active lifestyle.",
+      "title": "Gym",
+      "copy_ar": "مساحة لياقة بدنية عصرية مصممة للتمارين اليومية وتعزيز أسلوب حياة نشط.",
+      "media_id": "f6d6607e-38f1-457b-b104-19a96d14893e",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "An elegant dining destination offering a refined culinary experience.",
+      "title": "Fine Dining Restaurant",
+      "copy_ar": "وجهة أنيقة لتناول الطعام تقدم تجربة طهي راقية ومميزة.",
+      "media_id": "b8f05bf6-98ae-4979-8dc5-47bb96fe7e58",
+      "title_ar": "مطعم فاخر"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A relaxed social space for coffee, light bites, and casual gatherings.",
+      "title": "City Cafe",
+      "copy_ar": "مساحة اجتماعية مريحة للاستمتاع بالقهوة والوجبات الخفيفة واللقاءات الودية.",
+      "media_id": "0d1bc86e-29a7-43de-a121-85aed672393d",
+      "title_ar": "مقهى المدينة"
+    }
+  ]
+}

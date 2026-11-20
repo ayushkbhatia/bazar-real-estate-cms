@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is an established suburban residential area known for spacious homes and convenient airport connectivity.",
+        "q": "What is Khalifa City known for?",
+        "a_ar": "هي منطقة سكنية راسخة في الضواحي، تشتهر بالمنازل الواسعة وسهولة الوصول إلى المطار.",
+        "q_ar": "بماذا تشتهر مدينة خليفة؟"
+      },
+      {
+        "a": "The market is strongly villa-oriented but also includes apartments and newer residential developments. Current Bayut index data covers both apartments and villas.",
+        "q": "What types of properties are available?",
+        "a_ar": "يركز السوق بشكل كبير على الفلل، ولكنه يشمل أيضًا الشقق والمشاريع السكنية الأحدث. وتشمل بيانات مؤشر بيوت الحالية كلاً من الشقق والفلل.",
+        "q_ar": "ما أنواع العقارات المتاحة؟"
+      },
+      {
+        "a": "Al Forsan International Sports Resort and Abu Dhabi Golf Club are both located in Khalifa City.",
+        "q": "What major attractions are nearby?",
+        "a_ar": "يقع كل من منتجع الفرسان الرياضي الدولي ونادي أبوظبي للجولف في مدينة خليفة.",
+        "q_ar": "ما أبرز الوجهات القريبة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Khalifa City",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مدينة خليفة"
+  },
+  "enabled": true
+}

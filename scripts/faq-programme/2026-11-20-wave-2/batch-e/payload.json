@@ -1,0 +1,776 @@
+{
+  "wave": "2",
+  "batch": "batch-e",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    2,
+    3,
+    4,
+    5,
+    9,
+    10,
+    12,
+    13,
+    15,
+    18,
+    24,
+    30,
+    40,
+    60,
+    72,
+    95,
+    111,
+    157,
+    167,
+    321,
+    900,
+    1250000,
+    1400,
+    1700,
+    1716,
+    1960000,
+    1900000,
+    2175000,
+    2015,
+    2022,
+    2025,
+    2026,
+    2029,
+    2030,
+    1.6,
+    2.3,
+    3.5,
+    3.8,
+    5.5,
+    19000,
+    50000,
+    76,
+    850000,
+    850,
+    437,
+    64,
+    2800,
+    37000,
+    20000,
+    1000
+  ],
+  "sourcedNotes": {
+    "2": "2% Abu Dhabi (DARI) registration fee; AED 2 million Golden Visa threshold (adro.gov.ae); Estidama Pearl 2 / Fitwel 2-star (aldar.com, Al Ghadeer Gardens)",
+    "3": "Bashayer sell-out ~AED 3 billion in one day (modon.com / wam.ae, Dec 2025); Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (escrow)",
+    "4": "worked example: Bashayer / Marbella units priced at AED 4 million or more reach AED 2M paid during construction on a 50/50 plan",
+    "5": "Hudayriyat Golf Estate villas above AED 5 million reach AED 2M within the 40% pre-handover share (arithmetic)",
+    "9": "Al Naseem 5-bedroom villa from AED 9M (modon.com/real-estate/al-naseem-community); AlJurf 9 km canal front (zawya.com, IMKAN)",
+    "10": "Abu Dhabi Golden Visa is 10 years (adro.gov.ae); Al Naseem 6-bed from AED 10M (modon.com); Wadeem Gardens 5-bed from AED 10M (propertyfinder.ae); Al Naseem 10% down (propertyfinder.ae); RIMAS 10% booking (DB)",
+    "12": "Wadeem Gardens 6-bed from AED 12M (propertyfinder.ae)",
+    "13": "Hudayriyat Golf Estates > AED 13 billion sales within days of launch (modon.com / zawya.com, Jul 2026)",
+    "15": "15% of Hudayriyat Golf Estates launch buyers non-UAE residents (zawya.com, Jul 2026); RIMAS 15 six-bedroom villas (zawya.com, Sep 2026)",
+    "18": "Al Ghadeer Gardens on sale from 18 May 2026 (wam.ae / zawya.com); 18-hole course (DB feature blocks)",
+    "24": "Wadeem Gardens 24-hour CCTV security (propertyfinder.ae)",
+    "30": "Al Naseem broker schedule 10% down / 30% construction / 60% handover (propertyfinder.ae, dubizzle.com)",
+    "40": "Al Naseem 40/60 payment plan (modon.com); DB has no plan for Al Naseem",
+    "60": "Al Naseem 40/60 payment plan (modon.com); 60 townhouses in Naseem AlJurf (zawya.com, IMKAN)",
+    "64": "64% of Al Ghadeer Gardens buyers expatriate residents and overseas (aldar.com / wam.ae, May 2026, via wave 1)",
+    "72": "Wadeem plots sold out within 72 hours (modon.com / wam.ae, Jul 2025)",
+    "76": "RIMAS: 76 four-bedroom and 76 five-bedroom villas (zawya.com / wam.ae, Sep 2026)",
+    "95": "Hudayriyat Golf Estates 95-hectare golf course (zawya.com, Jul 2026)",
+    "111": "Naseem AlJurf 111 villas (zawya.com, IMKAN launch)",
+    "157": "Bashayer 157 villas (modon.com, Dec 2025)",
+    "167": "RIMAS 167 villas (zawya.com / wam.ae, Sep 2026; brief: use launch figure)",
+    "321": "321 Sports, Hudayriyat Island venue (modon.com/real-estate/al-naseem-community)",
+    "437": "Al Ghadeer Gardens 437 villas and townhouses (wam.ae, May 2026; brief: use 437 not DB 352)",
+    "850": "RIMAS plots ~850–1,716 sq m (zawya.com, Sep 2026)",
+    "900": "Naseem AlJurf 900 linear metres of waterways (zawya.com, IMKAN)",
+    "1000": "Jubail Island: more than 1,000 homes handed over across six villages (zawya.com / gulftoday.ae, 2026)",
+    "1400": "Naseem Plaza souk 1,400 sq m retail (zawya.com, IMKAN)",
+    "1700": "~1,700 homes sold at Hudayriyat Golf Estates launch (zawya.com, Jul 2026)",
+    "1716": "RIMAS plots ~850–1,716 sq m (zawya.com, Sep 2026)",
+    "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector — off-plan escrow (ADREC / u.ae)",
+    "2022": "Bloom Living designated an investment zone, 2022 (bloomholding.com / zawya.com)",
+    "2025": "Bashayer launched Dec 2025 (modon.com); Wadeem plots sold out Jul 2025 (modon.com); Marbella launched Sep 2025 (bloomholding.com)",
+    "2026": "Hudayriyat Golf Estates launch Jul 2026; Al Ghadeer Gardens May 2026; Alhambra Sep 2026; RIMAS at LIVEX 2026; first Abu Dhabi off-plan mortgage Sep 2026 (gulfnews.com / wam.ae)",
+    "2029": "Bashayer broker listings show Q4 2029 (propertyfinder.ae); Al Ghadeer Gardens launch listings Q4 2029",
+    "2030": "Hudayriyat Golf Estate / Bashayer Residences DB handover years, cited on Al Naseem",
+    "2800": "British-curriculum school for 2,800 students in Al Ghadeer (DB area landmarks; listings)",
+    "19000": "arithmetic: 2% of AED 950,000 (Alhambra, DB)",
+    "20000": "arithmetic: 2% of AED 1,000,000 (Naseem AlJurf, DB)",
+    "37000": "arithmetic: 2% of AED 1,850,000 (Al Ghadeer Gardens, DB)",
+    "50000": "arithmetic: 2% of AED 2,500,000 (Bashayer Residences, DB)",
+    "850000": "arithmetic: 10% of AED 8,500,000 (RIMAS, DB)",
+    "1250000": "arithmetic: 50% of AED 2,500,000 (Bashayer Residences, DB)",
+    "1900000": "arithmetic: 50% of AED 3,800,000 (Marbella Bloom Living, DB)",
+    "1960000": "arithmetic: 40% of AED 4,900,000 (Hudayriyat Golf Estate, DB)",
+    "2175000": "arithmetic: 25% of AED 8,700,000 (Wadeem Gardens, DB)",
+    "1.6": "AlJurf 1.6 km coastline (zawya.com, IMKAN)",
+    "2.3": "Hudayriyat Golf Estates 2.3 km green spine (zawya.com, Jul 2026)",
+    "3.5": "Bashayer 3.5 km waterfront promenade (modon.com, Dec 2025)",
+    "3.8": "AlJurf masterplan 3.8 million sq m (zawya.com, IMKAN)",
+    "5.5": "Wadeem plots AED 5.5 billion (modon.com, Jul 2025)"
+  },
+  "pages": [
+    {
+      "kind": "development",
+      "slug": "al-naseem",
+      "name": "Al Naseem",
+      "sources": [
+        "DB: developments row al-naseem (developer, area, starting price, handover, bedrooms), development_unit_types (sizes); subpage/area/hudayriyat-island nearby band",
+        "modon.com/real-estate/al-naseem-community — styles, prices by bedroom, 40/60 plan, Q4 2027 first phase, amenities, freehold all nationalities",
+        "propertyfinder.ae / dubizzle.com — broker schedule 10/30/60",
+        "wave 1 hudayriyat-island FAQ — freehold",
+        "adro.gov.ae — Golden Visa; u.ae / ADREC — Law No. 3 of 2015 escrow"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Al Naseem?",
+          "a": "Al Naseem is developed by Modon Properties, the real estate arm of Modon Holding and the master developer of Hudayriyat Island. It is a gated community of standalone villas, each on its own private plot, offered in two architectural styles: South Californian or Modern Contemporary.",
+          "q_ar": "من هو مطوّر مجتمع النسيم؟",
+          "a_ar": "يطوّر مجتمع النسيم شركة مُدن العقارية، الذراع العقارية لمجموعة مُدن القابضة والمطوّر الرئيسي لجزيرة الحديريات. وهو مجتمع مسوّر من الفلل المستقلة، تقوم كل منها على قطعة أرض خاصة، ويُطرح بطرازين معماريين: الطراز الكاليفورني الجنوبي أو الطراز العصري المعاصر."
+        },
+        {
+          "q": "Where is Al Naseem located?",
+          "a": "Al Naseem is near the shore of Hudayriyat Island, Abu Dhabi, the island directly opposite Al Bateen. Downtown Abu Dhabi is about 20 minutes by car and Zayed International Airport about 30 minutes, while Surf Abu Dhabi, 321 Sports and the Marsana dining and retail strip are a short drive away on the island.",
+          "q_ar": "أين يقع مجتمع النسيم؟",
+          "a_ar": "يقع مجتمع النسيم قرب شاطئ جزيرة الحديريات في أبوظبي، وهي الجزيرة المقابلة للبطين مباشرةً. ويبعد نحو 20 دقيقة بالسيارة عن وسط مدينة أبوظبي ونحو 30 دقيقة عن مطار زايد الدولي، فيما تقع وجهات سيرف أبوظبي و321 سبورتس وممشى مرسانا للمطاعم والمتاجر على مسافة قصيرة داخل الجزيرة."
+        },
+        {
+          "q": "What is the starting price of Al Naseem villas?",
+          "a": "Al Naseem starts from AED 7,800,000 for a four-bedroom villa. Modon lists five-bedroom villas from about AED 9 million and six-bedroom villas from about AED 10 million. Prices vary by plot, style and release, so ask a Bazar advisor for current availability and resale options.",
+          "q_ar": "ما سعر البداية لفلل مجتمع النسيم؟",
+          "a_ar": "تبدأ الأسعار في مجتمع النسيم من 7,800,000 درهم للفيلا بأربع غرف نوم. وتعرض مُدن الفلل بخمس غرف نوم بدءًا من نحو 9 ملايين درهم، والفلل بست غرف نوم بدءًا من نحو 10 ملايين درهم. وتختلف الأسعار بحسب القطعة والطراز ومرحلة الطرح، لذا يمكنك سؤال مستشار بازار عن التوافر الحالي وفرص إعادة البيع."
+        },
+        {
+          "q": "What villa types and sizes are available at Al Naseem?",
+          "a": "Al Naseem offers four- to six-bedroom standalone villas built over a ground and first floor. Four-bedroom villas measure about 5,274–5,500 sq ft, five-bedroom villas 6,028–6,135 sq ft and six-bedroom villas about 6,669–6,674 sq ft, each in a South Californian or Modern Contemporary design.",
+          "q_ar": "ما أنواع الفلل ومساحاتها في مجتمع النسيم؟",
+          "a_ar": "يضم مجتمع النسيم فللًا مستقلة من أربع إلى ست غرف نوم، مكونة من طابق أرضي وطابق أول. وتبلغ مساحة الفلل بأربع غرف نحو 5,274 إلى 5,500 قدم مربع، والفلل بخمس غرف من 6,028 إلى 6,135 قدمًا مربعًا، والفلل بست غرف نحو 6,669 إلى 6,674 قدمًا مربعًا، وكلها بالطراز الكاليفورني الجنوبي أو العصري المعاصر."
+        },
+        {
+          "q": "What is the payment plan for Al Naseem?",
+          "a": "Modon lists Al Naseem on a 40/60 payment plan: 40% before and during construction and 60% on handover. Broker listings show the 40% split as 10% down and 30% in construction instalments. The 2% Abu Dhabi registration fee is paid on top; confirm your schedule in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مجتمع النسيم؟",
+          "a_ar": "تعرض مُدن مجتمع النسيم بخطة سداد 40/60: تُدفع 40% قبل الإنشاء وخلاله، و60% عند التسليم. وتُظهر قوائم الوسطاء تقسيم نسبة 40% إلى 10% دفعة أولى و30% أقساطًا خلال الإنشاء. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، ويُنصح بتأكيد الجدول في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Al Naseem?",
+          "a": "The first phase of Al Naseem is scheduled for handover in Q4 2027, earlier than Modon's newer Hudayriyat Island launches, which are due from 2030. Off-plan completion dates can move, so check the anticipated completion date and the delay terms in your sale and purchase agreement.",
+          "q_ar": "متى موعد تسليم مجتمع النسيم؟",
+          "a_ar": "من المقرر تسليم المرحلة الأولى من مجتمع النسيم في الربع الرابع من 2027، أي قبل مشاريع مُدن الأحدث في جزيرة الحديريات التي يبدأ تسليمها من 2030. وقد تتغير مواعيد إنجاز المشاريع على الخريطة، لذا تحقق من تاريخ الإنجاز المتوقع وشروط التأخير في عقد البيع والشراء."
+        },
+        {
+          "q": "Can foreigners buy a villa at Al Naseem?",
+          "a": "Yes. Modon sells Al Naseem villas freehold to buyers of all nationalities, and the ownership covers both the villa and the land beneath it. Hudayriyat Island is open to foreign ownership, non-residents can buy without a UAE visa, and the title is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء فيلا في مجتمع النسيم؟",
+          "a_ar": "نعم. تبيع مُدن فلل مجتمع النسيم بنظام التملك الحر للمشترين من جميع الجنسيات، ويشمل التملك الفيلا والأرض المقامة عليها. وجزيرة الحديريات مفتوحة لتملك الأجانب، ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل سند الملكية لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Al Naseem?",
+          "a": "Yes. Every Al Naseem villa is priced above the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, from AED 7,800,000. Off-plan buyers need at least AED 2 million paid to the developer, which on the 40/60 plan is reached during the construction instalments; a mortgaged villa needs at least AED 2 million of owner equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في مجتمع النسيم؟",
+          "a_ar": "نعم. فجميع فلل مجتمع النسيم تتجاوز أسعارها حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات، إذ تبدأ من 7,800,000 درهم. ويحتاج مشترو العقارات على الخريطة إلى سداد مليوني درهم على الأقل للمطوّر، وهو ما يتحقق بخطة 40/60 خلال أقساط الإنشاء، أما الفيلا المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+        },
+        {
+          "q": "What amenities does Al Naseem have?",
+          "a": "Al Naseem includes a community centre, a gym, a swimming pool, a basketball court, an outdoor play area, pedestrian paths and cycle routes, with schools planned for the community. Beyond its gates, Hudayriyat Island adds Surf Abu Dhabi, 321 Sports, the velodrome and waterfront running and cycling trails.",
+          "q_ar": "ما المرافق المتوفرة في مجتمع النسيم؟",
+          "a_ar": "يضم مجتمع النسيم مركزًا مجتمعيًا وصالة رياضية ومسبحًا وملعبًا لكرة السلة ومنطقة لعب خارجية وممرات للمشاة ومسارات للدراجات، مع مدارس ضمن مخطط المجتمع. وخارج بواباته تضيف جزيرة الحديريات سيرف أبوظبي و321 سبورتس ومضمار الدراجات ومسارات الجري وركوب الدراجات على الواجهة المائية."
+        },
+        {
+          "q": "Are payments for an Al Naseem villa protected?",
+          "a": "Yes. Instalments for an Al Naseem villa go into the project's escrow account, not to Modon's general funds. Under Abu Dhabi Law No. 3 of 2015 regulating the real estate sector, off-plan payments are held in escrow and released against construction progress, and ADREC, the Abu Dhabi Real Estate Centre, registers the project and the sale.",
+          "q_ar": "هل دفعات شراء فيلا في مجتمع النسيم محمية؟",
+          "a_ar": "نعم. تُودَع أقساط شراء الفيلا في مجتمع النسيم في حساب ضمان خاص بالمشروع، لا في الأموال العامة لشركة مُدن. وبموجب قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري، تُحفظ دفعات العقارات على الخريطة في حساب الضمان وتُصرف وفق تقدم الإنشاء، ويتولى مركز أبوظبي العقاري ADREC تسجيل المشروع وعملية البيع."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "bashayer-residences",
+      "name": "Bashayer Residences",
+      "sources": [
+        "DB: developments row bashayer-residences (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/hudayriyat-island nearby band",
+        "modon.com media centre (8 and 10 Dec 2025) / wam.ae / thenationalnews.com — launch, 157 villas + 330 apartments, two low-rise terraced buildings, 4-bed penthouses, 3.5 km promenade, AED 3bn sell-out",
+        "propertyfinder.ae — broker listing Q4 2029 completion",
+        "gulfnews.com / wam.ae (Sep 2026) — ADREC off-plan mortgage framework, 50% paid",
+        "adro.gov.ae — Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Bashayer Residences?",
+          "a": "Bashayer Residences is developed by Modon Properties, part of Modon Holding. It is the apartment collection of Bashayer, which Modon launched in December 2025 as Hudayriyat Island's first waterfront community and sold out within one day, for about AED 3 billion in sales.",
+          "q_ar": "من هو مطوّر مشروع بشاير ريزيدنسز؟",
+          "a_ar": "يطوّر مشروع بشاير ريزيدنسز شركة مُدن العقارية، التابعة لمجموعة مُدن القابضة. وهو مجموعة الشقق في مجتمع بشاير، الذي أطلقته مُدن في ديسمبر 2025 بوصفه أول مجتمع على الواجهة المائية في جزيرة الحديريات، وبيعت وحداته بالكامل خلال يوم واحد بمبيعات بلغت نحو 3 مليارات درهم."
+        },
+        {
+          "q": "Where is Bashayer Residences located?",
+          "a": "Bashayer Residences is on the waterfront of Hudayriyat Island, Abu Dhabi, looking across to Al Bateen Beach and the city skyline. Downtown Abu Dhabi is about 20 minutes by car and Zayed International Airport about 30 minutes, and Al Bateen sits directly opposite the island.",
+          "q_ar": "أين يقع مشروع بشاير ريزيدنسز؟",
+          "a_ar": "يقع مشروع بشاير ريزيدنسز على الواجهة المائية لجزيرة الحديريات في أبوظبي، مطلًّا على شاطئ البطين وأفق المدينة. ويبعد نحو 20 دقيقة بالسيارة عن وسط مدينة أبوظبي ونحو 30 دقيقة عن مطار زايد الدولي، فيما تقع البطين مقابل الجزيرة مباشرةً."
+        },
+        {
+          "q": "What is the starting price of Bashayer Residences?",
+          "a": "Bashayer Residences starts from AED 2,500,000 for a one-bedroom apartment. Two- and three-bedroom homes and the four-bedroom penthouses cost more. Because the launch sold out, ask a Bazar advisor about resale units and any remaining release before you plan a budget.",
+          "q_ar": "ما سعر البداية في بشاير ريزيدنسز؟",
+          "a_ar": "تبدأ الأسعار في بشاير ريزيدنسز من 2,500,000 درهم لشقة بغرفة نوم واحدة. وتُسعَّر شقق الغرفتين والثلاث غرف والبنتهاوس بأربع غرف بأسعار أعلى. ولأن الإطلاق بيع بالكامل، يُستحسن سؤال مستشار بازار عن وحدات إعادة البيع وأي طرح متبقٍّ قبل تحديد ميزانيتك."
+        },
+        {
+          "q": "What apartment types and sizes are available at Bashayer Residences?",
+          "a": "Bashayer Residences has 330 apartments in two low-rise terraced buildings, from one to three bedrooms plus four-bedroom penthouses. One-bedrooms measure about 878–1,404 sq ft, two-bedrooms 1,394–2,448 sq ft and three-bedrooms 1,920–3,185 sq ft. The wider Bashayer community adds 157 gated villas.",
+          "q_ar": "ما أنواع الشقق ومساحاتها في بشاير ريزيدنسز؟",
+          "a_ar": "يضم مشروع بشاير ريزيدنسز 330 شقة في مبنيين منخفضَي الارتفاع بتصميم مدرّج، من غرفة إلى ثلاث غرف نوم، إضافة إلى بنتهاوس بأربع غرف. وتبلغ مساحة شقق الغرفة الواحدة نحو 878 إلى 1,404 أقدام مربعة، والغرفتين من 1,394 إلى 2,448 قدمًا مربعًا، والثلاث غرف من 1,920 إلى 3,185 قدمًا مربعًا. ويضم مجتمع بشاير الأوسع 157 فيلا مسوّرة."
+        },
+        {
+          "q": "What is the payment plan for Bashayer Residences?",
+          "a": "Bashayer Residences is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top, so an entry apartment at AED 2,500,000 carries about AED 50,000 in registration fees.",
+          "q_ar": "ما خطة السداد في بشاير ريزيدنسز؟",
+          "a_ar": "يُباع مشروع بشاير ريزيدنسز بخطة سداد 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، لذا تبلغ رسوم التسجيل لشقة البداية بسعر 2,500,000 درهم نحو 50,000 درهم."
+        },
+        {
+          "q": "When is the handover date for Bashayer Residences?",
+          "a": "Bashayer Residences is scheduled for handover in April 2030. Some broker listings show Q4 2029, so rely on the anticipated completion date written into your sale and purchase agreement, which also sets out what happens if construction runs late.",
+          "q_ar": "متى موعد تسليم بشاير ريزيدنسز؟",
+          "a_ar": "من المقرر تسليم بشاير ريزيدنسز في أبريل 2030. وتُظهر بعض قوائم الوسطاء الربع الرابع من 2029، لذا اعتمد على تاريخ الإنجاز المتوقع المذكور في عقد البيع والشراء، الذي يحدد أيضًا ما يترتب على أي تأخير في الإنشاء."
+        },
+        {
+          "q": "Can foreigners buy an apartment at Bashayer Residences?",
+          "a": "Yes. Bashayer Residences is sold freehold to buyers of all nationalities, as with Modon's other Hudayriyat Island communities. A foreign buyer, resident in the UAE or not, owns the apartment outright, and the title is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء شقة في بشاير ريزيدنسز؟",
+          "a_ar": "نعم. تُباع شقق بشاير ريزيدنسز بنظام التملك الحر للمشترين من جميع الجنسيات، كما هو الحال في مجتمعات مُدن الأخرى في جزيرة الحديريات. ويتملك المشتري الأجنبي، مقيمًا في الإمارات أو غير مقيم، الشقة ملكية كاملة، ويُسجَّل سند الملكية لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Bashayer Residences?",
+          "a": "Yes, as every apartment starts at AED 2,500,000, above the AED 2 million threshold. Off-plan buyers must have paid AED 2 million, so an entry one-bedroom, with AED 1,250,000 paid before handover on the 50/50 plan, qualifies at handover unless you pay ahead; units priced at AED 4 million or more reach it during construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء شقة في بشاير ريزيدنسز؟",
+          "a_ar": "نعم، فجميع الشقق تبدأ من 2,500,000 درهم، أي فوق حد مليوني درهم. لكن مشتري العقار على الخريطة يجب أن يكون قد سدد مليوني درهم، لذا فإن شقة الغرفة الواحدة، التي يُسدَّد منها 1,250,000 درهم قبل التسليم بخطة 50/50، تتأهل عند التسليم ما لم تُسدَّد دفعات مسبقة، أما الوحدات التي يبلغ سعرها 4 ملايين درهم أو أكثر فتتأهل خلال الإنشاء."
+        },
+        {
+          "q": "What amenities does Bashayer Residences have?",
+          "a": "Bashayer Residences sits on a 3.5 km waterfront promenade with walkable piers reaching into the water. Residents share a clubhouse with a rooftop infinity pool, a green park with a children's playground and sports courts, a linear park, a gym, a kids' room and a gaming room.",
+          "q_ar": "ما المرافق المتوفرة في بشاير ريزيدنسز؟",
+          "a_ar": "يقع مشروع بشاير ريزيدنسز على ممشى بحري بطول 3.5 كيلومتر مع أرصفة للمشي تمتد في المياه. ويتشارك السكان ناديًا اجتماعيًا بمسبح لا متناهٍ على السطح، وحديقة خضراء فيها منطقة لعب للأطفال وملاعب رياضية، وحديقة طولية، وصالة رياضية، وغرفة للأطفال، وغرفة ألعاب."
+        },
+        {
+          "q": "Can I get a mortgage on Bashayer Residences before handover?",
+          "a": "Yes, once you have paid 50% of the price. ADREC's off-plan mortgage framework, under which Abu Dhabi's first off-plan mortgage was completed in September 2026, requires buyers to have paid half the price. On the 5/45/50 plan that point arrives when the construction instalments are paid, so the 50% due on handover can be financed.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري لشقة في بشاير ريزيدنسز قبل التسليم؟",
+          "a_ar": "نعم، بعد سداد 50% من السعر. فإطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، الذي أُنجز بموجبه أول رهن عقاري على الخريطة في أبوظبي في سبتمبر 2026، يشترط سداد نصف السعر. ووفق خطة 5/45/50 تتحقق هذه النسبة بعد سداد أقساط الإنشاء، فيمكن تمويل نسبة 50% المستحقة عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "hudayriyat-golf-estate",
+      "name": "Hudayriyat Golf Estate",
+      "sources": [
+        "DB: developments row hudayriyat-golf-estate (developer, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/hudayriyat-island nearby band",
+        "modon.com media centre / zawya.com / wam.ae (7 Jul 2026) — ~1,700 homes, > AED 13bn, 95-hectare course, 2.3 km green spine, Andalusian design, 15% non-UAE residents",
+        "modon.com/real-estate/hudayriyat-golf-estates — freehold, all nationalities",
+        "propertyfinder.ae / dubizzle.com — Q3 2030, 5/35/60",
+        "adro.gov.ae — Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate is developed by Modon Properties, part of Modon Holding. Modon sold about 1,700 homes worth more than AED 13 billion within days of the July 2026 launch, which it reported as the largest publicly recorded sales value for a single residential launch in the UAE.",
+          "q_ar": "من هو مطوّر مشروع حديريات غولف إستيت؟",
+          "a_ar": "يطوّر مشروع حديريات غولف إستيت شركة مُدن العقارية، التابعة لمجموعة مُدن القابضة. وباعت مُدن نحو 1,700 منزل بقيمة تتجاوز 13 مليار درهم خلال أيام من الإطلاق في يوليو 2026، وهي بحسب الشركة أكبر قيمة مبيعات معلنة لإطلاق مشروع سكني واحد في الإمارات."
+        },
+        {
+          "q": "Where is Hudayriyat Golf Estate located?",
+          "a": "Hudayriyat Golf Estate wraps a new golf course on Hudayriyat Island, Abu Dhabi, with homes facing the fairways or the water. Downtown Abu Dhabi is about 20 minutes by car and Zayed International Airport about 30 minutes, and Surf Abu Dhabi and the velodrome are on the same island.",
+          "q_ar": "أين يقع مشروع حديريات غولف إستيت؟",
+          "a_ar": "يحيط مشروع حديريات غولف إستيت بملعب غولف جديد في جزيرة الحديريات بأبوظبي، وتطل منازله على مسارات الغولف أو على المياه. ويبعد نحو 20 دقيقة بالسيارة عن وسط مدينة أبوظبي ونحو 30 دقيقة عن مطار زايد الدولي، ويقع سيرف أبوظبي ومضمار الدراجات في الجزيرة نفسها."
+        },
+        {
+          "q": "What is the starting price of Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate starts from AED 4,900,000 for a three-bedroom townhouse. Four- to six-bedroom golf villas and mansions are priced well above that, by plot size and course or water view; ask a Bazar advisor for the current price list and resale availability.",
+          "q_ar": "ما سعر البداية في حديريات غولف إستيت؟",
+          "a_ar": "تبدأ الأسعار في حديريات غولف إستيت من 4,900,000 درهم لمنزل تاون هاوس بثلاث غرف نوم. وتُسعَّر فلل الغولف والقصور من أربع إلى ست غرف بأسعار أعلى بكثير بحسب مساحة القطعة والإطلالة على الملعب أو المياه، ويمكنك طلب قائمة الأسعار الحالية ووحدات إعادة البيع من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate offers townhouses and villas from three to six bedrooms. Three-bedroom townhouses measure about 2,798–2,906 sq ft and four-bedroom villas 5,016–5,059 sq ft, while five-bedroom villas run 8,800–10,051 sq ft and six-bedroom villas 11,350–11,840 sq ft.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في حديريات غولف إستيت؟",
+          "a_ar": "يضم مشروع حديريات غولف إستيت منازل تاون هاوس وفللًا من ثلاث إلى ست غرف نوم. وتبلغ مساحة التاون هاوس بثلاث غرف نحو 2,798 إلى 2,906 أقدام مربعة، والفلل بأربع غرف من 5,016 إلى 5,059 قدمًا مربعًا، فيما تتراوح الفلل بخمس غرف بين 8,800 و10,051 قدمًا مربعًا، والفلل بست غرف بين 11,350 و11,840 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate is sold on a 40/60 payment plan: 5% on booking, 35% during construction and 60% on handover. The 2% Abu Dhabi registration fee is paid on top. With most of the price due at completion, plan the handover payment, or its financing, early.",
+          "q_ar": "ما خطة السداد في حديريات غولف إستيت؟",
+          "a_ar": "يُباع مشروع حديريات غولف إستيت بخطة سداد 40/60: 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ولأن معظم السعر يُستحق عند الإنجاز، يُستحسن التخطيط مبكرًا لدفعة التسليم أو لتمويلها."
+        },
+        {
+          "q": "When is the handover date for Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate is scheduled for handover in August 2030, which brokers list as Q3 2030. Modon sets the completion date and it can move, so check the anticipated completion date and the delay terms in your sale and purchase agreement.",
+          "q_ar": "متى موعد تسليم حديريات غولف إستيت؟",
+          "a_ar": "من المقرر تسليم حديريات غولف إستيت في أغسطس 2030، ويدرجه الوسطاء ضمن الربع الثالث من 2030. وتحدد مُدن موعد الإنجاز وقد يتغير، لذا تحقق من تاريخ الإنجاز المتوقع وشروط التأخير في عقد البيع والشراء."
+        },
+        {
+          "q": "What golf facilities are at Hudayriyat Golf Estate?",
+          "a": "Hudayriyat Golf Estate is built around an 18-hole golf course on 95 hectares, with direct course access from many homes. A 2.3 km green spine links a country club, wellness and fitness facilities, retail, co-working spaces and a school, within a gated, walkable masterplan in an Andalusian-inspired style.",
+          "q_ar": "ما مرافق الغولف في حديريات غولف إستيت؟",
+          "a_ar": "صُمّم مشروع حديريات غولف إستيت حول ملعب غولف من 18 حفرة على مساحة 95 هكتارًا، مع وصول مباشر إلى الملعب من كثير من المنازل. ويربط محور أخضر بطول 2.3 كيلومتر بين نادٍ ريفي ومرافق للعافية واللياقة ومتاجر ومساحات عمل مشتركة ومدرسة، ضمن مخطط مسوّر يسهل التنقل فيه سيرًا بطابع مستوحى من العمارة الأندلسية."
+        },
+        {
+          "q": "Can foreigners buy at Hudayriyat Golf Estate?",
+          "a": "Yes. Modon offers Hudayriyat Golf Estate villas and townhouses freehold to buyers of all nationalities, and 15% of launch buyers were non-UAE residents. Ownership covers the home and its land, non-residents can buy without a UAE visa, and the title is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في حديريات غولف إستيت؟",
+          "a_ar": "نعم. تعرض مُدن فلل ومنازل تاون هاوس حديريات غولف إستيت بنظام التملك الحر للمشترين من جميع الجنسيات، وكان 15% من مشتري الإطلاق من غير المقيمين في الإمارات. ويشمل التملك المنزل وأرضه، ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل سند الملكية عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Hudayriyat Golf Estate?",
+          "a": "Yes, as prices start at AED 4,900,000, above the AED 2 million threshold. Off-plan, AED 2 million must actually be paid: on the 40/60 plan an entry townhouse has about AED 1,960,000 paid before handover, just short, so it qualifies at handover unless you pay a little ahead; villas above AED 5 million get there during construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في حديريات غولف إستيت؟",
+          "a_ar": "نعم، فالأسعار تبدأ من 4,900,000 درهم، أي فوق حد مليوني درهم. لكن في العقار على الخريطة يجب سداد مليوني درهم فعليًا: فبخطة 40/60 يُسدَّد من سعر التاون هاوس الأولى نحو 1,960,000 درهم قبل التسليم، أي أقل من الحد بقليل، فيتأهل عند التسليم ما لم تُسدَّد دفعة مسبقة صغيرة، أما الفلل التي تتجاوز 5 ملايين درهم فتتأهل خلال الإنشاء."
+        },
+        {
+          "q": "Can I resell a Hudayriyat Golf Estate home before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price set in your sale and purchase agreement. Modon then issues a no-objection certificate, the assignment is registered through DARI, and the new buyer takes over the remaining instalments, including the 60% due on handover.",
+          "q_ar": "هل يمكنني إعادة بيع منزل في حديريات غولف إستيت قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر المحدد في عقد البيع والشراء. وتصدر مُدن عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الأقساط المتبقية، ومنها نسبة 60% المستحقة عند التسليم."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "wadeem-gardens",
+      "name": "Wadeem Gardens",
+      "sources": [
+        "DB: developments row wadeem-gardens (developer, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/hudayriyat-island nearby band",
+        "propertyfinder.ae/en/new-projects/modon-properties/wadeem-gardens — three gated clusters, turnkey villas, façades, prices by bedroom, 5/20/75, April 2031, amenities",
+        "metropolitan.realestate — Wadeem Gardens, three clusters",
+        "modon.com / wam.ae (4 Jul 2025) — Wadeem plots sold out in 72 hours, AED 5.5bn",
+        "adro.gov.ae — Golden Visa; gulfnews.com / wam.ae (Sep 2026) — ADREC off-plan mortgage, 50% paid"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Wadeem Gardens?",
+          "a": "Wadeem Gardens is developed by Modon Properties, part of Modon Holding, the master developer of Hudayriyat Island. It follows Wadeem, Modon's first residential plots on the island, which sold out within 72 hours in July 2025 for about AED 5.5 billion; Wadeem Gardens offers ready-designed turnkey villas instead of plots.",
+          "q_ar": "من هو مطوّر مشروع واديم جاردنز؟",
+          "a_ar": "يطوّر مشروع واديم جاردنز شركة مُدن العقارية، التابعة لمجموعة مُدن القابضة والمطوّر الرئيسي لجزيرة الحديريات. ويأتي بعد مشروع وديم، أول قطع أراضٍ سكنية تطرحها مُدن في الجزيرة، والتي بيعت بالكامل خلال 72 ساعة في يوليو 2025 بنحو 5.5 مليار درهم، غير أن واديم جاردنز يقدم فللًا جاهزة التصميم والتشطيب بدلًا من الأراضي."
+        },
+        {
+          "q": "Where is Wadeem Gardens located?",
+          "a": "Wadeem Gardens is on Hudayriyat Island, Abu Dhabi, the island linked by bridge to Abu Dhabi Island directly opposite Al Bateen. Downtown Abu Dhabi is about 20 minutes by car and Zayed International Airport about 30 minutes, with the island's beaches, surf park and cycling trails close by.",
+          "q_ar": "أين يقع مشروع واديم جاردنز؟",
+          "a_ar": "يقع مشروع واديم جاردنز في جزيرة الحديريات بأبوظبي، المرتبطة بجسر بجزيرة أبوظبي مقابل البطين مباشرةً. ويبعد نحو 20 دقيقة بالسيارة عن وسط مدينة أبوظبي ونحو 30 دقيقة عن مطار زايد الدولي، وتقع شواطئ الجزيرة ومنتزه ركوب الأمواج ومسارات الدراجات على مقربة منه."
+        },
+        {
+          "q": "What is the starting price of Wadeem Gardens?",
+          "a": "Wadeem Gardens starts from AED 8,700,000 for a four-bedroom villa. Listings show five-bedroom villas from about AED 10 million and six-bedroom villas from about AED 12 million. Prices change between releases, so ask a Bazar advisor for the current list and resale options.",
+          "q_ar": "ما سعر البداية في واديم جاردنز؟",
+          "a_ar": "تبدأ الأسعار في واديم جاردنز من 8,700,000 درهم للفيلا بأربع غرف نوم. وتُظهر القوائم الفلل بخمس غرف بدءًا من نحو 10 ملايين درهم، والفلل بست غرف بدءًا من نحو 12 مليون درهم. وتتغير الأسعار بين مراحل الطرح، لذا يمكنك طلب القائمة الحالية وفرص إعادة البيع من مستشار بازار."
+        },
+        {
+          "q": "What villa types and sizes are available at Wadeem Gardens?",
+          "a": "Wadeem Gardens offers four- to six-bedroom turnkey villas in three gated clusters, with Contemporary Arabic or Modernist façades. Four-bedroom villas measure about 4,628–5,727 sq ft, five-bedroom villas 5,490–6,781 sq ft and six-bedroom villas 6,361–7,750 sq ft.",
+          "q_ar": "ما أنواع الفلل ومساحاتها في واديم جاردنز؟",
+          "a_ar": "يضم مشروع واديم جاردنز فللًا جاهزة من أربع إلى ست غرف نوم في ثلاث مجموعات مسوّرة، بواجهات عربية معاصرة أو حداثية. وتبلغ مساحة الفلل بأربع غرف نحو 4,628 إلى 5,727 قدمًا مربعًا، والفلل بخمس غرف من 5,490 إلى 6,781 قدمًا مربعًا، والفلل بست غرف من 6,361 إلى 7,750 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Wadeem Gardens?",
+          "a": "Wadeem Gardens is sold on a 25/75 payment plan: 5% on booking, 20% during construction and 75% on handover. Only a quarter of the price is paid before completion, which keeps capital free during construction but leaves a large final payment. The 2% Abu Dhabi registration fee is paid on top.",
+          "q_ar": "ما خطة السداد في واديم جاردنز؟",
+          "a_ar": "يُباع مشروع واديم جاردنز بخطة سداد 25/75: 5% عند الحجز، و20% خلال الإنشاء، و75% عند التسليم. ولا يُسدَّد قبل الإنجاز سوى ربع السعر، ما يُبقي رأس المال متاحًا خلال الإنشاء لكنه يترك دفعة أخيرة كبيرة. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك."
+        },
+        {
+          "q": "When is the handover date for Wadeem Gardens?",
+          "a": "Wadeem Gardens is scheduled for handover in April 2031, in Q2 2031, the latest of Modon's current Hudayriyat Island launches. Off-plan completion dates can move; your sale and purchase agreement states the anticipated completion date and the remedies if it is delayed.",
+          "q_ar": "متى موعد تسليم واديم جاردنز؟",
+          "a_ar": "من المقرر تسليم واديم جاردنز في أبريل 2031، أي في الربع الثاني من 2031، وهو أبعد موعد تسليم بين مشاريع مُدن المطروحة حاليًا في جزيرة الحديريات. وقد تتغير مواعيد إنجاز المشاريع على الخريطة، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع والحلول المتاحة عند التأخير."
+        },
+        {
+          "q": "What amenities does Wadeem Gardens have?",
+          "a": "Wadeem Gardens combines community dining and retail, jogging and cycling tracks, swimming pools, a sports arena and open landscaped green spaces. Listings also mention an indoor pool, a gym, children's play areas and 24-hour CCTV security across the gated clusters.",
+          "q_ar": "ما المرافق المتوفرة في واديم جاردنز؟",
+          "a_ar": "يجمع مشروع واديم جاردنز بين مطاعم ومتاجر للمجتمع ومسارات للجري وركوب الدراجات ومسابح وساحة رياضية ومساحات خضراء مفتوحة ومنسقة. وتذكر القوائم أيضًا مسبحًا داخليًا وصالة رياضية ومناطق لعب للأطفال وأمنًا بكاميرات مراقبة على مدار 24 ساعة في المجموعات المسوّرة."
+        },
+        {
+          "q": "Can foreigners buy a villa at Wadeem Gardens?",
+          "a": "Yes. Wadeem Gardens is freehold and open to buyers of all nationalities, like Modon's other Hudayriyat Island communities, and ownership covers the villa and its plot. Non-residents can buy without a UAE visa, and the purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء فيلا في واديم جاردنز؟",
+          "a_ar": "نعم. مشروع واديم جاردنز بنظام التملك الحر ومفتوح للمشترين من جميع الجنسيات، مثل مجتمعات مُدن الأخرى في جزيرة الحديريات، ويشمل التملك الفيلا وقطعة أرضها. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Wadeem Gardens?",
+          "a": "Yes. Every villa starts above the AED 2 million threshold, from AED 8,700,000. Off-plan buyers need AED 2 million paid, and on the 25/75 plan the pre-handover share of an entry villa is AED 2,175,000, so the threshold is crossed near the end of the construction instalments; a mortgaged villa needs AED 2 million of owner equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في واديم جاردنز؟",
+          "a_ar": "نعم. فجميع الفلل تبدأ فوق حد مليوني درهم، من 8,700,000 درهم. ويحتاج مشترو العقار على الخريطة إلى سداد مليوني درهم، وبخطة 25/75 تبلغ الحصة المسددة قبل التسليم لفيلا البداية 2,175,000 درهم، فيُتجاوز الحد قرب نهاية أقساط الإنشاء، أما الفيلا المرهونة فتحتاج إلى حصة مالك لا تقل عن مليوني درهم."
+        },
+        {
+          "q": "Can I get a mortgage on a Wadeem Gardens villa?",
+          "a": "Yes, but usually at handover. ADREC's off-plan mortgage framework requires 50% of the price paid before a bank can lend, and Wadeem Gardens' plan collects only 25% before completion, so most buyers finance part of the 75% handover payment with a standard mortgage once the villa is ready, unless they pay ahead.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري لفيلا في واديم جاردنز؟",
+          "a_ar": "نعم، لكن عادةً عند التسليم. فإطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة يشترط سداد 50% من السعر قبل أن يقرض البنك، بينما لا تحصّل خطة واديم جاردنز سوى 25% قبل الإنجاز، لذا يموّل معظم المشترين جزءًا من دفعة التسليم البالغة 75% برهن عقاري عادي عند جاهزية الفيلا، ما لم يسددوا دفعات مسبقة."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "al-ghadeer-gardens",
+      "name": "Al Ghadeer Gardens",
+      "sources": [
+        "DB: developments row al-ghadeer-gardens (developer, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/al-ghadeer nearby, landmarks (2,800-student school), communities (437 homes)",
+        "wam.ae / zawya.com (May 2026) — Aldar unveils Al Ghadeer Gardens, 437 villas and townhouses, on sale 18 May, Estidama Pearl 2 / Fitwel 2-star; sell-out > AED 1bn, second phase brought forward",
+        "metropolitan.realestate / engelvoelkers.com — 55/45, Q4 2029 (launch listings), private gardens, splash pad, stargazing lawns",
+        "wave 1 al-ghadeer FAQ — Sayh Al Sedairah investment area, 64% expatriate buyers",
+        "adro.gov.ae — Golden Visa; u.ae / ADREC — Law No. 3 of 2015 escrow"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens is developed by Aldar Properties, the developer of the wider Al Ghadeer community. Aldar put it on sale on 18 May 2026 and sold it out at launch, generating more than AED 1 billion, then brought forward a second phase to meet demand.",
+          "q_ar": "من هو مطوّر مشروع الغدير غاردنز؟",
+          "a_ar": "يطوّر مشروع الغدير غاردنز شركة الدار العقارية، مطوّر مجتمع الغدير الأوسع. وطرحت الدار المشروع للبيع في 18 مايو 2026 وبيعت وحداته بالكامل عند الإطلاق محققة أكثر من 1 مليار درهم، ثم قدّمت موعد طرح مرحلة ثانية لتلبية الطلب."
+        },
+        {
+          "q": "Where is Al Ghadeer Gardens located?",
+          "a": "Al Ghadeer Gardens is in Al Ghadeer, on Abu Dhabi's border with Dubai along Sheikh Mohammed Bin Zayed Road. Expo City Dubai, Dubai Parks and Resorts and Al Maktoum International Airport are each within about 20 minutes by car, and Yas Island and Zayed International Airport are reached along the same corridor.",
+          "q_ar": "أين يقع مشروع الغدير غاردنز؟",
+          "a_ar": "يقع مشروع الغدير غاردنز في الغدير، على حدود أبوظبي مع دبي على امتداد شارع الشيخ محمد بن زايد. ويبعد كل من إكسبو سيتي دبي ودبي باركس آند ريزورتس ومطار آل مكتوم الدولي في حدود 20 دقيقة تقريبًا بالسيارة، ويمكن الوصول إلى جزيرة ياس ومطار زايد الدولي عبر الممر نفسه."
+        },
+        {
+          "q": "What is the starting price of Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens starts from AED 1,850,000 for a two-bedroom townhouse, which places it among Aldar's more accessible family homes. Three-bedroom townhouses and four-bedroom villas cost more; as the launch sold out, ask a Bazar advisor about resale units and the second phase.",
+          "q_ar": "ما سعر البداية في الغدير غاردنز؟",
+          "a_ar": "تبدأ الأسعار في الغدير غاردنز من 1,850,000 درهم لمنزل تاون هاوس بغرفتي نوم، ما يجعله من منازل الدار العائلية الأيسر سعرًا. وتُسعَّر منازل التاون هاوس بثلاث غرف والفلل بأربع غرف بأسعار أعلى، ولأن الإطلاق بيع بالكامل يمكنك سؤال مستشار بازار عن وحدات إعادة البيع والمرحلة الثانية."
+        },
+        {
+          "q": "What home types and sizes are available at Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens has 437 villas and townhouses, each with a private garden. Two-bedroom townhouses measure about 1,636–1,650 sq ft, three-bedroom townhouses 2,099–2,153 sq ft and four-bedroom villas about 2,659–2,670 sq ft, with open-plan living and fitted kitchens.",
+          "q_ar": "ما أنواع المنازل ومساحاتها في الغدير غاردنز؟",
+          "a_ar": "يضم مشروع الغدير غاردنز 437 فيلا ومنزل تاون هاوس، لكل منها حديقة خاصة. وتبلغ مساحة التاون هاوس بغرفتي نوم نحو 1,636 إلى 1,650 قدمًا مربعًا، وبثلاث غرف من 2,099 إلى 2,153 قدمًا مربعًا، والفلل بأربع غرف نحو 2,659 إلى 2,670 قدمًا مربعًا، بتصميم مفتوح ومطابخ مجهزة."
+        },
+        {
+          "q": "What is the payment plan for Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens is sold on a plan of 5% on booking, 40% during construction and 55% on handover. The 2% Abu Dhabi registration fee is paid on top, about AED 37,000 on an entry townhouse. Some broker listings describe the split differently, so confirm it in your sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في الغدير غاردنز؟",
+          "a_ar": "يُباع مشروع الغدير غاردنز بخطة تبلغ 5% عند الحجز، و40% خلال الإنشاء، و55% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، أي نحو 37,000 درهم لمنزل التاون هاوس الأول. وتصف بعض قوائم الوسطاء التقسيم بشكل مختلف، لذا تأكد منه في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens is scheduled for handover in December 2030. Listings published at the May 2026 launch gave Q4 2029, so check the anticipated completion date in your own sale and purchase agreement, which also sets out what happens if it is delayed.",
+          "q_ar": "متى موعد تسليم الغدير غاردنز؟",
+          "a_ar": "من المقرر تسليم الغدير غاردنز في ديسمبر 2030. وقد ذكرت القوائم المنشورة عند الإطلاق في مايو 2026 الربع الرابع من 2029، لذا تحقق من تاريخ الإنجاز المتوقع في عقد البيع والشراء الخاص بك، الذي يحدد أيضًا ما يترتب على أي تأخير."
+        },
+        {
+          "q": "Can foreigners buy at Al Ghadeer Gardens?",
+          "a": "Yes. Al Ghadeer sits on Sayh Al Sedairah, one of Abu Dhabi's designated investment areas, so buyers of every nationality can own Al Ghadeer Gardens homes freehold. Aldar reported that 64% of the project's buyers were expatriate residents or overseas buyers; titles are registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في الغدير غاردنز؟",
+          "a_ar": "نعم. تقع الغدير في سيح السديرة، وهي من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من جميع الجنسيات تملّك منازل الغدير غاردنز بنظام التملك الحر. وأعلنت الدار أن 64% من مشتري المشروع كانوا مقيمين أجانب أو مشترين من خارج الدولة، وتُسجَّل الملكية عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Al Ghadeer Gardens?",
+          "a": "Not with an entry home on its own: two-bedroom townhouses start at AED 1,850,000, below the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. A larger townhouse or a villa priced at AED 2 million or more can qualify, but off-plan the developer must confirm AED 2 million actually paid, which on this plan usually means at handover.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في الغدير غاردنز؟",
+          "a_ar": "ليس بمنزل البداية وحده: فمنازل التاون هاوس بغرفتي نوم تبدأ من 1,850,000 درهم، أي دون حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. ويمكن أن يتأهل منزل تاون هاوس أكبر أو فيلا بسعر مليوني درهم أو أكثر، لكن في العقار على الخريطة يجب أن يؤكد المطوّر سداد مليوني درهم فعليًا، وهو ما يتحقق عادةً عند التسليم بهذه الخطة."
+        },
+        {
+          "q": "What amenities and schools are near Al Ghadeer Gardens?",
+          "a": "Al Ghadeer Gardens includes sports facilities, a family park and open green spaces, with a pool, a splash pad and desert stargazing lawns listed in its plans. A British-curriculum school for 2,800 students is planned in Al Ghadeer, and the project targets Estidama Pearl 2 and Fitwel 2-star ratings.",
+          "q_ar": "ما المرافق والمدارس القريبة من الغدير غاردنز؟",
+          "a_ar": "يضم مشروع الغدير غاردنز مرافق رياضية وحديقة عائلية ومساحات خضراء مفتوحة، مع مسبح ومنطقة ألعاب مائية ومروج لمراقبة النجوم في الصحراء ضمن مخططاته. ومن المخطط إنشاء مدرسة بمنهج بريطاني تتسع لـ 2,800 طالب في الغدير، ويستهدف المشروع تصنيف استدامة بدرجة 2 لؤلؤة وتصنيف فِتويل بنجمتين."
+        },
+        {
+          "q": "Are payments for Al Ghadeer Gardens held in escrow?",
+          "a": "Yes. Buyer instalments for Al Ghadeer Gardens are paid into the project's escrow account rather than to Aldar directly. Abu Dhabi Law No. 3 of 2015 regulating the real estate sector requires off-plan payments to be held in escrow and released as construction progresses, under the supervision of ADREC, the Abu Dhabi Real Estate Centre.",
+          "q_ar": "هل تُودَع دفعات الغدير غاردنز في حساب ضمان؟",
+          "a_ar": "نعم. تُسدَّد أقساط المشترين في الغدير غاردنز في حساب ضمان خاص بالمشروع لا إلى الدار مباشرةً. ويشترط قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري حفظ دفعات العقارات على الخريطة في حساب الضمان وصرفها بحسب تقدم الإنشاء، تحت إشراف مركز أبوظبي العقاري ADREC."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "al-hamra",
+      "name": "Alhambra",
+      "sources": [
+        "DB: developments row al-hamra (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/zayed-city nearby band",
+        "bloomholding.com press release (9 Sep 2026) / zawya.com — Alhambra final release of Bloom Living, Souk Alhambra, unit mix incl. townhouses and penthouses, Cordoba and Toledo occupied, investment zone",
+        "bloomholding.com / zawya.com (Jul 2022) — Bloom Living designated an investment zone",
+        "wave 1 zayed-city FAQ — freehold limited to Bloom Living",
+        "adro.gov.ae — Golden Visa; u.ae / ADREC — Law No. 3 of 2015 escrow"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Alhambra at Bloom Living?",
+          "a": "Alhambra, also listed as Al Hamra, is developed by Bloom Holding, the Abu Dhabi developer behind Bloom Living in Zayed City. Bloom launched it in September 2026 as the final release of Bloom Living, built around Souk Alhambra, the community's new social hub.",
+          "q_ar": "من هو مطوّر مشروع الحمراء في بلوم ليفينغ؟",
+          "a_ar": "يطوّر مشروع الحمراء، المدرج أيضًا باسم الحمراء بلوم ليفينغ، شركة بلووم القابضة، المطوّر الذي يقف وراء مجتمع بلوم ليفينغ في مدينة زايد بأبوظبي. وأطلقته بلووم في سبتمبر 2026 بوصفه المرحلة الأخيرة من بلوم ليفينغ، حول سوق الحمراء الذي يمثل المركز الاجتماعي الجديد للمجتمع."
+        },
+        {
+          "q": "Where is Alhambra at Bloom Living located?",
+          "a": "Alhambra is inside Bloom Living, a gated community in Zayed City, Abu Dhabi, close to Zayed International Airport. The airport and Masdar City are each about 15 minutes by car, and Downtown Abu Dhabi and Yas Island about 25 minutes.",
+          "q_ar": "أين يقع مشروع الحمراء في بلوم ليفينغ؟",
+          "a_ar": "يقع مشروع الحمراء داخل بلوم ليفينغ، المجتمع المسوّر في مدينة زايد بأبوظبي، بالقرب من مطار زايد الدولي. ويبعد كل من المطار ومدينة مصدر نحو 15 دقيقة بالسيارة، ويبعد وسط مدينة أبوظبي وجزيرة ياس نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price at Alhambra Bloom Living?",
+          "a": "Alhambra starts from AED 950,000 for a studio apartment, the lowest entry point in Bloom Living. One- to three-bedroom apartments, three-bedroom townhouses and the limited four-bedroom penthouses are priced higher; ask a Bazar advisor for the current price list by unit type.",
+          "q_ar": "ما سعر البداية في مشروع الحمراء ببلوم ليفينغ؟",
+          "a_ar": "تبدأ الأسعار في مشروع الحمراء من 950,000 درهم لشقة استوديو، وهو أدنى سعر دخول في بلوم ليفينغ. وتُسعَّر الشقق من غرفة إلى ثلاث غرف ومنازل التاون هاوس بثلاث غرف والبنتهاوس المحدودة بأربع غرف بأسعار أعلى، ويمكنك طلب قائمة الأسعار الحالية بحسب نوع الوحدة من مستشار بازار."
+        },
+        {
+          "q": "What unit types and sizes are available at Alhambra?",
+          "a": "Alhambra has 385 homes in low-rise buildings. Studios measure about 347–463 sq ft, one-bedrooms 700–926 sq ft, two-bedrooms 1,098–2,067 sq ft and three-bedrooms 1,851–2,680 sq ft. The release also includes three-bedroom townhouses and a limited number of four-bedroom penthouses.",
+          "q_ar": "ما أنواع الوحدات ومساحاتها في مشروع الحمراء؟",
+          "a_ar": "يضم مشروع الحمراء 385 وحدة سكنية في مبانٍ منخفضة الارتفاع. وتبلغ مساحة الاستوديو نحو 347 إلى 463 قدمًا مربعًا، وشقق الغرفة الواحدة من 700 إلى 926 قدمًا مربعًا، والغرفتين من 1,098 إلى 2,067 قدمًا مربعًا، والثلاث غرف من 1,851 إلى 2,680 قدمًا مربعًا. ويشمل الطرح أيضًا منازل تاون هاوس بثلاث غرف وعددًا محدودًا من البنتهاوس بأربع غرف."
+        },
+        {
+          "q": "What is the payment plan for Alhambra Bloom Living?",
+          "a": "Alhambra is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top, about AED 19,000 on an entry studio. Confirm the schedule for your unit in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في مشروع الحمراء ببلوم ليفينغ؟",
+          "a_ar": "يُباع مشروع الحمراء بخطة سداد 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، أي نحو 19,000 درهم لشقة الاستوديو الأولى. ويُنصح بتأكيد جدول وحدتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Alhambra at Bloom Living?",
+          "a": "Alhambra is scheduled for handover in October 2029. Bloom Living's earlier phases, Cordoba and Toledo, are already occupied, so buyers move into an established community; still, off-plan dates can move, so check the anticipated completion date in your sale and purchase agreement.",
+          "q_ar": "متى موعد تسليم مشروع الحمراء في بلوم ليفينغ؟",
+          "a_ar": "من المقرر تسليم مشروع الحمراء في أكتوبر 2029. والمرحلتان السابقتان في بلوم ليفينغ، قرطبة وطليطلة، مأهولتان بالفعل، لذا ينتقل المشترون إلى مجتمع قائم، ومع ذلك قد تتغير مواعيد المشاريع على الخريطة، فتحقق من تاريخ الإنجاز المتوقع في عقد البيع والشراء."
+        },
+        {
+          "q": "Can foreigners buy at Alhambra in Zayed City?",
+          "a": "Yes. Bloom Living was designated an investment zone in 2022, so buyers of all nationalities can own Alhambra apartments freehold, even though most of the rest of Zayed City is not open to foreign ownership. Non-residents can buy without a UAE visa, and the title is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في مشروع الحمراء بمدينة زايد؟",
+          "a_ar": "نعم. صُنِّف بلوم ليفينغ منطقة استثمارية في عام 2022، لذا يحق للمشترين من جميع الجنسيات تملّك شقق الحمراء بنظام التملك الحر، مع أن معظم أجزاء مدينة زايد الأخرى غير مفتوحة لتملك الأجانب. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل سند الملكية عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Alhambra Bloom Living?",
+          "a": "Usually not on its own: Alhambra starts at AED 950,000, well below the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa, and most studios and one- and two-bedroom apartments fall under it. Only a larger unit such as a penthouse priced at AED 2 million or more can qualify, once AED 2 million has been paid.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في مشروع الحمراء؟",
+          "a_ar": "في الغالب لا بوحدة واحدة: إذ يبدأ مشروع الحمراء من 950,000 درهم، أي دون حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات بكثير، وتقع معظم شقق الاستوديو والغرفة والغرفتين دونه. ولا يتأهل إلا وحدة أكبر مثل البنتهاوس بسعر مليوني درهم أو أكثر، بعد سداد مليوني درهم فعليًا."
+        },
+        {
+          "q": "What is Souk Alhambra at Bloom Living?",
+          "a": "Souk Alhambra is the social centre of Bloom Living, at the heart of the Alhambra release: a plaza lined with cafés and restaurants, an amphitheatre overlooking the lake, a supermarket, a medical clinic, a nursery and a vet. Residents also share a pool deck, a promenade, Bloom Living's Wellness Village and two international schools.",
+          "q_ar": "ما هو سوق الحمراء في بلوم ليفينغ؟",
+          "a_ar": "سوق الحمراء هو المركز الاجتماعي لبلوم ليفينغ وقلب مرحلة الحمراء: ساحة تصطف حولها المقاهي والمطاعم، ومدرج يطل على البحيرة، وسوبرماركت، وعيادة طبية، وحضانة، وعيادة بيطرية. كما يتشارك السكان منطقة المسبح والممشى وقرية العافية في بلوم ليفينغ ومدرستين دوليتين."
+        },
+        {
+          "q": "Are payments for Alhambra protected in escrow?",
+          "a": "Yes. Instalments for Alhambra are paid into a project escrow account rather than to Bloom Holding directly. Under Abu Dhabi Law No. 3 of 2015 regulating the real estate sector, off-plan payments stay in escrow and are released against verified construction progress, overseen by ADREC, the Abu Dhabi Real Estate Centre.",
+          "q_ar": "هل دفعات مشروع الحمراء محمية في حساب ضمان؟",
+          "a_ar": "نعم. تُسدَّد أقساط مشروع الحمراء في حساب ضمان خاص بالمشروع بدلًا من دفعها إلى بلووم القابضة مباشرةً. وبموجب قانون أبوظبي رقم 3 لسنة 2015 بشأن تنظيم القطاع العقاري، تبقى دفعات العقارات على الخريطة في حساب الضمان وتُصرف بحسب تقدم الإنشاء المُتحقَّق منه، تحت إشراف مركز أبوظبي العقاري ADREC."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "marbella-bloom-living",
+      "name": "Marbella Bloom Living",
+      "sources": [
+        "DB: developments row marbella-bloom-living (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/zayed-city nearby band",
+        "bloomholding.com press release (16 Sep 2025) / zawya.com / gulftoday.ae — tenth phase, 3–6 bed villas from AED 3.8M, Q4 2028, Spanish Mediterranean, lake and park views, clubhouse, Town Center, Cordoba early handover",
+        "bloomholding.com / zawya.com (Jul 2022) — Bloom Living investment zone, all nationalities",
+        "adro.gov.ae — Golden Visa; gulfnews.com / wam.ae (Sep 2026) — ADREC off-plan mortgage, 50% paid"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Marbella Bloom Living?",
+          "a": "Marbella is developed by Bloom Holding as the tenth phase of Bloom Living, its master-planned community in Zayed City, Abu Dhabi. Bloom launched it in September 2025, and the earlier phase Cordoba has already begun handing over ahead of schedule.",
+          "q_ar": "من هو مطوّر مشروع ماربيا بلوم ليفينج؟",
+          "a_ar": "تطوّر شركة بلووم القابضة مشروع ماربيا بوصفه المرحلة العاشرة من بلوم ليفينغ، مجتمعها المتكامل في مدينة زايد بأبوظبي. وأطلقته بلووم في سبتمبر 2025، فيما بدأت المرحلة السابقة قرطبة التسليم قبل موعدها."
+        },
+        {
+          "q": "Where is Marbella Bloom Living located?",
+          "a": "Marbella sits within Bloom Living in Zayed City, Abu Dhabi, beside the community's lake and parks. Zayed International Airport and Masdar City are each about 15 minutes by car, and Downtown Abu Dhabi and Yas Island about 25 minutes.",
+          "q_ar": "أين يقع مشروع ماربيا بلوم ليفينج؟",
+          "a_ar": "يقع مشروع ماربيا داخل بلوم ليفينغ في مدينة زايد بأبوظبي، بجوار بحيرة المجتمع وحدائقه. ويبعد كل من مطار زايد الدولي ومدينة مصدر نحو 15 دقيقة بالسيارة، ويبعد وسط مدينة أبوظبي وجزيرة ياس نحو 25 دقيقة."
+        },
+        {
+          "q": "What is the starting price of Marbella Bloom Living villas?",
+          "a": "Marbella Bloom Living starts from AED 3,800,000 for a three-bedroom villa, the price Bloom announced at launch. Four- to six-bedroom villas are priced higher by size and view; ask a Bazar advisor for current availability and resale prices.",
+          "q_ar": "ما سعر البداية لفلل ماربيا بلوم ليفينج؟",
+          "a_ar": "تبدأ الأسعار في ماربيا بلوم ليفينج من 3,800,000 درهم للفيلا بثلاث غرف نوم، وهو السعر الذي أعلنته بلووم عند الإطلاق. وتُسعَّر الفلل من أربع إلى ست غرف بأسعار أعلى بحسب المساحة والإطلالة، ويمكنك سؤال مستشار بازار عن التوافر الحالي وأسعار إعادة البيع."
+        },
+        {
+          "q": "What villa types and sizes are available at Marbella Bloom Living?",
+          "a": "Marbella Bloom Living has 144 villas from three to six bedrooms. Three-bedroom villas measure about 4,359–4,360 sq ft, four-bedrooms 5,491–5,520 sq ft, five-bedrooms 7,345–7,347 sq ft and six-bedrooms about 11,752–11,754 sq ft.",
+          "q_ar": "ما أنواع الفلل ومساحاتها في ماربيا بلوم ليفينج؟",
+          "a_ar": "يضم مشروع ماربيا بلوم ليفينج 144 فيلا من ثلاث إلى ست غرف نوم. وتبلغ مساحة الفلل بثلاث غرف نحو 4,359 إلى 4,360 قدمًا مربعًا، وبأربع غرف من 5,491 إلى 5,520 قدمًا مربعًا، وبخمس غرف من 7,345 إلى 7,347 قدمًا مربعًا، وبست غرف نحو 11,752 إلى 11,754 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for Marbella Bloom Living?",
+          "a": "Marbella Bloom Living is sold on a 50/50 payment plan: 5% on booking, 45% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top. Check the plan for your villa in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في ماربيا بلوم ليفينج؟",
+          "a_ar": "يُباع مشروع ماربيا بلوم ليفينج بخطة سداد 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. ويُنصح بمراجعة خطة فيلتك في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Marbella Bloom Living?",
+          "a": "Marbella Bloom Living is scheduled for handover in Q4 2028, the completion date Bloom gave at launch. Bloom reports that construction on its launched villas is on track, but off-plan dates can move, so check the anticipated completion date in your contract.",
+          "q_ar": "متى موعد تسليم ماربيا بلوم ليفينج؟",
+          "a_ar": "من المقرر تسليم ماربيا بلوم ليفينج في الربع الرابع من 2028، وهو موعد الإنجاز الذي أعلنته بلووم عند الإطلاق. وتفيد بلووم بأن أعمال إنشاء فللها المطروحة تسير وفق الجدول، لكن مواعيد المشاريع على الخريطة قد تتغير، لذا تحقق من تاريخ الإنجاز المتوقع في عقدك."
+        },
+        {
+          "q": "Can foreigners buy a villa at Marbella Bloom Living?",
+          "a": "Yes. Bloom Living, which includes Marbella, was designated an investment zone in 2022, so buyers of all nationalities can own its villas freehold. That status is specific to Bloom Living within Zayed City; the purchase is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء فيلا في ماربيا بلوم ليفينج؟",
+          "a_ar": "نعم. صُنِّف بلوم ليفينغ، الذي يضم ماربيا، منطقة استثمارية في عام 2022، لذا يحق للمشترين من جميع الجنسيات تملّك فلله بنظام التملك الحر. وهذا الوضع خاص ببلوم ليفينغ داخل مدينة زايد، ويُسجَّل الشراء عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Marbella Bloom Living?",
+          "a": "Yes, as every villa starts above the AED 2 million threshold, from AED 3,800,000. Off-plan buyers must have paid AED 2 million: an entry villa has AED 1,900,000 paid before handover on the 50/50 plan, just short, so it qualifies at handover unless you pay ahead, while villas priced at AED 4 million or more cross it during construction.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في ماربيا بلوم ليفينج؟",
+          "a_ar": "نعم، فجميع الفلل تبدأ فوق حد مليوني درهم، من 3,800,000 درهم. لكن مشتري العقار على الخريطة يجب أن يكون قد سدد مليوني درهم: فبخطة 50/50 يُسدَّد من فيلا البداية 1,900,000 درهم قبل التسليم، أي أقل من الحد بقليل، فتتأهل عند التسليم ما لم تُسدَّد دفعة مسبقة، أما الفلل التي يبلغ سعرها 4 ملايين درهم أو أكثر فتتجاوزه خلال الإنشاء."
+        },
+        {
+          "q": "What is the design of Marbella Bloom Living villas?",
+          "a": "Marbella villas follow a Spanish Mediterranean style with high ceilings, large windows, courtyards and indoor-outdoor living, many with lake or park views. Residents use a clubhouse with pools, a community centre and kids' play areas, plus Bloom Living's Town Center, lakeside trails and two international schools.",
+          "q_ar": "ما طراز تصميم فلل ماربيا بلوم ليفينج؟",
+          "a_ar": "تتبع فلل ماربيا الطراز المتوسطي الإسباني بأسقف عالية ونوافذ واسعة وأفنية ومساحات تربط الداخل بالخارج، ويطل كثير منها على البحيرة أو الحدائق. ويستخدم السكان ناديًا اجتماعيًا بمسابح ومركزًا مجتمعيًا ومناطق لعب للأطفال، إضافة إلى مركز بلوم ليفينغ التجاري ومسارات البحيرة ومدرستين دوليتين."
+        },
+        {
+          "q": "Can I get a mortgage on Marbella Bloom Living before handover?",
+          "a": "Yes, once half the price is paid. ADREC's off-plan mortgage framework, used for Abu Dhabi's first off-plan mortgage in September 2026, requires 50% paid before a bank lends. On Marbella's 5/45/50 plan that is reached when the construction instalments are complete, so the 50% handover payment can be financed.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري لفيلا في ماربيا بلوم ليفينج قبل التسليم؟",
+          "a_ar": "نعم، بعد سداد نصف السعر. فإطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، الذي استُخدم لأول رهن عقاري على الخريطة في أبوظبي في سبتمبر 2026، يشترط سداد 50% قبل أن يقرض البنك. ووفق خطة ماربيا 5/45/50 تتحقق هذه النسبة عند اكتمال أقساط الإنشاء، فيمكن تمويل دفعة التسليم البالغة 50%."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "naseem-aljurf-imkan",
+      "name": "Naseem AlJurf",
+      "sources": [
+        "DB: developments row naseem-aljurf-imkan (developer, units, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/al-jurf nearby band",
+        "zawya.com — IMKAN launches Naseem AlJurf: 111 villas, 8 apartment buildings, 60 townhouses; AlJurf 3.8m sq m, 1.6 km coast, 9 km canal; Naseem Plaza 1,400 sq m; 900 m waterways; AlJurf Gardens Phase 1 handed over",
+        "propertyfinder.ae — Naseem AlJurf launch price AED 1M, December 2027 delivery",
+        "wave 1 al-jurf FAQ — Ghantoot investment zone",
+        "adro.gov.ae — Golden Visa; gulfnews.com / wam.ae (Sep 2026) — ADREC off-plan mortgage, 50% paid"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of Naseem AlJurf?",
+          "a": "Naseem AlJurf is developed by IMKAN Properties, the Abu Dhabi master developer of the AlJurf coastal masterplan in Ghantoot. It is the newest phase of AlJurf, launched after IMKAN handed over the first phase of AlJurf Gardens, and mixes apartments with villas and townhouses.",
+          "q_ar": "من هو مطوّر مشروع نسيم الجرف؟",
+          "a_ar": "يطوّر مشروع نسيم الجرف شركة إمكان العقارية، المطوّر الرئيسي لمخطط الجرف الساحلي في غنتوت بأبوظبي. وهو أحدث مراحل الجرف، أُطلق بعد أن سلّمت إمكان المرحلة الأولى من حدائق الجرف، ويجمع بين الشقق والفلل ومنازل التاون هاوس."
+        },
+        {
+          "q": "Where is Naseem AlJurf located?",
+          "a": "Naseem AlJurf is in Al Jurf, Ghantoot, on the coast between Abu Dhabi and Dubai. Yas Island is about 25 minutes by car, Zayed International Airport and Al Maktoum International Airport about 30 minutes each, and Saadiyat Island and Dubai International Airport about 45 minutes.",
+          "q_ar": "أين يقع مشروع نسيم الجرف؟",
+          "a_ar": "يقع مشروع نسيم الجرف في الجرف بمنطقة غنتوت، على الساحل بين أبوظبي ودبي. ويبعد نحو 25 دقيقة بالسيارة عن جزيرة ياس، ونحو 30 دقيقة عن كل من مطار زايد الدولي ومطار آل مكتوم الدولي، ونحو 45 دقيقة عن جزيرة السعديات ومطار دبي الدولي."
+        },
+        {
+          "q": "What is the starting price of Naseem AlJurf?",
+          "a": "Naseem AlJurf starts from AED 1,000,000 for a studio apartment, a low entry point for a beachfront masterplan on the Abu Dhabi–Dubai coast. Larger apartments up to four bedrooms cost more; ask a Bazar advisor for the current price list and which release is selling.",
+          "q_ar": "ما سعر البداية في نسيم الجرف؟",
+          "a_ar": "تبدأ الأسعار في نسيم الجرف من 1,000,000 درهم لشقة استوديو، وهو سعر دخول منخفض لمخطط ساحلي على الشريط الواقع بين أبوظبي ودبي. وتُسعَّر الشقق الأكبر حتى أربع غرف نوم بأسعار أعلى، ويمكنك سؤال مستشار بازار عن قائمة الأسعار الحالية ومرحلة الطرح المتاحة."
+        },
+        {
+          "q": "What apartment types and sizes are available at Naseem AlJurf?",
+          "a": "Naseem AlJurf's apartments run from studios to four bedrooms across 618 homes. Studios measure about 614–829 sq ft, one-bedrooms 850–947 sq ft, two-bedrooms 1,227–1,894 sq ft, three-bedrooms 1,959–2,637 sq ft and four-bedrooms about 2,650–2,659 sq ft. The wider phase also has 111 villas and 60 townhouses.",
+          "q_ar": "ما أنواع الشقق ومساحاتها في نسيم الجرف؟",
+          "a_ar": "تتراوح شقق نسيم الجرف بين الاستوديو وأربع غرف نوم ضمن 618 وحدة سكنية. وتبلغ مساحة الاستوديو نحو 614 إلى 829 قدمًا مربعًا، والغرفة الواحدة من 850 إلى 947 قدمًا مربعًا، والغرفتين من 1,227 إلى 1,894 قدمًا مربعًا، والثلاث غرف من 1,959 إلى 2,637 قدمًا مربعًا، والأربع غرف نحو 2,650 إلى 2,659 قدمًا مربعًا. وتضم المرحلة أيضًا 111 فيلا و60 منزل تاون هاوس."
+        },
+        {
+          "q": "What is the payment plan for Naseem AlJurf?",
+          "a": "Naseem AlJurf is sold on a 60/40 payment plan: 10% on booking, 50% during construction and 40% on handover. The 2% Abu Dhabi registration fee is paid on top, about AED 20,000 on an entry studio. Confirm the plan for your release in the sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في نسيم الجرف؟",
+          "a_ar": "يُباع مشروع نسيم الجرف بخطة سداد 60/40: 10% عند الحجز، و50% خلال الإنشاء، و40% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك، أي نحو 20,000 درهم لشقة الاستوديو الأولى. ويُنصح بتأكيد خطة مرحلة الطرح في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for Naseem AlJurf?",
+          "a": "Naseem AlJurf is scheduled for handover in August 2027, while some listings show December 2027. Either way it is one of the nearer completions on the coast between Abu Dhabi and Dubai; check the anticipated completion date and delay terms in your sale and purchase agreement.",
+          "q_ar": "متى موعد تسليم نسيم الجرف؟",
+          "a_ar": "من المقرر تسليم نسيم الجرف في أغسطس 2027، بينما تُظهر بعض القوائم ديسمبر 2027. وفي الحالتين يُعد من مواعيد الإنجاز القريبة على الساحل بين أبوظبي ودبي، لذا تحقق من تاريخ الإنجاز المتوقع وشروط التأخير في عقد البيع والشراء."
+        },
+        {
+          "q": "Can foreigners buy at Naseem AlJurf?",
+          "a": "Yes. Al Jurf, in Ghantoot, is one of Abu Dhabi's designated investment zones, so buyers of any nationality can own Naseem AlJurf homes freehold under the 2019 amendment to the emirate's real estate law. Non-residents can buy without a UAE visa, and titles are registered through DARI.",
+          "q_ar": "هل يمكن للأجانب الشراء في نسيم الجرف؟",
+          "a_ar": "نعم. يُعد الجرف في غنتوت من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك منازل نسيم الجرف بنظام التملك الحر بموجب تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل التملك عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying at Naseem AlJurf?",
+          "a": "Not with an entry apartment: Naseem AlJurf starts at AED 1,000,000, half the AED 2 million threshold for Abu Dhabi's 10-year Golden Visa. Only a larger three- or four-bedroom apartment priced at AED 2 million or more can qualify, once AED 2 million has been paid; a mortgaged home needs AED 2 million of owner equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بالشراء في نسيم الجرف؟",
+          "a_ar": "ليس بشقة البداية: إذ يبدأ نسيم الجرف من 1,000,000 درهم، أي نصف حد مليوني درهم المطلوب للإقامة الذهبية في أبوظبي لمدة 10 سنوات. ولا تتأهل إلا شقة أكبر بثلاث أو أربع غرف بسعر مليوني درهم أو أكثر، بعد سداد مليوني درهم فعليًا، أما المنزل المرهون فيحتاج إلى حصة مالك لا تقل عن مليوني درهم."
+        },
+        {
+          "q": "What makes the AlJurf masterplan distinctive?",
+          "a": "AlJurf covers 3.8 million sq m of coast with 1.6 km of beach and a 9 km canal front, and Naseem AlJurf adds 900 metres of waterways and a beach promenade. At its centre, Naseem Plaza holds a 1,400 sq m souk of shops and cafés, linked by shaded pedestrian lanes, plus a gym and lobby in each building.",
+          "q_ar": "ما الذي يميز مخطط الجرف؟",
+          "a_ar": "يغطي مخطط الجرف 3.8 مليون متر مربع من الساحل مع شاطئ بطول 1.6 كيلومتر وواجهة على قناة مائية بطول 9 كيلومترات، ويضيف نسيم الجرف 900 متر من الممرات المائية وممشى على الشاطئ. وفي قلبه تضم ساحة النسيم سوقًا بمساحة 1,400 متر مربع للمتاجر والمقاهي، تربطه ممرات مظللة للمشاة، إضافة إلى صالة رياضية وردهة في كل مبنى."
+        },
+        {
+          "q": "Can I get a mortgage on Naseem AlJurf before handover?",
+          "a": "Yes, and sooner than on most plans. ADREC's off-plan mortgage framework requires 50% of the price paid, and Naseem AlJurf's plan collects 60% before completion, so the threshold is crossed during construction. A bank can then finance the remaining 40% due on handover, subject to its own lending checks.",
+          "q_ar": "هل يمكنني الحصول على تمويل عقاري في نسيم الجرف قبل التسليم؟",
+          "a_ar": "نعم، وفي وقت أبكر من معظم الخطط. فإطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة يشترط سداد 50% من السعر، وتحصّل خطة نسيم الجرف 60% قبل الإنجاز، فيُتجاوز هذا الحد خلال الإنشاء. ويمكن للبنك عندها تمويل نسبة 40% المتبقية المستحقة عند التسليم، وفق شروط الإقراض الخاصة به."
+        }
+      ]
+    },
+    {
+      "kind": "development",
+      "slug": "rimas",
+      "name": "RIMAS",
+      "sources": [
+        "DB: developments row rimas (developer, starting price, handover, payment plan, feature blocks), development_unit_types (sizes); subpage/area/jubail-island nearby band",
+        "zawya.com / wam.ae / tradearabia.com (Sep 2026) — LEAD Development unveils RIMAS at LIVEX 2026: 167 villas (76/76/15), plots ~850–1,716 sq m, first project of Jubail Island phase two, Mangrove Trail, beach, kayak station, beachfront gym",
+        "gulftoday.ae / zawya.com (2026) — 1,000+ homes handed over across six villages",
+        "wave 1 jubail-island FAQ — investment zone, freehold",
+        "adro.gov.ae — Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who is the developer of RIMAS on Jubail Island?",
+          "a": "RIMAS is developed by LEAD Development, the developer of Jubail Island for its owner, Jubail Island Investment Company. LEAD unveiled RIMAS at LIVEX 2026 in September as the first project in the second phase of Jubail Island, where more than 1,000 homes have already been handed over across six villages.",
+          "q_ar": "من هو مطوّر مشروع ريماس في جزيرة الجبيل؟",
+          "a_ar": "يطوّر مشروع ريماس شركة ليد للتطوير العقاري، مطوّر جزيرة الجبيل لصالح مالكتها شركة جزيرة الجبيل للاستثمار. وكشفت ليد عن ريماس في معرض ليفكس 2026 في سبتمبر بوصفه أول مشروع في المرحلة الثانية من جزيرة الجبيل، التي سُلِّم فيها أكثر من 1,000 منزل في ست قرى."
+        },
+        {
+          "q": "Where is RIMAS located?",
+          "a": "RIMAS is on Jubail Island, Abu Dhabi, set among the island's mangrove preserves between Saadiyat Island and Yas Island. Downtown Abu Dhabi and Zayed International Airport are each about 15 minutes by car, and both neighbouring islands are a short drive away.",
+          "q_ar": "أين يقع مشروع ريماس؟",
+          "a_ar": "يقع مشروع ريماس في جزيرة الجبيل بأبوظبي، وسط محميات القرم في الجزيرة بين جزيرة السعديات وجزيرة ياس. ويبعد كل من وسط مدينة أبوظبي ومطار زايد الدولي نحو 15 دقيقة بالسيارة، وتقع الجزيرتان المجاورتان على مسافة قصيرة بالسيارة."
+        },
+        {
+          "q": "What is the starting price of RIMAS villas?",
+          "a": "RIMAS starts from AED 8,500,000 for a four-bedroom villa. Five- and six-bedroom villas on larger plots are priced higher; as LEAD has not published a full public price list, ask a Bazar advisor for current prices by plot and availability.",
+          "q_ar": "ما سعر البداية لفلل ريماس؟",
+          "a_ar": "تبدأ الأسعار في ريماس من 8,500,000 درهم للفيلا بأربع غرف نوم. وتُسعَّر الفلل بخمس وست غرف على قطع أكبر بأسعار أعلى، ولأن ليد لم تنشر قائمة أسعار علنية كاملة، يمكنك سؤال مستشار بازار عن الأسعار الحالية بحسب القطعة والتوافر."
+        },
+        {
+          "q": "What villa types and sizes are available at RIMAS?",
+          "a": "RIMAS has 167 villas: 76 with four bedrooms, 76 with five and 15 with six, on plots of about 850–1,716 sq m. Four-bedroom villas measure about 5,350–5,351 sq ft, five-bedrooms 7,072–7,073 sq ft and six-bedrooms 10,667–10,668 sq ft.",
+          "q_ar": "ما أنواع الفلل ومساحاتها في ريماس؟",
+          "a_ar": "يضم مشروع ريماس 167 فيلا: 76 بأربع غرف نوم، و76 بخمس غرف، و15 بست غرف، على قطع تتراوح مساحتها بين 850 و1,716 مترًا مربعًا تقريبًا. وتبلغ مساحة الفلل بأربع غرف نحو 5,350 إلى 5,351 قدمًا مربعًا، وبخمس غرف من 7,072 إلى 7,073 قدمًا مربعًا، وبست غرف من 10,667 إلى 10,668 قدمًا مربعًا."
+        },
+        {
+          "q": "What is the payment plan for RIMAS?",
+          "a": "RIMAS is sold on a 50/50 payment plan: 10% on booking, 40% during construction and 50% on handover. The 2% Abu Dhabi registration fee is paid on top. Plans can differ between releases, so confirm the schedule in your sale and purchase agreement.",
+          "q_ar": "ما خطة السداد في ريماس؟",
+          "a_ar": "يُباع مشروع ريماس بخطة سداد 50/50: 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم. وتُدفع رسوم التسجيل في أبوظبي البالغة 2% إضافةً إلى ذلك. وقد تختلف الخطط بين مراحل الطرح، لذا تأكد من الجدول في عقد البيع والشراء."
+        },
+        {
+          "q": "When is the handover date for RIMAS?",
+          "a": "RIMAS is scheduled for handover in March 2029, in Q1 2029. LEAD has a track record on the island, with more than 1,000 homes already delivered, but off-plan dates can move; the sale and purchase agreement states the anticipated completion date and the delay terms.",
+          "q_ar": "متى موعد تسليم ريماس؟",
+          "a_ar": "من المقرر تسليم ريماس في مارس 2029، أي في الربع الأول من 2029. ولدى ليد سجل في الجزيرة بتسليم أكثر من 1,000 منزل، لكن مواعيد المشاريع على الخريطة قد تتغير، ويذكر عقد البيع والشراء تاريخ الإنجاز المتوقع وشروط التأخير."
+        },
+        {
+          "q": "Can foreigners buy a villa at RIMAS?",
+          "a": "Yes. Jubail Island is one of Abu Dhabi's designated investment zones, so buyers of any nationality can own RIMAS villas and their plots freehold under the 2019 amendment to the emirate's real estate law. Non-residents can buy without a UAE visa, and the title is registered through DARI.",
+          "q_ar": "هل يمكن للأجانب شراء فيلا في ريماس؟",
+          "a_ar": "نعم. جزيرة الجبيل من مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك فلل ريماس وقطع أراضيها بنظام التملك الحر بموجب تعديل قانون التنظيم العقاري في الإمارة عام 2019. ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، ويُسجَّل سند الملكية عبر منصة «داري»."
+        },
+        {
+          "q": "Can I get a Golden Visa by buying a RIMAS villa?",
+          "a": "Yes. Every RIMAS villa is priced far above the AED 2 million threshold, from AED 8,500,000. Off-plan, AED 2 million must be paid: the 10% booking payment on an entry villa is AED 850,000, so the threshold is crossed early in the construction instalments; a mortgaged villa needs at least AED 2 million of owner equity.",
+          "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بشراء فيلا في ريماس؟",
+          "a_ar": "نعم. فجميع فلل ريماس تتجاوز أسعارها حد مليوني درهم بكثير، إذ تبدأ من 8,500,000 درهم. وفي العقار على الخريطة يجب سداد مليوني درهم: فدفعة الحجز البالغة 10% لفيلا البداية تساوي 850,000 درهم، لذا يُتجاوز الحد في وقت مبكر من أقساط الإنشاء، أما الفيلا المرهونة فتحتاج إلى حصة مالك لا تقل عن مليوني درهم."
+        },
+        {
+          "q": "What amenities does RIMAS have?",
+          "a": "RIMAS is laid out around a Mangrove Trail linking to Jubail Island's Mangrove Park, with an elevated waterfront promenade, a community beach and kayak station. Residents also get a resort-style pool, a beachfront gym and wellbeing centre, sports courts, landscaped gardens and cycling routes.",
+          "q_ar": "ما المرافق المتوفرة في ريماس؟",
+          "a_ar": "صُمّم مشروع ريماس حول مسار القرم الذي يتصل بحديقة القرم في جزيرة الجبيل، مع ممشى مرتفع على الواجهة المائية وشاطئ مجتمعي ومحطة للتجديف بالكاياك. كما يحصل السكان على مسبح بطابع المنتجعات، وصالة رياضية ومركز للعافية على الشاطئ، وملاعب رياضية، وحدائق منسقة، ومسارات للدراجات."
+        },
+        {
+          "q": "Can I resell a RIMAS villa before handover?",
+          "a": "Usually yes, once you have paid the minimum share of the price that LEAD sets in the sale and purchase agreement. LEAD then issues a no-objection certificate, the assignment is registered through DARI, and the new buyer takes over the remaining instalments, including the 50% due on handover.",
+          "q_ar": "هل يمكنني إعادة بيع فيلا في ريماس قبل التسليم؟",
+          "a_ar": "نعم في الغالب، بعد سداد الحد الأدنى من السعر الذي تحدده ليد في عقد البيع والشراء. وتصدر ليد عندها شهادة عدم ممانعة، ويُسجَّل التنازل عبر منصة «داري»، ويتولى المشتري الجديد سداد الأقساط المتبقية، ومنها نسبة 50% المستحقة عند التسليم."
+        }
+      ]
+    }
+  ]
+}

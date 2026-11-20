@@ -1,0 +1,48 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Nurai Island is a private island located in the Arabian Gulf, just off the coast of Saadiyat Island in Abu Dhabi. It is accessible by boat from a dedicated welcome centre on Saadiyat Island.",
+        "q": "Where is Nurai Island located?",
+        "a_ar": "تقع جزيرة نوراي في الخليج العربي قبالة ساحل جزيرة السعديات في أبوظبي. وهي جزيرة خاصة يمكن الوصول إليها بالقارب من مركز استقبال مخصص في جزيرة السعديات.",
+        "q_ar": "أين تقع جزيرة نوراي؟"
+      },
+      {
+        "a": "Nurai Island primarily offers luxury beachfront villas, waterfront residences, and exclusive private estates designed for premium island living.",
+        "q": "What types of properties are available on Nurai Island?",
+        "a_ar": "تضم جزيرة نوراي بشكل أساسي فللاً فاخرة على الشاطئ وعقارات سكنية على الواجهة البحرية وفللاً خاصة حصرية، مصممة لتوفير أسلوب حياة جزيري فاخر.",
+        "q_ar": "ما أنواع العقارات المتاحة في جزيرة نوراي؟"
+      },
+      {
+        "a": "Nurai Island is accessible by boat from its dedicated welcome centre on Saadiyat Island. The boat journey typically takes approximately 10–15 minutes.",
+        "q": "How can you reach Nurai Island from Abu Dhabi?",
+        "a_ar": "يمكن الوصول إلى جزيرة نوراي بالقارب من مركز الاستقبال المخصص لها في جزيرة السعديات، وتستغرق الرحلة عادةً حوالي 10 إلى 15 دقيقة.",
+        "q_ar": "كيف يمكن الوصول إلى جزيرة نوراي من أبوظبي؟"
+      },
+      {
+        "a": "Nurai Island offers a distinctive investment proposition due to its private island location, limited residential supply, and luxury beachfront properties. Investment suitability depends on property pricing, ownership conditions, ongoing costs, and market demand.",
+        "q": "Is Nurai Island a good place to invest in real estate?",
+        "a_ar": "توفر جزيرة نوراي فرصاً استثمارية مميزة بفضل موقعها كجزيرة خاصة، ومحدودية المعروض العقاري، وفللها الفاخرة المطلة على الشاطئ. وتعتمد جدوى الاستثمار على أسعار العقارات وشروط الملكية والتكاليف المستمرة والطلب في السوق.",
+        "q_ar": "هل تعتبر جزيرة نوراي خياراً جيداً للاستثمار العقاري؟"
+      },
+      {
+        "a": "Nurai Island combines private island living, luxury beachfront villas, pristine beaches, and a secluded coastal setting, offering a residential lifestyle distinct from mainland Abu Dhabi communities.",
+        "q": "What makes Nurai Island unique?",
+        "a_ar": "تجمع جزيرة نوراي بين الحياة على جزيرة خاصة والفلل الفاخرة المطلة على الشاطئ والشواطئ الطبيعية الخلابة والأجواء الساحلية الهادئة، مما يوفر أسلوب حياة سكنياً مختلفاً عن المناطق السكنية في أبوظبي.",
+        "q_ar": "ما الذي يميز جزيرة نوراي؟"
+      },
+      {
+        "a": "Nurai Island is known for its exclusive beachfront and waterfront villas. Availability varies due to the limited number of properties, and interested buyers can contact Bazar Real Estate for current listings.",
+        "q": "Are there beachfront villas for sale on Nurai Island?",
+        "a_ar": "تشتهر جزيرة نوراي بفللها الحصرية المطلة على الشاطئ والواجهة البحرية. وتختلف العقارات المتاحة نظراً لمحدودية عددها، ويمكن للمشترين التواصل مع بازار العقارية للاطلاع على أحدث العروض العقارية.",
+        "q_ar": "هل تتوفر فلل على الشاطئ للبيع في جزيرة نوراي؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Nurai Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة نوراي"
+  },
+  "enabled": true
+}

@@ -1,0 +1,28 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.856715682140887,
+    "lng": 54.80685086238475
+  },
+  "nearby_ids": [],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A modern fitness space equipped to support everyday workouts, strength training, and an active lifestyle.",
+      "title": "Gym",
+      "copy_ar": "مساحة لياقة بدنية عصرية ومجهزة لدعم التمارين اليومية، وتمارين القوة، وتعزيز أسلوب حياة نشط.",
+      "media_id": "84ccb58f-6ad4-4029-8951-75d58c5aae1d",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A welcoming and refined entrance designed to create a polished first impression for residents and guests.",
+      "title": "Lobby",
+      "copy_ar": "مدخل أنيق ومرحّب مصمم ليمنح السكان والضيوف انطباعًا أوليًا راقيًا.",
+      "media_id": "4cb895c2-259e-4437-b15e-052d1e567cc3",
+      "title_ar": "الردهة"
+    }
+  ]
+}

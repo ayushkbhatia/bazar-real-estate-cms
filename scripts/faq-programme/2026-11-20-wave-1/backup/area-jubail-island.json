@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Approximately 40 million sq. m.",
+        "q": "How large is Jubail Island?",
+        "a_ar": "تبلغ مساحتها حوالي 40 مليون متر مربع.",
+        "q_ar": "ما مساحة جزيرة الجبيل؟"
+      },
+      {
+        "a": "The official masterplan contains six distinct villages.",
+        "q": "How many communities are on Jubail Island?",
+        "a_ar": "يضم المخطط الرئيسي الرسمي ست قرى متميزة.",
+        "q_ar": "كم عدد المجتمعات في جزيرة الجبيل؟"
+      },
+      {
+        "a": "Property options include villas, townhouses, apartments, mansions and residential plots across different parts of the island.",
+        "q": "What properties are available?",
+        "a_ar": "تشمل الخيارات العقارية الفلل، والتاون هاوس، والشقق، والقصور، وقطع الأراضي السكنية في مختلف أنحاء الجزيرة.",
+        "q_ar": "ما العقارات المتاحة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Jubail Island",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول جزيرة الجبيل"
+  },
+  "enabled": true
+}

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It is located in mainland Abu Dhabi, near Mussafah and Shakhbout City.",
+        "q": "Where is Mohammed Bin Zayed City located?",
+        "a_ar": "تقع في بر أبوظبي بالقرب من مصفح ومدينة شخبوط.",
+        "q_ar": "أين تقع مدينة محمد بن زايد؟"
+      },
+      {
+        "a": "Villas, apartments and residential compounds are available across the district.",
+        "q": "What types of properties are available?",
+        "a_ar": "تتوفر الفلل والشقق والمجمعات السكنية في مختلف أنحاء المدينة.",
+        "q_ar": "ما أنواع العقارات المتوفرة؟"
+      },
+      {
+        "a": "Yes. It offers spacious homes, schools, shopping facilities and established residential neighbourhoods.",
+        "q": "Is Mohammed Bin Zayed City suitable for families?",
+        "a_ar": "نعم، توفر منازل واسعة ومدارس ومراكز تسوق وأحياء سكنية قائمة.",
+        "q_ar": "هل مدينة محمد بن زايد مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Mohammed Bin Zayed City",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مدينة محمد بن زايد"
+  },
+  "enabled": true
+}

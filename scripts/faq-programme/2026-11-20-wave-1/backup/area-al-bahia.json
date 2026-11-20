@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Bahia is located in northeastern Abu Dhabi, near Al Shahama.",
+        "q": "Where is Al Bahia located?",
+        "a_ar": "تقع الباهية في شمال شرق أبوظبي بالقرب من الشهامة.",
+        "q_ar": "أين تقع الباهية؟"
+      },
+      {
+        "a": "The area offers villas, apartments and selected residential plots.",
+        "q": "What types of properties are available in Al Bahia?",
+        "a_ar": "تتوفر الفلل والشقق وبعض الأراضي السكنية.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الباهية؟"
+      },
+      {
+        "a": "Yes. Its residential neighbourhoods, spacious housing and nearby amenities make it suitable for family living.",
+        "q": "Is Al Bahia suitable for families?",
+        "a_ar": "نعم، توفر أحياء سكنية هادئة ومنازل واسعة ومرافق قريبة مناسبة للعائلات.",
+        "q_ar": "هل الباهية مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Bahia",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الباهية"
+  },
+  "enabled": true
+}

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Abu Dhabi Corniche stretches along the northwestern waterfront of Abu Dhabi Island, close to Al Khalidiyah, Al Bateen and the central business district.",
+        "q": "Where is Abu Dhabi Corniche located?",
+        "a_ar": "يمتد كورنيش أبوظبي على طول الواجهة البحرية الشمالية الغربية لجزيرة أبوظبي، بالقرب من الخالدية والبطين والمنطقة التجارية المركزية.",
+        "q_ar": "أين يقع كورنيش أبوظبي؟"
+      },
+      {
+        "a": "Corniche primarily offers apartments in established residential towers, including studios, one- to four-bedroom apartments and selected luxury penthouses.",
+        "q": "What types of properties are available in Corniche?",
+        "a_ar": "يوفر الكورنيش بشكل رئيسي شققا ضمن الأبراج السكنية القائمة، تشمل الاستوديوهات والشقق المكونة من غرفة إلى 4 غرف نوم، بالإضافة إلى بعض وحدات البنتهاوس الفاخرة.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الكورنيش؟"
+      },
+      {
+        "a": "Yes. Corniche offers access to public beaches, landscaped parks, walking and cycling paths, as well as residential towers with sea and city views.",
+        "q": "Is Corniche a good area for waterfront living?",
+        "a_ar": "نعم، يوفر الكورنيش سهولة الوصول إلى الشواطئ العامة والحدائق ومسارات المشي وركوب الدراجات، بالإضافة إلى أبراج سكنية تتميز بإطلالات بحرية وإطلالات على المدينة.",
+        "q_ar": "هل الكورنيش منطقة مناسبة للسكن على الواجهة البحرية؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Corniche",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الكورنيش"
+  },
+  "enabled": true
+}

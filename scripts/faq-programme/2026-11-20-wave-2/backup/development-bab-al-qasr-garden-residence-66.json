@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.430788391204857,
+    "lng": 54.6151575451199
+  },
+  "nearby_ids": [
+    "34181f94-0b19-4427-947c-0782ea67dfb9",
+    "151a3b6b-00b4-456b-bd11-61f12766afe0",
+    "226ea1ad-052b-4848-bda7-7d670da763a0"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A beautifully designed swimming pool offering a refreshing setting for relaxation and leisure.",
+      "title": "Swimming Pool",
+      "copy_ar": "مسبح مصمم بعناية يوفر أجواء منعشة للاسترخاء والاستمتاع بأوقات ممتعة.",
+      "media_id": "175d968b-8977-4106-9018-d27015905283",
+      "title_ar": "المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A dedicated tennis court designed for recreation, fitness, and friendly matches.",
+      "title": "Tennis Court",
+      "copy_ar": "ملعب مخصص للتنس مصمم للترفيه واللياقة والاستمتاع بالمباريات الودية.",
+      "media_id": "b2405823-8441-44fe-800e-caa4897e8e79",
+      "title_ar": "ملعب التنس"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "A fully equipped modern gym designed to support an active and healthy lifestyle.",
+      "title": "Gym",
+      "copy_ar": "صالة حديثة ومجهزة بالكامل لدعم أسلوب حياة صحي ونشط.",
+      "media_id": "0e80d121-dc18-4aed-abe3-0bb1dbee8bde",
+      "title_ar": "الصالة الرياضية"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "An elegant lounge offering a comfortable space to relax, socialize, and unwind.",
+      "title": "Lounge",
+      "copy_ar": "مساحة أنيقة ومريحة للاسترخاء والتواصل الاجتماعي.",
+      "media_id": "05943c58-c6a1-45fa-a367-7af500ad6207",
+      "title_ar": "الاستراحة"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A sophisticated lobby designed to provide a welcoming and luxurious first impression.",
+      "title": "Lobby",
+      "copy_ar": "ردهة راقية مصممة لتوفير أجواء ترحيبية وانطباع أول فاخر.",
+      "media_id": "c1ef1059-a303-44bf-8ed8-0c1126fcbad1",
+      "title_ar": "الردهة"
+    }
+  ]
+}

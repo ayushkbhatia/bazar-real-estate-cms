@@ -1,0 +1,519 @@
+{
+  "wave": "1",
+  "batch": "batch-d",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    "19",
+    "2005",
+    "13",
+    "2019",
+    "3",
+    "4",
+    "35",
+    "9687",
+    "4000000",
+    "80000",
+    "1000",
+    "47000",
+    "56000",
+    "44000",
+    "47",
+    "521",
+    "11.27",
+    "542",
+    "5.11",
+    "6000",
+    "3126000",
+    "5000",
+    "2710000",
+    "4.2",
+    "4.9",
+    "4900000",
+    "5400",
+    "5391",
+    "5489",
+    "1890000",
+    "1900000",
+    "37800",
+    "98000",
+    "2.8",
+    "786",
+    "220",
+    "690000",
+    "1700",
+    "2023",
+    "1050",
+    "630",
+    "2022",
+    "554",
+    "2.7",
+    "10",
+    "11",
+    "12.5",
+    "2012",
+    "899",
+    "1.92",
+    "180000",
+    "2"
+  ],
+  "sourcedNotes": {
+    "19": "Abu Dhabi Law No. 19 of 2005 on real property (CMS Law / Chambers legal updates)",
+    "2005": "Abu Dhabi Law No. 19 of 2005 (CMS Law / Chambers)",
+    "13": "Abu Dhabi Law No. 13 of 2019 amending Law No. 19 of 2005 (CMS Law / Chambers); also MBZ City Zone 13 (bayut.com area guide, Difayah International School in Zone 13)",
+    "2019": "Law No. 13 of 2019 (u.ae / CMS Law); Alreeman launch Jan 2019 and Alreeman II Jun 2019 (aldar.com, thenationalnews.com)",
+    "3": "MBZ City Zone 3 (bayut.com area guide)",
+    "4": "MBZ City Zone 4 (bayut.com area guide)",
+    "35": "MBZ City divided into more than 35 zones (dubizzle.com area overview)",
+    "9687": "DB listing in MBZ City: residential plot, 9,687 sq ft (properties table)",
+    "4000000": "DB listing in MBZ City: residential plot asking price AED 4,000,000 (properties table)",
+    "80000": "2% of the DB MBZ plot price AED 4,000,000; also Shakhbout City master plan for about 80,000 residents (Gulf News / WAM 2015)",
+    "1000": "worked example: 1,000 sq ft × the page's rental index; also Alreeman II plots 500–1,000 sq m (thenationalnews.com)",
+    "47000": "worked example: 1,000 sq ft × AED 47 (MBZ rental index, DB)",
+    "56000": "worked example: 1,000 sq ft × AED 56 (Mussafah apartment rental index, DB)",
+    "44000": "worked example: 1,000 sq ft × AED 44 (Al Shawamekh rental index, DB)",
+    "47": "MBZ City rental index, DB subpage/area/mohammed-bin-zayed-city stats (cited on the Mussafah page)",
+    "521": "Shakhbout City 6-bed villa sale index, DB subpage/area/shakhbout-city stats (cited on MBZ / Al Shawamekh pages)",
+    "11.27": "Shakhbout City 12-month villa index change, DB (cited on MBZ / Al Shawamekh pages)",
+    "542": "Al Shawamekh sale index, DB subpage/area/al-shawamekh stats (cited on the Shakhbout page)",
+    "5.11": "Al Shawamekh 12-month sale index change, DB (cited on the Shakhbout page)",
+    "6000": "worked example: 6,000 sq ft villa (assumed size)",
+    "3126000": "worked example: 6,000 sq ft × AED 521 (Shakhbout 6-bed villa index, DB)",
+    "5000": "worked example: 5,000 sq ft villa (assumed size)",
+    "2710000": "worked example: 5,000 sq ft × AED 542 (Al Shawamekh sale index, DB)",
+    "4.2": "DB listing: Fay Al Reeman 2 4-bed villa AED 4,200,000 (properties table)",
+    "4.9": "DB listing: Al Reeman 2 5-bed villa AED 4,900,000 (properties table)",
+    "4900000": "DB listing: Al Reeman 2 5-bed villa AED 4,900,000 (properties table)",
+    "5400": "approximate size of the two DB Al Reeman plot listings (5,391 and 5,489 sq ft)",
+    "5391": "DB listing: Al Reeman residential plot 5,391 sq ft, AED 1,900,000",
+    "5489": "DB listing: Al Reeman residential plot 5,489 sq ft, AED 1,890,000",
+    "1890000": "DB listing: Al Reeman plot AED 1,890,000",
+    "1900000": "DB listing: Al Reeman plot AED 1,900,000",
+    "37800": "2% of DB price AED 1,890,000",
+    "98000": "2% of DB price AED 4,900,000",
+    "2.8": "Alreeman 2.8 million sq m (aldar.com press release, Jan 2019 / TradeArabia)",
+    "786": "Alreeman 786 villa plots (aldar.com press release, Jan 2019)",
+    "220": "Alreeman 220 commercial plots (aldar.com press release, Jan 2019)",
+    "690000": "Alreeman villa plots from AED 690,000 (aldar.com press release, Jan 2019)",
+    "1700": "Alreeman II about 1,700 plots, Emiratis only (thenationalnews.com, Jun 2019)",
+    "2023": "Reeman Living launch Mar 2023 (aldar.com / Zawya); Al Falah expansion May 2023 (mediaoffice.abudhabi)",
+    "1050": "Reeman Living 1,050 units, freehold, all nationalities (aldar.com / Zawya)",
+    "630": "Reeman Living 630 units in phase one (aldar.com / Zawya)",
+    "2022": "Fay Alreeman launch, Apr 2022 (Gulf News / Zawya)",
+    "554": "Fay Alreeman 554 villas, UAE nationals only (Gulf News / Zawya 2022)",
+    "2.7": "Fay Alreeman villas from AED 2.7 million (Zawya / Aldar press release 2022)",
+    "10": "Abu Dhabi Golden Visa is 10 years (adro.gov.ae)",
+    "11": "Al Shawamekh lies just off the E11 (propertyfinder.ae area insights)",
+    "12.5": "Al Falah 12.5 million sq m (thenationalnews.com / worldpropertyjournal.com)",
+    "2012": "Al Falah first phases delivered from 2012 (mediaoffice.abudhabi)",
+    "899": "Al Falah expansion: 899 five-bedroom homes (mediaoffice.abudhabi, 2 May 2023)",
+    "1.92": "Al Falah expansion worth more than AED 1.92 billion (mediaoffice.abudhabi)",
+    "180000": "Al Falah villa asking rents around AED 180,000/year (propertyfinder.ae listings, indicative)",
+    "2": "2% DARI registration fee and ~2% agency commission (broker guides); AED 2 million Golden Visa threshold (adro.gov.ae); Alreeman AED 2 billion (aldar.com)"
+  },
+  "pages": [
+    {
+      "kind": "area",
+      "slug": "mohammed-bin-zayed-city",
+      "name": "Mohammed Bin Zayed City",
+      "pageSlug": "subpage/area/mohammed-bin-zayed-city",
+      "sources": [
+        "DB: subpage/area/mohammed-bin-zayed-city stats band (sale index, rental index, 12-month rental change), map band (E11/E22), landmarks, nearby band",
+        "DB: properties listing in the area (residential plot, 9,687 sq ft, AED 4,000,000, tenure usufruct)",
+        "DB: subpage/area/shakhbout-city stats band (for the comparison answer)",
+        "u.ae — Expatriates buying a property in the UAE (Abu Dhabi designated ownership areas)",
+        "CMS Law / Chambers — Abu Dhabi Law No. 19 of 2005 as amended by Law No. 13 of 2019",
+        "dubizzle.com / bayut.com area guides — MBZ City zones, villa rentals, Difayah International School, Emirates National School",
+        "Broker guides (Bayut, Property Finder): 2% registration fee"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Mohammed Bin Zayed City?",
+          "a": "Generally no: Mohammed Bin Zayed City is not one of Abu Dhabi's designated investment areas, so freehold ownership there is reserved for UAE nationals. Abu Dhabi Law No. 19 of 2005, as amended by Law No. 13 of 2019, opens freehold to other nationalities only inside those areas. Expats can rent across the district, and any buyer should confirm a plot's ownership status and permitted buyers on DARI before paying a deposit.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في مدينة محمد بن زايد؟",
+          "a_ar": "في الغالب لا: فمدينة محمد بن زايد ليست من مناطق الاستثمار المحددة في أبوظبي، ولذلك يقتصر التملك الحر فيها على مواطني دولة الإمارات. ويتيح قانون أبوظبي رقم 19 لسنة 2005، المعدّل بالقانون رقم 13 لسنة 2019، التملك الحر لسائر الجنسيات داخل تلك المناطق فقط. ويمكن للمقيمين الاستئجار في أنحاء المدينة، وينبغي لأي مشترٍ التحقق من وضع ملكية قطعة الأرض والفئات المسموح لها بالشراء عبر منصة «داري» قبل دفع أي عربون."
+        },
+        {
+          "q": "How much does property cost in Mohammed Bin Zayed City?",
+          "a": "Mohammed Bin Zayed City's property sale price index stands at about AED 488 per sq ft. Most stock is villas and residential plots traded between UAE nationals: a 9,687 sq ft residential plot with main-road frontage is currently listed with Bazar at AED 4,000,000. Prices vary with the zone, plot size, road frontage and whether the municipality permits commercial use.",
+          "q_ar": "كم تبلغ أسعار العقارات في مدينة محمد بن زايد؟",
+          "a_ar": "يبلغ مؤشر أسعار بيع العقارات في مدينة محمد بن زايد نحو 488 درهمًا للقدم المربع. ومعظم المعروض فلل وأراضٍ سكنية يجري تداولها بين المواطنين: إذ تعرض بازار حاليًا قطعة أرض سكنية مساحتها 9,687 قدمًا مربعة على شارع رئيسي بسعر 4,000,000 درهم. وتختلف الأسعار بحسب المنطقة الفرعية ومساحة القطعة وواجهتها على الطريق وما إذا كانت البلدية تسمح بالاستخدام التجاري."
+        },
+        {
+          "q": "What is the average rent in Mohammed Bin Zayed City?",
+          "a": "Mohammed Bin Zayed City's property rental index is about AED 47 per sq ft a year, up 1.34% over 12 months. On that basis a 1,000 sq ft apartment would rent for roughly AED 47,000 a year. Villas, which make up most of the district, are let by the unit rather than by area, so rents depend on the zone, size and condition of the house.",
+          "q_ar": "كم يبلغ متوسط الإيجار في مدينة محمد بن زايد؟",
+          "a_ar": "يبلغ مؤشر إيجارات العقارات في مدينة محمد بن زايد نحو 47 درهمًا للقدم المربع سنويًا، بارتفاع 1.34% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 47,000 درهم سنويًا تقريبًا. أما الفلل، وهي غالبية المساكن في المدينة، فتُؤجَّر بحسب الوحدة لا بحسب المساحة، ويتوقف الإيجار على المنطقة الفرعية ومساحة المنزل وحالته."
+        },
+        {
+          "q": "Can expats rent a villa in Mohammed Bin Zayed City?",
+          "a": "Yes. Expats cannot buy freehold in Mohammed Bin Zayed City, but they can rent villas and apartments across its more than 35 numbered zones. Zones such as Zone 3, Zone 4 and Zone 13 are known for three- to five-bedroom villas, some of them in private compounds. Every Abu Dhabi lease must be registered with the municipality's Tawtheeq system, which tenants need for utilities and visas.",
+          "q_ar": "هل يمكن للمقيمين الأجانب استئجار فيلا في مدينة محمد بن زايد؟",
+          "a_ar": "نعم. لا يحق للأجانب التملك الحر في مدينة محمد بن زايد، لكن يمكنهم استئجار الفلل والشقق في أكثر من 35 منطقة مرقّمة فيها. وتُعرف مناطق مثل المنطقة 3 والمنطقة 4 والمنطقة 13 بفلل تتراوح بين ثلاث وخمس غرف نوم، بعضها داخل مجمعات سكنية خاصة. ويجب تسجيل كل عقد إيجار في أبوظبي في نظام «توثيق» التابع للبلدية، ويحتاجه المستأجر لتوصيل الخدمات وإجراءات التأشيرة."
+        },
+        {
+          "q": "Is Mohammed Bin Zayed City a good place to live for families?",
+          "a": "Mohammed Bin Zayed City suits families who want space on a mainland budget: it is largely villas, with community parks and many schools and nurseries, including Difayah International School (British curriculum, Zone 13) and Emirates National School. Mazyad Mall sits inside the district and Dalma Mall is next door, so daily shopping rarely means crossing to the island.",
+          "q_ar": "هل مدينة محمد بن زايد مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب مدينة محمد بن زايد العائلات الباحثة عن مساحة أكبر بميزانية البر الرئيسي: فمعظم مساكنها فلل، وتضم حدائق مجتمعية وعددًا كبيرًا من المدارس والحضانات، منها مدرسة دفاية الدولية (منهج بريطاني، المنطقة 13) ومدرسة الإمارات الوطنية. ويقع مزيد مول داخل المدينة ودلما مول على مقربة منها، فلا يحتاج التسوق اليومي غالبًا إلى التوجه إلى الجزيرة."
+        },
+        {
+          "q": "How far is Mohammed Bin Zayed City from Downtown Abu Dhabi and the airport?",
+          "a": "Mohammed Bin Zayed City is about 15–25 minutes by car from Zayed International Airport, 10–20 minutes from Mussafah and 25–35 minutes from Downtown Abu Dhabi. The district sits between the E11 and E22 highways, which carry most of that traffic, so journey times depend heavily on the hour and the zone you start from.",
+          "q_ar": "كم تبعد مدينة محمد بن زايد عن وسط أبوظبي والمطار؟",
+          "a_ar": "تبعد مدينة محمد بن زايد نحو 15 إلى 25 دقيقة بالسيارة عن مطار زايد الدولي، ومن 10 إلى 20 دقيقة عن مصفح، ومن 25 إلى 35 دقيقة عن وسط أبوظبي. وتقع المدينة بين طريق E11 وطريق أبوظبي - العين اللذين يحملان معظم هذه الحركة، لذا تتوقف مدة الرحلة كثيرًا على التوقيت والمنطقة الفرعية التي تنطلق منها."
+        },
+        {
+          "q": "What types of property are in Mohammed Bin Zayed City?",
+          "a": "Mohammed Bin Zayed City is mainly standalone villas and residential plots, with private villa compounds and low-rise apartment buildings along its commercial strips. Some plots on main roads carry potential for commercial use, subject to municipality permits, which is why the 9,687 sq ft plot listed with Bazar is priced above typical inner-zone land.",
+          "q_ar": "ما أنواع العقارات الموجودة في مدينة محمد بن زايد؟",
+          "a_ar": "تتكون مدينة محمد بن زايد أساسًا من فلل مستقلة وأراضٍ سكنية، إلى جانب مجمعات فلل خاصة ومبانٍ سكنية منخفضة الارتفاع على امتداد شوارعها التجارية. وتتيح بعض القطع الواقعة على الطرق الرئيسية إمكانية الاستخدام التجاري بعد الحصول على تصاريح البلدية، ولهذا يأتي سعر القطعة البالغة مساحتها 9,687 قدمًا مربعة المعروضة لدى بازار أعلى من أراضي المناطق الداخلية المعتادة."
+        },
+        {
+          "q": "What fees do you pay when buying land in Mohammed Bin Zayed City?",
+          "a": "The main extra cost is Abu Dhabi's 2% registration fee, paid through DARI: on the AED 4,000,000 residential plot listed in Mohammed Bin Zayed City that is AED 80,000. Buyers usually add about 2% agency commission, plus bank and mortgage registration fees if they finance, and building on the plot later needs municipality design approval and permits.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء أرض في مدينة محمد بن زايد؟",
+          "a_ar": "أبرز تكلفة إضافية هي رسوم التسجيل في أبوظبي بنسبة 2% وتُدفع عبر منصة «داري»: فعلى قطعة الأرض السكنية المعروضة في مدينة محمد بن زايد بسعر 4,000,000 درهم تبلغ 80,000 درهم. ويضيف المشترون عادةً عمولة وساطة بنحو 2%، ورسوم البنك وتسجيل الرهن عند التمويل، كما يحتاج البناء على القطعة لاحقًا إلى اعتماد التصاميم وتصاريح البلدية."
+        },
+        {
+          "q": "Should you choose Mohammed Bin Zayed City or Shakhbout City?",
+          "a": "Mohammed Bin Zayed City is busier and better served, with malls, apartments and villas and a property sale index of about AED 488 per sq ft. Neighbouring Shakhbout City is quieter and almost entirely villas, with a 6-bedroom villa index of about AED 521 per sq ft, up 11.27% over 12 months. The two indices measure different stock, so compare like-for-like homes.",
+          "q_ar": "أيهما تختار: مدينة محمد بن زايد أم مدينة شخبوط؟",
+          "a_ar": "مدينة محمد بن زايد أكثر حيوية وخدمات، إذ تضم مراكز تسوق وشققًا وفللًا، ويبلغ مؤشر أسعار بيع العقارات فيها نحو 488 درهمًا للقدم المربع. أما مدينة شخبوط المجاورة فأهدأ ومعظم مساكنها فلل، ويبلغ مؤشر بيع الفلل المكونة من 6 غرف نوم فيها نحو 521 درهمًا للقدم المربع، بارتفاع 11.27% خلال 12 شهرًا. ويقيس المؤشران أنواعًا مختلفة من العقارات، لذا تُستحسن المقارنة بين منازل متماثلة."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "mussafah",
+      "name": "Mussafah",
+      "pageSlug": "subpage/area/mussafah",
+      "sources": [
+        "DB: subpage/area/mussafah hero (Shabiya, Musaffah Gardens), stats band (apartment rental index, 12-month change), landmarks, nearby band, why band",
+        "DB: subpage/area/mohammed-bin-zayed-city stats band (for the comparison answer)",
+        "u.ae — Expatriates buying a property in the UAE (Abu Dhabi designated ownership areas)",
+        "CMS Law / Al Tamimi — Abu Dhabi Law No. 19 of 2005 as amended by Law No. 13 of 2019; musataha outside investment areas",
+        "propertyfinder.ae / bayut.com — Mussafah and Shabiya area guides (Shabiya 9–12, four- to six-floor buildings)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Mussafah?",
+          "a": "Not freehold: Mussafah is not one of Abu Dhabi's designated investment areas, so freehold ownership of its residential land is reserved for UAE nationals under Law No. 19 of 2005, as amended in 2019. Most expats in Mussafah rent apartments in Shabiya or Musaffah Gardens, and businesses usually lease industrial or commercial space. Confirm any unit's ownership status on DARI before committing.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في مصفح؟",
+          "a_ar": "ليس بنظام التملك الحر: فمصفح ليست من مناطق الاستثمار المحددة في أبوظبي، ولذلك يقتصر التملك الحر لأراضيها السكنية على مواطني دولة الإمارات بموجب القانون رقم 19 لسنة 2005 المعدّل عام 2019. ويستأجر معظم المقيمين الأجانب في مصفح شققًا في الشعبية أو حدائق مصفح، بينما تستأجر الشركات عادةً المساحات الصناعية أو التجارية. وينبغي التحقق من وضع ملكية أي وحدة عبر منصة «داري» قبل الالتزام."
+        },
+        {
+          "q": "How much is rent in Mussafah?",
+          "a": "Mussafah's apartment rental index is about AED 56 per sq ft a year, up 11.75% over 12 months. On that basis a 1,000 sq ft two-bedroom flat in Shabiya would rent for roughly AED 56,000 a year; older buildings, chiller-free units and furnished flats can sit well either side of that figure.",
+          "q_ar": "كم يبلغ الإيجار في مصفح؟",
+          "a_ar": "يبلغ مؤشر إيجارات الشقق في مصفح نحو 56 درهمًا للقدم المربع سنويًا، بارتفاع 11.75% خلال 12 شهرًا. وعلى هذا الأساس يبلغ إيجار شقة بغرفتي نوم مساحتها 1,000 قدم مربع في الشعبية نحو 56,000 درهم سنويًا تقريبًا، وقد تبتعد المباني الأقدم والوحدات المعفاة من رسوم التبريد والشقق المفروشة كثيرًا عن هذا الرقم صعودًا أو هبوطًا."
+        },
+        {
+          "q": "Where do people live in Mussafah?",
+          "a": "Residents of Mussafah live mainly in two neighbourhoods: Shabiya, a grid of four- to six-floor apartment buildings across sectors Shabiya 9 to Shabiya 12, and Musaffah Gardens. Both are set apart from the industrial zones, and Shabiya 9 has the widest choice of studios and one- to three-bedroom flats, while the higher-numbered sectors are quieter.",
+          "q_ar": "أين يسكن الناس في مصفح؟",
+          "a_ar": "يسكن أهالي مصفح أساسًا في حيّين: الشعبية، وهي شبكة من المباني السكنية التي يتراوح ارتفاعها بين أربعة وستة طوابق موزعة على قطاعات من الشعبية 9 حتى الشعبية 12، وحدائق مصفح. ويقع الحيّان بعيدًا عن المناطق الصناعية، وتوفر الشعبية 9 أوسع خيار من الاستوديوهات والشقق من غرفة إلى ثلاث غرف نوم، بينما تكون القطاعات ذات الأرقام الأعلى أهدأ."
+        },
+        {
+          "q": "Is Mussafah residential or industrial?",
+          "a": "Mussafah is both: most of the district is industrial and commercial, with workshops, warehouses and showrooms, while Shabiya and Musaffah Gardens form its residential side. Anyone renting should check exactly which sector a building is in, since a flat facing an industrial block will see more traffic, noise and heavy vehicles than one inside Shabiya.",
+          "q_ar": "هل مصفح منطقة سكنية أم صناعية؟",
+          "a_ar": "مصفح تجمع الاثنين: فمعظم المنطقة صناعية وتجارية تضم ورشًا ومستودعات وصالات عرض، بينما تمثل الشعبية وحدائق مصفح جانبها السكني. وينبغي لمن يرغب في الاستئجار التحقق من القطاع الذي يقع فيه المبنى بدقة، لأن الشقة المطلة على مجمع صناعي تشهد حركة مرور وضوضاء ومركبات ثقيلة أكثر من شقة داخل الشعبية."
+        },
+        {
+          "q": "Is Mussafah a good place to live for families?",
+          "a": "Mussafah works for families who need to be close to jobs in its commercial and industrial districts, provided they live in Shabiya or Musaffah Gardens. Those neighbourhoods have schools, supermarkets, mosques and community parks within a short drive, and Dalma Mall and Mazyad Mall are nearby, though the area has fewer green spaces than villa suburbs such as Mohammed Bin Zayed City.",
+          "q_ar": "هل مصفح مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب مصفح العائلات التي تحتاج إلى القرب من أعمالها في المناطق التجارية والصناعية، شرط السكن في الشعبية أو حدائق مصفح. فهذان الحيّان قريبان من المدارس ومحلات السوبرماركت والمساجد والحدائق المجتمعية، ويقع دلما مول ومزيد مول على مقربة منهما، وإن كانت المساحات الخضراء في المنطقة أقل منها في ضواحي الفلل مثل مدينة محمد بن زايد."
+        },
+        {
+          "q": "How far is Mussafah from Downtown Abu Dhabi and the airport?",
+          "a": "Mussafah is about 5–15 minutes by car from Mohammed Bin Zayed City, 20–30 minutes from Zayed International Airport and 25–35 minutes from Downtown Abu Dhabi. The district lies southwest of Abu Dhabi Island and reaches it across the Mussafah Bridge, so morning traffic into the city is the main variable.",
+          "q_ar": "كم تبعد مصفح عن وسط أبوظبي والمطار؟",
+          "a_ar": "تبعد مصفح نحو 5 إلى 15 دقيقة بالسيارة عن مدينة محمد بن زايد، ومن 20 إلى 30 دقيقة عن مطار زايد الدولي، ومن 25 إلى 35 دقيقة عن وسط أبوظبي. وتقع المنطقة جنوب غرب جزيرة أبوظبي وتتصل بها عبر جسر مصفح، لذا تبقى حركة المرور الصباحية نحو المدينة العامل الأهم."
+        },
+        {
+          "q": "Is renting cheaper in Mussafah or Mohammed Bin Zayed City?",
+          "a": "Per square foot, Mussafah's apartment rental index of about AED 56 a year is above Mohammed Bin Zayed City's property rental index of about AED 47, which also covers its many villas. In practice Mussafah offers smaller, lower-cost flats close to work, while Mohammed Bin Zayed City offers more space per dirham for households that want a villa or a larger apartment.",
+          "q_ar": "أيهما أرخص للإيجار: مصفح أم مدينة محمد بن زايد؟",
+          "a_ar": "من حيث القدم المربع، يبلغ مؤشر إيجارات الشقق في مصفح نحو 56 درهمًا سنويًا، وهو أعلى من مؤشر إيجارات العقارات في مدينة محمد بن زايد البالغ نحو 47 درهمًا، والذي يشمل أيضًا فللها الكثيرة. وعمليًا توفر مصفح شققًا أصغر وأقل تكلفة قرب أماكن العمل، بينما توفر مدينة محمد بن زايد مساحة أكبر مقابل كل درهم للأسر الراغبة في فيلا أو شقة أوسع."
+        },
+        {
+          "q": "What shopping and amenities are near Mussafah?",
+          "a": "Dalma Mall, one of the larger malls on the Abu Dhabi mainland, is in Mussafah, and Mazyad Mall is a short drive away in Mohammed Bin Zayed City. Shabiya itself is lined with supermarkets, restaurants, clinics and everyday services, and the district's commercial streets hold car showrooms, furniture outlets and trade suppliers used by the whole emirate.",
+          "q_ar": "ما مراكز التسوق والخدمات القريبة من مصفح؟",
+          "a_ar": "يقع دلما مول، أحد أكبر مراكز التسوق في بر أبوظبي، في مصفح، ويبعد مزيد مول مسافة قصيرة بالسيارة في مدينة محمد بن زايد. وتنتشر في الشعبية محلات السوبرماركت والمطاعم والعيادات والخدمات اليومية، بينما تضم الشوارع التجارية في المنطقة صالات عرض السيارات ومتاجر الأثاث ومورّدي المواد الذين يخدمون الإمارة كلها."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "shakhbout-city",
+      "name": "Shakhbout City",
+      "pageSlug": "subpage/area/shakhbout-city",
+      "sources": [
+        "DB: subpage/area/shakhbout-city stats band (6-bedroom villa sale index, 12-month change), map band, landmarks, nearby band",
+        "DB: subpage/area/al-shawamekh stats band (for the comparison answer)",
+        "u.ae — Expatriates buying a property in the UAE (Abu Dhabi designated ownership areas)",
+        "CMS Law / Chambers — Abu Dhabi Law No. 19 of 2005 as amended by Law No. 13 of 2019",
+        "Wikipedia (Khalifa City) / The National — Khalifa City B renamed Shakhbout City",
+        "Gulf News / WAM (2015) — Shakhbout City master plan, about 80,000 residents",
+        "ssmc.ae FAQs — Sheikh Shakhbout Medical City is in Al Mafraq, Ghweifat International Highway"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Shakhbout City?",
+          "a": "No, not freehold: Shakhbout City is a national housing district outside Abu Dhabi's designated investment areas, so freehold ownership there is reserved for UAE nationals. Law No. 19 of 2005, as amended by Law No. 13 of 2019, opens freehold to other nationalities only inside those areas. Expats can rent villas in Shakhbout City, and any buyer should confirm a plot's status on DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في مدينة شخبوط؟",
+          "a_ar": "لا، ليس بنظام التملك الحر: فمدينة شخبوط منطقة سكنية للمواطنين تقع خارج مناطق الاستثمار المحددة في أبوظبي، ولذلك يقتصر التملك الحر فيها على مواطني دولة الإمارات. ويتيح القانون رقم 19 لسنة 2005، المعدّل بالقانون رقم 13 لسنة 2019، التملك الحر لسائر الجنسيات داخل تلك المناطق فقط. ويمكن للمقيمين الأجانب استئجار الفلل في مدينة شخبوط، وينبغي لأي مشترٍ التحقق من وضع القطعة عبر منصة «داري»."
+        },
+        {
+          "q": "How much does a villa cost in Shakhbout City?",
+          "a": "Shakhbout City's 6-bedroom villa sale index stands at about AED 521 per sq ft, up 11.27% over 12 months. On that basis a 6,000 sq ft six-bedroom villa would be valued at roughly AED 3,126,000, though corner plots, newer builds and homes on main roads trade above the index and older villas below it.",
+          "q_ar": "كم يبلغ سعر الفيلا في مدينة شخبوط؟",
+          "a_ar": "يبلغ مؤشر أسعار بيع الفلل المكونة من 6 غرف نوم في مدينة شخبوط نحو 521 درهمًا للقدم المربع، بارتفاع 11.27% خلال 12 شهرًا. وعلى هذا الأساس تُقدَّر قيمة فيلا بست غرف نوم مساحتها 6,000 قدم مربع بنحو 3,126,000 درهم تقريبًا، علمًا بأن القطع الزاوية والمباني الأحدث والمنازل على الطرق الرئيسية تُباع فوق المؤشر، والفلل الأقدم دونه."
+        },
+        {
+          "q": "Is Shakhbout City the same as Khalifa City B?",
+          "a": "Yes. Shakhbout City is the former Khalifa City B, renamed after Sheikh Shakhbout bin Sultan Al Nahyan when Abu Dhabi split the Khalifa City suburbs into separate districts. Older listings, maps and tenancy contracts may still say Khalifa City B. Its master plan, handed to the municipality for delivery, provides for about 80,000 residents.",
+          "q_ar": "هل مدينة شخبوط هي نفسها مدينة خليفة ب؟",
+          "a_ar": "نعم. مدينة شخبوط هي مدينة خليفة ب سابقًا، وقد أُعيدت تسميتها تيمنًا بالشيخ شخبوط بن سلطان آل نهيان عندما قسّمت أبوظبي ضواحي مدينة خليفة إلى مناطق مستقلة. وقد لا تزال الإعلانات والخرائط وعقود الإيجار القديمة تذكر اسم مدينة خليفة ب. ويستوعب مخططها الرئيسي، الذي سُلّم إلى البلدية لتنفيذه، نحو 80,000 نسمة."
+        },
+        {
+          "q": "Is Sheikh Shakhbout Medical City in Shakhbout City?",
+          "a": "Not quite: Sheikh Shakhbout Medical City sits in neighbouring Al Mafraq, on the Ghweifat International Highway next to Fatima College of Health Sciences, a short drive from Shakhbout City. Having one of the emirate's largest hospitals that close is a practical draw for families in the district, alongside its community parks and local schools.",
+          "q_ar": "هل تقع مدينة الشيخ شخبوط الطبية داخل مدينة شخبوط؟",
+          "a_ar": "ليس تمامًا: تقع مدينة الشيخ شخبوط الطبية في منطقة المفرق المجاورة، على طريق غويفات الدولي بجوار كلية فاطمة للعلوم الصحية، على مسافة قصيرة بالسيارة من مدينة شخبوط. ويُعد قرب أحد أكبر المستشفيات في الإمارة ميزة عملية للعائلات في المنطقة، إلى جانب حدائقها المجتمعية ومدارسها المحلية."
+        },
+        {
+          "q": "Is Shakhbout City a good place to live for families?",
+          "a": "Shakhbout City suits families who want a large villa in a quiet, low-rise setting: it is almost entirely standalone villas and private compounds on wide plots, with community parks, mosques and local schools in each neighbourhood. It has less retail and nightlife than Mohammed Bin Zayed City, so most residents drive there or to Dalma Mall for bigger shopping trips.",
+          "q_ar": "هل مدينة شخبوط مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب مدينة شخبوط العائلات الراغبة في فيلا واسعة ضمن بيئة هادئة منخفضة الارتفاع: فمعظم مساكنها فلل مستقلة ومجمعات خاصة على قطع واسعة، مع حدائق مجتمعية ومساجد ومدارس محلية في كل حي. وتضم مرافق تسوق وترفيه أقل من مدينة محمد بن زايد، لذا يتوجه معظم السكان إليها أو إلى دلما مول للتسوق الأكبر."
+        },
+        {
+          "q": "How far is Shakhbout City from Downtown Abu Dhabi and the airport?",
+          "a": "Shakhbout City is about 10–20 minutes by car from Mohammed Bin Zayed City, 20–30 minutes from Zayed International Airport and 25–35 minutes from Downtown Abu Dhabi. It sits between Mohammed Bin Zayed City and Al Shawamekh with access to the main highways, so the drive into the city depends mostly on rush-hour traffic.",
+          "q_ar": "كم تبعد مدينة شخبوط عن وسط أبوظبي والمطار؟",
+          "a_ar": "تبعد مدينة شخبوط نحو 10 إلى 20 دقيقة بالسيارة عن مدينة محمد بن زايد، ومن 20 إلى 30 دقيقة عن مطار زايد الدولي، ومن 25 إلى 35 دقيقة عن وسط أبوظبي. وتقع بين مدينة محمد بن زايد والشوامخ مع سهولة الوصول إلى الطرق الرئيسية، لذا تتوقف مدة الرحلة إلى المدينة أساسًا على حركة المرور في ساعات الذروة."
+        },
+        {
+          "q": "Can expats rent a villa in Shakhbout City?",
+          "a": "Yes. Expats can rent villas and villa compounds in Shakhbout City from Emirati owners, even though they cannot buy there. Most homes are large standalone villas, so rents are agreed per house rather than per square foot, and Bazar's page carries no rental index for the district yet. The lease must be registered on the municipality's Tawtheeq system.",
+          "q_ar": "هل يمكن للمقيمين الأجانب استئجار فيلا في مدينة شخبوط؟",
+          "a_ar": "نعم. يمكن للمقيمين الأجانب استئجار الفلل ومجمعات الفلل في مدينة شخبوط من ملاكها المواطنين، وإن لم يكن بإمكانهم الشراء فيها. ومعظم المساكن فلل مستقلة كبيرة، لذا يُتفق على الإيجار بحسب المنزل لا بحسب القدم المربع، ولا تعرض صفحة بازار بعد مؤشرًا للإيجارات في المنطقة. ويجب تسجيل العقد في نظام «توثيق» التابع للبلدية."
+        },
+        {
+          "q": "Should you choose Shakhbout City or Al Shawamekh?",
+          "a": "Shakhbout City and Al Shawamekh are neighbouring villa districts with similar homes. Shakhbout City's 6-bedroom villa index is about AED 521 per sq ft, up 11.27% over 12 months, while Al Shawamekh's all-property sale index is about AED 542, up 5.11%. Shakhbout City is closer to Mohammed Bin Zayed City's malls; Al Shawamekh is closer to Baniyas.",
+          "q_ar": "أيهما تختار: مدينة شخبوط أم الشوامخ؟",
+          "a_ar": "مدينة شخبوط والشوامخ منطقتا فلل متجاورتان ومساكنهما متشابهة. ويبلغ مؤشر بيع الفلل المكونة من 6 غرف نوم في مدينة شخبوط نحو 521 درهمًا للقدم المربع، بارتفاع 11.27% خلال 12 شهرًا، بينما يبلغ مؤشر بيع العقارات في الشوامخ نحو 542 درهمًا، بارتفاع 5.11%. وتقع مدينة شخبوط أقرب إلى مراكز التسوق في مدينة محمد بن زايد، والشوامخ أقرب إلى بني ياس."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-shamkha",
+      "name": "Al Shamkha",
+      "pageSlug": "subpage/area/al-shamkha",
+      "sources": [
+        "DB: subpage/area/al-shamkha hero, stats band (apartment sale index, 12-month change), map, landmarks (Fay Al Reeman, Bawabat Al Sharq Mall), nearby band",
+        "DB: published properties in the area — Al Reeman plots (5,391 / 5,489 sq ft, AED 1,900,000 / 1,890,000), Al Reeman 2 villas (4-bed 4,250 sq ft AED 4,400,000; 5-bed 4,519 sq ft AED 4,900,000), Fay Al Reeman 2 villa (4-bed 4,215 sq ft AED 4,200,000)",
+        "aldar.com press release (Jan 2019) / TradeArabia / Gulf News — Alreeman: AED 2 billion, 2.8 million sq m, 786 villa plots, 220 commercial plots, from AED 690,000, open to all nationalities",
+        "thenationalnews.com (Jun 2019) — Alreeman II: about 1,700 plots of 500–1,000 sq m, Emiratis only",
+        "aldar.com / Zawya (Mar 2023) — Reeman Living: 1,050 freehold apartments, 630 in phase one, all nationalities",
+        "Gulf News / Zawya (Apr 2022) — Fay Alreeman: 554 villas, 3–6 bedrooms, from AED 2.7 million, UAE nationals only",
+        "adro.gov.ae — Abu Dhabi Golden Visa, real-estate investors",
+        "Broker guides (Bayut, Property Finder): 2% registration fee"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Shamkha?",
+          "a": "Only in specific Aldar communities: the original Alreeman plots, launched in 2019, and the Reeman Living apartments were both released freehold to all nationalities. Alreeman II and Fay Alreeman were launched for UAE nationals only, and the rest of Al Shamkha is national housing. Ownership rules differ plot by plot, so confirm a property's permitted buyers on DARI before paying a deposit.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في الشامخة؟",
+          "a_ar": "فقط في مجتمعات محددة من تطوير الدار: إذ طُرحت قطع أراضي الريمان الأصلية عام 2019 وشقق ريمان ليفينج بنظام التملك الحر لجميع الجنسيات. أما الريمان الثاني وفيء الريمان فطُرحا لمواطني دولة الإمارات فقط، وبقية الشامخة مخصصة لإسكان المواطنين. وتختلف قواعد التملك من قطعة إلى أخرى، لذا ينبغي التحقق من الفئات المسموح لها بشراء العقار عبر منصة «داري» قبل دفع أي عربون."
+        },
+        {
+          "q": "How much does property cost in Al Shamkha?",
+          "a": "Al Shamkha's apartment sale price index is about AED 1,595 per sq ft, up 7.78% over 12 months, driven by newer stock such as Reeman Living. Villas cost far less per foot: Bazar currently lists four- and five-bedroom villas in Al Reeman 2 and Fay Al Reeman 2 at AED 4.2–4.9 million, and Al Reeman villa plots of about 5,400 sq ft at AED 1,890,000–1,900,000.",
+          "q_ar": "كم تبلغ أسعار العقارات في الشامخة؟",
+          "a_ar": "يبلغ مؤشر أسعار بيع الشقق في الشامخة نحو 1,595 درهمًا للقدم المربع، بارتفاع 7.78% خلال 12 شهرًا، مدفوعًا بالمشاريع الأحدث مثل ريمان ليفينج. أما الفلل فسعر القدم فيها أقل بكثير: إذ تعرض بازار حاليًا فللًا بأربع وخمس غرف نوم في الريمان 2 وفيء الريمان 2 بأسعار بين 4.2 و4.9 مليون درهم، وقطع أراضٍ للفلل في الريمان مساحتها نحو 5,400 قدم مربع بأسعار بين 1,890,000 و1,900,000 درهم."
+        },
+        {
+          "q": "What is Alreeman in Al Shamkha?",
+          "a": "Alreeman is Aldar's master-planned community in Al Shamkha, launched in January 2019 as an AED 2 billion development over 2.8 million sq m. Its first release offered 786 villa plots from AED 690,000 and 220 commercial plots, open to all nationalities, for buyers to build their own homes; Alreeman II followed later in 2019 with about 1,700 plots for Emiratis only.",
+          "q_ar": "ما هو مشروع الريمان في الشامخة؟",
+          "a_ar": "الريمان مجتمع مخطط من تطوير الدار في الشامخة، أُطلق في يناير 2019 بقيمة 2 مليار درهم على مساحة 2.8 مليون متر مربع. وضم إصداره الأول 786 قطعة أرض للفلل تبدأ من 690,000 درهم و220 قطعة تجارية، متاحة لجميع الجنسيات ليبني المشترون منازلهم بأنفسهم، ثم تلاه الريمان 2 في وقت لاحق من عام 2019 بنحو 1,700 قطعة للمواطنين فقط."
+        },
+        {
+          "q": "What is Reeman Living in Al Shamkha?",
+          "a": "Reeman Living is Aldar's apartment community inside Alreeman, Al Shamkha, launched in March 2023 with 1,050 freehold units open to buyers of all nationalities, 630 of them in the first phase. It offers studios to three-bedroom apartments in low-rise blocks, and is the main way a non-UAE national can buy a ready or near-ready home in Al Shamkha.",
+          "q_ar": "ما هو مشروع ريمان ليفينج في الشامخة؟",
+          "a_ar": "ريمان ليفينج مجتمع شقق من تطوير الدار داخل الريمان في الشامخة، أُطلق في مارس 2023 ويضم 1,050 وحدة بنظام التملك الحر متاحة للمشترين من جميع الجنسيات، منها 630 وحدة في المرحلة الأولى. ويوفر شققًا من الاستوديو حتى ثلاث غرف نوم في مبانٍ منخفضة الارتفاع، ويُعد الطريق الرئيسي أمام غير المواطنين لشراء منزل جاهز أو قريب من الجاهزية في الشامخة."
+        },
+        {
+          "q": "Who can buy a villa in Fay Alreeman?",
+          "a": "Fay Alreeman was launched by Aldar in 2022 for UAE nationals only, with 554 villas of three to six bedrooms from AED 2.7 million, and Aldar's own page still describes it as exclusively for Emiratis. Some portal listings for Fay Al Reeman 2 now say all nationalities can buy; treat that as unconfirmed until DARI or Aldar confirms the specific villa.",
+          "q_ar": "من يحق له شراء فيلا في فيء الريمان؟",
+          "a_ar": "أطلقت الدار مشروع فيء الريمان عام 2022 لمواطني دولة الإمارات فقط، ويضم 554 فيلا من ثلاث إلى ست غرف نوم تبدأ أسعارها من 2.7 مليون درهم، ولا تزال صفحة الدار تصفه بأنه مخصص للمواطنين حصرًا. وتذكر بعض الإعلانات على المنصات العقارية أن فيء الريمان 2 بات متاحًا لجميع الجنسيات، ويُستحسن التعامل مع ذلك على أنه غير مؤكد إلى أن تؤكده منصة «داري» أو الدار للفيلا المحددة."
+        },
+        {
+          "q": "Does buying property in Al Shamkha qualify for a UAE Golden Visa?",
+          "a": "Rarely for foreign buyers: Abu Dhabi's 10-year Golden Visa needs property worth at least AED 2 million, and the Al Shamkha homes open to all nationalities mostly sit below it. Reeman Living apartments are priced well under the threshold, and the Al Reeman plots listed with Bazar at AED 1,890,000–1,900,000 fall just short. Mortgaged homes need at least AED 2 million of owner equity.",
+          "q_ar": "هل يؤهّل شراء عقار في الشامخة للحصول على الإقامة الذهبية في الإمارات؟",
+          "a_ar": "نادرًا بالنسبة للمشترين الأجانب: إذ تتطلب الإقامة الذهبية في أبوظبي لمدة 10 سنوات عقارًا لا تقل قيمته عن مليوني درهم، ومعظم العقارات المتاحة لجميع الجنسيات في الشامخة دون هذا الحد. فأسعار شقق ريمان ليفينج أقل منه بكثير، وقطع أراضي الريمان المعروضة لدى بازار بين 1,890,000 و1,900,000 درهم تقل عنه بقليل. أما العقارات المرهونة فيجب ألا تقل حصة المالك فيها عن مليوني درهم."
+        },
+        {
+          "q": "What fees do you pay when buying property in Al Shamkha?",
+          "a": "Expect Abu Dhabi's 2% registration fee on top of the price, paid through DARI: AED 37,800 on a AED 1,890,000 Al Reeman plot, or AED 98,000 on a AED 4,900,000 villa in Al Reeman 2. Resale buyers usually add about 2% agency commission and an Aldar NOC fee, plus bank and mortgage registration fees if they finance.",
+          "q_ar": "ما الرسوم التي يدفعها المشتري عند شراء عقار في الشامخة؟",
+          "a_ar": "يُضاف إلى السعر رسوم التسجيل في أبوظبي بنسبة 2% وتُدفع عبر منصة «داري»: أي 37,800 درهم على قطعة أرض في الريمان بسعر 1,890,000 درهم، أو 98,000 درهم على فيلا في الريمان 2 بسعر 4,900,000 درهم. ويضيف مشترو عقارات إعادة البيع عادةً عمولة وساطة بنحو 2% ورسوم شهادة عدم الممانعة من الدار، إضافة إلى رسوم البنك وتسجيل الرهن عند التمويل."
+        },
+        {
+          "q": "Can you build your own villa in Al Shamkha?",
+          "a": "Yes, that is how much of Al Shamkha is being built: buyers purchase a serviced plot in Alreeman and build to its design guidelines. Bazar currently lists Al Reeman plots of 5,391 and 5,489 sq ft at AED 1,900,000 and AED 1,890,000, both freehold. Plans need approval from the master developer and the municipality before construction starts.",
+          "q_ar": "هل يمكن بناء فيلا خاصة بك في الشامخة؟",
+          "a_ar": "نعم، وبهذه الطريقة يُبنى جزء كبير من الشامخة: إذ يشتري المالك قطعة أرض مخدومة في الريمان ويبني وفق إرشادات التصميم الخاصة بها. وتعرض بازار حاليًا قطعتين في الريمان مساحتهما 5,391 و5,489 قدمًا مربعة بسعري 1,900,000 و1,890,000 درهم، وكلتاهما بنظام التملك الحر. ويجب اعتماد المخططات من المطوّر الرئيسي والبلدية قبل بدء البناء."
+        },
+        {
+          "q": "Is Al Shamkha a good place to live for families?",
+          "a": "Al Shamkha suits families who want a large, modern villa with a garden near the airport and Yas Island: Alreeman and Fay Al Reeman are planned around parks, mosques and community retail, and Bawabat Al Sharq Mall in neighbouring Baniyas covers bigger shopping. Much of the district is still being built, so some streets have construction nearby for now.",
+          "q_ar": "هل الشامخة مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب الشامخة العائلات الراغبة في فيلا حديثة واسعة بحديقة قرب المطار وجزيرة ياس: فقد خُطط الريمان وفيء الريمان حول الحدائق والمساجد والمحلات المجتمعية، ويغطي بوابة الشرق مول في بني ياس المجاورة احتياجات التسوق الأكبر. ولا يزال جزء كبير من المنطقة قيد الإنشاء، لذا تجاور أعمال البناء بعض الشوارع حاليًا."
+        },
+        {
+          "q": "How far is Al Shamkha from the airport, Yas Island and Downtown Abu Dhabi?",
+          "a": "Al Shamkha is about 15–20 minutes by car from Zayed International Airport, 20–30 minutes from Yas Island and 25–35 minutes from Downtown Abu Dhabi. It sits next to Al Falah, Baniyas and Shakhbout City on the mainland, so residents working on Yas or at the airport have a shorter commute than those heading to the island.",
+          "q_ar": "كم تبعد الشامخة عن المطار وجزيرة ياس ووسط أبوظبي؟",
+          "a_ar": "تبعد الشامخة نحو 15 إلى 20 دقيقة بالسيارة عن مطار زايد الدولي، ومن 20 إلى 30 دقيقة عن جزيرة ياس، ومن 25 إلى 35 دقيقة عن وسط أبوظبي. وتقع بجوار الفلاح وبني ياس ومدينة شخبوط في البر الرئيسي، لذا تكون رحلة من يعمل في ياس أو المطار أقصر من رحلة المتجهين إلى الجزيرة."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-shawamekh",
+      "name": "Al Shawamekh",
+      "pageSlug": "subpage/area/al-shawamekh",
+      "sources": [
+        "DB: subpage/area/al-shawamekh stats band (sale index, rental index, 12-month sale change), map, landmarks, nearby band",
+        "DB: subpage/area/shakhbout-city stats band (for the comparison answer)",
+        "u.ae — Expatriates buying a property in the UAE (Abu Dhabi designated ownership areas)",
+        "CMS Law / Chambers — Abu Dhabi Law No. 19 of 2005 as amended by Law No. 13 of 2019",
+        "propertyfinder.ae area insights — Al Shawamekh: villas and low-rise apartments, private gardens, off the E11"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Shawamekh?",
+          "a": "No, not freehold: Al Shawamekh is a national housing district outside Abu Dhabi's designated investment areas, so freehold ownership is reserved for UAE nationals. Law No. 19 of 2005, as amended by Law No. 13 of 2019, opens freehold to other nationalities only inside those areas. Expats can rent villas and low-rise apartments in Al Shawamekh; buyers should confirm any plot's status on DARI.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في الشوامخ؟",
+          "a_ar": "لا، ليس بنظام التملك الحر: فالشوامخ منطقة سكنية للمواطنين تقع خارج مناطق الاستثمار المحددة في أبوظبي، ولذلك يقتصر التملك الحر فيها على مواطني دولة الإمارات. ويتيح القانون رقم 19 لسنة 2005، المعدّل بالقانون رقم 13 لسنة 2019، التملك الحر لسائر الجنسيات داخل تلك المناطق فقط. ويمكن للمقيمين الأجانب استئجار الفلل والشقق المنخفضة الارتفاع في الشوامخ، وينبغي للمشترين التحقق من وضع أي قطعة عبر منصة «داري»."
+        },
+        {
+          "q": "How much does property cost in Al Shawamekh?",
+          "a": "Al Shawamekh's property sale price index stands at about AED 542 per sq ft, up 5.11% over 12 months. On that basis a 5,000 sq ft family villa would be valued at roughly AED 2,710,000; newer villas on wide plots and homes near the main roads trade above the index, and older stock below it.",
+          "q_ar": "كم تبلغ أسعار العقارات في الشوامخ؟",
+          "a_ar": "يبلغ مؤشر أسعار بيع العقارات في الشوامخ نحو 542 درهمًا للقدم المربع، بارتفاع 5.11% خلال 12 شهرًا. وعلى هذا الأساس تُقدَّر قيمة فيلا عائلية مساحتها 5,000 قدم مربع بنحو 2,710,000 درهم تقريبًا، بينما تُباع الفلل الأحدث على القطع الواسعة والمنازل القريبة من الطرق الرئيسية فوق المؤشر، والمساكن الأقدم دونه."
+        },
+        {
+          "q": "What is the average rent in Al Shawamekh?",
+          "a": "Al Shawamekh's property rental index is about AED 44 per sq ft a year. On that basis a 1,000 sq ft apartment in one of its low-rise buildings would rent for roughly AED 44,000 a year, while the district's large villas, often with five or more bedrooms, are let by the house and vary widely with size, age and condition.",
+          "q_ar": "كم يبلغ متوسط الإيجار في الشوامخ؟",
+          "a_ar": "يبلغ مؤشر إيجارات العقارات في الشوامخ نحو 44 درهمًا للقدم المربع سنويًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع في أحد مبانيها المنخفضة الارتفاع نحو 44,000 درهم سنويًا تقريبًا، أما الفلل الكبيرة في المنطقة، وكثير منها بخمس غرف نوم أو أكثر، فتُؤجَّر بحسب المنزل ويتفاوت إيجارها كثيرًا بحسب المساحة والعمر والحالة."
+        },
+        {
+          "q": "What types of property are in Al Shawamekh?",
+          "a": "Al Shawamekh is mostly spacious standalone villas, many with private gardens, plus villa compounds and a smaller number of low-rise apartment buildings. The low-rise layout gives the district more privacy than apartment-led areas such as Mussafah, and villas here are often subdivided or let as whole houses to large families.",
+          "q_ar": "ما أنواع العقارات الموجودة في الشوامخ؟",
+          "a_ar": "تتكون الشوامخ في معظمها من فلل مستقلة واسعة، كثير منها بحدائق خاصة، إلى جانب مجمعات فلل وعدد أقل من المباني السكنية المنخفضة الارتفاع. ويمنح هذا الطابع المنخفض المنطقة خصوصية أكبر من المناطق التي تغلب عليها الشقق مثل مصفح، وكثيرًا ما تُؤجَّر الفلل هنا كاملة للعائلات الكبيرة."
+        },
+        {
+          "q": "Is Al Shawamekh a good place to live for families?",
+          "a": "Al Shawamekh suits families who want a quiet villa neighbourhood with room to spread out: it has community parks, neighbourhood sports facilities, mosques and local schools, and the malls and shops of Baniyas are 10–20 minutes away. It is car-dependent, with limited bus service, so a household here usually needs at least one car per working adult.",
+          "q_ar": "هل الشوامخ مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب الشوامخ العائلات الراغبة في حي فلل هادئ بمساحات رحبة: إذ تضم حدائق مجتمعية ومرافق رياضية محلية ومساجد ومدارس، وتبعد مراكز التسوق والمحلات في بني ياس من 10 إلى 20 دقيقة. والتنقل فيها يعتمد على السيارة مع خدمة حافلات محدودة، لذا تحتاج الأسرة هنا عادةً إلى سيارة واحدة على الأقل لكل بالغ عامل."
+        },
+        {
+          "q": "How far is Al Shawamekh from Downtown Abu Dhabi?",
+          "a": "Al Shawamekh is about 25–35 minutes by car from Downtown Abu Dhabi, 10–15 minutes from Shakhbout City and 10–20 minutes from Baniyas. The district sits just off the E11 highway, which carries most of the traffic towards the island, so the morning drive depends heavily on when you leave.",
+          "q_ar": "كم تبعد الشوامخ عن وسط أبوظبي؟",
+          "a_ar": "تبعد الشوامخ نحو 25 إلى 35 دقيقة بالسيارة عن وسط أبوظبي، ومن 10 إلى 15 دقيقة عن مدينة شخبوط، ومن 10 إلى 20 دقيقة عن بني ياس. وتقع المنطقة بجوار طريق E11 الذي يحمل معظم الحركة باتجاه الجزيرة، لذا تتوقف مدة الرحلة الصباحية كثيرًا على موعد الانطلاق."
+        },
+        {
+          "q": "Can expats rent a villa in Al Shawamekh?",
+          "a": "Yes. Expats can rent villas, villa portions and low-rise apartments in Al Shawamekh from Emirati owners, even though they cannot buy there. Large villas are common, so rents are agreed per house, and checking which parts of a villa the lease covers, along with who pays utilities and maintenance, matters before signing. The lease must be registered on Tawtheeq.",
+          "q_ar": "هل يمكن للمقيمين الأجانب استئجار فيلا في الشوامخ؟",
+          "a_ar": "نعم. يمكن للمقيمين الأجانب استئجار الفلل وأجزاء الفلل والشقق المنخفضة الارتفاع في الشوامخ من ملاكها المواطنين، وإن لم يكن بإمكانهم الشراء فيها. والفلل الكبيرة شائعة، لذا يُتفق على الإيجار بحسب المنزل، ومن المهم قبل التوقيع التحقق من أجزاء الفيلا التي يشملها العقد ومن يتحمل فواتير الخدمات والصيانة. ويجب تسجيل العقد في نظام «توثيق»."
+        },
+        {
+          "q": "Is Al Shawamekh cheaper than Shakhbout City?",
+          "a": "Not on the latest indices: Al Shawamekh's all-property sale index is about AED 542 per sq ft, up 5.11% over 12 months, while neighbouring Shakhbout City's 6-bedroom villa index is about AED 521 and rose faster, by 11.27%. The two measure different stock, so for a like-for-like comparison look at villas of the same size and age in each district.",
+          "q_ar": "هل الشوامخ أرخص من مدينة شخبوط؟",
+          "a_ar": "ليس وفق أحدث المؤشرات: إذ يبلغ مؤشر بيع العقارات في الشوامخ نحو 542 درهمًا للقدم المربع، بارتفاع 5.11% خلال 12 شهرًا، بينما يبلغ مؤشر بيع الفلل المكونة من 6 غرف نوم في مدينة شخبوط المجاورة نحو 521 درهمًا وقد ارتفع بوتيرة أسرع بنسبة 11.27%. ويقيس المؤشران أنواعًا مختلفة من العقارات، لذا تُستحسن مقارنة فلل بالمساحة والعمر نفسيهما في كل منطقة."
+        }
+      ]
+    },
+    {
+      "kind": "area",
+      "slug": "al-falah",
+      "name": "Al Falah",
+      "pageSlug": "subpage/area/al-falah",
+      "sources": [
+        "DB: subpage/area/al-falah stats band (4,857 villas, 3–5 BR), map, landmarks (parks, shopping, walking and cycling routes), nearby band",
+        "DB: subpage/area/al-shamkha (comparison answer; Alreeman / Reeman Living facts sourced on that page)",
+        "thenationalnews.com / worldpropertyjournal.com — Al Falah: Aldar-built government housing for Emiratis, 4,857 villas, 12.5 million sq m, keys from 2012",
+        "mediaoffice.abudhabi (2 May 2023) — Alfalah expansion: 899 five-bedroom homes, more than AED 1.92 billion, five mosques, five parks",
+        "CMS Law / Chambers — Abu Dhabi Law No. 19 of 2005 as amended by Law No. 13 of 2019",
+        "propertyfinder.ae — Al Falah villa rental listings (around AED 180,000 a year)"
+      ],
+      "faq": [
+        {
+          "q": "Can foreigners buy property in Al Falah?",
+          "a": "No: Al Falah was built as a government housing project for Emirati families and lies outside Abu Dhabi's designated investment areas, so its villas can be owned only by UAE nationals. Law No. 19 of 2005, as amended by Law No. 13 of 2019, opens freehold to other nationalities only inside those areas. Expats can rent here, and nearby Alreeman in Al Shamkha has plots open to all nationalities.",
+          "q_ar": "هل يمكن للأجانب شراء عقار في الفلاح؟",
+          "a_ar": "لا: فقد شُيّدت الفلاح مشروعًا حكوميًا لإسكان الأسر المواطنة، وتقع خارج مناطق الاستثمار المحددة في أبوظبي، ولذلك يقتصر تملك فللها على مواطني دولة الإمارات. ويتيح القانون رقم 19 لسنة 2005، المعدّل بالقانون رقم 13 لسنة 2019، التملك الحر لسائر الجنسيات داخل تلك المناطق فقط. ويمكن للمقيمين الأجانب الاستئجار هنا، كما تضم منطقة الريمان في الشامخة المجاورة قطع أراضٍ متاحة لجميع الجنسيات."
+        },
+        {
+          "q": "What is the Al Falah housing project?",
+          "a": "Al Falah is a master-planned community for Emirati families east of Zayed International Airport, developed by Aldar for the Abu Dhabi government over 12.5 million sq m. Its first two phases delivered 4,857 villas from 2012, and a 2023 expansion added 899 five-bedroom homes worth more than AED 1.92 billion, with five mosques and five public parks.",
+          "q_ar": "ما هو مشروع إسكان الفلاح؟",
+          "a_ar": "الفلاح مجتمع مخطط للأسر المواطنة شرق مطار زايد الدولي، طوّرته الدار لصالح حكومة أبوظبي على مساحة 12.5 مليون متر مربع. وقد سلّمت مرحلتاه الأولى والثانية 4,857 فيلا اعتبارًا من عام 2012، ثم أضاف توسع عام 2023 عدد 899 منزلًا بخمس غرف نوم بقيمة تتجاوز 1.92 مليار درهم، مع خمسة مساجد وخمس حدائق عامة."
+        },
+        {
+          "q": "How many bedrooms do villas in Al Falah have?",
+          "a": "Most villas in Al Falah have 3–5 bedrooms, built to standard government-housing plans with a majlis, a maid's room and a walled garden. The 899 homes added in the 2023 expansion are all five-bedroom villas with two majlis rooms, one for men and one for women, plus separate dining and living rooms.",
+          "q_ar": "كم عدد غرف النوم في فلل الفلاح؟",
+          "a_ar": "تضم معظم فلل الفلاح من 3 إلى 5 غرف نوم، وقد بُنيت وفق مخططات الإسكان الحكومي الموحدة مع مجلس وغرفة للعاملة المنزلية وحديقة مسوّرة. أما المنازل الـ899 المضافة في توسع عام 2023 فجميعها فلل بخمس غرف نوم ومجلسين، أحدهما للرجال والآخر للنساء، إضافة إلى غرف طعام ومعيشة منفصلة."
+        },
+        {
+          "q": "Can expats rent a villa in Al Falah?",
+          "a": "Yes. Some Emirati owners in Al Falah lease their villas to expat families, and portal asking rents for larger villas cluster around AED 180,000 a year, though supply is thin compared with Mohammed Bin Zayed City. Tenants should check that the owner may lease the home, since some government-granted housing carries conditions, and register the lease on Tawtheeq.",
+          "q_ar": "هل يمكن للمقيمين الأجانب استئجار فيلا في الفلاح؟",
+          "a_ar": "نعم. يؤجر بعض الملاك المواطنين في الفلاح فللهم لعائلات مقيمة، وتتمحور الإيجارات المطلوبة للفلل الأكبر على المنصات العقارية حول 180,000 درهم سنويًا، وإن كان المعروض محدودًا مقارنة بمدينة محمد بن زايد. وينبغي للمستأجر التحقق من أن المالك يحق له التأجير، إذ تخضع بعض المساكن الحكومية لشروط، وتسجيل العقد في نظام «توثيق»."
+        },
+        {
+          "q": "Is Al Falah a good place to live for families?",
+          "a": "Al Falah suits families who want a large villa in an orderly, planned neighbourhood: its layout includes community parks, neighbourhood shopping, walking and cycling routes, and mosques in each district, with schools and a hospital in the master plan. It is quiet and car-dependent, with limited public transport, and most bigger shopping trips go to Yas Island.",
+          "q_ar": "هل الفلاح مكان مناسب لسكن العائلات؟",
+          "a_ar": "تناسب الفلاح العائلات الراغبة في فيلا واسعة ضمن حي منظم ومخطط: إذ يضم حدائق مجتمعية ومرافق تسوق محلية ومسارات للمشي وركوب الدراجات ومساجد في كل حي، مع مدارس ومستشفى ضمن المخطط الرئيسي. والمنطقة هادئة ويعتمد التنقل فيها على السيارة مع مواصلات عامة محدودة، ويتوجه معظم السكان إلى جزيرة ياس للتسوق الأكبر."
+        },
+        {
+          "q": "How far is Al Falah from the airport and Yas Island?",
+          "a": "Al Falah is about 15–25 minutes by car from Zayed International Airport and 15–25 minutes from Yas Island, but 30–40 minutes from Downtown Abu Dhabi. It lies northeast of the airport, which makes it practical for households working on Yas, at the airport or towards Dubai, and a longer commute for anyone working on the island.",
+          "q_ar": "كم تبعد الفلاح عن المطار وجزيرة ياس؟",
+          "a_ar": "تبعد الفلاح نحو 15 إلى 25 دقيقة بالسيارة عن مطار زايد الدولي، ومن 15 إلى 25 دقيقة عن جزيرة ياس، لكنها تبعد من 30 إلى 40 دقيقة عن وسط أبوظبي. وتقع شمال شرق المطار، ما يجعلها عملية للأسر التي تعمل في ياس أو المطار أو باتجاه دبي، بينما تكون الرحلة أطول لمن يعمل في الجزيرة."
+        },
+        {
+          "q": "Where is Al Falah in Abu Dhabi?",
+          "a": "Al Falah is on the Abu Dhabi mainland, northeast of Zayed International Airport, bordering Al Shamkha and with road links towards Yas Island and the Dubai highway. It is sometimes listed as Al Falah City or New Al Falah on property portals, and should not be confused with Al Falah Street, an apartment area in central Abu Dhabi.",
+          "q_ar": "أين تقع الفلاح في أبوظبي؟",
+          "a_ar": "تقع الفلاح في بر أبوظبي شمال شرق مطار زايد الدولي، بمحاذاة الشامخة، وتتصل بالطرق المؤدية إلى جزيرة ياس والطريق السريع باتجاه دبي. وتُدرج أحيانًا على المنصات العقارية باسم مدينة الفلاح أو الفلاح الجديدة، ويجب عدم الخلط بينها وبين شارع الفلاح، وهو منطقة شقق في وسط أبوظبي."
+        },
+        {
+          "q": "Should you choose Al Falah or Al Shamkha?",
+          "a": "Al Falah is entirely Emirati government housing, with 4,857 villas in its first phases, while neighbouring Al Shamkha mixes national housing with Aldar communities such as Alreeman and Reeman Living that are partly open to all nationalities. Expats who want to buy should look at Al Shamkha; renters can consider both.",
+          "q_ar": "أيهما تختار: الفلاح أم الشامخة؟",
+          "a_ar": "الفلاح بكاملها إسكان حكومي للمواطنين يضم 4,857 فيلا في مراحلها الأولى، بينما تجمع الشامخة المجاورة بين إسكان المواطنين ومجتمعات من تطوير الدار مثل الريمان وريمان ليفينج المتاح جزء منها لجميع الجنسيات. وعلى المقيمين الأجانب الراغبين في الشراء التوجه إلى الشامخة، أما المستأجرون فيمكنهم النظر في المنطقتين."
+        }
+      ]
+    }
+  ]
+}

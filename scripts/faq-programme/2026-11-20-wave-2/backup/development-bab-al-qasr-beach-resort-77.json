@@ -1,0 +1,41 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.502715486730764,
+    "lng": 54.40781703868092
+  },
+  "nearby_ids": [
+    "46c08375-1776-4351-a07d-147059f12a15",
+    "9d669da0-67a4-4bc0-ab10-f5a401ed572c",
+    "88498700-c86b-4e68-8e5e-d839a0acecf4"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Relax by the infinity pool with uninterrupted views and a refined resort-style atmosphere.\n",
+      "title": "Infinity Pool",
+      "copy_ar": "استرخِ بجانب مسبح الإنفينيتي مع إطلالات مفتوحة وأجواء راقية بطابع المنتجعات.",
+      "media_id": "bd5b0bab-4e4d-4870-bc7f-616b2fdd4aad",
+      "title_ar": "مسبح إنفينيتي"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy a refreshing swimming pool designed for relaxation and everyday leisure.",
+      "title": "Swimming Pool",
+      "copy_ar": "استمتع بمسبح مميز مصمم للاسترخاء وقضاء أوقات ممتعة يومياً.",
+      "media_id": "331d056c-da43-4a4f-aa5d-1ec1ff5bc398",
+      "title_ar": "مسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Enjoy direct access to the beach for a relaxed waterfront lifestyle.",
+      "title": "Beach Access",
+      "copy_ar": "استمتع بوصول مباشر إلى الشاطئ وأسلوب حياة هادئ على الواجهة البحرية.",
+      "media_id": "c30a86a5-eb05-4ea1-8d51-dbf5826a2e04",
+      "title_ar": "إمكانية الوصول إلى الشاطئ"
+    }
+  ]
+}

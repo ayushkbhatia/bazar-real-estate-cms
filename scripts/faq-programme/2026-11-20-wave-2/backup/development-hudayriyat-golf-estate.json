@@ -1,0 +1,37 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.430817830316386,
+    "lng": 54.34880207807106
+  },
+  "nearby_ids": [],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "Enjoy an exceptional golfing experience across a beautifully designed 18-hole golf course.",
+      "title": "18-Hole Golf Course",
+      "copy_ar": "استمتع بتجربة غولف مميزة ضمن ملعب مصمم بعناية يضم 18 حفرة.",
+      "media_id": "e0d6de0d-df6e-429f-9448-23728df13414",
+      "title_ar": "ملعب غولف من 18 حفرة"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "Enjoy seamless access to the golf course, bringing every round closer to home.",
+      "title": "Direct Golf Course Access",
+      "copy_ar": "استمتع بوصول مباشر وسلس إلى ملعب الغولف، لتكون كل جولة أقرب إلى منزلك.",
+      "media_id": "0ad87bc2-f243-431b-bcfb-a856edd2cb8d",
+      "title_ar": "وصول مباشر إلى ملعب الغولف"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Relax, dine and socialise in an elegant country club designed for leisure and community.",
+      "title": "Country Club",
+      "copy_ar": "مساحة أنيقة للاسترخاء وتناول الطعام والتواصل الاجتماعي ضمن أجواء مخصصة للترفيه والمجتمع.",
+      "media_id": "3e82104b-89f0-493a-a5b4-257b706894a7",
+      "title_ar": "النادي الريفي"
+    }
+  ]
+}

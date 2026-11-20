@@ -1,0 +1,59 @@
+{
+  "faq": [],
+  "coords": {
+    "lat": 24.402832630896356,
+    "lng": 54.642620008559476
+  },
+  "nearby_ids": [
+    "a290c4e2-28e0-4b14-8012-02e9a17c974c",
+    "61077776-5ef8-474d-9a49-9e5017a89a4c",
+    "c8fc6f5d-2854-477a-86d8-c33416dcb333"
+  ],
+  "feature_blocks": [
+    {
+      "alt": null,
+      "key": "feature_1",
+      "copy": "A relaxing poolside setting designed for leisure, sunbathing, and socialising.",
+      "title": "Pool Deck",
+      "copy_ar": "مساحة مريحة بجانب المسبح للاسترخاء والتشمس والتواصل الاجتماعي.",
+      "media_id": "c74a07f7-594e-40e2-bc8f-f6876612d924",
+      "title_ar": "منطقة المسبح"
+    },
+    {
+      "alt": null,
+      "key": "feature_2",
+      "copy": "A curated collection of amenities designed to support comfort, wellness, and everyday living.",
+      "title": "Residential Amenities",
+      "copy_ar": "مجموعة مختارة من المرافق المصممة لتعزيز الراحة والعافية والحياة اليومية.",
+      "media_id": "dc2d830e-46f6-43a7-8b2f-e2f4130887ca",
+      "title_ar": "المرافق السكنية"
+    },
+    {
+      "alt": null,
+      "key": "feature_3",
+      "copy": "Dedicated outdoor dining spaces for relaxed meals and social gatherings.",
+      "title": "Outdoor Dining",
+      "copy_ar": "مساحات مخصصة لتناول الطعام والاستمتاع بالوجبات واللقاءات الاجتماعية في أجواء خارجية مريحة.",
+      "media_id": "221ec501-dd2f-4038-bf69-855b82188e19",
+      "title_ar": "تناول الطعام في الهواء الطلق"
+    },
+    {
+      "alt": null,
+      "key": "feature_4",
+      "copy": "A safe and engaging space designed for children to play, explore, and enjoy.",
+      "title": "Kid's Play Area",
+      "copy_ar": "مساحة آمنة وممتعة مصممة للأطفال للعب والاستكشاف وقضاء أوقات ممتعة.",
+      "media_id": "c29bdc70-fc83-4e16-95a4-25503778b2e2",
+      "title_ar": "منطقة لعب الأطفال"
+    },
+    {
+      "alt": null,
+      "key": "feature_5",
+      "copy": "A landscaped promenade designed for walking, relaxing, and enjoying the surrounding views.",
+      "title": "Promenade",
+      "copy_ar": "ممشى منسق للمشي والاسترخاء والاستمتاع بالإطلالات المحيطة.",
+      "media_id": "b7c86820-8f9c-481e-a05e-05f9996c8137",
+      "title_ar": "الممشى"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Raha Beach is the waterfront half — apartments, townhouses and sky villas in low-rise blocks along the channel. Al Raha Gardens is the inland half — gated precincts of family villas and townhouses built around parks.",
+        "q": "What is the difference between Al Raha Beach and Al Raha Gardens?",
+        "a_ar": "شاطئ الراحة هو الجزء المطل على الواجهة البحرية، ويضم شققًا وتاون هاوس وفلل سماوية ضمن مبانٍ منخفضة الارتفاع تمتد على طول القناة. أما حدائق الراحة فهي الجزء الداخلي، وتضم مجتمعات سكنية مسوّرة من الفلل العائلية والتاون هاوس، تحيط بها الحدائق والمساحات الخضراء.",
+        "q_ar": "ما الفرق بين شاطئ الراحة وحدائق الراحة؟"
+      },
+      {
+        "a": "Apartments, townhouses, villas and sky villas, almost all of it ready stock rather than off-plan.",
+        "q": "What properties are available in Al Raha?",
+        "a_ar": "تتوفر الشقق والتاون هاوس والفلل والفلل السماوية، ومعظم العقارات المتاحة جاهزة وليست تحت الإنشاء.",
+        "q_ar": "ما العقارات المتاحة في منطقة الراحة؟"
+      },
+      {
+        "a": "Yes. Zayed International Airport is roughly 10 minutes away, and Yas Island is a similar distance.",
+        "q": "Is Al Raha close to the airport?",
+        "a_ar": "نعم. يبعد مطار زايد الدولي حوالي 10 دقائق، كما تقع جزيرة ياس على مسافة زمنية مماثلة.",
+        "q_ar": "هل تقع منطقة الراحة بالقرب من المطار؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Raha",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول منطقة الراحة"
+  },
+  "enabled": true
+}

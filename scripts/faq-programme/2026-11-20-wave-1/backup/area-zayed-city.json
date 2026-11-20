@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "It sits inland between Mohammed Bin Zayed City and Zayed International Airport, on the mainland side of Abu Dhabi.",
+        "q": "Where is Zayed City?",
+        "a_ar": "تقع في المنطقة الداخلية بين مدينة محمد بن زايد ومطار زايد الدولي، على الجانب الرئيسي من أبوظبي.",
+        "q_ar": "أين تقع مدينة زايد؟"
+      },
+      {
+        "a": "The district spans more than 4,900 hectares and is planned to accommodate over 370,000 residents.",
+        "q": "How large is the Zayed City masterplan?",
+        "a_ar": "تمتد المنطقة على أكثر من 4,900 هكتار، ومن المخطط أن تستوعب أكثر من 370,000 نسمة.",
+        "q_ar": "ما مساحة المخطط الرئيسي لمدينة زايد؟"
+      },
+      {
+        "a": "Mixed-density housing — family villas and townhouses alongside mid-rise apartments — with communities such as Bloom Living already delivering.",
+        "q": "What properties are available?",
+        "a_ar": "تتوفر خيارات سكنية متنوعة تشمل الفلل العائلية والتاون هاوس إلى جانب الشقق ضمن مبانٍ متوسطة الارتفاع، مع بدء تسليم مجتمعات سكنية مثل بلوم ليفينج.",
+        "q_ar": "ما العقارات المتاحة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Zayed City",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مدينة زايد"
+  },
+  "enabled": true
+}

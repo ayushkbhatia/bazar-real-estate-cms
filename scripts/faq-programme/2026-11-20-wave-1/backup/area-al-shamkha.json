@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Al Shamkha is located in mainland Abu Dhabi, near Al Falah, Baniyas and Shakhbout City, with convenient access to Zayed International Airport and Yas Island.",
+        "q": "Where is Al Shamkha located?",
+        "a_ar": "تقع الشامخة في بر أبوظبي بالقرب من الفلاح وبني ياس ومدينة شخبوط، مع سهولة الوصول إلى مطار زايد الدولي وجزيرة ياس.",
+        "q_ar": "أين تقع الشامخة؟"
+      },
+      {
+        "a": "Al Shamkha offers villas, apartments and residential plots. Major developments include Fay Al Reeman, Fay Al Reeman II, Al Reeman and Reeman Living.",
+        "q": "What types of properties are available in Al Shamkha?",
+        "a_ar": "توفر الشامخة فللا وشققا وأراضي سكنية. وتشمل أبرز المشاريع فيء الريمان وفيء الريمان 2 والريمان وريمان ليفينج.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الشامخة؟"
+      },
+      {
+        "a": "Yes, eligible buyers of all nationalities can purchase properties in designated developments such as Reeman Living and Fay Al Reeman II. However, ownership eligibility varies by project; the original Fay Al Reeman development was marketed specifically to UAE nationals. Buyers should verify the ownership status of the individual property before purchasing.",
+        "q": "Can foreigners buy property in Al Shamkha?",
+        "a_ar": "نعم، يمكن للمشترين المؤهلين من جميع الجنسيات شراء العقارات في مشاريع محددة مثل ريمان ليفينج وفيء الريمان 2. ومع ذلك، تختلف شروط التملك بحسب المشروع، حيث تم طرح مشروع فيء الريمان الأصلي لمواطني دولة الإمارات. وينبغي التحقق من شروط تملك العقار المحدد قبل الشراء.",
+        "q_ar": "هل يمكن للأجانب شراء عقارات في الشامخة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Shamkha",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الشامخة"
+  },
+  "enabled": true
+}

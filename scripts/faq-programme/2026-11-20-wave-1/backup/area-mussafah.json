@@ -1,0 +1,30 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Musaffah is located southwest of Abu Dhabi Island, near Mohammed Bin Zayed City. It includes residential, commercial and industrial districts.",
+        "q": "Where is Musaffah located?",
+        "a_ar": "تقع مصفح جنوب غرب جزيرة أبوظبي بالقرب من مدينة محمد بن زايد، وتضم مناطق سكنية وتجارية وصناعية.",
+        "q_ar": "أين تقع مصفح؟"
+      },
+      {
+        "a": "The residential neighbourhoods primarily offer studios and one-, two- and three-bedroom apartments, particularly in Shabiya and Musaffah Gardens.",
+        "q": "What types of residential properties are available in Musaffah?",
+        "a_ar": "تتوفر بشكل رئيسي الاستوديوهات والشقق المكونة من غرفة وغرفتين و3 غرف نوم، خاصة في الشعبية وحدائق مصفح.",
+        "q_ar": "ما أنواع العقارات السكنية المتوفرة في مصفح؟"
+      },
+      {
+        "a": "Yes. Residential neighbourhoods such as Shabiya offer access to schools, supermarkets, shopping centres and other everyday amenities. Residents should distinguish these areas from Musaffah's industrial zones.",
+        "q": "Is Musaffah suitable for families?",
+        "a_ar": "نعم، توفر الأحياء السكنية مثل الشعبية سهولة الوصول إلى المدارس والسوبرماركت ومراكز التسوق والخدمات اليومية، مع أهمية التمييز بين المناطق السكنية والمناطق الصناعية في مصفح.",
+        "q_ar": "هل مصفح مناسبة للعائلات؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Musaffah",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول مصفح"
+  },
+  "enabled": true
+}
