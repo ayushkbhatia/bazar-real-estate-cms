@@ -1,0 +1,735 @@
+{
+  "wave": "4",
+  "batch": "batch-d",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    "1",
+    "1.6",
+    "1.84",
+    "2",
+    "3",
+    "3.36",
+    "3.47",
+    "3.5",
+    "4",
+    "5",
+    "5.4",
+    "6",
+    "7",
+    "8",
+    "10",
+    "10.5",
+    "14",
+    "16",
+    "20",
+    "21",
+    "22",
+    "29",
+    "30",
+    "31",
+    "40",
+    "43",
+    "44",
+    "46",
+    "50",
+    "66",
+    "70",
+    "76",
+    "80",
+    "87",
+    "100",
+    "106.7",
+    "125",
+    "142",
+    "147",
+    "153",
+    "157",
+    "198",
+    "310",
+    "320",
+    "360",
+    "389",
+    "394",
+    "398",
+    "404.3",
+    "544",
+    "549",
+    "588",
+    "600",
+    "668",
+    "723",
+    "750",
+    "892",
+    "1300",
+    "1690",
+    "1976",
+    "2000",
+    "2005",
+    "2006",
+    "2007",
+    "2013",
+    "2014",
+    "2015",
+    "2017",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+    "2026",
+    "2027",
+    "2028",
+    "2029",
+    "2030",
+    "3000",
+    "13000",
+    "18000",
+    "30000",
+    "420000",
+    "830000",
+    "1073711",
+    "1460000",
+    "1600000",
+    "2232000",
+    "3644000"
+  ],
+  "sourcedNotes": {
+    "2": "AED 2 million Golden Visa (adro.gov.ae / Dubai); MERED phase 2, Q2 2030 (gulftoday.ae); ONE Development AED 2bn City of Arabia (zawya.com); Q2 2028/2029 delivery (propertyfinder.ae); Meraas Crestlane 2 and 3 (arabianbusiness.com)",
+    "3": "Abu Dhabi Law No. 3 of 2015 (escrow); Merito 3 bedrooms and 3 payment plans, Q3 2026 (propertyfinder.ae); MERED Q3 2027 / Q3 2029; Crestlane 3 (arabianbusiness.com); Renad 3 bedrooms",
+    "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (escrow); Town Square launch 2015 (gulfbusiness.com)",
+    "8": "Dubai Law No. 8 of 2007 (escrow accounts); MERED phase 2, 8 Bay Villas (gulftoday.ae)",
+    "2007": "Dubai Law No. 8 of 2007 (escrow); Meraas founded 2007 (Wikipedia / DB)",
+    "7": "Dubai Law No. 7 of 2006 on real property registration (freehold areas)",
+    "2006": "Dubai Law No. 7 of 2006 (freehold areas)",
+    "5": "Merito G+5 (goldpillars.ae); Crestlane 5 (wam.ae); Nakheel AED 5bn villa contracts 2024 (nakheel.com); RAK Properties AED 5bn commitment (rakproperties.ae)",
+    "1": "1 bedroom / phase 1 / 1 penthouse / AED 1bn Bluewaters Bay contract (meraas.com) / Riviera Residences 1 (gulftoday.ae)",
+    "830000": "Merito Al Reeman launch price (propertyfinder.ae, squareyards.ae)",
+    "1600000": "Merito Al Reeman top of range (squareyards.ae)",
+    "2026": "Merito handover dates; MERED phase 2 launch Nov 2026 and H1 2026 ADREC sales; Nakheel Jebel Ali Village Aug 2026 and Palm Jebel Ali Apr 2026 contracts; RAK results 6 Feb 2026; Forbes ME 2026 list; Renad handover 2026",
+    "2019": "Abu Dhabi real estate law amendment 2019; Aldar Alreeman plots 2019 (Wave 1)",
+    "2020": "Meraas became a Dubai Holding subsidiary in 2020 (Wikipedia)",
+    "106.7": "Dubai Holding Real Estate: 106.7K+ residential units and plots delivered (dubaiholding.com)",
+    "1.6": "Dubai Holding Real Estate: ~1.6mn residents (dubaiholding.com)",
+    "2013": "City Walk opened December 2013 (Wikipedia, Meraas)",
+    "2017": "La Mer October 2017 (Wikipedia, Meraas); Nshama Zahra handover September 2017 (Khaleej Times)",
+    "394": "City Walk Crestlane 2 and 3, 394 residences (arabianbusiness.com, Feb 2025)",
+    "2025": "Meraas 2025 launches; MERED Q4 2025 sell-out; Nakheel Palm Central Oct 2025; RAK 20th anniversary 2025; Samana Jan/Oct 2025; Tiger Cloud Towers 29 Oct 2025; Nshama Ellison 14 Jul 2025 and 2025 handovers",
+    "198": "Crestlane further phase, 198 units (mediaoffice.ae, June 2025)",
+    "4": "Crestlane 4 (wam.ae); Q4 2025 (gulftoday.ae); 4 bedrooms (Sea La Vie / ONE Residence); COLLECTA AED 4bn (khaleejtimes.com); Q4 2026 / Q4 2028 (Tiger)",
+    "360": "Crestlane 4 and 5, 360 residences (wam.ae)",
+    "2023": "MERED UAE launch Sept 2023 (gulfnews.com); Nine Yards / Jacob & Co Dec 2023 (zawya.com)",
+    "2029": "Riviera Residences 1 completion Q3 2029 (gulftoday.ae); Joud Residence Q2 2029 (propertyfinder.ae); Samana Imperial Garden March 2029 (zawya.com)",
+    "389": "Riviera Residences phase 2, 389 apartments (gulftoday.ae)",
+    "6": "Riviera Residences phase 2, 6 Sky Villas (gulftoday.ae); RAK results 6 Feb 2026",
+    "2030": "Riviera Residences phase 2 completion Q2 2030 (gulftoday.ae)",
+    "66": "ICONIC Residences G+66 (zawya.com)",
+    "310": "ICONIC Residences 310 apartments (zawya.com)",
+    "125": "ICONIC ~125 m as of March 2026 (zawya.com)",
+    "22": "ICONIC works on Level 22 (zawya.com)",
+    "2027": "ICONIC delivery target Q3 2027 (zawya.com); Palm Jebel Ali handovers through 2027 (nakheel.com); Jacob & Co Reem completion 2027 (zawya.com); Nshama deliveries 2027 (propertyfinder.ae)",
+    "10.5": "ADREC: Al Reem + Al Maryah residential sales AED 10.5bn in H1 2026 (gulftoday.ae)",
+    "153": "ADREC: +153% year on year (gulftoday.ae)",
+    "16": "Nakheel merged into Dubai Holding 16 March 2024 (thenationalnews.com)",
+    "2024": "Nakheel/Dubai Holding merger 2024; Palm Jebel Ali AED 5bn contracts 2024; Jacob & Co construction 2024; RAK Govt stake 2024; Samana Park Views 2024; Nobles Tower 14 Oct 2024; Renad construction 21 Apr 2024",
+    "892": "Jebel Ali Village 892 homes (thenationalnews.com, Aug 2026)",
+    "723": "Palm Jebel Ali 723 Beach and Coral Collection villas (nakheel.com)",
+    "3.5": "Palm Jebel Ali AED 3.5bn contracts, April 2026 (wam.ae)",
+    "544": "544 villas on Palm Jebel Ali (wam.ae)",
+    "80": "80+ hotels and resorts on Palm Jebel Ali (nakheel.com)",
+    "668": "Sea La Vie 668 homes (zawya.com)",
+    "30000": "Sea La Vie over 30,000 sq m (zawya.com)",
+    "2232000": "Sea La Vie launch price AED 2,232,000 (propertyfinder.ae)",
+    "2014": "Nshama founded 2014 (DB; aggregator)",
+    "750": "Town Square 750 acres (gulfbusiness.com, 2015)",
+    "3000": "Town Square 3,000 townhouses planned (gulfbusiness.com)",
+    "18000": "Town Square 18,000 apartments planned (gulfbusiness.com)",
+    "320": "Zahra townhouses, 320 units (Khaleej Times, Sept 2017)",
+    "2028": "Nshama deliveries 2028 (propertyfinder.ae); ONE Residence Q2 2028 (propertyfinder.ae); Tiger Orchid Towers Q4 2028 (zawya.com)",
+    "14": "Ellison sales from 14 July 2025 (propertyfinder.ae); Nobles Tower handover 14 Oct 2024 (zawya.com)",
+    "43": "Al Gebely Holding 43-year legacy (zawya.com)",
+    "31": "ONE Residence 31 storeys (zawya.com); RAK revenue +31% (rakproperties.ae)",
+    "3644000": "ONE Residence launch price AED 3,644,000 (propertyfinder.ae)",
+    "1460000": "Joud Residence launch price AED 1,460,000 (propertyfinder.ae)",
+    "10": "ONE Residence 10/40/50 plan (propertyfinder.ae); Tiger Downtown Ajman $10bn (zawya.com)",
+    "40": "ONE Residence 40% during construction (propertyfinder.ae); Samana Abu Dhabi office 40+ consultants (zawya.com)",
+    "50": "ONE Residence 50% at handover (propertyfinder.ae); Renad Tower 50% during construction (propertyfinder.ae)",
+    "20": "RAK Properties 20th anniversary (rakproperties.ae); Samana Abu Dhabi clients 20% of sales (zawya.com); Renad 20% down (propertyfinder.ae)",
+    "2005": "RAK Properties founded 2005 (DB; 20th anniversary in 2025)",
+    "1.84": "RAK Properties 2025 revenue AED 1.84bn (rakproperties.ae)",
+    "404.3": "RAK Properties 2025 net profit AED 404.30m (rakproperties.ae)",
+    "44": "RAK Properties net profit +44% (rakproperties.ae)",
+    "3.36": "RAK Properties 2025 sales AED 3.36bn (rakproperties.ae)",
+    "142": "RAK Properties sales +142% (rakproperties.ae)",
+    "3.47": "RAK Properties backlog AED 3.47bn (rakproperties.ae)",
+    "87": "RAK Properties backlog +87% (rakproperties.ae)",
+    "2000": "RAK Properties target of nearly 2,000 units handed over by end-2026 (rakproperties.ae)",
+    "5.4": "RAK Properties AED 5.4bn of new projects (rakproperties.ae)",
+    "2021": "Samana Greens handover 2021 (gulfnews.com)",
+    "1300": "Samana 1,300+ units handed over (zawya.com)",
+    "13000": "Samana ~13,000 units under construction (zawya.com)",
+    "157": "Samana Santorini 157 units (zawya.com)",
+    "2022": "Samana Hills delivered 2022 (khaleejtimes.com)",
+    "147": "Samana Hills South 3, 147 units (zawya.com)",
+    "398": "Samana Imperial Garden AED 398m (zawya.com)",
+    "1976": "Tiger Group founded 1976 in Sharjah (zawya.com, DB)",
+    "100": "Forbes Middle East Top 100 Arab Family Businesses 2026",
+    "46": "Nobles Tower 46 storeys (zawya.com)",
+    "549": "Nobles Tower 549 units (zawya.com)",
+    "29": "Cloud Towers handover 29 October 2025 (khaleejtimes.com)",
+    "588": "Renad Tower smallest unit 588 sq ft (propertyfinder.ae)",
+    "1690": "Renad Tower largest unit 1,690 sq ft (propertyfinder.ae)",
+    "1073711": "Renad Tower launch price AED 1,073,711 (propertyfinder.ae)",
+    "21": "Renad Tower construction started 21 April 2024 (propertyfinder.ae)",
+    "76": "Tiger Downtown Ajman 76 buildings (zawya.com)",
+    "420000": "Orchid Towers from AED 420,000 (zawya.com)",
+    "70": "Orchid Towers 70% during construction (zawya.com)",
+    "30": "Orchid Towers / Renad Tower 30% on or after handover (zawya.com, propertyfinder.ae)",
+    "600": "Sky Gate AED 600m (gulfnews.com)"
+  },
+  "pages": [
+    {
+      "kind": "faqdoc",
+      "slug": "developer-jadara",
+      "name": "Jadara",
+      "route": "/developers/jadara",
+      "pageSlug": "subpage/faq/developer-jadara",
+      "sources": [
+        "DB: developers row jadara (founded_year 2023, description); no published developments",
+        "https://www.propertyfinder.ae/en/new-projects/dev/jadara-development — Jadara Home for Real Estate Development L.L.C., parent Marvol Group, Abu Dhabi HQ, Merito Al Reeman from AED 830,000, 3 payment plans, Q3 2026",
+        "https://www.propertyfinder.ae/en/new-projects/jadara-development/merito-al-reeman — Merito Al Reeman listing",
+        "https://www.goldpillars.ae/project/merito-at-al-reeman — G+5 building, 1–3 bedrooms, February 2026 handover",
+        "https://www.squareyards.ae/new-projects/abu-dhabi/jadara-development — AED 830,000–1,600,000",
+        "Wave 1 Al Shamkha FAQ (Aldar Alreeman plots 2019 freehold to all nationalities; Alreeman II / Fay Alreeman UAE nationals only)",
+        "Abu Dhabi Law No. 3 of 2015 (off-plan escrow)"
+      ],
+      "faq": [
+        {
+          "q": "Who is Jadara Development?",
+          "a": "Jadara Development is an Abu Dhabi real estate developer that trades as Jadara Home for Real Estate Development and draws on its parent company, Marvol Group. It is a young company with one publicly listed project so far, Merito Al Reeman, so it does not yet have a record of completed handovers to compare against older Abu Dhabi developers.",
+          "q_ar": "من هي شركة جادارا للتطوير العقاري؟",
+          "a_ar": "جادارا شركة تطوير عقاري مقرها أبوظبي، تعمل باسم جادارا هوم للتطوير العقاري وتستند إلى خبرة شركتها الأم مجموعة مارفول. وهي شركة حديثة العهد لا يُعرف لها حتى الآن سوى مشروع واحد معلن هو ميريتو الريمان، لذا لا يتوفر لها بعد سجل تسليمات مكتملة يمكن مقارنته بمطوري أبوظبي الأقدم."
+        },
+        {
+          "q": "Does Jadara build in Abu Dhabi?",
+          "a": "Yes. Jadara's only listed project is in Abu Dhabi: Merito Al Reeman, a G+5 residential building in the Al Reeman community of Al Shamkha, on the mainland east of the city. It offers apartments of 1 to 3 bedrooms, aimed at buyers looking below island price points. No Jadara project is published on Bazar yet.",
+          "q_ar": "هل تطوّر جادارا مشاريع في أبوظبي؟",
+          "a_ar": "نعم. مشروع جادارا الوحيد المعلن يقع في أبوظبي، وهو ميريتو الريمان، مبنى سكني من طابق أرضي و5 طوابق في مجتمع الريمان بمنطقة الشامخة على البر الرئيسي شرق المدينة. ويضم شققاً من 1 إلى 3 غرف نوم لمن يبحث عن أسعار أدنى من أسعار الجزر. ولم يُنشر أي مشروع لجادارا على موقع بازار حتى الآن."
+        },
+        {
+          "q": "How much does an apartment at Merito Al Reeman cost?",
+          "a": "Merito Al Reeman launched from AED 830,000, according to Jadara's Property Finder listing, which shows three payment plans without giving their terms. Square Yards lists a range of AED 830,000 to AED 1,600,000 across its one- to three-bedroom apartments. Launch prices are rarely today's prices, so ask the developer or a Bazar advisor for current availability.",
+          "q_ar": "كم سعر الشقة في ميريتو الريمان؟",
+          "a_ar": "طُرح مشروع ميريتو الريمان بسعر يبدأ من 830,000 درهم بحسب صفحة جادارا على بروبرتي فايندر، التي تذكر ثلاث خطط سداد دون تفاصيلها. ويذكر موقع سكوير ياردز نطاقاً من 830,000 إلى 1,600,000 درهم لشققه من غرفة إلى ثلاث غرف. ونادراً ما تبقى أسعار الإطلاق على حالها، لذا اسأل المطوّر أو مستشار بازار عن التوافر الحالي."
+        },
+        {
+          "q": "When is Merito Al Reeman due for handover?",
+          "a": "The listings disagree: one broker page gives February 2026 and Property Finder gives Q3 2026, and both dates have now passed. Before paying a deposit, ask Jadara for the current completion certificate status or revised handover date, and check the project's registration on DARI, Abu Dhabi's property platform.",
+          "q_ar": "متى موعد تسليم ميريتو الريمان؟",
+          "a_ar": "تختلف الإعلانات في ذلك: إذ تذكر صفحة أحد الوسطاء فبراير 2026، ويذكر بروبرتي فايندر الربع 3 من عام 2026، وقد مضى التاريخان كلاهما. لذا اطلب من جادارا قبل دفع أي عربون وضع شهادة الإنجاز أو موعد التسليم المعدّل، وتحقق من تسجيل المشروع على منصة «DARI» العقارية في أبوظبي."
+        },
+        {
+          "q": "Can foreigners buy property from Jadara in Al Shamkha?",
+          "a": "It depends on the plot. In Al Shamkha, Aldar's original Alreeman plots, launched in 2019, were released freehold to all nationalities, while Alreeman II and Fay Alreeman were for UAE nationals only, and the rest of the area is national housing. Ask Jadara which plot Merito Al Reeman stands on and confirm its permitted buyers on DARI before you reserve.",
+          "q_ar": "هل يمكن للأجانب الشراء من جادارا في الشامخة؟",
+          "a_ar": "يتوقف ذلك على قطعة الأرض. ففي الشامخة طُرحت قطع أراضي الريمان الأصلية من الدار عام 2019 بنظام التملك الحر لجميع الجنسيات، بينما خُصص الريمان الثاني وفيء الريمان لمواطني الإمارات فقط، وبقية المنطقة لإسكان المواطنين. لذا اسأل جادارا عن القطعة التي يقوم عليها ميريتو الريمان، وتحقق من الفئات المسموح لها بالشراء عبر منصة «DARI» قبل الحجز."
+        },
+        {
+          "q": "Is Jadara escrow-protected?",
+          "a": "Off-plan sales in Abu Dhabi must go through a project escrow account under Abu Dhabi Law No. 3 of 2015, so payments for Merito Al Reeman should be made to that account, not to Jadara directly. Ask for the escrow account details in the sale and purchase agreement and confirm the project is registered with ADREC on DARI before paying.",
+          "q_ar": "هل مشاريع جادارا محمية بحساب ضمان؟",
+          "a_ar": "يجب أن تمر مبيعات المشاريع على الخريطة في أبوظبي عبر حساب ضمان خاص بالمشروع بموجب قانون أبوظبي رقم 3 لسنة 2015، لذا ينبغي سداد دفعات ميريتو الريمان في ذلك الحساب لا لجادارا مباشرة. اطلب تفاصيل حساب الضمان في عقد البيع والشراء، وتأكد من تسجيل المشروع لدى «ADREC» على منصة «DARI» قبل الدفع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-meraas",
+      "name": "Meraas",
+      "route": "/developers/meraas",
+      "pageSlug": "subpage/faq/developer-meraas",
+      "sources": [
+        "DB: developers row meraas (founded_year 2007, description: Bluewaters, City Walk); no published developments",
+        "https://en.wikipedia.org/wiki/Meraas — founded 2007, Dubai Holding subsidiary since 2020, City Walk Dec 2013, La Mer Oct 2017",
+        "https://www.dubaiholding.com/en/our-business/our-companies/dubai-holding-real-estate — Meraas, Nakheel, Dubai Properties; 106.7K+ units and plots delivered; ~1.6mn residents",
+        "https://www.arabianbusiness.com/industries/real-estate/dubais-meraas-launches-premium-city-walk-crestlane-residential-project — Crestlane 2 and 3, 394 residences (Feb 2025)",
+        "https://www.mediaoffice.ae/en/news/2025/june/26-06/meraas-unveils-next-chapter-of-city-walk — further Crestlane phase, 198 units",
+        "https://www.wam.ae/en/article/bn10aro-meraas-launches-crestlane-and-advancing — Crestlane 4 and 5, 360 residences",
+        "https://meraas.com/en/latest-post/news/meraas-awards-over-aed-1-billion-construction-contract-bluewaters-bay — Bluewaters Bay contract (Jan 2025)",
+        "https://www.mediaoffice.ae/en/news/2025/july/24-07/meraas-launches-new-phase-of-nad-al-sheba-gardens",
+        "Dubai Law No. 7 of 2006 (freehold areas); Dubai Law No. 8 of 2007 (escrow)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Meraas?",
+          "a": "Meraas is owned by Dubai Holding, the investment group of the Ruler of Dubai, which took it over as a subsidiary in 2020. Founded in Dubai in 2007, Meraas now sits within Dubai Holding Real Estate alongside Nakheel and Dubai Properties, which together report more than 106.7K homes and plots delivered and about 1.6 million people living in their communities.",
+          "q_ar": "من يملك شركة مِراس؟",
+          "a_ar": "تملك شركة مِراس مجموعة دبي القابضة، الذراع الاستثمارية لحاكم دبي، التي ضمتها شركةً تابعة لها عام 2020. وتأسست مِراس في دبي عام 2007، وهي اليوم جزء من دبي القابضة للعقارات إلى جانب نخيل ودبي للعقارات، وتفيد المجموعة بأنها سلّمت أكثر من 106.7 ألف وحدة سكنية وقطعة أرض، وبأن نحو 1.6 مليون شخص يعيشون في مجتمعاتها."
+        },
+        {
+          "q": "What projects has Meraas built in Dubai?",
+          "a": "Meraas is behind several of Dubai's landmark destinations: Bluewaters Island with Ain Dubai, City Walk (opened in December 2013), the La Mer beachfront (October 2017), Port de La Mer and Jumeira Bay. Its homes are concentrated in these communities, plus newer master plans such as Nad Al Sheba Gardens and Bluewaters Bay.",
+          "q_ar": "ما المشاريع التي طوّرتها مِراس في دبي؟",
+          "a_ar": "تقف مِراس وراء عدد من الوجهات البارزة في دبي: جزيرة بلوواترز وعين دبي، وسيتي ووك التي افتُتحت في ديسمبر 2013، وواجهة لا مير البحرية في أكتوبر 2017، وميناء لا مير، وجزيرة جميرا باي. وتتركز مساكنها في هذه المجتمعات، إضافة إلى مخططات أحدث مثل حدائق ند الشبا وخليج بلوواترز."
+        },
+        {
+          "q": "Does Meraas build in Abu Dhabi?",
+          "a": "No. Every Meraas community is in Dubai, and neither Meraas nor Dubai Holding Real Estate lists a residential project in Abu Dhabi. Abu Dhabi buyers who like City Walk or Bluewaters can buy there through a Dubai purchase, or compare the capital's own waterfront launches on Saadiyat, Yas and Al Reem islands with a Bazar advisor.",
+          "q_ar": "هل تطوّر مِراس مشاريع في أبوظبي؟",
+          "a_ar": "لا. جميع مجتمعات مِراس في دبي، ولا تُدرج مِراس ولا دبي القابضة للعقارات أي مشروع سكني في أبوظبي. ويمكن لمشتري أبوظبي المهتمين بسيتي ووك أو بلوواترز الشراء هناك وفق إجراءات دبي، أو مقارنة المشاريع البحرية الجديدة في العاصمة على جزر السعديات وياس والريم مع مستشار بازار."
+        },
+        {
+          "q": "What is Meraas launching now?",
+          "a": "Most recent Meraas launches are at City Walk Crestlane: phases 2 and 3 with 394 residences in February 2025, a further phase of 198 units that June, then Crestlane 4 and 5 with 360 more. Meraas also released a new phase of Nad Al Sheba Gardens in July 2025 and awarded a contract worth over AED 1 billion to build Bluewaters Bay.",
+          "q_ar": "ما المشاريع التي تطلقها مِراس حالياً؟",
+          "a_ar": "تتركز أحدث إطلاقات مِراس في سيتي ووك كريستلين: المرحلتان 2 و3 بعدد 394 وحدة في فبراير 2025، ثم مرحلة أخرى من 198 وحدة في يونيو من العام نفسه، ثم كريستلين 4 و5 بعدد 360 وحدة إضافية. كما طرحت مِراس مرحلة جديدة من حدائق ند الشبا في يوليو 2025، وأرست عقداً تتجاوز قيمته 1 مليار درهم لبناء خليج بلوواترز."
+        },
+        {
+          "q": "Can foreigners buy property from Meraas?",
+          "a": "Yes, in Dubai's freehold areas, which Dubai Law No. 7 of 2006 opened to buyers of every nationality; Meraas communities such as City Walk, Bluewaters and Port de La Mer sell freehold to foreign buyers. A home worth AED 2 million or more can qualify for the UAE Golden Visa. Each sale is registered with the Dubai Land Department.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات من مِراس؟",
+          "a_ar": "نعم، في مناطق التملك الحر في دبي التي فتحها قانون دبي رقم 7 لسنة 2006 للمشترين من كل الجنسيات، وتبيع مجتمعات مِراس مثل سيتي ووك وبلوواترز وميناء لا مير بنظام التملك الحر للأجانب. ويمكن لعقار تبلغ قيمته 2 مليون درهم أو أكثر أن يؤهل للإقامة الذهبية في الإمارات، وتُسجَّل كل عملية بيع لدى دائرة الأراضي والأملاك في دبي."
+        },
+        {
+          "q": "Is Meraas escrow-protected?",
+          "a": "Yes, for off-plan homes: under Dubai Law No. 8 of 2007, payments for a Dubai project sold before completion go into an escrow account registered with the Dubai Land Department, released to the developer as construction progresses. That applies to Meraas launches such as City Walk Crestlane; check the project's escrow number in the sale contract.",
+          "q_ar": "هل مشاريع مِراس محمية بحساب ضمان؟",
+          "a_ar": "نعم بالنسبة إلى الوحدات على الخريطة: فبموجب قانون دبي رقم 8 لسنة 2007 تُودَع دفعات أي مشروع في دبي يُباع قبل إنجازه في حساب ضمان مسجّل لدى دائرة الأراضي والأملاك، ويُصرف للمطوّر بحسب تقدم البناء. وينطبق ذلك على إطلاقات مِراس مثل سيتي ووك كريستلين، لذا تحقق من رقم حساب ضمان المشروع في عقد البيع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-mered",
+      "name": "MERED",
+      "route": "/developers/mered",
+      "pageSlug": "subpage/faq/developer-mered",
+      "sources": [
+        "DB: developers row mered (founded_year 2023, description); no published developments",
+        "https://gulfnews.com/business/corporate-news/international-real-estate-developer-mered-announces-entry-into-the-uae-1.1693984966603 — UAE launch Sept 2023, Dubai Internet City flagship, Pininfarina",
+        "https://www.zawya.com/en/press-release/companies-news/iconic-residences-reaches-key-construction-milestones-mered-highlights-market-confidence-kch4h1d1 — ICONIC Residences G+66, 310 apartments + two-level penthouse, ~125 m / Level 22 in March 2026, Q3 2027 delivery target, CEO Michael Belton",
+        "https://zawya.com/en/projects/construction/dubai-based-developer-mered-acquires-prime-waterfront-plot-in-abu-dhabi-ktlw26zx — Al Reem Island plot within ADGM",
+        "https://www.gulftoday.ae/business/2026/11/05/mered-launches-phase-2-of-riviera-residences-on-al-reem-island — Riviera Residences: Herzog & de Meuron; phase 1 pre-launch sold out Q4 2025, completion Q3 2029; phase 2 389 apartments, 8 Bay Villas, 6 Sky Villas, 1 penthouse, Q2 2030; ADREC H1 2026 Al Reem/Al Maryah sales AED 10.5bn, +153%",
+        "Abu Dhabi Law No. 3 of 2015; Dubai Law No. 8 of 2007 (escrow)"
+      ],
+      "faq": [
+        {
+          "q": "Who is MERED?",
+          "a": "MERED is an international luxury developer that launched in the UAE in September 2023 with its base in Dubai Internet City. Its first UAE tower, ICONIC Residences designed with Pininfarina, is under construction in Dubai, and its second project, Riviera Residences, is on Al Reem Island in Abu Dhabi. Michael Belton is its chief executive.",
+          "q_ar": "من هي شركة ميريد؟",
+          "a_ar": "ميريد شركة تطوير عقاري فاخرة دولية بدأت أعمالها في الإمارات في سبتمبر 2023 واتخذت من مدينة دبي للإنترنت مقراً لها. وبرجها الأول في الدولة، آيكونيك ريزيدنسز بتصميم بينينفارينا، قيد الإنشاء في دبي، أما مشروعها الثاني ريفييرا ريزيدنسز فيقع في جزيرة الريم بأبوظبي، ويشغل مايكل بيلتون منصب رئيسها التنفيذي."
+        },
+        {
+          "q": "Does MERED build in Abu Dhabi?",
+          "a": "Yes. MERED is building Riviera Residences on Al Reem Island, inside the ADGM area, designed by Herzog & de Meuron. Phase 1 pre-launch homes sold out in Q4 2025 and target completion in Q3 2029. Phase 2, launched in November 2026, adds 389 apartments, 8 Bay Villas, 6 Sky Villas and 1 penthouse, with completion targeted for Q2 2030.",
+          "q_ar": "هل تطوّر ميريد مشاريع في أبوظبي؟",
+          "a_ar": "نعم. تبني ميريد مشروع ريفييرا ريزيدنسز في جزيرة الريم ضمن نطاق «ADGM»، بتصميم مكتب هيرتسوغ ودي ميرون. وقد بيعت وحدات ما قبل الإطلاق في المرحلة 1 بالكامل في الربع 4 من عام 2025، ويُستهدف إنجازها في الربع 3 من عام 2029. وتضيف المرحلة 2 التي أُطلقت في نوفمبر 2026 عدد 389 شقة و8 فلل باي و6 فلل سكاي و1 بنتهاوس، ويُستهدف إنجازها في الربع 2 من عام 2030."
+        },
+        {
+          "q": "What is MERED building in Dubai?",
+          "a": "MERED's Dubai project is ICONIC Residences, Design by Pininfarina, in Dubai Internet City: a G+66 tower of 310 apartments plus a two-level penthouse. By March 2026 the structure had reached about 125 metres with work on Level 22, and MERED targets delivery in Q3 2027.",
+          "q_ar": "ما المشروع الذي تبنيه ميريد في دبي؟",
+          "a_ar": "مشروع ميريد في دبي هو آيكونيك ريزيدنسز بتصميم بينينفارينا في مدينة دبي للإنترنت، وهو برج من طابق أرضي و66 طابقاً يضم 310 شقق إضافة إلى بنتهاوس من طابقين. وبحلول مارس 2026 بلغ الهيكل نحو 125 متراً مع العمل في الطابق 22، وتستهدف ميريد التسليم في الربع 3 من عام 2027."
+        },
+        {
+          "q": "Has MERED completed any projects in the UAE?",
+          "a": "Not yet. MERED entered the UAE in 2023, and both of its projects are still under construction: ICONIC Residences in Dubai targets Q3 2027 and Riviera Residences 1 in Abu Dhabi targets Q3 2029. Buyers judging the developer can follow those construction milestones and the escrow status of each project rather than a handover record.",
+          "q_ar": "هل أنجزت ميريد أي مشاريع في الإمارات؟",
+          "a_ar": "ليس بعد. دخلت ميريد السوق الإماراتية عام 2023، ولا يزال مشروعاها قيد الإنشاء: إذ يستهدف آيكونيك ريزيدنسز في دبي الربع 3 من عام 2027، ويستهدف ريفييرا ريزيدنسز 1 في أبوظبي الربع 3 من عام 2029. ويمكن للمشترين تقييم المطوّر بمتابعة مراحل البناء في المشروعين ووضع حساب الضمان لكل منهما، في غياب سجل تسليمات."
+        },
+        {
+          "q": "Can foreigners buy at MERED's Riviera Residences?",
+          "a": "Yes. Al Reem Island is one of Abu Dhabi's investment areas where buyers of every nationality can own freehold, and each purchase is registered with ADREC through DARI. Demand there is strong: ADREC reports AED 10.5 billion of residential sales across Al Reem and Al Maryah islands in H1 2026, up 153% on a year earlier.",
+          "q_ar": "هل يمكن للأجانب الشراء في ريفييرا ريزيدنسز من ميريد؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار في أبوظبي التي يحق فيها للمشترين من كل الجنسيات التملك الحر، وتُسجَّل كل عملية شراء لدى «ADREC» عبر منصة «DARI». والطلب هناك قوي، إذ يفيد مركز أبوظبي العقاري بأن المبيعات السكنية في جزيرتي الريم والماريه بلغت 10.5 مليار درهم في النصف 1 من عام 2026، بارتفاع 153% عن العام السابق."
+        },
+        {
+          "q": "Is MERED escrow-protected?",
+          "a": "Both of MERED's projects fall under escrow rules: Riviera Residences under Abu Dhabi Law No. 3 of 2015, and ICONIC Residences under Dubai Law No. 8 of 2007, which require off-plan payments to go into a project escrow account. Ask for the escrow details in your contract. No MERED project is published on Bazar yet.",
+          "q_ar": "هل مشاريع ميريد محمية بحساب ضمان؟",
+          "a_ar": "يخضع مشروعا ميريد لقواعد حسابات الضمان: ريفييرا ريزيدنسز بموجب قانون أبوظبي رقم 3 لسنة 2015، وآيكونيك ريزيدنسز بموجب قانون دبي رقم 8 لسنة 2007، وكلاهما يوجب إيداع دفعات البيع على الخريطة في حساب ضمان خاص بالمشروع. اطلب تفاصيل حساب الضمان في عقدك، ولم يُنشر أي مشروع لميريد على موقع بازار حتى الآن."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-nakheel",
+      "name": "Nakheel",
+      "route": "/developers/nakheel",
+      "pageSlug": "subpage/faq/developer-nakheel",
+      "sources": [
+        "DB: developers row nakheel (founded_year 2000, description: Palm Jumeirah, Palm Jebel Ali); no published developments",
+        "https://en.wikipedia.org/wiki/Nakheel_Properties — Dubai World subsidiary, Government of Dubai, merged into Dubai Holding 16 March 2024; communities and malls",
+        "https://thenationalnews.com/business/economy/2024/03/16/nakheel-and-meydan-merge-under-umbrella-of-dubai-holding",
+        "https://www.dubaiholding.com/en/our-business/our-companies/dubai-holding-real-estate — Nakheel: Palm Jumeirah, Palm Jebel Ali, Dubai Islands",
+        "https://www.nakheel.com/media-centre/press-release/news-detail/2026/06/16/dubai-s-palm-jebel-ali-villas-head-for-first-handovers-this-year — 723 villas, AED 5bn contracts (2024), AED 3.5bn (April 2026), 80+ hotels, phased handovers from late 2026",
+        "https://www.wam.ae/en/article/bzxeeb2-nakheel-awards-aed35-billion-contracts-build-544 — 544 villas",
+        "https://thenationalnews.com/business/property/2026/08/17/nakheel-starts-handover-of-892-homes-at-redeveloped-jebel-ali-village",
+        "https://www.mediaoffice.ae/en/news/2025/october/29-10/nakheel-unveils-palm-central-private-residences",
+        "Dubai Law No. 7 of 2006 (freehold areas); Dubai Law No. 8 of 2007 (escrow)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Nakheel?",
+          "a": "Nakheel is owned by Dubai Holding: it was merged into Dubai Holding with Meydan on 16 March 2024, and now operates as a brand of Dubai Holding Real Estate alongside Meraas and Dubai Properties. It was earlier a Dubai World company before ownership passed to the Government of Dubai.",
+          "q_ar": "من يملك شركة نخيل؟",
+          "a_ar": "تملك شركة نخيل مجموعة دبي القابضة، إذ دُمجت فيها مع ميدان في 16 مارس 2024، وتعمل اليوم علامةً تابعة لدبي القابضة للعقارات إلى جانب مِراس ودبي للعقارات. وكانت قبل ذلك من شركات دبي العالمية، ثم انتقلت ملكيتها إلى حكومة دبي."
+        },
+        {
+          "q": "What communities has Nakheel built?",
+          "a": "Nakheel built Palm Jumeirah and many of Dubai's established neighbourhoods, including Jumeirah Village, Al Furjan, The Gardens, International City and Jebel Ali Village, plus The World islands and malls such as Ibn Battuta Mall and Nakheel Mall. In August 2026 it began handing over 892 homes at the redeveloped Jebel Ali Village.",
+          "q_ar": "ما المجتمعات التي طوّرتها نخيل؟",
+          "a_ar": "طوّرت نخيل نخلة جميرا وكثيراً من أحياء دبي الراسخة، ومنها قرية جميرا والفرجان والحدائق والمدينة العالمية وقرية جبل علي، إضافة إلى جزر العالم ومراكز تسوق مثل ابن بطوطة مول ونخيل مول. وفي أغسطس 2026 بدأت تسليم 892 منزلاً في قرية جبل علي بعد إعادة تطويرها."
+        },
+        {
+          "q": "When will Palm Jebel Ali villas be handed over?",
+          "a": "Nakheel says Palm Jebel Ali villa handovers are phased, starting from late 2026 and continuing through 2027. It awarded AED 5 billion of contracts in 2024 for 723 Beach and Coral Collection villas, and over AED 3.5 billion in April 2026 for 544 more; the master plan also includes more than 80 hotels and resorts.",
+          "q_ar": "متى تُسلَّم فلل نخلة جبل علي؟",
+          "a_ar": "تقول نخيل إن تسليم فلل نخلة جبل علي يتم على مراحل تبدأ أواخر 2026 وتستمر خلال 2027. وقد أرست في 2024 عقوداً بقيمة 5 مليارات درهم لبناء 723 فيلا ضمن مجموعتي بيتش وكورال، ثم عقوداً تتجاوز 3.5 مليار درهم في أبريل 2026 لبناء 544 فيلا أخرى، ويضم المخطط العام أيضاً أكثر من 80 فندقاً ومنتجعاً."
+        },
+        {
+          "q": "Does Nakheel build in Abu Dhabi?",
+          "a": "No. Nakheel's communities are all in Dubai, from Palm Jumeirah to Palm Jebel Ali and Dubai Islands, and it lists no project in Abu Dhabi. Buyers based in the capital who want a Nakheel home buy under Dubai's rules; for comparable island living in Abu Dhabi, a Bazar advisor can show Saadiyat, Yas and Al Reem launches.",
+          "q_ar": "هل تطوّر نخيل مشاريع في أبوظبي؟",
+          "a_ar": "لا. جميع مجتمعات نخيل في دبي، من نخلة جميرا إلى نخلة جبل علي وجزر دبي، ولا تُدرج أي مشروع في أبوظبي. ويشتري المقيمون في العاصمة منازل نخيل وفق أنظمة دبي، أما من يبحث عن حياة الجزر في أبوظبي فيمكن لمستشار بازار أن يعرض عليه مشاريع السعديات وياس والريم."
+        },
+        {
+          "q": "Can foreigners buy property from Nakheel?",
+          "a": "Yes. Palm Jumeirah, Palm Jebel Ali and Dubai Islands are in freehold areas that Dubai Law No. 7 of 2006 opened to every nationality, so foreign buyers can own there outright, with title registered at the Dubai Land Department. Palm villas typically sit well above the AED 2 million value that qualifies a property owner for the Golden Visa.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات من نخيل؟",
+          "a_ar": "نعم. تقع نخلة جميرا ونخلة جبل علي وجزر دبي في مناطق تملك حر فتحها قانون دبي رقم 7 لسنة 2006 لجميع الجنسيات، لذا يمكن للمشترين الأجانب التملك الكامل هناك مع تسجيل الملكية لدى دائرة الأراضي والأملاك في دبي. وتتجاوز فلل النخلة عادة بكثير قيمة 2 مليون درهم التي تؤهل مالك العقار للإقامة الذهبية."
+        },
+        {
+          "q": "Is Nakheel escrow-protected?",
+          "a": "Yes for off-plan sales: Dubai Law No. 8 of 2007 requires buyers' payments for an unfinished Dubai project to go into an escrow account registered with the Dubai Land Department. That covers Nakheel launches such as Palm Central Private Residences on Palm Jebel Ali, unveiled in October 2025; the escrow number appears in the sale contract.",
+          "q_ar": "هل مشاريع نخيل محمية بحساب ضمان؟",
+          "a_ar": "نعم بالنسبة إلى البيع على الخريطة: إذ يوجب قانون دبي رقم 8 لسنة 2007 إيداع دفعات المشترين لأي مشروع غير منجز في دبي في حساب ضمان مسجّل لدى دائرة الأراضي والأملاك. ويشمل ذلك إطلاقات نخيل مثل بالم سنترال برايفت ريزيدنسز في نخلة جبل علي، التي كُشف عنها في أكتوبر 2025، ويظهر رقم حساب الضمان في عقد البيع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-nine-yards",
+      "name": "Nine Yards",
+      "route": "/developers/nine-yards",
+      "pageSlug": "subpage/faq/developer-nine-yards",
+      "sources": [
+        "DB: developers row nine-yards (founded_year 2020, description); no published developments",
+        "https://www.zawya.com/en/press-release/companies-news/newly-established-abu-dhabi-based-real-estate-developer-nine-yards-launches-sea-la-vie-a-2bln-dirham-project-at-yas-bay-nngqs10j — Ethmar International Holding + Al Nahda International Holding; Sea La Vie AED 2bn, Yas Bay",
+        "https://www.zawya.com/en/business/real-estate/nine-yards-breaks-ground-on-544mln-abu-dhabi-residential-project-j2rg28tp — 668 homes, 30,000+ sq m, infinity lagoon",
+        "https://zawya.com/press-release/companies-news/nine-yards-real-estate-development-appoints-zublin-as-main-contractor-for-yas-bays-luxurious-project-sea-la-vie-dw5yejmq",
+        "https://www.propertyfinder.ae/en/new-projects/dev/nine-yards — Sea La Vie from AED 2,232,000, sold out, no developer stock",
+        "https://www.zawya.com/en/press-release/companies-news/nine-yards-plus-holding-and-jacob-and-co-announce-exclusive-partnership-for-reem-island-waterfront-residential-project-p9oecexm — Dec 2023, construction 2024, completion 2027",
+        "Abu Dhabi Law No. 3 of 2015 (escrow); adro.gov.ae Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Nine Yards?",
+          "a": "Nine Yards Real Estate Development is an Abu Dhabi developer formed as a partnership between Ethmar International Holding and Al Nahda International Holding. It entered the market with a single large waterfront project, Sea La Vie at Yas Bay on Yas Island, and has since announced a branded residential partnership with Jacob & Co on Al Reem Island.",
+          "q_ar": "من يملك شركة ناين ياردز؟",
+          "a_ar": "ناين ياردز للتطوير العقاري شركة مقرها أبوظبي تأسست شراكةً بين إثمار القابضة الدولية والنهضة الدولية القابضة. ودخلت السوق بمشروع بحري كبير واحد هو سي لا في في خليج ياس بجزيرة ياس، ثم أعلنت شراكة لمشروع سكني يحمل علامة جاكوب آند كو في جزيرة الريم."
+        },
+        {
+          "q": "What is Sea La Vie by Nine Yards?",
+          "a": "Sea La Vie is Nine Yards' AED 2 billion development at Yas Bay on Yas Island: 668 homes over more than 30,000 sq m, from one- to four-bedroom apartments to lofts, duplexes, townhouses and penthouses, arranged around an infinity lagoon. Ed. Züblin was appointed main contractor after ground was broken.",
+          "q_ar": "ما هو مشروع سي لا في من ناين ياردز؟",
+          "a_ar": "سي لا في مشروع ناين ياردز في خليج ياس بجزيرة ياس بقيمة 2 مليار درهم، ويضم 668 وحدة سكنية على مساحة تتجاوز 30,000 متر مربع، من شقق بغرفة واحدة إلى أربع غرف إلى لوفت ودوبلكس وتاون هاوس وبنتهاوس، تحيط جميعها ببحيرة لا متناهية. وعُيّنت شركة زوبلين مقاولاً رئيسياً بعد وضع حجر الأساس."
+        },
+        {
+          "q": "How much does a home at Sea La Vie cost?",
+          "a": "Sea La Vie launched from AED 2,232,000, according to Property Finder, which lists the developer's own stock as sold out, so homes there now change hands on resale at the sellers' asking prices. Ask a Bazar advisor for current resale listings and recent transaction prices at Yas Bay before making an offer.",
+          "q_ar": "كم سعر الوحدة في سي لا في؟",
+          "a_ar": "طُرح مشروع سي لا في بسعر يبدأ من 2,232,000 درهم بحسب بروبرتي فايندر، الذي يذكر أن وحدات المطوّر نفسه بيعت بالكامل، لذا تُتداول الوحدات هناك الآن عبر إعادة البيع وبالأسعار التي يطلبها البائعون. اسأل مستشار بازار عن عروض إعادة البيع الحالية وأسعار الصفقات الأخيرة في خليج ياس قبل تقديم أي عرض."
+        },
+        {
+          "q": "What is the Nine Yards and Jacob & Co project on Al Reem Island?",
+          "a": "In December 2023, Nine Yards Plus Holding and the jeweller Jacob & Co announced an exclusive partnership for a waterfront residential project of apartments and townhouses on Al Reem Island. The announcement said construction would start in 2024 and complete in 2027; no sales launch or update has been published since, so confirm its status with the developer.",
+          "q_ar": "ما مشروع ناين ياردز وجاكوب آند كو في جزيرة الريم؟",
+          "a_ar": "في ديسمبر 2023 أعلنت ناين ياردز بلس القابضة ودار المجوهرات جاكوب آند كو شراكة حصرية لمشروع سكني على الواجهة البحرية في جزيرة الريم يضم شققاً وتاون هاوس. وذكر الإعلان أن البناء سيبدأ في 2024 وينتهي في 2027، ولم يُنشر منذ ذلك الحين إطلاق للمبيعات أو تحديث، لذا تحقق من وضعه لدى المطوّر."
+        },
+        {
+          "q": "Can foreigners buy from Nine Yards?",
+          "a": "Yes. Both Yas Island and Al Reem Island are Abu Dhabi investment areas open to freehold ownership by every nationality since the 2019 amendment to the emirate's real estate law. A Sea La Vie home at its AED 2,232,000 launch price is above the AED 2 million value that can qualify an owner for a Golden Visa, provided at least AED 2 million is paid.",
+          "q_ar": "هل يمكن للأجانب الشراء من ناين ياردز؟",
+          "a_ar": "نعم. جزيرتا ياس والريم من مناطق الاستثمار في أبوظبي المفتوحة للتملك الحر لجميع الجنسيات منذ تعديل قانون العقارات في الإمارة عام 2019. ويتجاوز سعر الإطلاق لوحدة في سي لا في البالغ 2,232,000 درهم قيمة 2 مليون درهم التي قد تؤهل المالك للإقامة الذهبية، شرط أن يكون قد سدّد 2 مليون درهم على الأقل."
+        },
+        {
+          "q": "Is Nine Yards escrow-protected?",
+          "a": "Yes, for off-plan sales: Abu Dhabi Law No. 3 of 2015 requires payments for a project sold before completion to go into its escrow account, released as construction progresses. That applies to Sea La Vie and to any Al Reem launch; check the escrow account in the sale contract and the project's registration on DARI. No Nine Yards project is published on Bazar yet.",
+          "q_ar": "هل مشاريع ناين ياردز محمية بحساب ضمان؟",
+          "a_ar": "نعم بالنسبة إلى البيع على الخريطة: إذ يوجب قانون أبوظبي رقم 3 لسنة 2015 إيداع دفعات أي مشروع يُباع قبل إنجازه في حساب الضمان الخاص به، ويُصرف بحسب تقدم البناء. وينطبق ذلك على سي لا في وعلى أي إطلاق في الريم، لذا تحقق من حساب الضمان في عقد البيع ومن تسجيل المشروع على منصة «DARI»، ولم يُنشر أي مشروع لناين ياردز على موقع بازار حتى الآن."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-nshama",
+      "name": "Nshama",
+      "route": "/developers/nshama",
+      "pageSlug": "subpage/faq/developer-nshama",
+      "sources": [
+        "DB: developers row nshama (founded_year 2014, description: Town Square Dubai); no published developments",
+        "https://gulfbusiness.com/en/2015/industry/nshama-launches-massive-residential-project-town-square-dubai — 750 acres, 3,000 townhouses, 18,000 apartments (2015)",
+        "https://www.pressreader.com/uae/khaleej-times/20170929/282252370724093 — Zahra townhouses handover, 320 units, September 2017",
+        "https://www.propertyfinder.ae/en/new-projects/dev/nshama/dubai — Camden, Alton, Odessa, Ellison (delivery 2027–2028; Ellison sales from 14 July 2025)",
+        "https://famproperties.com/developers/nshama — Maha Townhouses, Holland Gardens handovers 2025",
+        "Dubai Law No. 7 of 2006 (freehold areas); Dubai Law No. 8 of 2007 (escrow)"
+      ],
+      "faq": [
+        {
+          "q": "Who is Nshama?",
+          "a": "Nshama is a Dubai developer founded in 2014 and known for one master-planned community, Town Square Dubai. Launched in 2015, Town Square was planned across 750 acres with about 3,000 townhouses and 18,000 apartments, alongside parks, retail and schools, and Nshama has been building it out in phases ever since.",
+          "q_ar": "من هي شركة نشاما؟",
+          "a_ar": "نشاما شركة تطوير عقاري في دبي تأسست عام 2014، وتُعرف بمجتمع مخطط واحد هو تاون سكوير دبي. وقد أُطلق تاون سكوير عام 2015 على مساحة 750 فداناً بخطة تضم نحو 3,000 تاون هاوس و18,000 شقة إلى جانب الحدائق والمتاجر والمدارس، وتواصل نشاما بناءه على مراحل منذ ذلك الحين."
+        },
+        {
+          "q": "Does Nshama deliver on time?",
+          "a": "Nshama's first handover, 320 Zahra townhouses at Town Square, began in September 2017 and was reported as ahead of schedule. Later phases such as Maha Townhouses and Holland Gardens were listed for 2025 handover. Ask for the current construction progress of any phase you buy, which the Dubai Land Department publishes for registered projects.",
+          "q_ar": "هل تسلّم نشاما مشاريعها في موعدها؟",
+          "a_ar": "بدأ أول تسليم لنشاما، وهو 320 تاون هاوس في مجمع زهرة بتاون سكوير، في سبتمبر 2017، وأُفيد بأنه جاء قبل الموعد المحدد. وأُدرجت مراحل لاحقة مثل تاون هاوس مها وهولاند غاردنز للتسليم في 2025. واسأل عن نسبة الإنجاز الحالية لأي مرحلة تشتري فيها، وهي نسبة تنشرها دائرة الأراضي والأملاك في دبي للمشاريع المسجّلة."
+        },
+        {
+          "q": "What is Nshama selling now?",
+          "a": "Nshama's current launches are new apartment buildings inside Town Square, including Camden, Alton, Odessa and Ellison, with deliveries listed for 2027 and 2028. Sales at Ellison opened on 14 July 2025. Town Square sits off Al Qudra Road in Dubai, so these are mid-market homes rather than waterfront ones.",
+          "q_ar": "ماذا تبيع نشاما حالياً؟",
+          "a_ar": "تتمثل إطلاقات نشاما الحالية في مبانٍ سكنية جديدة داخل تاون سكوير، منها كامدن وألتون وأوديسا وإليسون، مع مواعيد تسليم مدرجة في 2027 و2028. وبدأت مبيعات إليسون في 14 يوليو 2025. ويقع تاون سكوير قرب شارع القدرة في دبي، لذا فهي مساكن للفئة المتوسطة لا على الواجهة البحرية."
+        },
+        {
+          "q": "Does Nshama build in Abu Dhabi?",
+          "a": "No. Nshama's work is concentrated in Town Square Dubai, and it lists no project in Abu Dhabi. Abu Dhabi buyers wanting a similar family community at mid-market prices usually compare mainland communities such as Yas Acres, Al Reeman or Masdar City; a Bazar advisor can set those against Town Square.",
+          "q_ar": "هل تطوّر نشاما مشاريع في أبوظبي؟",
+          "a_ar": "لا. يتركز عمل نشاما في تاون سكوير دبي، ولا تُدرج أي مشروع في أبوظبي. ويقارن مشترو أبوظبي الباحثون عن مجتمع عائلي مماثل بأسعار متوسطة عادةً بين مجتمعات مثل ياس إيكرز والريمان ومدينة مصدر، ويمكن لمستشار بازار أن يضعها في مقارنة مع تاون سكوير."
+        },
+        {
+          "q": "Can foreigners buy in Town Square Dubai?",
+          "a": "Yes. Town Square is a freehold community, within the areas that Dubai Law No. 7 of 2006 opened to buyers of every nationality, so foreign buyers can own apartments and townhouses there outright. Most Town Square homes sit below the AED 2 million value that would qualify a single property for the Golden Visa.",
+          "q_ar": "هل يمكن للأجانب الشراء في تاون سكوير دبي؟",
+          "a_ar": "نعم. تاون سكوير مجتمع تملك حر ضمن المناطق التي فتحها قانون دبي رقم 7 لسنة 2006 للمشترين من كل الجنسيات، لذا يمكن للأجانب تملك الشقق والتاون هاوس فيه تملكاً كاملاً. وتقل أسعار معظم منازل تاون سكوير عن قيمة 2 مليون درهم التي تؤهل عقاراً واحداً للإقامة الذهبية."
+        },
+        {
+          "q": "Is Nshama escrow-protected?",
+          "a": "Yes for off-plan homes: under Dubai Law No. 8 of 2007, payments for Town Square phases sold before completion, such as Ellison, go into a project escrow account registered with the Dubai Land Department and are released as building progresses. Check the escrow account number in your contract. No Nshama project is published on Bazar yet.",
+          "q_ar": "هل مشاريع نشاما محمية بحساب ضمان؟",
+          "a_ar": "نعم بالنسبة إلى الوحدات على الخريطة: فبموجب قانون دبي رقم 8 لسنة 2007 تُودَع دفعات مراحل تاون سكوير المباعة قبل إنجازها، مثل إليسون، في حساب ضمان خاص بالمشروع مسجّل لدى دائرة الأراضي والأملاك في دبي، وتُصرف بحسب تقدم البناء. تحقق من رقم حساب الضمان في عقدك، ولم يُنشر أي مشروع لنشاما على موقع بازار حتى الآن."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-one-development",
+      "name": "ONE Development",
+      "route": "/developers/one-development",
+      "pageSlug": "subpage/faq/developer-one-development",
+      "sources": [
+        "DB: developers row one-development (founded_year 2023, description); no published developments",
+        "https://www.zawya.com/en/press-release/companies-news/one-development-launches-one-residence-in-abu-dhabi-q6caramn — founder and chairman Ali Al Gebely; Al Gebely Holding 43-year legacy; ONE Residence 31 storeys, Al Reem Island; Laguna Residence Dubai; Egypt",
+        "https://www.zawya.com/en/press-release/companies-news/one-development-set-to-launch-aed-2bln-project-in-city-of-arabia-redefining-the-uaes-real-estate-landscape-b2h827l2 — AED 2bn City of Arabia project; offices in Abu Dhabi and Dubai",
+        "https://www.propertyfinder.ae/en/new-projects/dev/one-development/abu-dhabi — ONE Residence from AED 3,644,000, Q2 2028, sold out; Joud Residence from AED 1,460,000, Q2 2029",
+        "https://www.propertyfinder.ae/en/new-projects/one-development/one-residence — 10/40/50 plan",
+        "Abu Dhabi Law No. 3 of 2015 (escrow); adro.gov.ae Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who owns ONE Development?",
+          "a": "ONE Development was founded by Ali Al Gebely, who is its chairman, and draws on Al Gebely Holding, a family business with a 43-year history. It has offices in Abu Dhabi and Dubai and projects in the UAE and Egypt. As a young developer, its UAE towers are still under construction, so it has no completed handover record here yet.",
+          "q_ar": "من يملك شركة ون ديفيلوبمنت؟",
+          "a_ar": "أسس ون ديفيلوبمنت علي الجبلي الذي يرأس مجلس إدارتها، وتستند الشركة إلى الجبلي القابضة، وهي شركة عائلية يمتد تاريخها 43 عاماً. ولها مكاتب في أبوظبي ودبي ومشاريع في الإمارات ومصر. وبما أنها مطوّر حديث، فلا تزال أبراجها في الإمارات قيد الإنشاء، ولا يتوفر لها بعد سجل تسليمات مكتملة في الدولة."
+        },
+        {
+          "q": "Does ONE Development build in Abu Dhabi?",
+          "a": "Yes. ONE Development's Abu Dhabi debut is ONE Residence, a 31-storey tower on Al Reem Island with one- to four-bedroom apartments and duplexes, launched at Emirates Palace and promoted for its built-in aerial mobility features. Property Finder lists it from AED 3,644,000 at launch, delivery in Q2 2028, and the developer's stock as sold out.",
+          "q_ar": "هل تطوّر ون ديفيلوبمنت مشاريع في أبوظبي؟",
+          "a_ar": "نعم. أول مشاريع ون ديفيلوبمنت في أبوظبي هو ون ريزيدنس، برج من 31 طابقاً في جزيرة الريم يضم شققاً ودوبلكس من غرفة واحدة إلى أربع غرف، أُطلق في قصر الإمارات ويُروَّج له بمرافق التنقل الجوي المدمجة. ويذكر بروبرتي فايندر أن سعره عند الإطلاق بدأ من 3,644,000 درهم، وأن التسليم في الربع 2 من عام 2028، وأن وحدات المطوّر بيعت بالكامل."
+        },
+        {
+          "q": "What is Joud Residence by ONE Development?",
+          "a": "Joud Residence is ONE Development's second Al Reem Island project and the one still selling off-plan. Property Finder lists it from AED 1,460,000 at launch, with delivery in Q2 2029. It offers a lower entry point than ONE Residence on the same island; ask a Bazar advisor for the unit mix and payment schedule.",
+          "q_ar": "ما هو مشروع جود ريزيدنس من ون ديفيلوبمنت؟",
+          "a_ar": "جود ريزيدنس هو المشروع الثاني لون ديفيلوبمنت في جزيرة الريم، وهو المعروض حالياً للبيع على الخريطة. ويذكر بروبرتي فايندر أن سعره عند الإطلاق يبدأ من 1,460,000 درهم، مع التسليم في الربع 2 من عام 2029. ويوفر نقطة دخول أقل من ون ريزيدنس في الجزيرة نفسها، ويمكنك طلب توزيع الوحدات وجدول السداد من مستشار بازار."
+        },
+        {
+          "q": "What has ONE Development built in Dubai?",
+          "a": "In Dubai, ONE Development launched Laguna Residence, whose first release sold out within weeks, and announced an AED 2 billion boutique community in City of Arabia on Sheikh Mohamed bin Zayed Road. Both are off-plan, so buyers comparing it with older Dubai developers should look at construction progress rather than completed homes.",
+          "q_ar": "ماذا طوّرت ون ديفيلوبمنت في دبي؟",
+          "a_ar": "في دبي أطلقت ون ديفيلوبمنت مشروع لاغونا ريزيدنس الذي بيعت دفعته الأولى خلال أسابيع، وأعلنت عن مجتمع سكني بقيمة 2 مليار درهم في سيتي أوف أرابيا على شارع الشيخ محمد بن زايد. والمشروعان على الخريطة، لذا ينبغي لمن يقارنها بمطوري دبي الأقدم أن ينظر إلى نسبة الإنجاز لا إلى منازل مكتملة."
+        },
+        {
+          "q": "Can foreigners buy from ONE Development in Abu Dhabi?",
+          "a": "Yes. Al Reem Island is one of Abu Dhabi's investment areas, open to freehold ownership by every nationality, so foreign buyers can own at ONE Residence and Joud Residence, with title registered on DARI. At AED 3,644,000, a ONE Residence home clears the AED 2 million Golden Visa value; a Joud home from AED 1,460,000 does not on its own.",
+          "q_ar": "هل يمكن للأجانب الشراء من ون ديفيلوبمنت في أبوظبي؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار في أبوظبي المفتوحة للتملك الحر لجميع الجنسيات، لذا يمكن للأجانب التملك في ون ريزيدنس وجود ريزيدنس مع تسجيل الملكية على منصة «DARI». وبسعر 3,644,000 درهم تتجاوز وحدة في ون ريزيدنس قيمة 2 مليون درهم المطلوبة للإقامة الذهبية، أما وحدة في جود ريزيدنس بسعر يبدأ من 1,460,000 درهم فلا تكفي وحدها."
+        },
+        {
+          "q": "What payment plan does ONE Development offer?",
+          "a": "ONE Residence was sold on a 10/40/50 plan: 10% on booking, 40% during construction and 50% at handover, according to its Property Finder listing. Under Abu Dhabi Law No. 3 of 2015, these instalments go into the project's escrow account, not to the developer directly. Confirm the exact schedule in the sale contract.",
+          "q_ar": "ما خطة السداد التي تقدمها ون ديفيلوبمنت؟",
+          "a_ar": "بيع ون ريزيدنس بخطة 10/40/50: أي 10% عند الحجز و40% خلال البناء و50% عند التسليم، بحسب صفحته على بروبرتي فايندر. وبموجب قانون أبوظبي رقم 3 لسنة 2015 تُودَع هذه الأقساط في حساب ضمان المشروع لا لدى المطوّر مباشرة. تحقق من الجدول الدقيق في عقد البيع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-rak-properties",
+      "name": "RAK Properties",
+      "route": "/developers/rak-properties",
+      "pageSlug": "subpage/faq/developer-rak-properties",
+      "sources": [
+        "DB: developers row rak-properties (founded_year 2005, description); no published developments",
+        "https://www.rakproperties.ae/news/rak-properties-crowns-20th-anniversary-year-with-impressive-2025-results-driven-by-robust-sales-strategic-partnerships-and-accelerated-project-development/ — FY2025 (6 Feb 2026): revenue AED 1.84bn +31%, net profit AED 404.30m +44%, sales AED 3.36bn +142%, backlog AED 3.47bn +87%; ADX RAKPROP; RAK Government stake increased 2024; Mina, Raha Island, Hayat, The Strand, Marjan Beach; ~2,000 units handed over by end-2026; AED 5bn commitment, AED 5.4bn achieved; chairman and CEO",
+        "https://www.marketscreener.com/news/rak-properties-pjsc-reports-earnings-results-for-the-full-year-ended-december-31-2025-ce7e5ad8dc8bf722",
+        "https://tranio.com/articles/buying-property-in-ras-al-khaimah/ and https://bayut.com/mybayut/top-areas-buy-freehold-properties-rak — RAK Municipality freehold areas (Mina Al Arab, Al Marjan Island, Al Hamra Village)"
+      ],
+      "faq": [
+        {
+          "q": "Is RAK Properties a listed company?",
+          "a": "Yes. RAK Properties is listed on the Abu Dhabi Securities Exchange under the ticker RAKPROP, and it marked its 20th anniversary in 2025, having been founded in 2005. The Government of Ras Al Khaimah increased its stake in the company in 2024, and it publishes audited results every year.",
+          "q_ar": "هل شركة رأس الخيمة العقارية مدرجة في البورصة؟",
+          "a_ar": "نعم. شركة رأس الخيمة العقارية مدرجة في سوق أبوظبي للأوراق المالية، واحتفلت بذكراها الـ20 في 2025 بعد تأسيسها عام 2005. وقد رفعت حكومة رأس الخيمة حصتها في الشركة في 2024، وتنشر الشركة نتائج مالية مدققة كل عام."
+        },
+        {
+          "q": "What were RAK Properties' 2025 results?",
+          "a": "For 2025, RAK Properties reported revenue of AED 1.84 billion, up 31%, and net profit after tax of AED 404.3 million, up 44%. Sales reached a record AED 3.36 billion, up 142%, and the development backlog stood at AED 3.47 billion at year end, up 87%, according to results published on 6 February 2026.",
+          "q_ar": "ما نتائج رأس الخيمة العقارية لعام 2025؟",
+          "a_ar": "أعلنت رأس الخيمة العقارية لعام 2025 إيرادات بلغت 1.84 مليار درهم بارتفاع 31%، وصافي ربح بعد الضريبة قدره 404.3 مليون درهم بارتفاع 44%. وبلغت المبيعات مستوى قياسياً عند 3.36 مليار درهم بارتفاع 142%، ووصلت قيمة المشاريع قيد التطوير غير المعترف بإيراداتها إلى 3.47 مليار درهم في نهاية العام بارتفاع 87%، بحسب النتائج المنشورة في 6 فبراير 2026."
+        },
+        {
+          "q": "Where is RAK Properties building now?",
+          "a": "Most RAK Properties work is at Mina, its waterfront master plan in Ras Al Khaimah, with projects such as Nura, Mirasol, Solera, Cape Hayat, Quattro Del Mar and Armani Beach Residences. It is also developing Raha Island and The Strand, a mainland mixed-use plan, and holds land at Marjan Beach. It aims to have handed over nearly 2,000 units by the end of 2026.",
+          "q_ar": "أين تبني رأس الخيمة العقارية حالياً؟",
+          "a_ar": "يتركز معظم عمل رأس الخيمة العقارية في مينا، مخططها البحري في رأس الخيمة، بمشاريع مثل نورا وميراسول وسوليرا وكيب حياة وكواترو ديل مار وأرماني بيتش ريزيدنسز. كما تطوّر جزيرة الراحة ومشروع ذا ستراند متعدد الاستخدامات على البر الرئيسي، وتملك أراضي في شاطئ المرجان. وتهدف إلى تسليم نحو 2,000 وحدة بحلول نهاية 2026."
+        },
+        {
+          "q": "Does RAK Properties build in Abu Dhabi?",
+          "a": "No. Although its shares trade in Abu Dhabi, RAK Properties builds only in Ras Al Khaimah, and its 2025 results name no project in Abu Dhabi; it sells to UAE-wide buyers through a sales centre in Dubai. Buyers based in Abu Dhabi who want beachfront homes in the capital itself can compare Saadiyat, Yas and Hudayriyat launches with a Bazar advisor.",
+          "q_ar": "هل تطوّر رأس الخيمة العقارية مشاريع في أبوظبي؟",
+          "a_ar": "لا. رغم تداول أسهمها في أبوظبي، تبني رأس الخيمة العقارية في رأس الخيمة فقط، ولا تذكر نتائجها لعام 2025 أي مشروع في أبوظبي، وتبيع للمشترين من أنحاء الدولة عبر مركز مبيعات في دبي. ويمكن لمشتري أبوظبي الراغبين في منازل على الشاطئ داخل العاصمة نفسها مقارنة مشاريع السعديات وياس والحديريات مع مستشار بازار."
+        },
+        {
+          "q": "Can foreigners buy property from RAK Properties?",
+          "a": "Yes, in Ras Al Khaimah's freehold areas, which RAK Municipality lists as including Mina Al Arab, Al Marjan Island and Al Hamra Village; non-Emirati buyers may own property outright there. RAK Properties' Mina projects sit within Mina Al Arab. Outside those areas ownership is limited to UAE nationals, so confirm a unit's status before buying.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات من رأس الخيمة العقارية؟",
+          "a_ar": "نعم، في مناطق التملك الحر في رأس الخيمة التي تذكر بلدية رأس الخيمة أن من بينها ميناء العرب وجزيرة المرجان وقرية الحمراء، إذ يحق لغير المواطنين التملك الكامل فيها. وتقع مشاريع مينا التابعة لرأس الخيمة العقارية ضمن ميناء العرب. أما خارج هذه المناطق فيقتصر التملك على مواطني الإمارات، لذا تحقق من وضع الوحدة قبل الشراء."
+        },
+        {
+          "q": "Who runs RAK Properties?",
+          "a": "RAK Properties is chaired by Abdulaziz Abdullah Al Zaabi, and its chief executive is Sameh Muhtadi. Under their plan the company committed to AED 5 billion of new projects and reports having launched AED 5.4 billion, while the Government of Ras Al Khaimah, which raised its shareholding in 2024, remains a major owner.",
+          "q_ar": "من يدير شركة رأس الخيمة العقارية؟",
+          "a_ar": "يرأس مجلس إدارة رأس الخيمة العقارية عبدالعزيز عبدالله الزعابي، ويشغل سامح مهتدي منصب الرئيس التنفيذي. وفي إطار خطتهما التزمت الشركة بمشاريع جديدة بقيمة 5 مليارات درهم، وتفيد بأنها أطلقت مشاريع بقيمة 5.4 مليار درهم، فيما تبقى حكومة رأس الخيمة، التي رفعت حصتها في 2024، من كبار المساهمين."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-samana",
+      "name": "Samana Developers",
+      "route": "/developers/samana",
+      "pageSlug": "subpage/faq/developer-samana",
+      "sources": [
+        "DB: developers row samana (founded_year 2018, description: private pools); no published developments",
+        "https://www.zawya.com/en/press-release/companies-news/samana-developers-celebrates-major-milestone-with-handover-of-samana-santorini-mclbx6ib — 157-unit Santorini, 1,300+ units handed over, 13,000 under construction",
+        "https://gulfnews.com/amp/story/business%2Fcorporate-news%2Fsamana-developers-starts-handover-of-its-greens-apartments-in-arjan-1.1613736028901 — Samana Greens handover 2021",
+        "https://www.khaleejtimes.com/business/property/dh100m-samana-hills-project-delivered-with-private-pools-feature-in-residential-projects — Samana Hills 2022; CEO Imran Farooq",
+        "https://zawya.com/en/press-release/companies-news/samana-developers-expands-footprint-with-new-abu-dhabi-office-opening-vaocwhl7 — Abu Dhabi office, Al Falah Tower, 40+ consultants, Abu Dhabi clients 20% of sales",
+        "https://samanadevelopers.com/blogs/expanding-our-vision-across-the-uae-samana-developers-opens-new-office-in-abu-dhabi — January 2025; head office Bay Square, Business Bay",
+        "https://www.zawya.com/en/business/real-estate/samana-unveils-new-147-unit-residential-project-in-dubai-south-fvqr5iff — Hills South 3, 147 units (Oct 2025)",
+        "https://www.zawya.com/en/press-release/companies-news/samana-redefines-arjan-living-with-flexible-homes-and-private-pools-at-imperial-garden-397366 — Imperial Garden AED 398m, March 2029",
+        "https://www.khaleejtimes.com/business/property/samana-launches-collecta-taking-its-next-growth-chapter-into-premium-real-estate — COLLECTA, The World Islands, GDV over AED 4bn",
+        "Dubai Law No. 7 of 2006; Dubai Law No. 8 of 2007"
+      ],
+      "faq": [
+        {
+          "q": "Who is Samana Developers?",
+          "a": "Samana Developers is a Dubai developer headquartered in Bay Square, Business Bay, led by chief executive Imran Farooq. It builds mid-market apartment buildings in communities such as Arjan, Dubai Studio City and Dubai South, and is known for apartments with their own private pools. Its first project, Samana Greens in Arjan, began handover in 2021.",
+          "q_ar": "من هي شركة سامانا للتطوير العقاري؟",
+          "a_ar": "سامانا للتطوير العقاري شركة في دبي مقرها الرئيسي في باي سكوير بالخليج التجاري، ويقودها الرئيس التنفيذي عمران فاروق. وتبني مباني شقق للفئة المتوسطة في مجتمعات مثل أرجان ومدينة دبي للاستوديوهات ودبي الجنوب، وتُعرف بشققها ذات المسابح الخاصة. وبدأ تسليم أول مشاريعها، سامانا غرينز في أرجان، عام 2021."
+        },
+        {
+          "q": "How many homes has Samana delivered?",
+          "a": "Samana says it has handed over more than 1,300 units across its portfolio and has about 13,000 under construction, figures it gave when completing the 157-unit Samana Santorini in Dubai Studio City. Earlier completions include Samana Hills in Arjan in 2022 and Samana Park Views in late 2024. The gap between delivered and pipeline units is worth weighing.",
+          "q_ar": "كم عدد الوحدات التي سلّمتها سامانا؟",
+          "a_ar": "تقول سامانا إنها سلّمت أكثر من 1,300 وحدة في محفظتها، وإن لديها نحو 13,000 وحدة قيد الإنشاء، وهي أرقام أعلنتها عند إنجاز مشروع سامانا سانتوريني المكون من 157 وحدة في مدينة دبي للاستوديوهات. ومن إنجازاتها السابقة سامانا هيلز في أرجان عام 2022 وسامانا بارك فيوز أواخر 2024. ويجدر بالمشتري أن يوازن بين الوحدات المسلّمة وتلك قيد الإنشاء."
+        },
+        {
+          "q": "Does Samana build in Abu Dhabi?",
+          "a": "Not yet. Samana's projects are all in Dubai, but in January 2025 it opened an Abu Dhabi office in Al Falah Tower with more than 40 property consultants, saying Abu Dhabi clients account for 20% of its sales. So the capital is a sales market for Samana, not yet a place where it builds.",
+          "q_ar": "هل تطوّر سامانا مشاريع في أبوظبي؟",
+          "a_ar": "ليس بعد. جميع مشاريع سامانا في دبي، لكنها افتتحت في يناير 2025 مكتباً في أبوظبي ببرج الفلاح يضم أكثر من 40 مستشاراً عقارياً، وذكرت أن عملاء أبوظبي يمثلون 20% من مبيعاتها. فالعاصمة بالنسبة إلى سامانا سوق للمبيعات، وليست بعد مكاناً تبني فيه."
+        },
+        {
+          "q": "What is Samana launching now?",
+          "a": "Recent Samana launches include Samana Hills South 3 in Dubai South with 147 units (October 2025), Samana Imperial Garden in Arjan, an AED 398 million project due for handover in March 2029, and Samana Ocean Pearl on Dubai Islands. It has also launched COLLECTA, a premium brand whose first project, on The World Islands, has a value of over AED 4 billion.",
+          "q_ar": "ما المشاريع التي تطلقها سامانا حالياً؟",
+          "a_ar": "من أحدث إطلاقات سامانا: سامانا هيلز ساوث 3 في دبي الجنوب بعدد 147 وحدة في أكتوبر 2025، وسامانا إمبريال غاردن في أرجان، وهو مشروع بقيمة 398 مليون درهم موعد تسليمه مارس 2029، وسامانا أوشن بيرل في جزر دبي. كما أطلقت علامة كوليكتا الراقية، ويقع مشروعها الأول في جزر العالم بقيمة تتجاوز 4 مليارات درهم."
+        },
+        {
+          "q": "Do Samana apartments have private pools?",
+          "a": "Many do. Private pools inside apartments are Samana's signature: projects from Samana Hills in Arjan to Samana Imperial Garden put a plunge pool on the balcony or terrace of selected units. Availability varies by unit type, so check the floor plan, and note that pool units usually carry a higher service charge.",
+          "q_ar": "هل تحتوي شقق سامانا على مسابح خاصة؟",
+          "a_ar": "كثير منها كذلك. فالمسابح الخاصة داخل الشقق هي السمة المميزة لسامانا، إذ تضع مشاريعها من سامانا هيلز في أرجان إلى سامانا إمبريال غاردن مسبحاً صغيراً في شرفة أو تراس وحدات مختارة. ويختلف التوافر بحسب نوع الوحدة، لذا راجع المخطط، ولاحظ أن الوحدات ذات المسابح تحمل عادة رسوم خدمة أعلى."
+        },
+        {
+          "q": "Can foreigners buy from Samana and is it escrow-protected?",
+          "a": "Yes. Samana builds in Dubai freehold areas such as Arjan, Dubai Studio City and Dubai South, open to every nationality under Dubai Law No. 7 of 2006. Its off-plan sales fall under Dubai Law No. 8 of 2007, so instalments go into a project escrow account registered with the Dubai Land Department. No Samana project is published on Bazar yet.",
+          "q_ar": "هل يمكن للأجانب الشراء من سامانا وهل مشاريعها محمية بحساب ضمان؟",
+          "a_ar": "نعم. تبني سامانا في مناطق تملك حر في دبي مثل أرجان ومدينة دبي للاستوديوهات ودبي الجنوب، وهي مفتوحة لجميع الجنسيات بموجب قانون دبي رقم 7 لسنة 2006. وتخضع مبيعاتها على الخريطة لـقانون دبي رقم 8 لسنة 2007، لذا تُودَع الأقساط في حساب ضمان خاص بالمشروع مسجّل لدى دائرة الأراضي والأملاك في دبي، ولم يُنشر أي مشروع لسامانا على موقع بازار حتى الآن."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-tiger-properties",
+      "name": "Tiger Properties",
+      "route": "/developers/tiger-properties",
+      "pageSlug": "subpage/faq/developer-tiger-properties",
+      "sources": [
+        "DB: developers row tiger-properties (founded_year 1976, description); no published developments",
+        "https://www.zawya.com/en/press-release/companies-news/tiger-properties-successfully-completes-the-handover-of-nobles-tower-p23spjcy — Tiger Group founded 1976 in Sharjah; Nobles Tower 46 storeys, 549 units, 14 October 2024",
+        "https://www.khaleejtimes.com/kt-network/tiger-properties-successfully-completes-the-handover-of-cloud-towers — Cloud Towers JVT handover 29 October 2025",
+        "https://www.forbesmiddleeast.com/lists/top-100-arab-family-businesses-2026/tiger-holding/ — Tiger Holding, Top 100 Arab Family Businesses 2026",
+        "https://www.propertyfinder.ae/en/new-projects/tiger-properties/renad-tower — Renad Tower, Al Reem: from AED 1,073,711, 1–3 bed, 588–1,690 sq ft, construction from 21 April 2024, 20/50/30, Sept/Q4 2026",
+        "https://www.zawya.com/en/business/real-estate/tiger-properties-unveils-10bln-lagoon-front-premium-city-in-ajman-quu7g2tj — Tiger Downtown Ajman $10bn, 76 buildings, Orchid Towers from AED 420,000, 70/30, Q4 2028; CEO Amer Waleed Al Zaabi",
+        "https://gulfnews.com/business/corporate-news/tiger-properties-unveils-sky-gate-in-jvt-dubai-with-dh600-million-investment-1.500308454 — Sky Gate AED 600m",
+        "Abu Dhabi Law No. 3 of 2015 (escrow); adro.gov.ae Golden Visa"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Tiger Properties?",
+          "a": "Tiger Properties is the real estate arm of Tiger Group, a family-owned UAE business founded in 1976 as a construction company in Sharjah. Its holding company appears on Forbes Middle East's Top 100 Arab Family Businesses list for 2026, and the developer's chief executive is Eng. Amer Waleed Al Zaabi.",
+          "q_ar": "من يملك شركة تايجر العقارية؟",
+          "a_ar": "تايجر العقارية هي الذراع العقارية لمجموعة تايجر، وهي شركة عائلية إماراتية تأسست عام 1976 شركةً للمقاولات في الشارقة. وتظهر شركتها القابضة ضمن قائمة فوربس الشرق الأوسط لأقوى 100 شركة عائلية عربية لعام 2026، ويشغل المهندس عامر وليد الزعابي منصب الرئيس التنفيذي للمطوّر."
+        },
+        {
+          "q": "Has Tiger Properties delivered projects on time?",
+          "a": "Tiger's recent completions include Nobles Tower in Business Bay, a 46-storey tower of 549 units handed over on 14 October 2024, and Cloud Towers in Jumeirah Village Triangle, handed over on 29 October 2025. For any off-plan purchase, compare the promised date in the contract with the regulator's published construction progress.",
+          "q_ar": "هل تسلّم تايجر العقارية مشاريعها في موعدها؟",
+          "a_ar": "من أحدث إنجازات تايجر برج نوبلز في الخليج التجاري، وهو برج من 46 طابقاً يضم 549 وحدة سُلّم في 14 أكتوبر 2024، وأبراج كلاود في قرية جميرا الثلاثية التي سُلّمت في 29 أكتوبر 2025. وعند أي شراء على الخريطة، قارن الموعد المحدد في العقد بنسبة الإنجاز التي تنشرها الجهة التنظيمية."
+        },
+        {
+          "q": "Does Tiger Properties build in Abu Dhabi?",
+          "a": "Yes, with one project: Renad Tower on Al Reem Island, offering one- to three-bedroom apartments of 588 to 1,690 sq ft from AED 1,073,711, according to Property Finder. Construction started on 21 April 2024, and the listing gives handover as September 2026 in one place and Q4 2026 in another, so confirm the date with the developer.",
+          "q_ar": "هل تطوّر تايجر العقارية مشاريع في أبوظبي؟",
+          "a_ar": "نعم، بمشروع واحد: برج رناد في جزيرة الريم، ويضم شققاً من غرفة إلى ثلاث غرف بمساحات من 588 إلى 1,690 قدماً مربعة بسعر يبدأ من 1,073,711 درهم، بحسب بروبرتي فايندر. وبدأ البناء في 21 أبريل 2024، وتذكر الصفحة موعد التسليم سبتمبر 2026 في موضع والربع 4 من 2026 في موضع آخر، لذا تحقق من الموعد لدى المطوّر."
+        },
+        {
+          "q": "Where else is Tiger Properties building?",
+          "a": "Tiger's largest current project is Tiger Downtown Ajman, a $10 billion lagoon-front city of 76 buildings in Al Alia, whose first phase, Orchid Towers, starts from AED 420,000 with handover targeted for Q4 2028. In Dubai it is building Sky Gate in Jumeirah Village Triangle, an AED 600 million project.",
+          "q_ar": "أين تبني تايجر العقارية أيضاً؟",
+          "a_ar": "أكبر مشاريع تايجر الحالية تايجر داون تاون عجمان، مدينة على بحيرة بقيمة 10 مليارات دولار تضم 76 مبنى في منطقة العالية، وتبدأ أسعار مرحلتها الأولى أوركيد تاورز من 420,000 درهم مع استهداف التسليم في الربع 4 من 2028. وفي دبي تبني سكاي غيت في قرية جميرا الثلاثية، وهو مشروع بقيمة 600 مليون درهم."
+        },
+        {
+          "q": "What payment plans does Tiger Properties offer?",
+          "a": "Tiger's plans lean towards paying during construction. Renad Tower in Abu Dhabi is listed on a 20/50/30 plan: 20% at launch, 50% during construction and 30% on handover. Orchid Towers in Ajman uses 70% during construction and 30% after handover. Check the final schedule in the sale contract, since listings and brochures can differ.",
+          "q_ar": "ما خطط السداد التي تقدمها تايجر العقارية؟",
+          "a_ar": "تميل خطط تايجر إلى السداد خلال فترة البناء. فبرج رناد في أبوظبي مدرج بخطة 20/50/30: أي 20% عند الإطلاق و50% خلال البناء و30% عند التسليم. أما أوركيد تاورز في عجمان فتعتمد 70% خلال البناء و30% بعد التسليم. تحقق من الجدول النهائي في عقد البيع، فقد تختلف الإعلانات عن الكتيبات."
+        },
+        {
+          "q": "Can foreigners buy Renad Tower by Tiger Properties?",
+          "a": "Yes. Al Reem Island is an Abu Dhabi investment area open to freehold ownership by every nationality, and the sale is registered on DARI; off-plan payments go into the project's escrow account under Abu Dhabi Law No. 3 of 2015. From AED 1,073,711, a Renad Tower apartment sits below the AED 2 million value needed for a property Golden Visa on its own.",
+          "q_ar": "هل يمكن للأجانب الشراء في برج رناد من تايجر العقارية؟",
+          "a_ar": "نعم. جزيرة الريم من مناطق الاستثمار في أبوظبي المفتوحة للتملك الحر لجميع الجنسيات، ويُسجَّل البيع على منصة «DARI»، وتُودَع دفعات البيع على الخريطة في حساب ضمان المشروع بموجب قانون أبوظبي رقم 3 لسنة 2015. وبسعر يبدأ من 1,073,711 درهم، تقل شقة في برج رناد عن قيمة 2 مليون درهم اللازمة وحدها للإقامة الذهبية العقارية."
+        }
+      ]
+    }
+  ]
+}

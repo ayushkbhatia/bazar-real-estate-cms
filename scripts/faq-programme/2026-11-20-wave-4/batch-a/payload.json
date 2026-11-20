@@ -1,0 +1,753 @@
+{
+ "wave": "4",
+ "batch": "batch-a",
+ "written": "2026-11-20",
+ "sourcedNumbers": [
+  "1",
+  "2",
+  "2.76",
+  "3",
+  "4",
+  "5.5",
+  "5.8",
+  "10",
+  "11",
+  "13",
+  "14",
+  "15",
+  "15.2",
+  "18",
+  "18.6",
+  "18.9",
+  "21",
+  "26",
+  "27.4",
+  "29.8",
+  "30",
+  "31",
+  "31.63",
+  "34",
+  "36.3",
+  "40.3",
+  "40.6",
+  "46.0",
+  "71.6",
+  "72",
+  "76",
+  "77",
+  "84.76",
+  "92",
+  "99",
+  "111",
+  "112",
+  "147",
+  "167",
+  "225",
+  "321",
+  "500",
+  "850",
+  "900",
+  "944",
+  "1000",
+  "1716",
+  "1800",
+  "2004",
+  "2012",
+  "2015",
+  "2017",
+  "2019",
+  "2020",
+  "2022",
+  "2024",
+  "2025",
+  "2026",
+  "2027",
+  "2028",
+  "2031",
+  "2109",
+  "2247",
+  "4500",
+  "13000",
+  "17534",
+  "310000",
+  "846000",
+  "850000",
+  "1050000",
+  "1550000",
+  "1900000",
+  "2000000",
+  "2175000",
+  "2350000",
+  "4250000"
+ ],
+ "sourcedNotes": {
+  "2": "2% DARI registration fee; AED 2 million Golden Visa threshold (adro.gov.ae)",
+  "3": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (escrow); Bashayer ~AED 3bn in one day (modon.com / wam.ae, Dec 2025); quarter numbers from DB handover dates",
+  "10": "Golden Visa 10 years (adro.gov.ae); 10% booking from DB plans",
+  "11": "Ville 11, Burtville's Masdar City project (gulftoday.ae Feb 2024; gulfnews.com 2026)",
+  "13": "Hudayriyat Golf Estates > AED 13bn within days of July 2026 launch (modon.com / zawya.com)",
+  "14": "Ville 11 handed over 14 months ahead of contractual completion (gulfnews.com, 2026)",
+  "15": "15% of Hudayriyat Golf Estates launch buyers non-UAE residents (zawya.com, Jul 2026); 15 six-bedroom RIMAS villas (zawya.com)",
+  "18": "Bab Al Qasr Resort Residence 18 (zawya.com, Burtville progress release)",
+  "21": "Aldar FY2025 group sales +21% (zawya.com / wam.ae, Feb 2026)",
+  "31": "Bab Al Qasr Residence 31 (zawya.com, Burtville progress release)",
+  "34": "Aldar 9M 2026 group sales -34% (thenationalnews.com, 27 Oct 2026)",
+  "72": "Wadeem plots sold out within 72 hours (modon.com / wam.ae, Jul 2025)",
+  "76": "RIMAS 76 four-bedroom and 76 five-bedroom villas (zawya.com, Sept 2026)",
+  "77": "Aldar overseas and expatriate buyers 77% of UAE sales, FY2025 (zawya.com)",
+  "92": "~92% of Residence 77 homes with direct sea views (zawya.com / gulfnews.com, Wave 2)",
+  "111": "Ville 11: 111 units (gulftoday.ae / tradearabia.com); Naseem AlJurf 111 villas (zawya.com, IMKAN)",
+  "112": "Jubail Island 112 private plots (zawya.com, JIIC)",
+  "147": "Bloom Gardens Phase 3: 147 villas and townhouses (bloomholding.com/who-we-are)",
+  "167": "RIMAS 167 villas at launch (zawya.com / wam.ae, Sept 2026)",
+  "225": "Bloom Marina 225 residences (bloomholding.com/who-we-are)",
+  "321": "321 Sports, Hudayriyat Island venue (modon.com)",
+  "500": "Alburouj, 500-hectare development in Egypt (zawya.com, IMKAN)",
+  "850": "RIMAS plots ~850–1,716 sq m (zawya.com, Sept 2026)",
+  "900": "Ramhan Island 900 marina residences (zawya.com, Eagle Hills, May 2024)",
+  "944": "Bloom Towers Dubai 944 apartments (bloomholding.com/who-we-are)",
+  "1000": "Jubail Island more than 1,000 homes handed over (wam.ae, April 2026)",
+  "1716": "RIMAS plots ~850–1,716 sq m (zawya.com, Sept 2026)",
+  "1800": "Ramhan Island more than 1,800 standalone villas (zawya.com, Eagle Hills, May 2024)",
+  "2004": "Aldar founded 2004 (DB)",
+  "2012": "Bloom Gardens Phase 1 handed over 2012 (bloomholding.com/who-we-are)",
+  "2017": "Bloom Gardens Phase 3 handed over 2017 (bloomholding.com/who-we-are)",
+  "2020": "Bloom Towers completed 2020 (bloomholding.com/who-we-are)",
+  "2022": "Bloom Living designated investment zone 2022 (bloomholding.com / zawya.com, Wave 2)",
+  "2024": "Aldar FY2025 vs 2024; Ville 11 launched Feb 2024; Ramhan announced May 2024; Modon Properties joined Q Holding/Modon Holding Feb 2024 (gulfnews.com)",
+  "2025": "Alpha Dhabi stake Nov 2025 (thenationalnews.com); L'imad Oct 2025 (modon.com); Modon FY2025; Marbella launch Sept 2025; Naseem AlJurf construction May 2025; Wadeem Jul 2025; Bashayer Dec 2025",
+  "2026": "9M 2026 Aldar results; Toledo handover July 2026; Burtville May 2026 progress; Ville 11 handover 2026; East & West groundbreaking Sept 2026; Jumeirah Residences unveiled Jan 2026; Ramhan Island Views Q4 2026; Jubail April 2026; SHA Emirates Residences 2026; LIVEX 2026",
+  "2027": "Ramhan villa phases 2027 (propertyfinder.ae); Rixos Financial Center Road Q2 2027 (propertyfinder.ae); Hilton Residences JLT Q3 2027 (propertyfinder.ae)",
+  "2028": "Stellar by Elie Saab and Emirates Hilton Residences Q4 2028 (propertyfinder.ae); Ramhan villa phases 2028",
+  "2031": "Jumeirah Residences opening 2031 per launch coverage (aeworld.com)",
+  "2109": "Ras El Hekma initial launch 2,109 units (modon.com, FY2025 results)",
+  "2247": "Al Metlaa 2,247 villas for Emirati families (bloomholding.com/who-we-are)",
+  "4500": "Bloom Living more than 4,500 homes (bloomholding.com/who-we-are)",
+  "13000": "Bloom Education over 13,000 students (bloomholding.com/who-we-are)",
+  "17534": "Residence 77 plot 17,534 sq m (zawya.com / gulfnews.com, Wave 2)",
+  "2.76": "Garden Residence 66 2.76% ahead of DARI target (zawya.com, end May 2026)",
+  "5.5": "Wadeem plots ~AED 5.5bn (modon.com, Jul 2025)",
+  "5.8": "Ras El Hekma initial launch AED 5.8bn (modon.com, FY2025 results)",
+  "15.2": "Garden Residence 66 15.2% complete (zawya.com, end May 2026)",
+  "18.6": "Makers District 18.6 hectares (zawya.com, IMKAN)",
+  "18.9": "Aldar 9M 2026 group sales AED 18.9bn (thenationalnews.com / wam.ae)",
+  "27.4": "Aldar FY2025 sales to overseas/expat buyers AED 27.4bn (zawya.com)",
+  "29.8": "Modon FY2025 Abu Dhabi real estate sales AED 29.8bn (modon.com)",
+  "31.63": "Alpha Dhabi and subsidiaries 31.63% of Aldar, Nov 2025 (thenationalnews.com)",
+  "36.3": "Modon FY2025 real estate sales AED 36.3bn (modon.com)",
+  "40.3": "Residence 31 40.3% complete (zawya.com, end May 2026)",
+  "40.6": "Aldar FY2025 group sales AED 40.6bn (zawya.com / wam.ae)",
+  "46.0": "Modon revenue backlog AED 46.0bn, end 2025 (modon.com)",
+  "71.6": "Aldar group revenue backlog AED 71.6bn, end Sept 2026 (thenationalnews.com)",
+  "84.76": "L'imad Holding 84.76% of Modon Holding (modon.com, 30 Oct 2025)",
+  "310000": "arithmetic: 10% of DB price 3,100,000 (The Bristol Residences)",
+  "846000": "arithmetic: 40% of DB price 2,115,000 (Rixos Residences)",
+  "850000": "arithmetic: 10% of DB price 8,500,000 (RIMAS)",
+  "1050000": "arithmetic: 70% of DB price 1,500,000 (Garden Residence 66)",
+  "1550000": "arithmetic: 50% of DB price 3,100,000 (The Bristol Residences)",
+  "1900000": "arithmetic: 50% of DB price 3,800,000 (Marbella Bloom Living)",
+  "2175000": "arithmetic: 25% of DB price 8,700,000 (Wadeem Gardens)",
+  "2350000": "arithmetic: 50% of DB price 4,700,000 (Jumeirah Residences)",
+  "2000000": "Golden Visa AED 2,000,000 (adro.gov.ae)",
+  "4250000": "arithmetic: 50% of DB price 8,500,000 (RIMAS)",
+  "1": "quarter numbers (Q1–Q4) derived from DB handover dates",
+  "4": "quarter numbers (Q1–Q4) derived from DB handover dates",
+  "26": "IMKAN 26 projects across five countries (zawya.com, IMKAN)",
+  "30": "LEAD portfolio over AED 30bn (zawya.com, Sept 2026); 30% pre-completion share is DB plan arithmetic",
+  "99": "Ville 11 99% complete at end May 2026 (zawya.com, Burtville progress release)",
+  "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector — off-plan escrow (ADREC / u.ae)",
+  "2019": "Park View handover began 2019 (bloomholding.com/who-we-are)"
+ },
+ "pages": [
+  {
+   "kind": "faqdoc",
+   "slug": "developer-aldar",
+   "name": "ALDAR Properties",
+   "route": "/developers/aldar",
+   "pageSlug": "subpage/faq/developer-aldar",
+   "sources": [
+    "DB: developers row aldar (founded 2004, description); 9 published developments (prices, handover, units, payment plans, unit types)",
+    "https://www.zawya.com/en/press-release/companies-news/aldars-net-profit-climbs-36-to-a-record-aed-88bln-in-2025-as-group-sales-reach-aed-406bln-opsq7yy3 — FY2025: group sales AED 40.6bn (+21%), UAE sales AED 35.5bn, overseas/expat AED 27.4bn = 77% of UAE sales",
+    "https://www.thenationalnews.com/business/property/2026/10/27/aldar-reports-25-jump-in-q3-net-profit-amid-launch-of-new-projects/ — 9M 2026 group sales AED 18.9bn (-34%), backlog AED 71.6bn",
+    "https://www.wam.ae/en/article/c2ycqbu-aldars-nine-month-net-profit-rises-19-aed71 — 9M 2026 results",
+    "https://www.thenationalnews.com/business/property/2025/11/06/abu-dhabis-ihc-has-no-plans-to-sell-aldar-stake-ceo-says — Alpha Dhabi 31.63%, Mamoura (Mubadala) second",
+    "aoshearman.com / kslaw.com — Law No. 3 of 2015 escrow, drawdown after 20% (Wave 3 off-plan page)",
+    "gulfnews.com / wam.ae (Sept 2026) — Aldar and ADCB first off-plan mortgage under ADREC framework (Wave 2)"
+   ],
+   "faq": [
+    {
+     "q": "Who owns Aldar Properties, and is Aldar listed?",
+     "a": "Aldar Properties is a public company listed on the Abu Dhabi Securities Exchange under the ticker ALDAR. Its largest shareholder is Alpha Dhabi Holding, part of International Holding Company, which with its subsidiaries held 31.63% in November 2025; a Mubadala unit, Mamoura Diversified Global Holding, is the second-largest. Aldar was founded in 2004.",
+     "q_ar": "من يملك شركة الدار العقارية، وهل هي مدرجة في البورصة؟",
+     "a_ar": "الدار العقارية شركة مساهمة عامة مدرجة في سوق أبوظبي للأوراق المالية. وأكبر مساهميها شركة ألفا ظبي القابضة التابعة للشركة العالمية القابضة، إذ كانت تملك مع شركاتها التابعة 31.63% في نوفمبر 2025، وتأتي شركة مامورة للاستثمارات المتنوعة العالمية القابضة التابعة لمبادلة في المرتبة الثانية. وتأسست الدار عام 2004."
+    },
+    {
+     "q": "What Aldar projects can I buy through Bazar?",
+     "a": "Bazar offers nine Aldar off-plan projects across four Abu Dhabi locations. They are Mamsha Gardens, Sei Saadiyat and Talay at Marsa Al Saadiyat on Saadiyat Island; Yas Park Place, The Canopies at Yas Point and Yas Riva Reserve on Yas Island; Fahid Beach Residences and Fahid Beach Terraces on Fahid Island; and Al Ghadeer Gardens. Starting prices run from AED 1,390,000 at Yas Park Place to AED 13,500,000 at Talay.",
+     "q_ar": "ما مشاريع الدار التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار تسعة مشاريع على الخريطة من الدار: ممشى غاردنز وسي السعديات وتالاي في مرسى السعديات على جزيرة السعديات؛ وياس بارك بليس وذا كانوبيز آت ياس بوينت وياس ريفا ريزيرف على جزيرة ياس؛ وفاهد بيتش ريزيدنسز وفاهد بيتش تيراسز على جزيرة فاهد؛ إضافة إلى الغدير غاردنز. وتتراوح أسعار البداية بين 1,390,000 درهم في ياس بارك بليس و13,500,000 درهم في تالاي."
+    },
+    {
+     "q": "What Aldar projects are on Saadiyat Island?",
+     "a": "Bazar lists three Aldar projects on Saadiyat Island. Mamsha Gardens has one- to three-bedroom apartments from AED 3,100,000, due in Q2 2028; Sei Saadiyat has one- to three-bedroom apartments from AED 2,950,000, due in Q4 2030; and Talay, the first homes at Marsa Al Saadiyat, has four- to six-bedroom villas of 7,922 to 9,504 sq ft from AED 13,500,000, due in Q4 2029.",
+     "q_ar": "ما مشاريع الدار في جزيرة السعديات؟",
+     "a_ar": "تعرض بازار ثلاثة مشاريع للدار في جزيرة السعديات: ممشى غاردنز بشقق من غرفة إلى ثلاث غرف تبدأ من 3,100,000 درهم، ويُتوقع تسليمه في الربع الثاني من 2028؛ وسي السعديات بشقق من غرفة إلى ثلاث غرف تبدأ من 2,950,000 درهم، وتسليمه في الربع الرابع من 2030؛ وتالاي، أول المنازل في مرسى السعديات، بفلل من أربع إلى ست غرف بمساحات من 7,922 إلى 9,504 أقدام مربعة تبدأ من 13,500,000 درهم، وتسليمه في الربع الرابع من 2029."
+    },
+    {
+     "q": "What Aldar projects are on Yas Island?",
+     "a": "Aldar has three projects on Yas Island through Bazar. Yas Park Place has 780 studios to three-bedroom apartments from AED 1,390,000, due in Q1 2030; The Canopies at Yas Point has studios to three-bedroom apartments from AED 1,650,000, due in Q3 2030; and Yas Riva Reserve has four- to six-bedroom waterfront villas from AED 7,900,000, also due in Q3 2030.",
+     "q_ar": "ما مشاريع الدار في جزيرة ياس؟",
+     "a_ar": "لدى الدار ثلاثة مشاريع في جزيرة ياس عبر بازار: ياس بارك بليس ويضم 780 وحدة من الاستوديو إلى شقق بثلاث غرف تبدأ من 1,390,000 درهم، وتسليمه في الربع الأول من 2030؛ وذا كانوبيز آت ياس بوينت بوحدات من الاستوديو إلى ثلاث غرف تبدأ من 1,650,000 درهم، وتسليمه في الربع الثالث من 2030؛ وياس ريفا ريزيرف بفلل على الواجهة المائية من أربع إلى ست غرف تبدأ من 7,900,000 درهم، وتسليمه كذلك في الربع الثالث من 2030."
+    },
+    {
+     "q": "What do Aldar's sales and financial results show?",
+     "a": "Aldar reported group sales of AED 40.6 billion for 2025, up 21% on 2024, and a revenue backlog of AED 71.6 billion at the end of September 2026. Sales in the first nine months of 2026 were AED 18.9 billion, 34% lower than a year earlier. Its completed Abu Dhabi communities include Al Raha Beach, Yas Acres and Water's Edge on Yas Island.",
+     "q_ar": "ماذا تُظهر مبيعات الدار ونتائجها المالية؟",
+     "a_ar": "أعلنت الدار مبيعات للمجموعة بلغت 40.6 مليار درهم في 2025، بارتفاع 21% عن 2024، وتراكمًا في الإيرادات قدره 71.6 مليار درهم بنهاية سبتمبر 2026. وبلغت المبيعات في الأشهر التسعة الأولى من 2026 نحو 18.9 مليار درهم، بانخفاض 34% عن الفترة نفسها من العام السابق. ومن مجتمعاتها المكتملة في أبوظبي شاطئ الراحة وياس إيكرز ووترز إيدج في جزيرة ياس."
+    },
+    {
+     "q": "What payment plans does Aldar offer?",
+     "a": "Aldar's plans differ by project. Yas Park Place, Sei Saadiyat, Talay and Yas Riva Reserve are 50/50: 5% on booking, 45% during construction and 50% on handover. Mamsha Gardens and both Fahid Island projects are 65/35 (10%, 55%, 35%); The Canopies is 5%, 50% and 45%, and Al Ghadeer Gardens 5%, 40% and 55%. The 2% DARI registration fee is paid on top.",
+     "q_ar": "ما خطط السداد التي تقدمها الدار؟",
+     "a_ar": "تختلف خطط الدار من مشروع إلى آخر. فخطة ياس بارك بليس وسي السعديات وتالاي وياس ريفا ريزيرف هي 50/50: 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم. أما ممشى غاردنز ومشروعا جزيرة فاهد فخطتها 65/35 (10% ثم 55% ثم 35%)، وخطة ذا كانوبيز 5% و50% و45%، والغدير غاردنز 5% و40% و55%. وتُدفع رسوم التسجيل في «داري» البالغة 2% إضافةً إلى ذلك."
+    },
+    {
+     "q": "Can foreigners buy Aldar property in Abu Dhabi?",
+     "a": "Yes, at the Aldar projects Bazar sells: Saadiyat Island, Yas Island, Fahid Island and Al Ghadeer are designated investment zones, so buyers of any nationality can own there freehold. Aldar reported AED 27.4 billion of sales to overseas and expatriate buyers in 2025, 77% of its UAE sales. Every title is registered through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقارات الدار في أبوظبي؟",
+     "a_ar": "نعم، في مشاريع الدار التي تبيعها بازار؛ إذ تُعد جزيرة السعديات وجزيرة ياس وجزيرة فاهد والغدير مناطق استثمار محددة، فيحق للمشترين من أي جنسية التملك فيها بنظام التملك الحر. وأعلنت الدار مبيعات للمشترين من الخارج والمقيمين الوافدين بلغت 27.4 مليار درهم في 2025، أي 77% من مبيعاتها في الإمارات. ويُسجَّل كل سند ملكية عبر منصة «داري»."
+    },
+    {
+     "q": "Are Aldar off-plan payments protected by escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, payments for an Aldar off-plan home such as Fahid Beach Terraces, from AED 3,600,000 with handover in Q4 2029, go into a project escrow account registered with ADREC, and the developer may draw on it only as construction is certified. In September 2026 Aldar and ADCB also completed Abu Dhabi's first off-plan mortgage under ADREC's framework.",
+     "q_ar": "هل مدفوعات مشاريع الدار على الخريطة محمية بحساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع دفعات أي منزل على الخريطة من الدار، مثل فاهد بيتش تيراسز الذي يبدأ من 3,600,000 درهم ويُسلَّم في الربع الرابع من 2029، في حساب ضمان خاص بالمشروع ومسجل لدى مركز أبوظبي العقاري ADREC، ولا يسحب المطوّر منه إلا وفق الإنجاز المعتمد للإنشاء. وفي سبتمبر 2026 أتمّت الدار مع بنك أبوظبي التجاري أول رهن عقاري على الخريطة في أبوظبي ضمن إطار ADREC."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-bloom",
+   "name": "Bloom Holding",
+   "route": "/developers/bloom",
+   "pageSlug": "subpage/faq/developer-bloom",
+   "sources": [
+    "DB: developers row bloom (founded 2007, description); published developments Al Hamra Bloom Living and Marbella Bloom Living (prices, handover, units, plans, unit types)",
+    "https://bloomholding.com/who-we-are — milestones: Bloom Gardens Phase 1 handed over 2012; Phase 3 (147 villas and townhouses) handed over 2017; Park View handover 2019; Bloom Towers Dubai (944 apartments) completed 2020; Cordoba launched March 2022; Toledo handover July 2026; Bloom Living more than 4,500 homes; Al Metlaa 2,247 villas for Emirati families; Bloom Marina 225 residences; five divisions; Education over 13,000 students",
+    "https://bloomholding.com/ — divisions and communities",
+    "https://en.wikipedia.org/wiki/Bloom_Holding — subsidiary of National Holding (gives 2008; CB Insights gives 2007)",
+    "https://www.zawya.com/en/press-release/companies-news/bloom-holding-launches-alhambra-the-vibrant-heart-and-final-release-of-bloom-living-483353 — Alhambra final release (Sept 2026, Wave 2)",
+    "bloomholding.com / zawya.com — Bloom Living investment zone 2022; Marbella launched Sept 2025 (Wave 2)",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who owns Bloom Holding?",
+     "a": "Bloom Holding is part of National Holding, the privately held Abu Dhabi investment group, and is not listed on a stock exchange. Founded in 2007, it runs five businesses: Bloom Properties, Bloom Education, hospitality, landscaping and facilities management. Bloom Education operates schools including Brighton College Abu Dhabi, with more than 13,000 students across the group.",
+     "q_ar": "من يملك شركة بلووم القابضة؟",
+     "a_ar": "بلووم القابضة جزء من مجموعة ناشونال القابضة، المجموعة الاستثمارية الخاصة في أبوظبي، وهي غير مدرجة في أي سوق للأوراق المالية. وتأسست عام 2007، وتدير خمسة أعمال: بلووم العقارية، وبلووم للتعليم، والضيافة، وتنسيق الحدائق، وإدارة المرافق. وتشغّل بلووم للتعليم مدارس منها كلية برايتون أبوظبي، ويتجاوز عدد طلابها في المجموعة 13,000 طالب."
+    },
+    {
+     "q": "What Bloom Holding projects can I buy through Bazar?",
+     "a": "Bazar offers two Bloom projects, both inside Bloom Living in Zayed City. Alhambra, listed as Al Hamra Bloom Living, has 385 studios and one- to three-bedroom apartments from AED 950,000, due in Q4 2029. Marbella Bloom Living has 144 three- to six-bedroom villas from AED 3,800,000, due in Q4 2028.",
+     "q_ar": "ما مشاريع بلووم القابضة التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار مشروعين لبلووم، كلاهما داخل بلوم ليفينغ في مدينة زايد. الأول الحمراء، المدرج باسم الحمراء بلوم ليفينغ، ويضم 385 وحدة من الاستوديو إلى شقق بثلاث غرف تبدأ من 950,000 درهم، ويُتوقع تسليمه في الربع الرابع من 2029. والثاني ماربيا بلوم ليفينج ويضم 144 فيلا من ثلاث إلى ست غرف تبدأ من 3,800,000 درهم، وتسليمه في الربع الرابع من 2028."
+    },
+    {
+     "q": "What is Marbella at Bloom Living?",
+     "a": "Marbella is a villa phase of Bloom Living that Bloom launched in September 2025. Its 144 villas have three to six bedrooms, from about 4,359 sq ft for a three-bedroom to 11,754 sq ft for a six-bedroom, priced from AED 3,800,000. The plan is 5% on booking, 45% during construction and 50% on handover in Q4 2028.",
+     "q_ar": "ما هو مشروع ماربيا في بلوم ليفينغ؟",
+     "a_ar": "ماربيا مرحلة فلل في بلوم ليفينغ أطلقتها بلووم في سبتمبر 2025. وتضم 144 فيلا من ثلاث إلى ست غرف، بمساحات تبدأ من نحو 4,359 قدمًا مربعًا للفيلا ذات الثلاث غرف وتصل إلى 11,754 قدمًا مربعًا للفيلا ذات الست غرف، وبأسعار تبدأ من 3,800,000 درهم. وخطة السداد 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم في الربع الرابع من 2028."
+    },
+    {
+     "q": "What is Alhambra at Bloom Living?",
+     "a": "Alhambra is the final release of Bloom Living, launched in September 2026 around Souk Alhambra, the community's new social hub. It has 385 homes, from studios to three-bedroom apartments of up to 2,680 sq ft, priced from AED 950,000. Buyers pay 5% on booking, 45% during construction and 50% on handover in Q4 2029.",
+     "q_ar": "ما هو مشروع الحمراء في بلوم ليفينغ؟",
+     "a_ar": "الحمراء هو الإصدار الأخير في بلوم ليفينغ، وأُطلق في سبتمبر 2026 حول سوق الحمراء، المركز الاجتماعي الجديد للمجتمع. ويضم 385 وحدة سكنية من الاستوديو إلى شقق بثلاث غرف تصل مساحتها إلى 2,680 قدمًا مربعًا، بأسعار تبدأ من 950,000 درهم. ويدفع المشتري 5% عند الحجز، و45% خلال الإنشاء، و50% عند التسليم في الربع الرابع من 2029."
+    },
+    {
+     "q": "Has Bloom Holding delivered its previous projects?",
+     "a": "Bloom's own record lists several completed communities. Bloom Gardens Phase 1 was handed over in 2012 and Phase 3, with 147 villas and townhouses, in 2017; Park View began handing over in 2019; and Bloom Towers in Dubai, with 944 apartments, was completed in 2020. At Bloom Living, handover of the Toledo phase began in July 2026.",
+     "q_ar": "هل سلّمت بلووم القابضة مشاريعها السابقة؟",
+     "a_ar": "يذكر سجل بلووم عددًا من المجتمعات المكتملة: فقد سُلّمت المرحلة الأولى من بلوم غاردنز عام 2012، والمرحلة الثالثة التي تضم 147 فيلا وتاون هاوس عام 2017، وبدأ تسليم بارك فيو عام 2019، واكتمل بلوم تاورز في دبي بشققه البالغة 944 شقة عام 2020. وفي بلوم ليفينغ بدأ تسليم مرحلة طليطلة في يوليو 2026."
+    },
+    {
+     "q": "Where is Bloom Holding building now?",
+     "a": "Bloom's largest current community is Bloom Living in Zayed City, planned for more than 4,500 homes, where Alhambra is the final release. It is also building Bloom Marina in Al Bateen with 225 residences, Al Metlaa in Al Ain with 2,247 villas for Emirati families, and Mabel Residences in Marbella, Spain.",
+     "q_ar": "أين تبني بلووم القابضة حاليًا؟",
+     "a_ar": "أكبر مجتمعات بلووم الحالية هو بلوم ليفينغ في مدينة زايد، المخطط لأكثر من 4,500 منزل، ويُعد الحمراء إصداره الأخير. كما تبني بلوم مارينا في البطين بـ225 وحدة سكنية، ومشروع المطلاع في العين بـ2,247 فيلا للأسر الإماراتية، ومشروع مابيل ريزيدنسز في ماربيا بإسبانيا."
+    },
+    {
+     "q": "Can foreigners buy from Bloom Holding?",
+     "a": "Yes, at Bloom Living: it was designated an investment zone in 2022, so buyers of any nationality can own Alhambra apartments and Marbella villas freehold, even though most of Zayed City is not open to foreign ownership. Al Metlaa in Al Ain is a different case, built for Emirati families. Titles are registered through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء من بلووم القابضة؟",
+     "a_ar": "نعم، في بلوم ليفينغ؛ فقد صُنّف منطقة استثمار عام 2022، لذا يحق للمشترين من أي جنسية تملّك شقق الحمراء وفلل ماربيا بنظام التملك الحر، رغم أن معظم مدينة زايد غير مفتوح لتملك الأجانب. أما مشروع المطلاع في العين فحالة مختلفة، إذ بُني للأسر الإماراتية. وتُسجَّل سندات الملكية عبر منصة «داري»."
+    },
+    {
+     "q": "Are Bloom Holding off-plan payments held in escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, instalments for Alhambra and Marbella go into each project's escrow account registered with ADREC and are released to Bloom against certified construction progress. Both are sold 50/50, so on a Marbella villa from AED 3,800,000 about AED 1,900,000 is paid before handover and the rest on completion.",
+     "q_ar": "هل تُودَع دفعات مشاريع بلووم على الخريطة في حساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع أقساط مشروعي الحمراء وماربيا في حساب ضمان خاص بكل مشروع ومسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف لبلووم مقابل الإنجاز المعتمد للإنشاء. ويُباع المشروعان بخطة 50/50، فعلى فيلا في ماربيا تبدأ من 3,800,000 درهم يُدفع نحو 1,900,000 درهم قبل التسليم والباقي عند الإنجاز."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-burtville",
+   "name": "Burtville Developments",
+   "route": "/developers/burtville",
+   "pageSlug": "subpage/faq/developer-burtville",
+   "sources": [
+    "DB: developers row burtville (founded 2024, description); published developments Bab Al Qasr Garden Residence 65, Garden Residence 66, Beach Resort Residence 77",
+    "https://www.zawya.com/en/press-release/companies-news/seven-of-eight-burtville-developments-projects-outpace-construction-milestones-gqmwjxrt — progress at end May 2026 vs DARI targets",
+    "https://gulfnews.com/uae/abu-dhabi/abu-dhabi-residential-project-handed-over-14-months-early-1.500690826 ; https://tradearabia.com/News/486933/Burtville-completes-handover-of-111-unit-Abu-Dhabi-residential-project — Ville 11, 111 units, handed over 14 months early (2026)",
+    "https://gulftoday.ae/business/2024/02/13/developer-launches-the-ville-11-in-masdar-city — Ville 11 launch Feb 2024",
+    "https://www.zawya.com/en/business/real-estate/burtville-sees-prime-abu-dhabi-projects-on-track-de7vnon4 — eight projects under construction (five Masdar City, two Yas Bay, one Al Raha Beach)",
+    "https://www.khaleejtimes.com/business/burtville-developments-launches-live-streaming-from-project-sites-across-abu-dhabi — live site streams; office in Bab Al Qasr Hotel",
+    "zawya.com (Wave 2) — Residence 77: 92% sea views, 17,534 sq m plot"
+   ],
+   "faq": [
+    {
+     "q": "Who is Burtville Developments?",
+     "a": "Burtville Developments is a private Abu Dhabi developer, founded in 2024, that builds residential towers under the Bab Al Qasr hotel brand and its own Ville name. It launched Ville 11 in Masdar City in February 2024, and by 2026 had eight projects under construction: five in Masdar City, two in Yas Bay and one on Al Raha Beach.",
+     "q_ar": "من هي شركة برتڤيل للتطوير العقاري؟",
+     "a_ar": "برتڤيل للتطوير العقاري مطوّر خاص في أبوظبي تأسس عام 2024، ويبني أبراجًا سكنية تحت علامة فندق باب القصر وتحت اسم فيل الخاص به. وأطلق مشروع فيل 11 في مدينة مصدر في فبراير 2024، وبحلول 2026 كان لديه ثمانية مشاريع قيد الإنشاء: خمسة في مدينة مصدر، واثنان في ياس باي، وواحد على شاطئ الراحة."
+    },
+    {
+     "q": "What Burtville projects can I buy through Bazar?",
+     "a": "Bazar offers three Burtville projects. Bab Al Qasr Garden Residence 66 in Masdar City starts from AED 1,500,000 with handover in Q2 2029; Garden Residence 65, also in Masdar City, starts from AED 1,830,000, due in Q1 2030; and Bab Al Qasr Beach Resort Residence 77 on Al Reem Island starts from AED 2,200,000, due in Q4 2031.",
+     "q_ar": "ما مشاريع برتڤيل التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار ثلاثة مشاريع لبرتڤيل: باب القصر غاردن ريزيدنس 66 في مدينة مصدر بأسعار تبدأ من 1,500,000 درهم وتسليم في الربع الثاني من 2029؛ وغاردن ريزيدنس 65 في مدينة مصدر أيضًا بأسعار تبدأ من 1,830,000 درهم وتسليم في الربع الأول من 2030؛ وباب القصر بيتش ريزورت ريزيدنس 77 في جزيرة الريم بأسعار تبدأ من 2,200,000 درهم وتسليم في الربع الرابع من 2031."
+    },
+    {
+     "q": "What are Burtville's Garden Residence 65 and 66 in Masdar City?",
+     "a": "They are two Bab Al Qasr towers in Masdar City. Garden Residence 65 has 405 homes of one to five bedrooms, from AED 1,830,000, on a plan of 15% on booking, 45% during construction and 40% on handover. Garden Residence 66 has 240 homes of one to four bedrooms, from AED 1,500,000, paid 10% on booking, 20% during construction and 70% on handover.",
+     "q_ar": "ما هما مشروعا غاردن ريزيدنس 65 و66 من برتڤيل في مدينة مصدر؟",
+     "a_ar": "هما برجان من مشاريع باب القصر في مدينة مصدر. يضم غاردن ريزيدنس 65 عدد 405 وحدات من غرفة إلى خمس غرف، بأسعار تبدأ من 1,830,000 درهم، وبخطة سداد 15% عند الحجز و45% خلال الإنشاء و40% عند التسليم. ويضم غاردن ريزيدنس 66 عدد 240 وحدة من غرفة إلى أربع غرف، بأسعار تبدأ من 1,500,000 درهم، وتُدفع 10% عند الحجز و20% خلال الإنشاء و70% عند التسليم."
+    },
+    {
+     "q": "What is Bab Al Qasr Beach Resort Residence 77 on Al Reem Island?",
+     "a": "Residence 77 is Burtville's beachfront project on Al Reem Island: 400 homes of one to five bedrooms, from AED 2,200,000, on a 17,534 sq m plot where about 92% of homes face the sea. It is sold 10% on booking, 40% during construction and 50% on handover, which is scheduled for Q4 2031.",
+     "q_ar": "ما هو مشروع باب القصر بيتش ريزورت ريزيدنس 77 في جزيرة الريم؟",
+     "a_ar": "ريزيدنس 77 هو مشروع برتڤيل على الشاطئ في جزيرة الريم، ويضم 400 وحدة من غرفة إلى خمس غرف تبدأ أسعارها من 2,200,000 درهم، على قطعة أرض مساحتها 17,534 مترًا مربعًا تطل نحو 92% من وحداتها على البحر. ويُباع بخطة 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم المقرر في الربع الرابع من 2031."
+    },
+    {
+     "q": "Has Burtville Developments delivered a project?",
+     "a": "Yes. Burtville handed over Ville 11, a 111-unit building in Masdar City, in 2026 after receiving its completion certificate from Abu Dhabi's Department of Municipalities and Transport, 14 months ahead of the contractual completion date. Ville 11 was launched in February 2024, so it is the first finished project in Burtville's record.",
+     "q_ar": "هل سلّمت برتڤيل للتطوير العقاري أي مشروع؟",
+     "a_ar": "نعم. سلّمت برتڤيل مشروع فيل 11، وهو مبنى يضم 111 وحدة في مدينة مصدر، عام 2026 بعد حصوله على شهادة الإنجاز من دائرة البلديات والنقل في أبوظبي، أي قبل 14 شهرًا من موعد الإنجاز التعاقدي. وكان المشروع قد أُطلق في فبراير 2024، فهو أول مشروع مكتمل في سجل برتڤيل."
+    },
+    {
+     "q": "How far along is construction on Burtville projects?",
+     "a": "Burtville reported progress against DARI's expected targets at the end of May 2026: Ville 11 was 99% complete, Residence 31 at 40.3% and Garden Residence 66 at 15.2%, 2.76% ahead of target. Six of its eight projects were ahead, one on target and Residence 18 1% behind. Burtville also streams live video from its sites.",
+     "q_ar": "ما مدى تقدم الإنشاء في مشاريع برتڤيل؟",
+     "a_ar": "أعلنت برتڤيل نسب الإنجاز مقارنة بالأهداف المتوقعة في «داري» بنهاية مايو 2026: بلغ فيل 11 نسبة 99%، وريزيدنس 31 نسبة 40.3%، وغاردن ريزيدنس 66 نسبة 15.2% متقدمًا بـ2.76% على الهدف. وكانت ستة من مشاريعها الثمانية متقدمة، وواحد مطابقًا للهدف، وريزيدنس 18 متأخرًا بنسبة 1%. كما تبث برتڤيل بثًا مباشرًا من مواقع مشاريعها."
+    },
+    {
+     "q": "Can foreigners buy Burtville property?",
+     "a": "Yes, at the Burtville projects Bazar sells. Masdar City and Al Reem Island are both designated investment areas, so buyers of any nationality, resident in the UAE or not, can own a Garden Residence 65, Garden Residence 66 or Residence 77 home freehold. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقارات برتڤيل؟",
+     "a_ar": "نعم، في مشاريع برتڤيل التي تبيعها بازار. فمدينة مصدر وجزيرة الريم من مناطق الاستثمار المحددة، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو خارجها، تملّك وحدة في غاردن ريزيدنس 65 أو غاردن ريزيدنس 66 أو ريزيدنس 77 بنظام التملك الحر. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Are payments to Burtville protected by escrow?",
+     "a": "Yes. Abu Dhabi Law No. 3 of 2015 requires off-plan payments to go into an escrow account for each registered project, and Burtville's progress figures are measured against the targets ADREC's DARI platform sets. On Garden Residence 66, for example, 30% is paid before completion and the 70% balance, AED 1,050,000 on a AED 1,500,000 home, on handover.",
+     "q_ar": "هل المدفوعات لبرتڤيل محمية بحساب ضمان؟",
+     "a_ar": "نعم. يُلزم القانون رقم 3 لسنة 2015 في أبوظبي بإيداع دفعات البيع على الخريطة في حساب ضمان لكل مشروع مسجل، وتُقاس نسب إنجاز برتڤيل مقارنة بالأهداف التي تحددها منصة «داري» التابعة لمركز أبوظبي العقاري ADREC. ففي غاردن ريزيدنس 66 مثلًا تُدفع 30% قبل الإنجاز، ويُدفع الرصيد البالغ 70%، أي 1,050,000 درهم على وحدة بسعر 1,500,000 درهم، عند التسليم."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-eagle-hills",
+   "name": "Eagle Hills",
+   "route": "/developers/eagle-hills",
+   "pageSlug": "subpage/faq/developer-eagle-hills",
+   "sources": [
+    "DB: developers row eagle-hills (founded 2014, description); published development The Bristol Residences (price, handover, 125 units, plan, unit types)",
+    "https://www.eaglehills.com/about-us — founder and chairman Mohamed Alabbar; Eagle Hills Properties LLC; countries in its history (Albania, Bahrain, Croatia, Egypt, Ethiopia, Georgia, Italy, Jordan, Latvia, Montenegro, Morocco, Oman, Serbia, UAE); Belgrade Waterfront, Marassi Al Bahrain",
+    "https://www.zawya.com/en/press-release/companies-news/mohamed-alabbar-unveils-a-luxurious-sanctuary-in-abu-dhabi-ramhan-island-ulgeyods — Ramhan Island (May 2024): over 1,800 villas, 900 marina residences, branded residences, marina hotel, retail promenade",
+    "https://www.propertyfinder.ae/en/new-projects/dev/eagle-hills/abu-dhabi — Ramhan Island Views sold out, Q4 2026 delivery; villa phases due 2027-2028",
+    "Wave 2 the-bristol-residences FAQ — The Bristol hotel brand (Belgrade, Bol); Ramhan freehold marketing and DARI check",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who owns Eagle Hills?",
+     "a": "Eagle Hills is a private company, Eagle Hills Properties LLC, founded in 2014 and chaired by its founder, Mohamed Alabbar, who also founded Emaar Properties in Dubai. It is headquartered in Abu Dhabi and is not listed on a stock exchange, so it does not publish results the way listed developers do.",
+     "q_ar": "من يملك شركة إيجل هيلز؟",
+     "a_ar": "إيجل هيلز شركة خاصة باسم إيجل هيلز العقارية ذات المسؤولية المحدودة، تأسست عام 2014 ويرأسها مؤسسها محمد العبار، مؤسس إعمار العقارية في دبي. ويقع مقرها الرئيسي في أبوظبي، وهي غير مدرجة في أي سوق للأوراق المالية، لذا لا تنشر نتائج مالية كما يفعل المطورون المدرجون."
+    },
+    {
+     "q": "Does Eagle Hills build in Abu Dhabi?",
+     "a": "Yes. Eagle Hills' Abu Dhabi master development is Ramhan Island, announced in May 2024 and planned for more than 1,800 standalone villas, 900 marina residences, branded residences, a marina hotel and a retail promenade. Its first sold-out release, Ramhan Island Views, is listed for delivery in Q4 2026, with villa phases due in 2027 and 2028.",
+     "q_ar": "هل تبني إيجل هيلز في أبوظبي؟",
+     "a_ar": "نعم. مشروع إيجل هيلز الرئيسي في أبوظبي هو جزيرة رمحان، الذي أُعلن في مايو 2024 ويُخطَّط ليضم أكثر من 1,800 فيلا مستقلة، و900 وحدة سكنية في المارينا، ووحدات بعلامات تجارية، وفندقًا على المارينا، وممشى للتسوق. وأول إصداراته المباعة بالكامل، رمحان آيلاند فيوز، مدرج للتسليم في الربع الرابع من 2026، فيما يُتوقع تسليم مراحل الفلل في 2027 و2028."
+    },
+    {
+     "q": "What Eagle Hills project can I buy through Bazar?",
+     "a": "Bazar offers The Bristol Residences on Ramhan Island: 125 waterfront homes of one to four bedrooms beside a planned Bristol hotel, Eagle Hills' own hotel brand. Prices start from AED 3,100,000 and handover is scheduled for Q4 2028.",
+     "q_ar": "ما مشروع إيجل هيلز الذي يمكنني شراؤه عبر بازار؟",
+     "a_ar": "تعرض بازار مشروع ذا بريستول ريزيدنسز في جزيرة رمحان، ويضم 125 وحدة على الواجهة المائية من غرفة إلى أربع غرف بجوار فندق بريستول المخطط، وهو العلامة الفندقية التي تملكها إيجل هيلز. وتبدأ الأسعار من 3,100,000 درهم، والتسليم مقرر في الربع الرابع من 2028."
+    },
+    {
+     "q": "What sizes and payment plan does The Bristol Residences have?",
+     "a": "The Bristol Residences ranges from about 738 sq ft for a one-bedroom to 2,570 sq ft for a four-bedroom. It is sold on a 50/50 plan: 10% on booking, 40% during construction and 50% on handover in Q4 2028. On the AED 3,100,000 starting price, that is AED 1,550,000 before completion, plus the 2% registration fee.",
+     "q_ar": "ما مساحات مشروع ذا بريستول ريزيدنسز وخطة السداد فيه؟",
+     "a_ar": "تتراوح مساحات ذا بريستول ريزيدنسز من نحو 738 قدمًا مربعًا للشقة بغرفة واحدة إلى 2,570 قدمًا مربعًا للشقة بأربع غرف. ويُباع بخطة 50/50: 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم في الربع الرابع من 2028. وعلى سعر البداية البالغ 3,100,000 درهم يعني ذلك 1,550,000 درهم قبل الإنجاز، إضافة إلى رسوم التسجيل البالغة 2%."
+    },
+    {
+     "q": "Where else does Eagle Hills build?",
+     "a": "Outside the UAE, Eagle Hills' history covers Serbia, where it built Belgrade Waterfront, Bahrain with Marassi Al Bahrain, and Oman, Morocco, Jordan, Egypt, Ethiopia, Georgia, Croatia, Montenegro, Albania, Italy and Latvia. Ramhan Island is its Abu Dhabi community; The Bristol, its hotel brand, began in Belgrade.",
+     "q_ar": "أين تبني إيجل هيلز أيضًا؟",
+     "a_ar": "خارج الإمارات يشمل سجل إيجل هيلز صربيا، حيث بنت واجهة بلغراد المائية، والبحرين بمشروع مراسي البحرين، إلى جانب عُمان والمغرب والأردن ومصر وإثيوبيا وجورجيا وكرواتيا والجبل الأسود وألبانيا وإيطاليا ولاتفيا. وجزيرة رمحان هي مجتمعها في أبوظبي، أما بريستول، علامتها الفندقية، فانطلقت من بلغراد."
+    },
+    {
+     "q": "What is Eagle Hills' track record?",
+     "a": "Eagle Hills is a private company, so its record is read from projects rather than published accounts. Its founder, Mohamed Alabbar, led Emaar during Burj Khalifa and Downtown Dubai; Eagle Hills itself has built Belgrade Waterfront and opened The Bristol hotels. In Abu Dhabi, Ramhan Island Views is listed for delivery in Q4 2026, ahead of The Bristol Residences in Q4 2028.",
+     "q_ar": "ما سجل إيجل هيلز في الإنجاز؟",
+     "a_ar": "إيجل هيلز شركة خاصة، لذا يُقرأ سجلها من مشاريعها لا من حسابات منشورة. فقد قاد مؤسسها محمد العبار شركة إعمار خلال بناء برج خليفة ووسط مدينة دبي، وبنت إيجل هيلز نفسها واجهة بلغراد المائية وافتتحت فنادق بريستول. وفي أبوظبي، يُدرج مشروع رمحان آيلاند فيوز للتسليم في الربع الرابع من 2026، قبل ذا بريستول ريزيدنسز المقرر في الربع الرابع من 2028."
+    },
+    {
+     "q": "Can foreigners buy Eagle Hills property on Ramhan Island?",
+     "a": "Eagle Hills markets Ramhan Island homes, including The Bristol Residences, as freehold for buyers of all nationalities. Ramhan does not appear on the older government list of nine investment areas, so ask for the plot's title status on DARI before signing, as with any newer Abu Dhabi island.",
+     "q_ar": "هل يمكن للأجانب شراء عقارات إيجل هيلز في جزيرة رمحان؟",
+     "a_ar": "تسوّق إيجل هيلز منازل جزيرة رمحان، ومنها ذا بريستول ريزيدنسز، بنظام التملك الحر للمشترين من جميع الجنسيات. ولا تظهر رمحان في القائمة الحكومية الأقدم لمناطق الاستثمار التسع، لذا يُستحسن طلب التحقق من وضع سند القطعة على منصة «داري» قبل التوقيع، كما هو الحال مع أي جزيرة جديدة في أبوظبي."
+    },
+    {
+     "q": "Are Eagle Hills off-plan payments held in escrow in Abu Dhabi?",
+     "a": "Yes. Abu Dhabi Law No. 3 of 2015 requires payments for an off-plan project such as The Bristol Residences to go into the project's escrow account registered with ADREC, released to Eagle Hills against certified construction. Your 10% booking, AED 310,000 on a AED 3,100,000 home, is paid into that account, not to the developer directly.",
+     "q_ar": "هل تُودَع دفعات مشاريع إيجل هيلز على الخريطة في حساب ضمان في أبوظبي؟",
+     "a_ar": "نعم. يُلزم القانون رقم 3 لسنة 2015 في أبوظبي بإيداع دفعات أي مشروع على الخريطة، مثل ذا بريستول ريزيدنسز، في حساب ضمان المشروع المسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف لإيجل هيلز مقابل الإنجاز المعتمد للإنشاء. وتُدفع دفعة الحجز البالغة 10%، أي 310,000 درهم على وحدة بسعر 3,100,000 درهم، في ذلك الحساب لا إلى المطوّر مباشرة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-east-west",
+   "name": "East & West",
+   "route": "/developers/east-west",
+   "pageSlug": "subpage/faq/developer-east-west",
+   "sources": [
+    "DB: developers row east-west (founded 1993, description); published development Rixos Residences (price, handover, 386 units, plan, unit types)",
+    "https://gulfnews.com/gn-focus/company-news/east-west-breaks-ground-on-rixos-al-reem-residences-in-abu-dhabi-1.500673734 — groundbreaking (Sept 2026), 386 residences, first branded project, UAE portfolio more than AED 10bn delivered, partners Aedas, HBA Residential, ABSONS, Accor One Living",
+    "https://www.zawya.com/en/press-release/aedas-designs-rixos-al-reem-residences-in-abu-dhabi-for-east-west-properties-406004 — Aedas design",
+    "https://www.propertyfinder.ae/en/new-projects/dev/east-and-west-properties/dubai — Dubai projects (Rixos Financial Center Road, sold out, Q2 2027)",
+    "https://metropolitan.realestate/developers/east-west-group/ — real estate since 1993; Abu Dhabi, Dubai, Al Ain, Sharjah",
+    "adro.gov.ae — Golden Visa AED 2M; off-plan needs AED 2M paid",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who is East & West Properties?",
+     "a": "East & West is a privately held UAE developer founded in 1993, with projects in Abu Dhabi, Dubai, Al Ain and Sharjah. Its Abu Dhabi arm, East & West Property Development, says the group's UAE portfolio has delivered more than AED 10 billion of premium residential property. It is not listed on a stock exchange.",
+     "q_ar": "من هي شركة إيست آند ويست العقارية؟",
+     "a_ar": "إيست آند ويست مطوّر إماراتي خاص تأسس عام 1993، ولديه مشاريع في أبوظبي ودبي والعين والشارقة. وتقول ذراعه في أبوظبي، إيست آند ويست للتطوير العقاري، إن محفظة المجموعة في الإمارات سلّمت عقارات سكنية فاخرة تتجاوز قيمتها 10 مليارات درهم. والشركة غير مدرجة في أي سوق للأوراق المالية."
+    },
+    {
+     "q": "What East & West project can I buy through Bazar?",
+     "a": "Bazar offers Rixos Residences on Al Reem Island, Abu Dhabi's first Rixos-branded residential tower: 386 homes of one to three bedrooms from AED 2,115,000, with handover scheduled for Q1 2029. Residents receive Rixos hotel services and Accor One Living owner privileges.",
+     "q_ar": "ما مشروع إيست آند ويست الذي يمكنني شراؤه عبر بازار؟",
+     "a_ar": "تعرض بازار مشروع ريكسوس ريزيدنسز في جزيرة الريم، أول برج سكني بعلامة ريكسوس في أبوظبي، ويضم 386 وحدة من غرفة إلى ثلاث غرف تبدأ من 2,115,000 درهم، والتسليم مقرر في الربع الأول من 2029. ويحصل السكان على خدمات فندق ريكسوس وامتيازات الملاك من برنامج أكور ون ليفينغ."
+    },
+    {
+     "q": "What sizes and payment plan does Rixos Residences have?",
+     "a": "Rixos Residences ranges from about 1,049 sq ft for a one-bedroom to 2,852 sq ft for a three-bedroom. It is sold on a 40/60 plan: 5% on booking, 35% during construction and 60% on handover in Q1 2029. On the AED 2,115,000 starting price, about AED 846,000 is paid before completion.",
+     "q_ar": "ما مساحات ريكسوس ريزيدنسز وخطة السداد فيه؟",
+     "a_ar": "تتراوح مساحات ريكسوس ريزيدنسز من نحو 1,049 قدمًا مربعًا للشقة بغرفة واحدة إلى 2,852 قدمًا مربعًا للشقة بثلاث غرف. ويُباع بخطة 40/60: 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم في الربع الأول من 2029. وعلى سعر البداية البالغ 2,115,000 درهم يُدفع نحو 846,000 درهم قبل الإنجاز."
+    },
+    {
+     "q": "Has construction started on East & West's Rixos Residences?",
+     "a": "Yes. East & West broke ground on Rixos Residences in September 2026, with ABSONS General Contracting among the project partners. The tower is designed by Aedas with interiors by HBA Residential, and it is the first branded project of East & West Property Development in Abu Dhabi.",
+     "q_ar": "هل بدأ الإنشاء في مشروع ريكسوس ريزيدنسز من إيست آند ويست؟",
+     "a_ar": "نعم. وضعت إيست آند ويست حجر الأساس لمشروع ريكسوس ريزيدنسز في سبتمبر 2026، وتُعد شركة أبسونز للمقاولات العامة من شركاء المشروع. وصمّم البرج استوديو إيداس، فيما تولّت إتش بي إيه ريزيدنشال التصميم الداخلي، وهو أول مشروع بعلامة تجارية لشركة إيست آند ويست للتطوير العقاري في أبوظبي."
+    },
+    {
+     "q": "Does East & West build in Dubai as well as Abu Dhabi?",
+     "a": "Yes. East & West's Dubai projects include Rixos Financial Center Road, listed as sold out with delivery in Q2 2027. In Abu Dhabi, its project on sale through Bazar is Rixos Residences on Al Reem Island, from AED 2,115,000.",
+     "q_ar": "هل تبني إيست آند ويست في دبي إلى جانب أبوظبي؟",
+     "a_ar": "نعم. من مشاريع إيست آند ويست في دبي ريكسوس على شارع المركز المالي، المدرج على أنه مباع بالكامل وتسليمه في الربع الثاني من 2027. أما في أبوظبي، فمشروعها المعروض عبر بازار هو ريكسوس ريزيدنسز في جزيرة الريم، بأسعار تبدأ من 2,115,000 درهم."
+    },
+    {
+     "q": "Can foreigners buy from East & West in Abu Dhabi?",
+     "a": "Yes. Rixos Residences is on Al Reem Island, one of Abu Dhabi's designated investment areas, so buyers of any nationality, resident in the UAE or overseas, can own an apartment there freehold. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء من إيست آند ويست في أبوظبي؟",
+     "a_ar": "نعم. يقع ريكسوس ريزيدنسز في جزيرة الريم، إحدى مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو خارجها، تملّك شقة فيه بنظام التملك الحر. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Are East & West off-plan payments protected by escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, instalments for Rixos Residences go into the project's escrow account registered with ADREC, and East & West can draw on them only against certified construction progress. The 60% due on handover in Q1 2029 is paid when the tower is complete.",
+     "q_ar": "هل دفعات مشاريع إيست آند ويست على الخريطة محمية بحساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع أقساط ريكسوس ريزيدنسز في حساب ضمان المشروع المسجل لدى مركز أبوظبي العقاري ADREC، ولا تستطيع إيست آند ويست السحب منها إلا مقابل الإنجاز المعتمد للإنشاء. وتُدفع نسبة 60% المستحقة عند التسليم في الربع الأول من 2029 بعد اكتمال البرج."
+    },
+    {
+     "q": "Does buying at Rixos Residences qualify for a Golden Visa?",
+     "a": "It can. Abu Dhabi grants a 10-year Golden Visa to owners of property worth AED 2 million or more, and Rixos Residences starts at AED 2,115,000. For an off-plan home, though, AED 2 million must already be paid, and on the 40/60 plan only about 40% is paid before handover, so most buyers qualify once the 60% is settled on completion.",
+     "q_ar": "هل يؤهل الشراء في ريكسوس ريزيدنسز للحصول على الإقامة الذهبية؟",
+     "a_ar": "قد يؤهل. تمنح أبوظبي الإقامة الذهبية لمدة 10 سنوات لملاك العقارات التي تبلغ قيمتها 2 مليون درهم أو أكثر، وتبدأ أسعار ريكسوس ريزيدنسز من 2,115,000 درهم. لكن في العقار على الخريطة يجب أن يكون قد دُفع 2 مليون درهم فعلًا، وفي خطة 40/60 لا يُدفع قبل التسليم سوى نحو 40%، لذا يتأهل معظم المشترين بعد سداد نسبة 60% عند الإنجاز."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-emirates-developments",
+   "name": "Emirates Developments",
+   "route": "/developers/emirates-developments",
+   "pageSlug": "subpage/faq/developer-emirates-developments",
+   "sources": [
+    "DB: developers row emirates-developments (description); published developments Jumeirah Residences and Waterfront by Missoni (prices, handover, units, plans, unit types)",
+    "https://www.propertyfinder.ae/en/new-projects/dev-lp/emirates-developments — privately held, branded residences; Stellar by Elie Saab (Yas, Q4 2028), Emirates Hilton Residences (Al Raha Beach, Q4 2028), Hilton Residences JLT (Dubai, Q3 2027)",
+    "https://aeworld.com/?p=151223 — Jumeirah Residences unveiled 28 January 2026 at Louvre Abu Dhabi; Killa Design; opening 2031",
+    "https://www.zawya.com/en/press-release/companies-news/emirates-developments-enters-agreement-with-jumeirah-to-develop-jumeirah-branded-residences-bptqzp22 — Jumeirah agreement",
+    "https://tradearabia.com/News/488360/Missoni-to-unveil-its-first-branded-water-front-residences-in-Abu-Dhabi — Missoni's first branded waterfront residences in Abu Dhabi (Oct 2026)",
+    "adro.gov.ae — Golden Visa AED 2M; off-plan needs AED 2M paid",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who is Emirates Developments?",
+     "a": "Emirates Developments is a privately held Abu Dhabi real estate developer that focuses on branded residences, built with hotel and fashion names such as Jumeirah, Missoni, Hilton and Elie Saab. It is not listed on a stock exchange. In Abu Dhabi its projects are on Al Maryah Island, Al Reem Island, Yas Island and Al Raha Beach.",
+     "q_ar": "من هي شركة الإمارات للتطوير العقاري؟",
+     "a_ar": "الإمارات للتطوير العقاري مطوّر عقاري خاص في أبوظبي يركّز على الوحدات السكنية ذات العلامات التجارية، ويبنيها مع أسماء فندقية وأزياء مثل جميرا وميسوني وهيلتون وإيلي صعب. والشركة غير مدرجة في أي سوق للأوراق المالية. وتقع مشاريعها في أبوظبي في جزيرة الماريه وجزيرة الريم وجزيرة ياس وشاطئ الراحة."
+    },
+    {
+     "q": "What Emirates Developments projects can I buy through Bazar?",
+     "a": "Bazar offers two Emirates Developments projects. Jumeirah Residences on Al Maryah Island has 253 homes of one to four bedrooms from AED 4,700,000, due in Q4 2030. Waterfront by Missoni on Al Reem Island has 250 homes of one to five bedrooms from AED 1,900,000, due in Q2 2030.",
+     "q_ar": "ما مشاريع الإمارات للتطوير العقاري التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار مشروعين للإمارات للتطوير العقاري: جميرا ريزيدنسز في جزيرة الماريه ويضم 253 وحدة من غرفة إلى أربع غرف تبدأ من 4,700,000 درهم، وتسليمه في الربع الرابع من 2030؛ وووترفرونت من ميسوني في جزيرة الريم ويضم 250 وحدة من غرفة إلى خمس غرف تبدأ من 1,900,000 درهم، وتسليمه في الربع الثاني من 2030."
+    },
+    {
+     "q": "What is Jumeirah Residences by Emirates Developments?",
+     "a": "Jumeirah Residences is a branded tower on Al Maryah Island, unveiled at Louvre Abu Dhabi in January 2026 and designed by Killa Design. Homes run from about 1,115 sq ft for a one-bedroom to 4,467 sq ft for a four-bedroom, from AED 4,700,000, on a 50/50 plan of 10% on booking, 40% during construction and 50% on handover.",
+     "q_ar": "ما هو مشروع جميرا ريزيدنسز من الإمارات للتطوير العقاري؟",
+     "a_ar": "جميرا ريزيدنسز برج سكني بعلامة تجارية في جزيرة الماريه، كُشف عنه في متحف اللوفر أبوظبي في يناير 2026 وصممه استوديو كيلا ديزاين. وتتراوح مساحات وحداته من نحو 1,115 قدمًا مربعًا للشقة بغرفة واحدة إلى 4,467 قدمًا مربعًا للشقة بأربع غرف، بأسعار تبدأ من 4,700,000 درهم، وبخطة 50/50: 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم."
+    },
+    {
+     "q": "What is Waterfront by Missoni on Al Reem Island?",
+     "a": "Waterfront by Missoni is Missoni's first branded waterfront residential tower in Abu Dhabi, developed by Emirates Developments on Al Reem Island. Its 250 homes run from about 668 sq ft to 4,443 sq ft, one to five bedrooms, from AED 1,900,000, on a 40/60 plan: 5% on booking, 35% during construction and 60% on handover in Q2 2030.",
+     "q_ar": "ما هو مشروع ووترفرونت من ميسوني في جزيرة الريم؟",
+     "a_ar": "ووترفرونت من ميسوني أول برج سكني بعلامة ميسوني على الواجهة المائية في أبوظبي، تطوّره الإمارات للتطوير العقاري في جزيرة الريم. وتتراوح مساحات وحداته البالغة 250 وحدة من نحو 668 إلى 4,443 قدمًا مربعًا، من غرفة إلى خمس غرف، بأسعار تبدأ من 1,900,000 درهم، وبخطة 40/60: 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم في الربع الثاني من 2030."
+    },
+    {
+     "q": "What other projects does Emirates Developments have?",
+     "a": "Beyond the two projects on Bazar, portals list Stellar by Elie Saab on Yas Island and Emirates Hilton Residences on Al Raha Beach, both due in Q4 2028, and Hilton Residences in Jumeirah Lake Towers, Dubai, due in Q3 2027. These are not offered through Bazar today; ask an advisor if you want details on them.",
+     "q_ar": "ما المشاريع الأخرى لدى الإمارات للتطوير العقاري؟",
+     "a_ar": "إلى جانب المشروعين المعروضين في بازار، تُدرج المنصات العقارية مشروع ستيلار من إيلي صعب في جزيرة ياس، ومشروع الإمارات هيلتون ريزيدنسز على شاطئ الراحة، وكلاهما متوقع تسليمه في الربع الرابع من 2028، إضافة إلى هيلتون ريزيدنسز في أبراج بحيرات جميرا بدبي، وتسليمه في الربع الثالث من 2027. وهذه المشاريع غير معروضة عبر بازار حاليًا، ويمكنك سؤال أحد المستشارين عن تفاصيلها."
+    },
+    {
+     "q": "Can foreigners buy from Emirates Developments?",
+     "a": "Yes, at both projects Bazar sells. Al Maryah Island and Al Reem Island are designated investment areas, so buyers of any nationality, resident in the UAE or not, can own at Jumeirah Residences or Waterfront by Missoni freehold. The purchase is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب الشراء من الإمارات للتطوير العقاري؟",
+     "a_ar": "نعم، في المشروعين اللذين تبيعهما بازار. فجزيرة الماريه وجزيرة الريم من مناطق الاستثمار المحددة، لذا يحق للمشترين من أي جنسية، مقيمين في الإمارات أو خارجها، التملك في جميرا ريزيدنسز أو ووترفرونت من ميسوني بنظام التملك الحر. ويُسجَّل الشراء لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Are Emirates Developments off-plan payments held in escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, payments for Jumeirah Residences and Waterfront by Missoni go into each project's escrow account registered with ADREC and are released against certified construction progress. Launch coverage speaks of Jumeirah Residences opening in 2031, so read the anticipated completion date and delay terms in your sale and purchase agreement.",
+     "q_ar": "هل تُودَع دفعات مشاريع الإمارات للتطوير العقاري على الخريطة في حساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع دفعات جميرا ريزيدنسز وووترفرونت من ميسوني في حساب ضمان خاص بكل مشروع ومسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف مقابل الإنجاز المعتمد للإنشاء. وتتحدث تغطية الإطلاق عن افتتاح جميرا ريزيدنسز عام 2031، لذا راجع تاريخ الإنجاز المتوقع وشروط التأخير في عقد البيع والشراء."
+    },
+    {
+     "q": "Does a Jumeirah Residences home qualify for a Golden Visa?",
+     "a": "Yes, during construction. Abu Dhabi's 10-year Golden Visa needs property worth AED 2 million, and for an off-plan home AED 2 million paid. Jumeirah Residences starts at AED 4,700,000, and its plan collects 50%, AED 2,350,000, before handover, so the threshold is passed while the tower is still being built.",
+     "q_ar": "هل يؤهل منزل في جميرا ريزيدنسز للحصول على الإقامة الذهبية؟",
+     "a_ar": "نعم، خلال فترة الإنشاء. تتطلب الإقامة الذهبية في أبوظبي لمدة 10 سنوات عقارًا بقيمة 2 مليون درهم، وفي العقار على الخريطة دفع 2 مليون درهم فعلًا. وتبدأ أسعار جميرا ريزيدنسز من 4,700,000 درهم، وتحصّل خطتها 50%، أي 2,350,000 درهم، قبل التسليم، لذا يُتجاوز الحد بينما لا يزال البرج قيد البناء."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-imkan-properties",
+   "name": "IMKAN Properties",
+   "route": "/developers/imkan-properties",
+   "pageSlug": "subpage/faq/developer-imkan-properties",
+   "sources": [
+    "DB: developers row imkan-properties (founded 2017, description); published developments Naseem AlJurf and The Artery Residences (prices, handover, units, plans, unit types)",
+    "https://www.zawya.com/en/press-release/companies-news/imkan-launches-naseem-aljurf-in-abu-dhabi-a-luxury-and-serene-living-concept-in-the-emirates-riviera-axp3qls7 — wholly owned by Abu Dhabi Capital Group; 26 projects in five countries; AlJurf Gardens Phase 1 handed over; Naseem AlJurf 111 villas, 60 townhouses, 8 apartment buildings, construction from May 2025; Makers District 18.6 ha, Pixel seven towers; SHA Emirates Residences 2026; Nudra; Sheikha Fatima Park; Alburouj (Egypt, 500 ha); Le Carrousel (Morocco); CEO Suwaidan Al Dhaheri",
+    "https://www.bayut.com/mybayut/dotm-july-2025-imkan — developer profile",
+    "gulfnews.com / wam.ae (Sept 2026) — ADREC off-plan mortgage framework, 50% paid (Wave 2)",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who owns IMKAN Properties?",
+     "a": "IMKAN Properties is a wholly owned subsidiary of Abu Dhabi Capital Group, a private investment group, and is not listed on a stock exchange. Founded in 2017 and led by its CEO, Suwaidan Al Dhaheri, IMKAN says it has 26 projects across five countries, from the AlJurf coast and Al Reem Island in Abu Dhabi to Egypt and Morocco.",
+     "q_ar": "من يملك شركة إمكان العقارية؟",
+     "a_ar": "إمكان العقارية شركة تابعة ومملوكة بالكامل لمجموعة أبوظبي كابيتال، وهي مجموعة استثمارية خاصة، والشركة غير مدرجة في أي سوق للأوراق المالية. وتأسست عام 2017 ويقودها رئيسها التنفيذي سويدان الظاهري، وتقول إن لديها 26 مشروعًا في خمس دول، من ساحل الجرف وجزيرة الريم في أبوظبي إلى مصر والمغرب."
+    },
+    {
+     "q": "What IMKAN projects can I buy through Bazar?",
+     "a": "Bazar offers two IMKAN projects. Naseem AlJurf, on the coast at Al Jurf, has 618 homes from studios to four-bedroom units, from AED 1,000,000, due in Q3 2027. The Artery Residences in the Makers District on Al Reem Island has 220 homes from studios to four bedrooms, from AED 940,000, due in Q4 2029.",
+     "q_ar": "ما مشاريع إمكان التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار مشروعين لإمكان: نسيم الجرف على ساحل الجرف ويضم 618 وحدة من الاستوديو إلى وحدات بأربع غرف تبدأ من 1,000,000 درهم، وتسليمه في الربع الثالث من 2027؛ وذا آرتري ريزيدنسز في حي الصنّاع بجزيرة الريم ويضم 220 وحدة من الاستوديو إلى أربع غرف تبدأ من 940,000 درهم، وتسليمه في الربع الرابع من 2029."
+    },
+    {
+     "q": "What is IMKAN's Naseem AlJurf?",
+     "a": "Naseem AlJurf is the newest phase of IMKAN's AlJurf coastal masterplan, with 111 villas, 60 townhouses and 8 apartment buildings; construction was set to begin in May 2025. Prices start from AED 1,000,000, and the plan is 10% on booking, 50% during construction and 40% on handover in Q3 2027.",
+     "q_ar": "ما هو مشروع نسيم الجرف من إمكان؟",
+     "a_ar": "نسيم الجرف أحدث مراحل المخطط الساحلي للجرف من إمكان، ويضم 111 فيلا و60 تاون هاوس و8 مبانٍ سكنية، وكان مقررًا أن يبدأ إنشاؤه في مايو 2025. وتبدأ الأسعار من 1,000,000 درهم، وخطة السداد 10% عند الحجز، و50% خلال الإنشاء، و40% عند التسليم في الربع الثالث من 2027."
+    },
+    {
+     "q": "What is The Artery Residences by IMKAN?",
+     "a": "The Artery Residences is an IMKAN tower in the Makers District, its 18.6-hectare waterfront district on Al Reem Island beside the seven Pixel towers. Homes run from about 483 sq ft studios to 3,703 sq ft four-bedrooms, from AED 940,000, paid 10% on booking, 30% during construction and 60% on handover in Q4 2029.",
+     "q_ar": "ما هو مشروع ذا آرتري ريزيدنسز من إمكان؟",
+     "a_ar": "ذا آرتري ريزيدنسز برج من إمكان في حي الصنّاع، منطقتها على الواجهة المائية في جزيرة الريم بمساحة 18.6 هكتار، بجوار أبراج بيكسل السبعة. وتتراوح الوحدات من استوديوهات بنحو 483 قدمًا مربعًا إلى شقق بأربع غرف بمساحة 3,703 أقدام مربعة، بأسعار تبدأ من 940,000 درهم، وتُدفع 10% عند الحجز، و30% خلال الإنشاء، و60% عند التسليم في الربع الرابع من 2029."
+    },
+    {
+     "q": "Has IMKAN delivered its projects?",
+     "a": "IMKAN's record includes the handover of AlJurf Gardens Phase 1, the first community in the AlJurf masterplan, and the seven-tower Pixel complex in the Makers District. It also developed Sheikha Fatima Park in Abu Dhabi, and SHA Emirates Residences at AlJurf is set to open in 2026, ahead of Naseem AlJurf in Q3 2027.",
+     "q_ar": "هل سلّمت إمكان مشاريعها؟",
+     "a_ar": "يشمل سجل إمكان تسليم المرحلة الأولى من الجرف غاردنز، أول مجتمع في المخطط الرئيسي للجرف، ومجمع بيكسل المكوّن من سبعة أبراج في حي الصنّاع. كما طوّرت حديقة الشيخة فاطمة في أبوظبي، ومن المقرر افتتاح شا الإمارات ريزيدنسز في الجرف عام 2026، قبل نسيم الجرف المتوقع في الربع الثالث من 2027."
+    },
+    {
+     "q": "Where else does IMKAN build?",
+     "a": "In Abu Dhabi, IMKAN has also built Nudra, a beachside community on Saadiyat Island, alongside AlJurf and the Makers District. Abroad, its projects include Alburouj, a 500-hectare development in Egypt, and Le Carrousel Residences in Morocco. Only Naseem AlJurf and The Artery Residences are offered through Bazar.",
+     "q_ar": "أين تبني إمكان أيضًا؟",
+     "a_ar": "في أبوظبي بنت إمكان أيضًا مجتمع ندرة على شاطئ جزيرة السعديات، إلى جانب الجرف وحي الصنّاع. وفي الخارج تشمل مشاريعها البروج، وهو مشروع بمساحة 500 هكتار في مصر، ولو كاروسيل ريزيدنسز في المغرب. ولا يُعرض عبر بازار سوى نسيم الجرف وذا آرتري ريزيدنسز."
+    },
+    {
+     "q": "Can foreigners buy IMKAN property?",
+     "a": "Yes, at both IMKAN projects Bazar sells. Al Reem Island and Al Jurf are designated investment zones, so buyers of any nationality can own a Naseem AlJurf or Artery Residences home freehold, with or without UAE residency. Titles are registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقارات إمكان؟",
+     "a_ar": "نعم، في مشروعي إمكان اللذين تبيعهما بازار. فجزيرة الريم والجرف من مناطق الاستثمار المحددة، لذا يحق للمشترين من أي جنسية تملّك وحدة في نسيم الجرف أو ذا آرتري ريزيدنسز بنظام التملك الحر، سواء كانوا مقيمين في الإمارات أم لا. وتُسجَّل سندات الملكية لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Are IMKAN off-plan payments held in escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, payments for Naseem AlJurf and The Artery Residences go into each project's escrow account registered with ADREC and are released against certified construction. Naseem AlJurf's plan collects 60% before completion, which passes the 50% paid that ADREC's off-plan mortgage framework requires.",
+     "q_ar": "هل تُودَع دفعات مشاريع إمكان على الخريطة في حساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع دفعات نسيم الجرف وذا آرتري ريزيدنسز في حساب ضمان خاص بكل مشروع ومسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف مقابل الإنجاز المعتمد للإنشاء. وتحصّل خطة نسيم الجرف 60% قبل الإنجاز، وهو ما يتجاوز نسبة 50% المدفوعة التي يشترطها إطار ADREC للرهن العقاري على الخريطة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-lead-development",
+   "name": "LEAD Development",
+   "route": "/developers/lead-development",
+   "pageSlug": "subpage/faq/developer-lead-development",
+   "sources": [
+    "DB: developers row lead-development (founded 2010, description); published development RIMAS (price, handover, plan, unit types)",
+    "https://www.zawya.com/en/press-release/companies-news/lead-development-unveils-rimas-at-livex-2026-a-new-addition-to-jubail-islands-premium-community-offering-1388855 — RIMAS: 167 villas (76/76/15), plots ~850–1,716 sq m, LIVEX 2026; LEAD portfolio over AED 30bn; Hidd Al Saadiyat, Jubail Island, Emirates Palace and Mandarin Oriental Mansions; Mounir Haidar co-founder; more than 1,000 homes across six villages; community centres in Nad Al Dhabi, Seef Al Jubail, Jubail Terraces (states established 2011)",
+    "https://www.wam.ae/en/article/bzttsx3-jubail-island-delivers-over-1000-homes-abu-dhabi — Jubail Island over 1,000 homes delivered (April 2026)",
+    "https://www.zawya.com/en/press-release/companies-news/jubail-island-announces-significant-achievement-for-the-island-with-the-first-title-deed-handed-over-to-new-owner-kuori5u5 — 112 private plots",
+    "adro.gov.ae — Golden Visa AED 2M",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who is LEAD Development?",
+     "a": "LEAD Development is an Abu Dhabi developer and master planner, known chiefly as the developer of Jubail Island for its owner, Jubail Island Investment Company. Its co-founder and managing partner is Mounir Haidar, and LEAD puts its portfolio at more than AED 30 billion, including Jubail Island and Hidd Al Saadiyat.",
+     "q_ar": "من هي شركة ليد للتطوير العقاري؟",
+     "a_ar": "ليد للتطوير العقاري مطوّر ومخطِّط رئيسي في أبوظبي، تشتهر بتطوير جزيرة الجبيل لصالح مالكتها شركة جزيرة الجبيل للاستثمار. وشريكها المؤسس والشريك الإداري هو منير حيدر، وتقدّر ليد قيمة محفظتها بأكثر من 30 مليار درهم، ومنها جزيرة الجبيل وحدّ السعديات."
+    },
+    {
+     "q": "What LEAD Development project can I buy through Bazar?",
+     "a": "Bazar offers RIMAS on Jubail Island, LEAD's newest villa community: four- to six-bedroom villas from AED 8,500,000, with handover scheduled for Q1 2029. LEAD unveiled it at LIVEX 2026 as the first project in the second phase of Jubail Island.",
+     "q_ar": "ما مشروع ليد للتطوير العقاري الذي يمكنني شراؤه عبر بازار؟",
+     "a_ar": "تعرض بازار مشروع ريماس في جزيرة الجبيل، أحدث مجتمعات الفلل من ليد، ويضم فللًا من أربع إلى ست غرف تبدأ من 8,500,000 درهم، والتسليم مقرر في الربع الأول من 2029. وكشفت ليد عنه في معرض ليفكس 2026 بوصفه أول مشروع في المرحلة الثانية من جزيرة الجبيل."
+    },
+    {
+     "q": "What villas are available at RIMAS on Jubail Island?",
+     "a": "RIMAS launched with 167 villas: 76 four-bedroom, 76 five-bedroom and 15 six-bedroom homes, on plots of about 850 to 1,716 sq m. Built areas run from about 5,350 sq ft for a four-bedroom to 10,668 sq ft for a six-bedroom, and a mangrove trail links the community to Jubail Island Mangrove Park.",
+     "q_ar": "ما الفلل المتوفرة في ريماس بجزيرة الجبيل؟",
+     "a_ar": "أُطلق ريماس بـ167 فيلا: 76 فيلا بأربع غرف، و76 بخمس غرف، و15 بست غرف، على قطع أراضٍ تتراوح مساحتها بين نحو 850 و1,716 مترًا مربعًا. وتتراوح المساحات المبنية من نحو 5,350 قدمًا مربعًا للفيلا ذات الأربع غرف إلى 10,668 قدمًا مربعًا للفيلا ذات الست غرف، ويربط ممر عبر أشجار القرم المجتمع بمنتزه القرم في جزيرة الجبيل."
+    },
+    {
+     "q": "What is the payment plan for LEAD Development's RIMAS?",
+     "a": "RIMAS is sold on a 50/50 plan: 10% on booking, 40% during construction and 50% on handover in Q1 2029. On the AED 8,500,000 starting price, that is AED 850,000 at booking and AED 4,250,000 paid before completion, which is above the AED 2 million an off-plan home needs for Abu Dhabi's 10-year Golden Visa.",
+     "q_ar": "ما خطة السداد في مشروع ريماس من ليد للتطوير العقاري؟",
+     "a_ar": "يُباع ريماس بخطة 50/50: 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم في الربع الأول من 2029. وعلى سعر البداية البالغ 8,500,000 درهم يعني ذلك 850,000 درهم عند الحجز و4,250,000 درهم مدفوعة قبل الإنجاز، وهو أعلى من مبلغ 2 مليون درهم الذي يحتاجه العقار على الخريطة للحصول على الإقامة الذهبية لمدة 10 سنوات في أبوظبي."
+    },
+    {
+     "q": "Has LEAD Development delivered homes on Jubail Island?",
+     "a": "Yes. In April 2026 Jubail Island reported more than 1,000 homes completed and handed over across its six villages, with community centres open in Nad Al Dhabi, Seef Al Jubail and Jubail Terraces. Plot owners have also begun receiving the island's 112 private mansion plots.",
+     "q_ar": "هل سلّمت ليد للتطوير العقاري منازل في جزيرة الجبيل؟",
+     "a_ar": "نعم. أعلنت جزيرة الجبيل في أبريل 2026 إنجاز وتسليم أكثر من 1,000 منزل في قراها الست، مع افتتاح مراكز مجتمعية في ند الذبي وسيف الجبيل وجبيل تيراسز. كما بدأ ملاك القطع في تسلّم قطع القصور الخاصة في الجزيرة وعددها 112 قطعة."
+    },
+    {
+     "q": "What other projects has LEAD Development worked on?",
+     "a": "Besides Jubail Island, LEAD lists Hidd Al Saadiyat, the villa community on Saadiyat Island, and Emirates Palace and Mandarin Oriental Mansions in Abu Dhabi among its projects. Of these, Bazar currently offers RIMAS on Jubail Island; ask an advisor about resale homes elsewhere in LEAD's portfolio.",
+     "q_ar": "ما المشاريع الأخرى التي عملت عليها ليد للتطوير العقاري؟",
+     "a_ar": "إلى جانب جزيرة الجبيل، تُدرج ليد ضمن مشاريعها حدّ السعديات، مجتمع الفلل في جزيرة السعديات، وقصور قصر الإمارات وماندارين أورينتال في أبوظبي. ومن بين هذه المشاريع تعرض بازار حاليًا ريماس في جزيرة الجبيل، ويمكنك سؤال أحد المستشارين عن منازل إعادة البيع في بقية محفظة ليد."
+    },
+    {
+     "q": "Can foreigners buy a LEAD Development villa?",
+     "a": "Yes, at RIMAS. Jubail Island is one of Abu Dhabi's designated investment zones, so buyers of any nationality can own a RIMAS villa and its plot freehold, with or without UAE residency. The title is registered with the Abu Dhabi Real Estate Centre through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء فيلا من ليد للتطوير العقاري؟",
+     "a_ar": "نعم، في ريماس. فجزيرة الجبيل إحدى مناطق الاستثمار المحددة في أبوظبي، لذا يحق للمشترين من أي جنسية تملّك فيلا في ريماس مع قطعة أرضها بنظام التملك الحر، سواء كانوا مقيمين في الإمارات أم لا. ويُسجَّل سند الملكية لدى مركز أبوظبي العقاري عبر منصة «داري»."
+    },
+    {
+     "q": "Are LEAD Development off-plan payments held in escrow?",
+     "a": "Yes. Abu Dhabi Law No. 3 of 2015 requires RIMAS instalments to be paid into the project's escrow account registered with ADREC, and they are released against certified construction progress. Your 10% booking, AED 850,000 on an AED 8,500,000 villa, goes into that account rather than straight to the developer.",
+     "q_ar": "هل تُودَع دفعات مشاريع ليد للتطوير العقاري على الخريطة في حساب ضمان؟",
+     "a_ar": "نعم. يُلزم القانون رقم 3 لسنة 2015 في أبوظبي بإيداع أقساط ريماس في حساب ضمان المشروع المسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف مقابل الإنجاز المعتمد للإنشاء. وتُدفع دفعة الحجز البالغة 10%، أي 850,000 درهم على فيلا بسعر 8,500,000 درهم، في ذلك الحساب لا إلى المطوّر مباشرة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "developer-modon-properties",
+   "name": "MODON Properties",
+   "route": "/developers/modon-properties",
+   "pageSlug": "subpage/faq/developer-modon-properties",
+   "sources": [
+    "DB: developers row modon-properties (founded 2018, description); published developments Bashayer Residences, Al Naseem, Hudayriyat Golf Estate, Wadeem Gardens (prices, handover, units, plans, unit types)",
+    "https://www.modon.com/media-centre/details/2025/10/30/l-imad-holding-company--acquires-shares-of-majority-stakeholders-in-modon-holding — L'imad Holding (Abu Dhabi Government) 84.76% (Oct 2025)",
+    "https://www.modon.com/media-centre/details/2026/02/18/modon-delivers-outstanding-growth-in-2025-with-aed-3.9-billion-in-net-profit-and-aed-46.0-billion-revenue-backlog — FY2025 real estate sales AED 36.3bn (AED 29.8bn Abu Dhabi), backlog AED 46.0bn; Ras El Hekma initial launch AED 5.8bn, 2,109 units",
+    "https://www.wam.ae/en/article/byswyai-modon-holding-reports-aed138-billion-revenue-aed39 — FY2025 results",
+    "https://gulfnews.com/business/property/abu-dhabis-q-holding-completes-ambitious-real-estate-consolidation-with-adq-ihc-1.1709093268676 — Q Holding acquisition of Modon Properties completed Feb 2024, renamed Modon Holding",
+    "modon.com / wam.ae / zawya.com (Wave 2) — Wadeem plots AED 5.5bn in 72 hours (Jul 2025); Bashayer ~AED 3bn (Dec 2025); Hudayriyat Golf Estates > AED 13bn, 15% non-UAE resident buyers (Jul 2026); Al Naseem 40/60 plan; 321 Sports",
+    "Law No. 3 of 2015 escrow (Wave 2/3)"
+   ],
+   "faq": [
+    {
+     "q": "Who owns Modon Properties?",
+     "a": "Modon Properties is the real estate arm of Modon Holding, which is listed on the Abu Dhabi Securities Exchange under the ticker MODON. Since October 2025 L'imad Holding, wholly owned by the Abu Dhabi Government, has held 84.76% of Modon Holding. Modon Properties was founded in 2018 and joined the listed group in February 2024.",
+     "q_ar": "من يملك شركة مُدن العقارية؟",
+     "a_ar": "مُدن العقارية هي الذراع العقارية لشركة مدن القابضة المدرجة في سوق أبوظبي للأوراق المالية. ومنذ أكتوبر 2025 تملك شركة لِماد القابضة، المملوكة بالكامل لحكومة أبوظبي، نسبة 84.76% من مدن القابضة. وتأسست مُدن العقارية عام 2018 وانضمت إلى المجموعة المدرجة في فبراير 2024."
+    },
+    {
+     "q": "What Modon projects can I buy through Bazar?",
+     "a": "Bazar offers four Modon projects, all on Hudayriyat Island. Al Naseem villas from AED 7,800,000, due in Q4 2027. Bashayer Residences apartments from AED 2,500,000, due in Q2 2030; Hudayriyat Golf Estate homes from AED 4,900,000, due in Q3 2030; and Wadeem Gardens villas from AED 8,700,000, due in Q2 2031.",
+     "q_ar": "ما مشاريع مُدن التي يمكنني شراؤها عبر بازار؟",
+     "a_ar": "تعرض بازار أربعة مشاريع لمُدن، جميعها في جزيرة الحديريات: فلل النسيم بأسعار تبدأ من 7,800,000 درهم وتسليم في الربع الرابع من 2027؛ وشقق بشاير ريزيدنسز من 2,500,000 درهم وتسليم في الربع الثاني من 2030؛ ومنازل حديريات غولف إستيت من 4,900,000 درهم وتسليم في الربع الثالث من 2030؛ وفلل واديم جاردنز من 8,700,000 درهم وتسليم في الربع الثاني من 2031."
+    },
+    {
+     "q": "What are Modon's Bashayer Residences and Hudayriyat Golf Estate?",
+     "a": "Bashayer Residences has one- to three-bedroom apartments of about 878 to 3,185 sq ft, from AED 2,500,000, sold 5% on booking, 45% during construction and 50% on handover; Modon reported about AED 3 billion of sales in one day at its December 2025 launch. Hudayriyat Golf Estate has three- to six-bedroom homes from AED 4,900,000 on a 5/35/60 plan, and sold more than AED 13 billion within days of its July 2026 launch.",
+     "q_ar": "ما هما مشروعا بشاير ريزيدنسز وحديريات غولف إستيت من مُدن؟",
+     "a_ar": "يضم بشاير ريزيدنسز شققًا من غرفة إلى ثلاث غرف بمساحات من نحو 878 إلى 3,185 قدمًا مربعًا، بأسعار تبدأ من 2,500,000 درهم، وتُدفع 5% عند الحجز و45% خلال الإنشاء و50% عند التسليم، وأعلنت مُدن مبيعات بنحو 3 مليارات درهم في يوم واحد عند إطلاقه في ديسمبر 2025. ويضم حديريات غولف إستيت منازل من ثلاث إلى ست غرف تبدأ من 4,900,000 درهم بخطة 5/35/60، وتجاوزت مبيعاته 13 مليار درهم خلال أيام من إطلاقه في يوليو 2026."
+    },
+    {
+     "q": "What are Modon's Al Naseem and Wadeem Gardens villas?",
+     "a": "Both are four- to six-bedroom villa communities on Hudayriyat Island. Al Naseem villas measure about 5,274 to 6,674 sq ft, from AED 7,800,000, with the first phase due in Q4 2027; Modon sells them on a 40/60 plan. Wadeem Gardens villas run from about 4,628 to 7,750 sq ft, from AED 8,700,000, paid 5% on booking, 20% during construction and 75% on handover in Q2 2031.",
+     "q_ar": "ما هما مجتمعا فلل النسيم وواديم جاردنز من مُدن؟",
+     "a_ar": "كلاهما مجتمع فلل من أربع إلى ست غرف في جزيرة الحديريات. تتراوح مساحات فلل النسيم من نحو 5,274 إلى 6,674 قدمًا مربعًا، بأسعار تبدأ من 7,800,000 درهم، والمرحلة الأولى متوقع تسليمها في الربع الرابع من 2027، وتبيعها مُدن بخطة 40/60. وتتراوح فلل واديم جاردنز من نحو 4,628 إلى 7,750 قدمًا مربعًا، بأسعار تبدأ من 8,700,000 درهم، وتُدفع 5% عند الحجز و20% خلال الإنشاء و75% عند التسليم في الربع الثاني من 2031."
+    },
+    {
+     "q": "What do Modon's sales and results show?",
+     "a": "Modon Holding reported real estate sales of AED 36.3 billion for 2025, AED 29.8 billion of it in Abu Dhabi, and a revenue backlog of AED 46.0 billion. Its Hudayriyat launches drove much of that: the Wadeem plots sold for about AED 5.5 billion within 72 hours in July 2025, and Bashayer about AED 3 billion in a day in December 2025.",
+     "q_ar": "ماذا تُظهر مبيعات مُدن ونتائجها؟",
+     "a_ar": "أعلنت مدن القابضة مبيعات عقارية بلغت 36.3 مليار درهم في 2025، منها 29.8 مليار درهم في أبوظبي، وتراكمًا في الإيرادات قدره 46.0 مليار درهم. وكانت إطلاقات جزيرة الحديريات وراء جزء كبير من ذلك: إذ بيعت قطع واديم بنحو 5.5 مليار درهم خلال 72 ساعة في يوليو 2025، وبشاير بنحو 3 مليارات درهم في يوم واحد في ديسمبر 2025."
+    },
+    {
+     "q": "Where else does Modon build?",
+     "a": "Hudayriyat Island is Modon's main Abu Dhabi master development, where it also runs leisure venues such as 321 Sports. Outside the UAE, Modon is developing Ras El Hekma on Egypt's Mediterranean coast, whose initial launch sold 2,109 units for AED 5.8 billion in 2025, and has projects in Spain.",
+     "q_ar": "أين تبني مُدن أيضًا؟",
+     "a_ar": "جزيرة الحديريات هي المشروع الرئيسي لمُدن في أبوظبي، وتدير فيها أيضًا مرافق ترفيهية مثل 321 سبورتس. وخارج الإمارات تطوّر مُدن مشروع رأس الحكمة على ساحل مصر المتوسطي، الذي باع إطلاقه الأولي 2,109 وحدات بقيمة 5.8 مليار درهم في 2025، ولديها مشاريع في إسبانيا."
+    },
+    {
+     "q": "Can foreigners buy Modon property on Hudayriyat Island?",
+     "a": "Yes. Modon sells its Hudayriyat Island communities freehold to buyers of all nationalities, and ownership covers the home and its land. At the Hudayriyat Golf Estates launch, 15% of buyers were non-UAE residents; non-residents can buy without a UAE visa, and titles are registered through DARI.",
+     "q_ar": "هل يمكن للأجانب شراء عقارات مُدن في جزيرة الحديريات؟",
+     "a_ar": "نعم. تبيع مُدن مجتمعاتها في جزيرة الحديريات بنظام التملك الحر للمشترين من جميع الجنسيات، وتشمل الملكية المنزل والأرض. وعند إطلاق حديريات غولف إستيتس كان 15% من المشترين من غير المقيمين في الإمارات، ويمكن لغير المقيمين الشراء من دون تأشيرة إماراتية، وتُسجَّل سندات الملكية عبر منصة «داري»."
+    },
+    {
+     "q": "Are Modon off-plan payments held in escrow?",
+     "a": "Yes. Under Abu Dhabi Law No. 3 of 2015, instalments for Bashayer Residences, Hudayriyat Golf Estate, Wadeem Gardens and Al Naseem go into each project's escrow account registered with ADREC, released against certified construction. On Wadeem Gardens only 25%, AED 2,175,000 on an AED 8,700,000 villa, is paid before handover.",
+     "q_ar": "هل تُودَع دفعات مشاريع مُدن على الخريطة في حساب ضمان؟",
+     "a_ar": "نعم. بموجب القانون رقم 3 لسنة 2015 في أبوظبي، تُودَع أقساط بشاير ريزيدنسز وحديريات غولف إستيت وواديم جاردنز والنسيم في حساب ضمان خاص بكل مشروع ومسجل لدى مركز أبوظبي العقاري ADREC، وتُصرف مقابل الإنجاز المعتمد للإنشاء. وفي واديم جاردنز لا يُدفع قبل التسليم سوى 25%، أي 2,175,000 درهم على فيلا بسعر 8,700,000 درهم."
+    }
+   ]
+  }
+ ]
+}

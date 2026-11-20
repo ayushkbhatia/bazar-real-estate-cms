@@ -1,0 +1,719 @@
+{
+  "wave": "4",
+  "batch": "batch-b",
+  "written": "2026-11-20",
+  "sourcedNumbers": [
+    1.2,
+    1.4,
+    1.45,
+    1.6,
+    3.93,
+    4,
+    4.5,
+    4.69,
+    4.7,
+    5,
+    9,
+    9.6,
+    10,
+    10.2,
+    14,
+    15,
+    17,
+    18,
+    24,
+    25,
+    30,
+    36,
+    38,
+    48,
+    55,
+    60,
+    72,
+    75,
+    80,
+    90,
+    92,
+    100,
+    144,
+    161,
+    437,
+    457,
+    700,
+    750,
+    790,
+    1000,
+    1300,
+    2015,
+    2024,
+    2025,
+    2026,
+    2028,
+    2500,
+    3000,
+    4000,
+    11000,
+    14000,
+    15000,
+    19000,
+    22000,
+    24620,
+    40000,
+    44000,
+    47500,
+    50000,
+    56000,
+    70000,
+    75000,
+    79000,
+    100000,
+    110000,
+    140700,
+    165000,
+    210000,
+    262000,
+    280000,
+    332500,
+    395000,
+    420000,
+    440000,
+    524000,
+    550000,
+    560000,
+    570000,
+    700000,
+    1185000,
+    1200000,
+    1650000,
+    1960000,
+    2370000
+  ],
+  "sourcedNotes": {
+    "1.2": "Radisson Residences Phase 1 AED 1.2bn (zawya.com)",
+    "1.4": "Taraf–Masdar City master plan 1.4m sq m (zawya.com)",
+    "1.45": "Radisson Residences total AED 1.45bn (zawya.com)",
+    "1.6": "Seamont AED 1.6bn (wam.ae)",
+    "3.93": "Emirates Stallions total assets AED 3.93bn at 30 Sep 2025 (zawya.com)",
+    "4": "quarter notation (Q4); Object 1 AD plots four (zawya.com)",
+    "4.5": "Object 1 Al Reem plots combined AED 4.5bn (zawya.com)",
+    "4.69": "Sobha City villas from AED 4.69M (khaleejtimes.com)",
+    "4.7": "Jacob & Co. Beachfront Living AED 4.7bn (gulfnews.com)",
+    "5": "Al Maryah ~5 min from A1LA (tradearabia.com); Golden Visa worked example: 40% pre-handover reaches AED 2M at AED 5M (arithmetic, adro.gov.ae rule)",
+    "9": "The Galleria ~9 min from A1LA (tradearabia.com)",
+    "9.6": "Reportage AED 9.6bn 2025 sales (zawya.com)",
+    "10": "E10 road designation (Sobha City corridor, gulfnews.com)",
+    "10.2": "RDC AED 10.2bn sales (zawya.com)",
+    "14": "Sobha 14 UAE developments (zawya.com, Sobha FY2025 release); DARI 2% on AED 700,000 = 14,000 (arithmetic)",
+    "15": "RDC 15+ countries (zawya.com RDH release); Ohana AED 15bn community (zawya.com groundbreaking release)",
+    "17": "A1LA 17 residential floors, sky pool on 17th (zawya.com)",
+    "18": "Sobha City 18 km loop (gulfnews.com)",
+    "24": "Radisson Residences Phase 1 sold in 24 hours (zawya.com)",
+    "25": "RA1N Residence 25 storeys (zawya.com)",
+    "30": "Sobha AED 30bn 2025 sales, +30% (zawya.com, Sobha FY2025 release)",
+    "36": "Radiant Legacy 36 office floors (engelvoelkers.com)",
+    "38": "St. Regis Residences 38 storeys (thenationalnews.com); Sobha City 38m sq ft (gulfnews.com)",
+    "48": "MCYR Phase 2 92% sold in under 48 hours (wam.ae, Oct 2026)",
+    "55": "MCYR >55% green space (zawya.com launch release)",
+    "60": "Reportage >60 projects delivered (zawya.com The Wadi release); RDC >60 projects (zawya.com); Sobha 60% intl buyers (khaleejtimes.com)",
+    "72": "MCYR AED 6bn in 72 hours (khaleejtimes.com / gulfnews.com)",
+    "75": "Ohana by the Sea 75 villas (zawya.com)",
+    "80": "Sobha City 80 mansions (khaleejtimes.com)",
+    "90": "Reportage 2025 sales +90% (zawya.com The Wadi release)",
+    "92": "MCYR 92% of Phase 2 sold (wam.ae, Oct 2026)",
+    "100": "RDC >100 professionals (zawya.com RDH release)",
+    "144": "RA1N Residence 144 units (zawya.com)",
+    "161": "St. Regis Residences 161 residences (thenationalnews.com, May 2025)",
+    "437": "Radisson Residences Phase 2 third tower, 437 residences (zawya.com)",
+    "457": "Jacob & Co. Beachfront Living 457 residences (gulfnews.com)",
+    "700": "Ohana by the Sea AED 700 million (zawya.com)",
+    "750": "Sobha US$750m green sukuk 2025 (zawya.com, Sobha FY2025 release)",
+    "790": "Seamont main works contract AED 790m to Fibrex (zawya.com)",
+    "1000": "Fay Hills / Taraf–Masdar JV >1,000 homes (zawya.com)",
+    "1300": "Reportage ~1,300 Abu Dhabi transactions in 2025 (cavendishmaxwell.com)",
+    "2015": "Abu Dhabi Law No. 3 of 2015 (off-plan escrow)",
+    "2024": "Sobha 2024 comparison year (zawya.com); Ravi Menon chairman since Nov 2024 (gulfnews.com)",
+    "2025": "dated events in 2025: Cosmo Real Estate Investment est., RDH formed, Radisson launch Dec 2025, ESG assets 30 Sep 2025, Reportage/Sobha 2025 results, Sobha green sukuk (zawya.com)",
+    "2026": "dated events in 2026: Object 1 AD entry Apr 2026, MCYR launch/groundbreaking, Ohana by the Sea Q1 2026, Sensi groundbreaking Jun 2026, Sobha City Apr 2026 (zawya.com, gulftoday.ae, khaleejtimes.com)",
+    "2028": "A1LA Q4 2028 per Object 1 release; ELAR1S 2028; Rotana Residences Q4 2028; Seamont Q4 2028; St. Regis Q4 2028; Radiant Elite Q4 2028 (zawya.com, propertyfinder.ae)",
+    "2500": "Sobha City 2,500 villas (khaleejtimes.com)",
+    "3000": "Sobha ~3,000 homes delivered in 2025 (thearabianpost.com)",
+    "4000": "Sobha City 4,000 apartments (khaleejtimes.com)",
+    "11000": "Ohana portfolio >11,000 homes (zawya.com groundbreaking release)",
+    "14000": "DARI 2% on AED 700,000 (arithmetic)",
+    "15000": "Sobha ~15,000 homes launched in 2025 (thearabianpost.com); DARI 2% on AED 750,000 = 15,000 (arithmetic)",
+    "19000": "DARI 2% on AED 950,000 (arithmetic)",
+    "22000": "DARI 2% on AED 1,100,000 (arithmetic)",
+    "24620": "DARI 2% on AED 1,231,000 (arithmetic)",
+    "40000": "DARI 2% on AED 2,000,000 (arithmetic)",
+    "44000": "DARI 2% on AED 2,200,000 (arithmetic)",
+    "47500": "5% of AED 950,000 (arithmetic, DB plan)",
+    "50000": "Sobha City >50,000 trees (gulfnews.com)",
+    "56000": "DARI 2% on AED 2,800,000 (arithmetic)",
+    "70000": "10% of AED 700,000 (arithmetic, DB plan)",
+    "75000": "10% of AED 750,000 (arithmetic, DB plan)",
+    "79000": "DARI 2% on AED 3,950,000 (arithmetic)",
+    "100000": "5% of AED 2,000,000 (arithmetic, DB plan)",
+    "110000": "10% of AED 1,100,000 (arithmetic, DB plan)",
+    "140700": "The Wadi plot 140,700 sq m (zawya.com)",
+    "165000": "5% of AED 3,300,000 (arithmetic, DB plan)",
+    "210000": "30% of AED 700,000 (arithmetic, DB plan)",
+    "262000": "20% of AED 1,310,000 (arithmetic, DB plan)",
+    "280000": "10% of AED 2,800,000 (arithmetic, DB plan)",
+    "332500": "35% of AED 950,000 (arithmetic, DB plan)",
+    "395000": "10% of AED 3,950,000 (arithmetic, DB plan)",
+    "420000": "60% of AED 700,000 (arithmetic, DB plan)",
+    "440000": "40% of AED 1,100,000 (arithmetic, DB plan)",
+    "524000": "40% of AED 1,310,000 (arithmetic, DB plan)",
+    "550000": "50% of AED 1,100,000 (arithmetic, DB plan)",
+    "560000": "20% of AED 2,800,000 (arithmetic, DB plan)",
+    "570000": "60% of AED 950,000 (arithmetic, DB plan)",
+    "700000": "35% of AED 2,000,000 (arithmetic, DB plan); Radiant Terrace price (DB)",
+    "1185000": "30% of AED 3,950,000 (arithmetic, DB plan)",
+    "1200000": "60% of AED 2,000,000 (arithmetic, DB plan)",
+    "1650000": "50% of AED 3,300,000 (arithmetic, DB plan)",
+    "1960000": "70% of AED 2,800,000 (arithmetic, DB plan)",
+    "2370000": "60% of AED 3,950,000 (arithmetic, DB plan)"
+  },
+  "pages": [
+    {
+      "kind": "faqdoc",
+      "slug": "developer-object-1",
+      "name": "Object 1",
+      "route": "/developers/object-1",
+      "pageSlug": "subpage/faq/developer-object-1",
+      "sources": [
+        "DB: developers row object-1 (founded_year 2010, description); published development A1LA Residence (price, 171 units, handover, payment plan) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/object-1-marks-abu-dhabi-entry-with-launch-of-a1la-residence-on-al-reem-island-bmyg7h55 — TSZ Holding, CEO Tatiana Tonu, 171 units, 17 floors, Q4 2028, four plots, AED 4.5bn",
+        "https://www.gulftoday.ae/business/2026/04/17/object-1-marks-abu-dhabi-entry-with-launch-of-a1la-residence-on-al-reem-island — April 2026 launch",
+        "https://tradearabia.com/News/414140/Object-1-announces-Abu-Dhabi-foray-with-new-171-unit-residential-tower — Shams Gate plots, 5 min Al Maryah, 9 min Galleria",
+        "https://www.zawya.com/en/press-release/companies-news/object-1-hits-major-milestone-project-completion-with-ra1n-residence-in-jvc-354636 — RA1N completion, 25 storeys, 144 units",
+        "https://www.zawya.com/en/business/construction/object-1-completes-its-second-residential-project-in-jumeirah-village-circle-411755 — V1TER completion",
+        "https://www.christiesrealestatedubai.com/developers/object-1 — established 2010, TSZ Group",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Object 1 developer?",
+          "a": "Object 1 is a Dubai-based developer that belongs to TSZ Holding, an international group, and is led by chief executive Tatiana Tonu. Its profile dates the company to 2010. Most of its towers are in Jumeirah Village Circle and Jumeirah Village Triangle in Dubai, and it entered Abu Dhabi in April 2026 with A1LA Residence on Al Reem Island.",
+          "q_ar": "من يملك شركة أوبجكت 1 للتطوير العقاري؟",
+          "a_ar": "أوبجكت 1 مطوّر عقاري مقره دبي، يتبع مجموعة تي إس زد القابضة الدولية، وتقوده الرئيسة التنفيذية تاتيانا تونو. ويعود تأسيس الشركة بحسب ملفها إلى عام 2010. وتقع معظم أبراجها في قرية جميرا الدائرية ومثلث قرية جميرا في دبي، ودخلت سوق أبوظبي في أبريل 2026 بمشروع إيلا ريزيدنس في جزيرة الريم."
+        },
+        {
+          "q": "Has Object 1 completed any projects?",
+          "a": "Yes. Object 1 has announced the completion of RA1N Residence, a 25-storey tower of 144 homes in District 12 of Jumeirah Village Circle, and of V1TER Residence, its second finished project in the same district. Its later Dubai towers, such as SKY LEVEL 1 in JVC and ELAR1S Sky and Rise in JVT, are still under construction, with ELAR1S handovers planned for 2028.",
+          "q_ar": "هل أنجزت شركة أوبجكت 1 أي مشاريع؟",
+          "a_ar": "نعم. أعلنت أوبجكت 1 اكتمال مشروع رين ريزيدنس، وهو برج من 25 طابقًا يضم 144 وحدة سكنية في الحي 12 بقرية جميرا الدائرية، ثم اكتمال مشروع فايتر ريزيدنس، وهو ثاني مشاريعها المنجزة في الحي نفسه. أما أبراجها اللاحقة في دبي، مثل سكاي ليفل 1 في قرية جميرا الدائرية وإيلاريس سكاي وإيلاريس رايز في مثلث قرية جميرا، فما زالت قيد الإنشاء، ويُتوقع تسليم مشروعي إيلاريس في 2028."
+        },
+        {
+          "q": "What projects does Object 1 have in Abu Dhabi?",
+          "a": "Object 1's first Abu Dhabi project is A1LA Residence on Al Reem Island, a 171-home tower overlooking the Reem canal near ADGM, available through Bazar from AED 1,100,000. The developer has also bought four waterfront plots on Al Reem in the Shams Gate district, more than 2 million sq ft in all, which it values at a combined AED 4.5 billion.",
+          "q_ar": "ما مشاريع أوبجكت 1 في أبوظبي؟",
+          "a_ar": "أول مشاريع أوبجكت 1 في أبوظبي هو إيلا ريزيدنس في جزيرة الريم، وهو برج يضم 171 وحدة سكنية يطل على قناة الريم بالقرب من ADGM، ومتاح عبر بازار بأسعار تبدأ من 1,100,000 درهم. كما اشترى المطوّر أربع قطع أراضٍ على الواجهة المائية في منطقة شمس بوابة الريم تتجاوز مساحتها الإجمالية 2 مليون قدم مربعة، ويقدّر قيمتها المجمعة بنحو 4.5 مليار درهم."
+        },
+        {
+          "q": "How much is an apartment at A1LA Residence by Object 1?",
+          "a": "A1LA Residence on Al Reem Island starts from AED 1,100,000 on Bazar. One-bedroom apartments measure 797–1,068 sq ft, two-bedrooms 1,180–1,501 sq ft and three-bedrooms 1,919–2,058 sq ft, across 171 homes. Bazar lists handover for Q4 2027, while Object 1's launch release gives Q4 2028, so confirm the date in the sale contract.",
+          "q_ar": "كم سعر الشقة في إيلا ريزيدنس من أوبجكت 1؟",
+          "a_ar": "تبدأ الأسعار في إيلا ريزيدنس بجزيرة الريم من 1,100,000 درهم على بازار. وتتراوح مساحة شقق الغرفة الواحدة بين 797 و1,068 قدمًا مربعة، وشقق الغرفتين بين 1,180 و1,501 قدم مربعة، وشقق الثلاث غرف بين 1,919 و2,058 قدمًا مربعة، ضمن 171 وحدة سكنية. ويذكر بازار أن التسليم في الربع الرابع من 2027، بينما يحدد بيان الإطلاق الصادر عن أوبجكت 1 الربع الرابع من 2028، لذا تحقق من الموعد في عقد البيع."
+        },
+        {
+          "q": "What payment plan does Object 1 offer at A1LA Residence?",
+          "a": "A1LA Residence is sold on a 50/50 plan: 10% on booking, 40% during construction and 50% on handover. On the AED 1,100,000 starting price that is AED 110,000 at booking, AED 440,000 while the tower is built and AED 550,000 at handover, so half the price is due only when the keys are ready.",
+          "q_ar": "ما خطة الدفع التي تقدمها أوبجكت 1 في إيلا ريزيدنس؟",
+          "a_ar": "يُباع مشروع إيلا ريزيدنس بخطة دفع 50/50: نسبة 10% عند الحجز، و40% خلال الإنشاء، و50% عند التسليم. وعلى سعر البداية البالغ 1,100,000 درهم يعني ذلك 110,000 درهم عند الحجز، و440,000 درهم أثناء بناء البرج، و550,000 درهم عند التسليم، أي أن نصف السعر لا يُستحق إلا عند جاهزية الوحدة."
+        },
+        {
+          "q": "Can foreigners buy Object 1 property in Abu Dhabi?",
+          "a": "Yes. A1LA Residence is on Al Reem Island, an Abu Dhabi investment zone where buyers of any nationality can own freehold. The sale is registered on DARI for a 2% fee, about AED 22,000 on the AED 1,100,000 starting price. Object 1's Dubai towers in JVC and JVT are in freehold areas open to foreign buyers as well.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات أوبجكت 1 في أبوظبي؟",
+          "a_ar": "نعم. يقع مشروع إيلا ريزيدنس في جزيرة الريم، وهي منطقة استثمارية في أبوظبي يحق فيها للمشترين من جميع الجنسيات التملك الحر. ويُسجَّل البيع على منصة DARI برسوم 2%، أي نحو 22,000 درهم على سعر البداية البالغ 1,100,000 درهم. كما تقع أبراج أوبجكت 1 في قرية جميرا الدائرية ومثلث قرية جميرا بدبي في مناطق تملك حر مفتوحة للمشترين الأجانب."
+        },
+        {
+          "q": "Is A1LA Residence by Object 1 escrow-protected?",
+          "a": "Off-plan homes in Abu Dhabi, A1LA Residence included, must be registered with ADREC, and buyers' payments go into a project escrow account under Law No. 3 of 2015 rather than to the developer directly. Before paying, check that the project appears on DARI and that the sale contract names the escrow account; a Bazar advisor can confirm both.",
+          "q_ar": "هل مشروع إيلا ريزيدنس من أوبجكت 1 محمي بحساب ضمان؟",
+          "a_ar": "يجب تسجيل الوحدات على المخطط في أبوظبي، ومنها إيلا ريزيدنس، لدى ADREC، وتُودَع دفعات المشترين في حساب ضمان خاص بالمشروع وفق القانون رقم 3 لسنة 2015 بدلًا من دفعها للمطوّر مباشرة. وقبل الدفع، تأكد من ظهور المشروع على منصة DARI ومن أن عقد البيع يذكر حساب الضمان، ويمكن لمستشار بازار التحقق من الأمرين."
+        },
+        {
+          "q": "What amenities and location does A1LA Residence offer?",
+          "a": "A1LA Residence rises 17 residential floors beside the Al Reem Island canal, with a sky pool on the 17th floor, a cinema, clubhouse, gym, yoga and pilates room, games room and children's play areas. Object 1 puts Al Maryah Island about 5 minutes away and The Galleria about 9 minutes, with ADGM and Downtown Abu Dhabi close by.",
+          "q_ar": "ما المرافق والموقع الذي يوفره مشروع إيلا ريزيدنس؟",
+          "a_ar": "يرتفع مشروع إيلا ريزيدنس 17 طابقًا سكنيًا بجوار قناة جزيرة الريم، ويضم مسبحًا معلقًا في الطابق 17، وصالة سينما، وناديًا اجتماعيًا، وصالة رياضية، وغرفة لليوغا والبيلاتس، وغرفة ألعاب، ومناطق لعب للأطفال. وتقدّر أوبجكت 1 أن جزيرة الماريه تبعد نحو 5 دقائق والغاليريا نحو 9 دقائق، مع قرب ADGM ووسط مدينة أبوظبي."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-ohana-development",
+      "name": "Ohana Development",
+      "route": "/developers/ohana-development",
+      "pageSlug": "subpage/faq/developer-ohana-development",
+      "sources": [
+        "DB: developers row ohana-development (founded_year 2006, description); published development Manchester City Yas Residences (price, 2,000 units, handover Q4 2029, 5/35/60 plan) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/ohana-development-launches-usd-41bln-manchester-city-yas-residences-by-ohana-in-abu-dhabi-hay39kf2 — launch, CEO Husein Salem, COO Mustafa El Sammak, 1.67m sqm, ADREC escrow",
+        "https://www.zawya.com/en/press-release/companies-news/ohana-development-breaks-ground-on-aed-15bln-manchester-city-yas-residences-by-ohana-1250085 — AED 15bn, >2,000 homes, phased delivery by 2029, 35 years, 2,000 employees, 11,000 units, four offices",
+        "https://www.mancity.com/club/partners/ohana — groundbreaking September 2026",
+        "https://www.wam.ae/en/article/c2ycqu3-manchester-city-yas-residences-ohana-sells-92 — 92% of Phase 2 sold in under 48 hours (Oct 2026)",
+        "https://www.khaleejtimes.com/business-technology-review/dh6-billion-in-72-hours-manchester-city-yas-residences-by-ohana-development-sets-new-sales-record-in-abu-dhabi — AED 6bn in 72 hours",
+        "https://www.zawya.com/en/projects/construction/abu-dhabis-ohana-says-self-funding-projects-offer-full-development-control-katfzy6o — self-funded",
+        "https://www.zawya.com/en/press-release/companies-news/ohana-development-commences-delivery-of-aed-700mln-ohana-by-the-sea-set-for-completion-by-q1-2026-wiba0itn — 75 villas, Al Jurf, AED 700m",
+        "https://gulfnews.com/business/property/abu-dhabi-to-get-dh47b-luxury-community-from-ohana-jacob--co-alliance-1.1734497605563 — Jacob & Co. Beachfront Living, AED 4.7bn, 457 residences",
+        "adro.gov.ae — Golden Visa AED 2M (off-plan: AED 2M paid)",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Ohana Development?",
+          "a": "Ohana Development is a privately owned developer based in Abu Dhabi, founded in 2006 and led by chief executive Husein Salem and chief operating officer Mustafa El Sammak. The company reports more than 35 years of family experience in property, four regional offices, more than 2,000 employees and a portfolio of more than 11,000 homes across the UAE and Lebanon.",
+          "q_ar": "من يملك شركة أوهانا للتطوير العقاري؟",
+          "a_ar": "أوهانا للتطوير العقاري مطوّر خاص مقره أبوظبي، تأسس عام 2006، ويقوده الرئيس التنفيذي حسين سالم والرئيس التنفيذي للعمليات مصطفى السماك. وتذكر الشركة أن لديها خبرة عائلية في العقار تمتد لأكثر من 35 عامًا، وأربعة مكاتب إقليمية، وأكثر من 2,000 موظف، ومحفظة تتجاوز 11,000 وحدة سكنية في الإمارات ولبنان."
+        },
+        {
+          "q": "Has Ohana Development delivered any projects?",
+          "a": "Yes. Ohana began handing over Ohana by the Sea, a 75-villa community of fully customised four- to seven-bedroom homes at Al Jurf on the Abu Dhabi–Dubai coast, worth AED 700 million, with completion targeted for Q1 2026. In Lebanon it has built Ohana Villas and Ohana Hills. Its larger Abu Dhabi projects are still under construction.",
+          "q_ar": "هل سلّمت أوهانا للتطوير العقاري أي مشاريع؟",
+          "a_ar": "نعم. بدأت أوهانا تسليم مشروع أوهانا باي ذا سي، وهو مجتمع من 75 فيلا مصممة بالكامل حسب الطلب تضم من أربع إلى سبع غرف نوم في منطقة الجرف على ساحل أبوظبي ودبي، بقيمة 700 مليون درهم، مع استهداف الإنجاز في الربع الأول من 2026. وفي لبنان طوّرت مشروعي أوهانا فيلاز وأوهانا هيلز. أما مشاريعها الأكبر في أبوظبي فما زالت قيد الإنشاء."
+        },
+        {
+          "q": "What projects does Ohana Development have in Abu Dhabi?",
+          "a": "Ohana's Abu Dhabi projects are Manchester City Yas Residences on Yas Canal, available through Bazar from AED 2,000,000; Jacob & Co. Beachfront Living, an AED 4.7 billion, 457-residence beachfront scheme at Al Jurf; ELIE SAAB Waterfront on Al Reem Island; and Ohana by the Sea, its villa community at Al Jurf.",
+          "q_ar": "ما مشاريع أوهانا للتطوير العقاري في أبوظبي؟",
+          "a_ar": "تشمل مشاريع أوهانا في أبوظبي مشروع مانشستر سيتي ياس ريزيدنسز على قناة ياس، المتاح عبر بازار بأسعار تبدأ من 2,000,000 درهم؛ ومشروع جاكوب آند كو بيتشفرونت ليفينغ على شاطئ الجرف بقيمة 4.7 مليار درهم ويضم 457 وحدة سكنية؛ ومشروع إيلي صعب ووترفرونت في جزيرة الريم؛ ومشروع أوهانا باي ذا سي، مجتمع الفلل التابع لها في الجرف."
+        },
+        {
+          "q": "How much is Manchester City Yas Residences by Ohana?",
+          "a": "Manchester City Yas Residences starts from AED 2,000,000 on Bazar, with handover listed for Q4 2029. Homes range from studios of about 500 sq ft and one-bedrooms of about 850 sq ft to three-bedroom townhouses of about 2,476 sq ft, four-bedroom villas of about 3,229 sq ft and five-bedroom villas of about 4,822 sq ft, across some 2,000 residences.",
+          "q_ar": "كم سعر الوحدات في مانشستر سيتي ياس ريزيدنسز من أوهانا؟",
+          "a_ar": "تبدأ الأسعار في مانشستر سيتي ياس ريزيدنسز من 2,000,000 درهم على بازار، مع تسليم مدرج في الربع الرابع من 2029. وتتنوع الوحدات بين استوديوهات بمساحة نحو 500 قدم مربعة وشقق بغرفة واحدة بنحو 850 قدمًا مربعة، وصولًا إلى منازل تاون هاوس بثلاث غرف بنحو 2,476 قدمًا مربعة، وفلل بأربع غرف بنحو 3,229 قدمًا مربعة، وفلل بخمس غرف بنحو 4,822 قدمًا مربعة، ضمن نحو 2,000 وحدة سكنية."
+        },
+        {
+          "q": "What payment plan does Ohana offer at Manchester City Yas Residences?",
+          "a": "The plan is 5% on booking, 35% during construction and 60% on handover. On the AED 2,000,000 starting price that means AED 100,000 at booking, AED 700,000 while the community is built and AED 1,200,000 at handover. For the Golden Visa on off-plan, AED 2 million must be paid, which this plan reaches before handover only on homes of about AED 5 million or more.",
+          "q_ar": "ما خطة الدفع التي تقدمها أوهانا في مانشستر سيتي ياس ريزيدنسز؟",
+          "a_ar": "خطة الدفع هي 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم. وعلى سعر البداية البالغ 2,000,000 درهم يعني ذلك 100,000 درهم عند الحجز، و700,000 درهم أثناء بناء المجتمع، و1,200,000 درهم عند التسليم. وللحصول على الإقامة الذهبية عبر عقار على المخطط يجب سداد 2 مليون درهم، وهو ما لا تبلغه هذه الخطة قبل التسليم إلا في الوحدات التي يبلغ سعرها نحو 5 ملايين درهم أو أكثر."
+        },
+        {
+          "q": "How fast did Manchester City Yas Residences sell?",
+          "a": "Ohana reported AED 6 billion of sales within 72 hours of the launch in early 2026, and in October 2026 WAM reported that 92% of Phase 2 sold in under 48 hours. Ohana broke ground on the first phase in September 2026 and plans phased delivery by 2029. These are the developer's own sales figures; ask a Bazar advisor what is still available.",
+          "q_ar": "ما سرعة بيع مشروع مانشستر سيتي ياس ريزيدنسز؟",
+          "a_ar": "أعلنت أوهانا مبيعات بقيمة 6 مليارات درهم خلال 72 ساعة من إطلاق المشروع مطلع 2026، وفي أكتوبر 2026 أفادت وكالة أنباء الإمارات ببيع 92% من المرحلة الثانية في أقل من 48 ساعة. وبدأت أوهانا أعمال المرحلة الأولى في سبتمبر 2026، وتخطط للتسليم على مراحل بحلول 2029. وهذه أرقام المبيعات التي أعلنها المطوّر نفسه، ويمكنك سؤال مستشار بازار عن الوحدات المتاحة حاليًا."
+        },
+        {
+          "q": "Is Ohana Development escrow-protected?",
+          "a": "Ohana's Abu Dhabi projects fall under ADREC: Manchester City Yas Residences was registered through ADREC's Madhmoun off-plan platform with mandatory escrow, under Abu Dhabi Law No. 3 of 2015. Ohana also says it self-funds the AED 15 billion community rather than relying on buyers' payments. Check the escrow account named in your sale contract before paying.",
+          "q_ar": "هل مشاريع أوهانا للتطوير العقاري محمية بحسابات ضمان؟",
+          "a_ar": "تخضع مشاريع أوهانا في أبوظبي لإشراف ADREC، إذ سُجّل مشروع مانشستر سيتي ياس ريزيدنسز عبر منصة ADREC الرقمية للبيع على المخطط مع حساب ضمان إلزامي، وفق قانون أبوظبي رقم 3 لسنة 2015. وتقول أوهانا أيضًا إنها تموّل المجتمع البالغة قيمته 15 مليار درهم ذاتيًا بدلًا من الاعتماد على دفعات المشترين. وتحقق من حساب الضمان المذكور في عقد البيع قبل الدفع."
+        },
+        {
+          "q": "Can foreigners buy Ohana property on Yas Island?",
+          "a": "Yes. Manchester City Yas Residences sits on Yas Canal next to Ferrari World and SeaWorld, in the Yas Island investment zone, where any nationality can own freehold. The purchase is registered on DARI for a 2% fee, AED 40,000 on the AED 2,000,000 starting price. The community includes a Manchester City academy and more than 55% green space.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات أوهانا في جزيرة ياس؟",
+          "a_ar": "نعم. يقع مشروع مانشستر سيتي ياس ريزيدنسز على قناة ياس بجوار عالم فيراري وسي وورلد، ضمن المنطقة الاستثمارية في جزيرة ياس التي يحق فيها لجميع الجنسيات التملك الحر. ويُسجَّل الشراء على منصة DARI برسوم 2%، أي 40,000 درهم على سعر البداية البالغ 2,000,000 درهم. ويضم المجتمع أكاديمية لنادي مانشستر سيتي ومساحات خضراء تتجاوز 55% من المخطط."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-radiant-real-estate",
+      "name": "Radiant Real Estate",
+      "route": "/developers/radiant-real-estate",
+      "pageSlug": "subpage/faq/developer-radiant-real-estate",
+      "sources": [
+        "DB: developers row radiant-real-estate (founded_year 2021, description); published developments Radiant Terrace, Breeze by Trace, Radiant Legacy (prices, units, handover, payment plans) + unit types",
+        "https://www.propertyfinder.ae/en/new-projects/dev/radiant-enterprises-real-estate/abu-dhabi/al-reem-island — Radiant portfolio on Al Reem",
+        "https://www.propertyfinder.ae/en/new-projects/radiant-real-estate/radiant-square — Radiant Square ready, sold out",
+        "https://www.propertyfinder.ae/en/new-projects/radiant-enterprises-real-estate/radiant-elite-tower — Q4 2028 delivery",
+        "https://www.engelvoelkers.com/ae/en/off-plan/radiant-legacy-al-reem-island — Radiant Legacy, 36 office floors, 158 suites",
+        "https://insiderealty.ae/ar/projects/radiant-terrace — Radiant Terrace in Shams",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who is Radiant Real Estate in Abu Dhabi?",
+          "a": "Radiant Real Estate is a privately owned Abu Dhabi developer, founded in 2021 according to its profile, that builds almost entirely on Al Reem Island. Its towers there include Radiant Square, Radiant Marina Towers, Radiant Bridges, Radiant Elite Tower and Radiant Viewz, and three of its current launches, Radiant Terrace, Breeze by Trace and Radiant Legacy, are available through Bazar.",
+          "q_ar": "من هي شركة راديانت العقارية في أبوظبي؟",
+          "a_ar": "راديانت العقارية مطوّر خاص في أبوظبي، تأسس عام 2021 بحسب ملفه، ويبني بشكل شبه كامل في جزيرة الريم. وتشمل أبراجه هناك راديانت سكوير وأبراج راديانت مارينا وراديانت بريدجز وبرج راديانت إيليت وراديانت فيوز، وثلاثة من مشاريعه الحالية، وهي راديانت تيراس وبريز من تريس وراديانت ليجاسي، متاحة عبر بازار."
+        },
+        {
+          "q": "Has Radiant Real Estate completed any buildings?",
+          "a": "Property Finder lists Radiant Square, Radiant's mixed-use tower in the City of Lights district of Al Reem Island, as ready and sold out. Several later towers, such as Radiant Elite Tower with delivery listed for Q4 2028, are still under construction. Before buying off-plan, ask a Bazar advisor for the project's ADREC registration and construction progress.",
+          "q_ar": "هل أنجزت راديانت العقارية أي مبانٍ؟",
+          "a_ar": "تُدرج منصة بروبرتي فايندر مشروع راديانت سكوير، البرج متعدد الاستخدامات التابع لراديانت في حي مدينة الأضواء بجزيرة الريم، على أنه جاهز ومباع بالكامل. أما عدد من الأبراج اللاحقة، مثل برج راديانت إيليت الذي يُذكر تسليمه في الربع الرابع من 2028، فما زالت قيد الإنشاء. وقبل الشراء على المخطط، اطلب من مستشار بازار بيانات تسجيل المشروع لدى ADREC ونسبة الإنجاز."
+        },
+        {
+          "q": "What Radiant Real Estate projects are available through Bazar?",
+          "a": "Three Radiant projects on Al Reem Island are available through Bazar. Radiant Terrace has 618 homes from AED 700,000 with handover in Q4 2029; Breeze by Trace has 217 apartments from AED 1,231,000 with handover in Q2 2030; and Radiant Legacy is an office tower of 158 units from AED 2,316,000, also due in Q2 2030.",
+          "q_ar": "ما مشاريع راديانت العقارية المتاحة عبر بازار؟",
+          "a_ar": "تتوفر عبر بازار ثلاثة مشاريع لراديانت في جزيرة الريم: راديانت تيراس ويضم 618 وحدة سكنية بأسعار تبدأ من 700,000 درهم مع التسليم في الربع الرابع من 2029؛ وبريز من تريس ويضم 217 شقة بأسعار تبدأ من 1,231,000 درهم مع التسليم في الربع الثاني من 2030؛ وراديانت ليجاسي، وهو برج مكاتب من 158 وحدة بأسعار تبدأ من 2,316,000 درهم، ويُتوقع تسليمه أيضًا في الربع الثاني من 2030."
+        },
+        {
+          "q": "How much is Radiant Terrace on Al Reem Island?",
+          "a": "Radiant Terrace starts from AED 700,000, with studios of 352–585 sq ft, one-bedrooms of 877–1,208 sq ft, two-bedrooms of 1,364–1,983 sq ft and three-bedrooms of 2,574–3,861 sq ft. Its 40/60 plan asks 10% on booking (AED 70,000), 30% during construction (AED 210,000) and 60% on handover (AED 420,000), with handover in Q4 2029.",
+          "q_ar": "كم سعر الوحدات في راديانت تيراس بجزيرة الريم؟",
+          "a_ar": "تبدأ الأسعار في راديانت تيراس من 700,000 درهم، وتتراوح مساحة الاستوديوهات بين 352 و585 قدمًا مربعة، وشقق الغرفة الواحدة بين 877 و1,208 أقدام مربعة، وشقق الغرفتين بين 1,364 و1,983 قدمًا مربعة، وشقق الثلاث غرف بين 2,574 و3,861 قدمًا مربعة. وتتطلب خطة الدفع 40/60 سداد 10% عند الحجز (70,000 درهم)، و30% خلال الإنشاء (210,000 درهم)، و60% عند التسليم (420,000 درهم)، مع التسليم في الربع الرابع من 2029."
+        },
+        {
+          "q": "What is Breeze by Trace by Radiant Real Estate?",
+          "a": "Breeze by Trace is a 217-apartment Radiant tower on Al Reem Island, priced from AED 1,231,000. One-bedrooms measure 703–868 sq ft, two-bedrooms 1,151–1,268 sq ft, three-bedrooms 1,458–1,744 sq ft and four-bedrooms about 2,507 sq ft. Buyers pay 45% in nine 5% steps from Q4 2026 to Q1 2030 and 55% on handover in Q2 2030.",
+          "q_ar": "ما هو مشروع بريز من تريس التابع لراديانت العقارية؟",
+          "a_ar": "بريز من تريس برج لراديانت في جزيرة الريم يضم 217 شقة، بأسعار تبدأ من 1,231,000 درهم. وتتراوح مساحة شقق الغرفة الواحدة بين 703 و868 قدمًا مربعة، وشقق الغرفتين بين 1,151 و1,268 قدمًا مربعة، وشقق الثلاث غرف بين 1,458 و1,744 قدمًا مربعة، وتبلغ شقق الأربع غرف نحو 2,507 أقدام مربعة. ويسدد المشتري 45% على تسع دفعات قيمة كل منها 5% من الربع الرابع 2026 حتى الربع الأول 2030، و55% عند التسليم في الربع الثاني من 2030."
+        },
+        {
+          "q": "Does Radiant Real Estate sell offices on Al Reem Island?",
+          "a": "Yes. Radiant Legacy is a 158-unit office tower in Shams on Al Reem Island, with 36 office floors, priced from AED 2,316,000. Office suites measure about 1,544–2,114 sq ft and whole floors about 16,885–16,894 sq ft. The plan is 45% in instalments from Q4 2026 to Q1 2030 and 55% on handover, expected in Q2 2030.",
+          "q_ar": "هل تبيع راديانت العقارية مكاتب في جزيرة الريم؟",
+          "a_ar": "نعم. راديانت ليجاسي برج مكاتب في منطقة شمس بجزيرة الريم يضم 158 وحدة على 36 طابقًا مكتبيًا، بأسعار تبدأ من 2,316,000 درهم. وتتراوح مساحة الأجنحة المكتبية بين نحو 1,544 و2,114 قدمًا مربعة، والطوابق الكاملة بين نحو 16,885 و16,894 قدمًا مربعة. وتقوم خطة الدفع على سداد 45% على أقساط من الربع الرابع 2026 حتى الربع الأول 2030، و55% عند التسليم المتوقع في الربع الثاني من 2030."
+        },
+        {
+          "q": "Can foreigners buy Radiant Real Estate property?",
+          "a": "Yes. All of Radiant's projects are on Al Reem Island, an Abu Dhabi investment zone where buyers of any nationality can own freehold, offices included. The sale is registered on DARI for a 2% fee, which is AED 14,000 on a Radiant Terrace home at the AED 700,000 starting price and AED 24,620 on Breeze by Trace at AED 1,231,000.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات راديانت العقارية؟",
+          "a_ar": "نعم. تقع جميع مشاريع راديانت في جزيرة الريم، وهي منطقة استثمارية في أبوظبي يحق فيها للمشترين من جميع الجنسيات التملك الحر، بما في ذلك المكاتب. ويُسجَّل البيع على منصة DARI برسوم 2%، أي 14,000 درهم على وحدة في راديانت تيراس بسعر البداية البالغ 700,000 درهم، و24,620 درهمًا على بريز من تريس بسعر 1,231,000 درهم."
+        },
+        {
+          "q": "Are Radiant Real Estate off-plan payments escrow-protected?",
+          "a": "Radiant's off-plan towers on Al Reem Island must be registered with ADREC, and under Abu Dhabi Law No. 3 of 2015 buyers' instalments go into a project escrow account, not to the developer directly. With handovers on Bazar running from Q4 2029 to Q2 2030, check the escrow account in the sale contract and the project's DARI record before paying.",
+          "q_ar": "هل دفعات مشاريع راديانت العقارية على المخطط محمية بحساب ضمان؟",
+          "a_ar": "يجب تسجيل أبراج راديانت على المخطط في جزيرة الريم لدى ADREC، ووفق قانون أبوظبي رقم 3 لسنة 2015 تُودَع أقساط المشترين في حساب ضمان خاص بالمشروع وليس لدى المطوّر مباشرة. ومع مواعيد تسليم على بازار تمتد من الربع الرابع 2029 إلى الربع الثاني 2030، تحقق من حساب الضمان في عقد البيع ومن سجل المشروع على منصة DARI قبل الدفع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-reportage",
+      "name": "Reportage Properties",
+      "route": "/developers/reportage",
+      "pageSlug": "subpage/faq/developer-reportage",
+      "sources": [
+        "DB: developers row reportage (founded_year 2014, description); published developments The Wadi, Brabus Island (prices, units, handover, payment plans) + unit types — both are Cosmo Developments projects powered by Reportage",
+        "https://www.zawya.com/en/press-release/companies-news/aed-6bln-al-wadi-residential-project-launched-on-yas-island-in-abu-dhabi-1019995 — Cosmo JV (Flag Holding + Reportage), 3,950 units, 140,700 sqm, >60 projects, AED 9.6bn 2025 sales +90%, Felix Limited, Cosmo Real Estate Investment 2025",
+        "https://www.khaleejtimes.com/business/property/cosmo-developments-launches-dh6-billion-the-wadi-project-in-abu-dhabi — The Wadi launch",
+        "https://cavendishmaxwell.com/news/abu-dhabi-residential-market-hits-record-as-sales-reach-usd-19-93b — about 1,300 Abu Dhabi transactions in 2025, third among developers",
+        "https://www.zawya.com/en/press-release/companies-news/reportage-properties-handed-off-the-rukan-tower-units-in-dubai-qsw90yt0 — Rukan Tower handover",
+        "https://www.zawya.com/en/press-release/companies-news/reportage-breaks-ground-on-sensi-at-saadiyat-island-x1s57rd0 — Sensi groundbreaking June 2026",
+        "https://propertyfinder.ae/en/new-projects/dev/reportage-real-estate — founded 2014, Marlin (Al Reem), Baia (Al Raha Beach), Perla (Yas Bay), Masdar projects",
+        "https://propertyfinder.ae/en/new-projects/cosmo-developments/brabus-island — Brabus Island, Al Raha",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Reportage Properties?",
+          "a": "Reportage Properties is a privately owned developer founded in Abu Dhabi in 2014, part of Reportage Group, whose main shareholder is Felix Limited. In 2025 Felix and H.H. Sheikh Ahmed bin Tahnoon Al Nahyan set up Cosmo Real Estate Investment, and Reportage manages that partnership's projects. The group describes itself as debt-free and builds in the UAE and abroad.",
+          "q_ar": "من يملك شركة ريبورتاج العقارية؟",
+          "a_ar": "ريبورتاج العقارية مطوّر خاص تأسس في أبوظبي عام 2014، وهو جزء من مجموعة ريبورتاج التي تعد شركة فيليكس المحدودة مساهمها الرئيسي. وفي 2025 أسست فيليكس مع سمو الشيخ أحمد بن طحنون آل نهيان شركة كوزمو للاستثمار العقاري، وتتولى ريبورتاج إدارة مشاريع هذه الشراكة. وتصف المجموعة نفسها بأنها خالية من الديون، وتبني في الإمارات وخارجها."
+        },
+        {
+          "q": "What has Reportage Properties delivered?",
+          "a": "Reportage Group says it has delivered more than 60 projects, among them Rukan Tower in Wadi Al Safa, Dubai. It reported AED 9.6 billion of sales in 2025, up 90% on the year, and Cavendish Maxwell counted about 1,300 Reportage transactions in Abu Dhabi in 2025, third among the emirate's developers. Ask a Bazar advisor for a project's completion record.",
+          "q_ar": "ما المشاريع التي سلّمتها ريبورتاج العقارية؟",
+          "a_ar": "تقول مجموعة ريبورتاج إنها سلّمت أكثر من 60 مشروعًا، منها برج ركن في وادي الصفا بدبي. وأعلنت مبيعات بقيمة 9.6 مليار درهم في 2025 بزيادة 90% على أساس سنوي، ورصدت كافنديش ماكسويل نحو 1,300 صفقة لريبورتاج في أبوظبي خلال 2025، لتحل ثالثة بين مطوري الإمارة. ويمكنك طلب سجل إنجاز أي مشروع من مستشار بازار."
+        },
+        {
+          "q": "What projects does Reportage have in Abu Dhabi?",
+          "a": "Reportage builds across Abu Dhabi: Marlin on Al Reem Island, Sensi on Saadiyat Island (ground broken in June 2026), Baia on Al Raha Beach, Perla in Yas Bay, and Plaza, Royal Park and The Gate in Masdar City. Through Cosmo Developments it also powers The Wadi on Yas Island and Brabus Island in Al Raha, both available through Bazar.",
+          "q_ar": "ما مشاريع ريبورتاج في أبوظبي؟",
+          "a_ar": "تبني ريبورتاج في أنحاء أبوظبي: مارلين في جزيرة الريم، وسينسي في جزيرة السعديات (بدأت أعماله في يونيو 2026)، وبايا على شاطئ الراحة، وبيرلا في خليج ياس، وبلازا ورويال بارك وذا غيت في مدينة مصدر. ومن خلال كوزمو للتطوير تدير أيضًا مشروعي الوادي في جزيرة ياس وبرابوس آيلاند في الراحة، وكلاهما متاح عبر بازار."
+        },
+        {
+          "q": "Who develops The Wadi and Brabus Island?",
+          "a": "The Wadi and Brabus Island are Cosmo Developments projects. Cosmo is a joint venture of Abu Dhabi's Flag Holding Group and Reportage Group, and Reportage runs its projects from development and delivery through to long-term management, which is why both are filed under Reportage on Bazar. The Wadi is valued at AED 6 billion on a 140,700 sq m plot on Yas Canal.",
+          "q_ar": "من يطوّر مشروعي الوادي وبرابوس آيلاند؟",
+          "a_ar": "مشروعا الوادي وبرابوس آيلاند من مشاريع كوزمو للتطوير، وهي مشروع مشترك بين مجموعة فلاغ القابضة في أبوظبي ومجموعة ريبورتاج، وتتولى ريبورتاج مشاريعها من التطوير والتسليم وحتى الإدارة طويلة الأمد، ولهذا يُدرجان ضمن ريبورتاج على بازار. وتبلغ قيمة مشروع الوادي 6 مليارات درهم على قطعة أرض مساحتها 140,700 متر مربع على قناة ياس."
+        },
+        {
+          "q": "How much is The Wadi on Yas Island?",
+          "a": "The Wadi starts from AED 750,000 on Bazar, with 3,950 homes and handover listed for Q4 2030. Studios measure 315–502 sq ft, one-bedrooms 660–872 sq ft, two-bedrooms 786–1,267 sq ft, three-bedrooms 1,142–1,966 sq ft and four-bedrooms 2,330–3,300 sq ft. Its 20/80 plan asks 10% on booking (AED 75,000), 10% during construction and 80% on handover.",
+          "q_ar": "كم سعر الوحدات في مشروع الوادي بجزيرة ياس؟",
+          "a_ar": "تبدأ الأسعار في مشروع الوادي من 750,000 درهم على بازار، ويضم 3,950 وحدة سكنية مع تسليم مدرج في الربع الرابع من 2030. وتتراوح مساحة الاستوديوهات بين 315 و502 قدم مربعة، وشقق الغرفة الواحدة بين 660 و872 قدمًا مربعة، وشقق الغرفتين بين 786 و1,267 قدمًا مربعة، وشقق الثلاث غرف بين 1,142 و1,966 قدمًا مربعة، وشقق الأربع غرف بين 2,330 و3,300 قدم مربعة. وتتطلب خطة 20/80 سداد 10% عند الحجز (75,000 درهم)، و10% خلال الإنشاء، و80% عند التسليم."
+        },
+        {
+          "q": "How much is Brabus Island in Al Raha?",
+          "a": "Brabus Island starts from AED 2,800,000, with 352 apartments and handover in Q1 2029. Two-bedrooms measure 1,106–1,981 sq ft, three-bedrooms about 3,233 sq ft and four-bedrooms about 6,001–6,033 sq ft. The 30/70 plan asks 10% on booking (AED 280,000), 20% during construction (AED 560,000) and 70% on handover (AED 1,960,000).",
+          "q_ar": "كم سعر الوحدات في برابوس آيلاند بالراحة؟",
+          "a_ar": "تبدأ الأسعار في برابوس آيلاند من 2,800,000 درهم، ويضم 352 شقة مع التسليم في الربع الأول من 2029. وتتراوح مساحة شقق الغرفتين بين 1,106 و1,981 قدمًا مربعة، وتبلغ شقق الثلاث غرف نحو 3,233 قدمًا مربعة، وشقق الأربع غرف بين نحو 6,001 و6,033 قدمًا مربعة. وتتطلب خطة 30/70 سداد 10% عند الحجز (280,000 درهم)، و20% خلال الإنشاء (560,000 درهم)، و70% عند التسليم (1,960,000 درهم)."
+        },
+        {
+          "q": "Can foreigners buy Reportage property in Abu Dhabi?",
+          "a": "Yes. Reportage's Abu Dhabi projects sit in investment zones open to freehold for every nationality: Yas Island, Al Raha, Al Reem Island, Saadiyat Island and Masdar City. The sale is registered on DARI for a 2% fee, AED 15,000 on a home at The Wadi's AED 750,000 starting price and AED 56,000 at Brabus Island's AED 2,800,000.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات ريبورتاج في أبوظبي؟",
+          "a_ar": "نعم. تقع مشاريع ريبورتاج في أبوظبي ضمن مناطق استثمارية مفتوحة للتملك الحر لجميع الجنسيات: جزيرة ياس، والراحة، وجزيرة الريم، وجزيرة السعديات، ومدينة مصدر. ويُسجَّل البيع على منصة DARI برسوم 2%، أي 15,000 درهم على وحدة بسعر البداية في مشروع الوادي البالغ 750,000 درهم، و56,000 درهم على سعر برابوس آيلاند البالغ 2,800,000 درهم."
+        },
+        {
+          "q": "Are Reportage off-plan projects escrow-protected?",
+          "a": "Reportage's Abu Dhabi off-plan projects, The Wadi and Brabus Island included, must be registered with ADREC, and under Abu Dhabi Law No. 3 of 2015 buyers' payments are held in a project escrow account. Both projects put most of the price on handover, 80% at The Wadi and 70% at Brabus Island, so less money is paid before completion.",
+          "q_ar": "هل مشاريع ريبورتاج على المخطط محمية بحسابات ضمان؟",
+          "a_ar": "يجب تسجيل مشاريع ريبورتاج على المخطط في أبوظبي، ومنها الوادي وبرابوس آيلاند، لدى ADREC، ووفق قانون أبوظبي رقم 3 لسنة 2015 تُحفظ دفعات المشترين في حساب ضمان خاص بالمشروع. ويؤجل المشروعان معظم السعر إلى التسليم، بنسبة 80% في الوادي و70% في برابوس آيلاند، ما يقلل المبالغ المدفوعة قبل الإنجاز."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-royal-development-company",
+      "name": "Royal Development Company",
+      "route": "/developers/royal-development-company",
+      "pageSlug": "subpage/faq/developer-royal-development-company",
+      "sources": [
+        "DB: developers row royal-development-company (description); published development Radisson Residences (price, 488 units, handover Q4 2027, 5/35/60 plan) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/royal-development-holding-sells-out-phase-1-of-aed-12bln-radisson-residences-al-reem-island-within-24-hours-of-public-launch-ueidpg1t — RDH founded 2025, subsidiary of Emirates Stallions Group (ADX: ESG), IHC; RDC >60 projects, 15+ countries, AED 10.2bn sales; ESG assets AED 3.93bn at 30 Sep 2025; Phase 1 AED 1.2bn sold in 24 hours",
+        "https://www.wam.ae/en/article/bn9xt09-royal-development-holding-launches-aed12-billion — launch Dec 2025, completion end of 2027",
+        "https://www.zawya.com/en/press-release/companies-news/royal-development-holding-expands-investment-offering-with-phase-two-of-the-aed-1.45bln-radisson-residences-al-reem-island-1021520 — Phase 2, third tower, 437 residences, AED 1.45bn",
+        "https://www.zawya.com/en/press-release/companies-news/royal-development-holdings-aed-1bln-rotana-residences-al-reem-island-sells-out-ahead-of-launch-o97ij620 — Rotana Residences AED 1bn",
+        "https://www.zawya.com/en/projects/construction/work-set-to-begin-on-272mln-rotana-residences-on-al-reem-island-in-q2-2026-fpguhql3 — Rotana works Q2 2026, completion Q4 2028",
+        "https://www.wam.ae/en/article/bk4tftx-royal-development-holding-saas-develop-aed16 — Seamont with SAAS, AED 1.6bn",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Royal Development Company?",
+          "a": "Royal Development Company is part of Royal Development Holding, formed in 2025 as the real estate arm of Emirates Stallions Group, which belongs to International Holding Company. The company says it has managed more than 60 projects in over 15 countries, with AED 10.2 billion in sales and more than 100 professionals.",
+          "q_ar": "من يملك رويال ديفيلوبمنت كومباني؟",
+          "a_ar": "رويال ديفيلوبمنت كومباني جزء من رويال ديفيلوبمنت القابضة، التي تأسست في 2025 ذراعًا عقارية لمجموعة الإمارات ستاليونز التابعة للشركة العالمية القابضة. وتقول الشركة إنها أدارت أكثر من 60 مشروعًا في أكثر من 15 دولة، بمبيعات بلغت 10.2 مليار درهم وفريق يضم أكثر من 100 متخصص."
+        },
+        {
+          "q": "Is Royal Development Holding a listed company?",
+          "a": "Royal Development Holding is not listed itself, but its parent, Emirates Stallions Group, trades on the Abu Dhabi Securities Exchange under the ticker ESG and reported total assets of AED 3.93 billion at 30 September 2025. Emirates Stallions is part of International Holding Company, so the group's results and filings are public on ADX.",
+          "q_ar": "هل رويال ديفيلوبمنت القابضة شركة مدرجة؟",
+          "a_ar": "رويال ديفيلوبمنت القابضة غير مدرجة بذاتها، لكن الشركة الأم، مجموعة الإمارات ستاليونز، مدرجة في سوق أبوظبي للأوراق المالية، وأعلنت إجمالي أصول بقيمة 3.93 مليار درهم حتى 30 سبتمبر 2025. والإمارات ستاليونز جزء من الشركة العالمية القابضة، لذا تُنشر نتائج المجموعة وإفصاحاتها علنًا في السوق."
+        },
+        {
+          "q": "What projects does Royal Development have in Abu Dhabi?",
+          "a": "Royal Development Holding builds on Al Reem Island, where Radisson Residences is available through Bazar from AED 950,000. Its other projects there are Rotana Residences, an AED 1 billion scheme that sold out before launch, with completion planned for Q4 2028; and Seamont Autograph Collection Residences, an AED 1.6 billion joint venture with SAAS Properties.",
+          "q_ar": "ما مشاريع رويال ديفيلوبمنت في أبوظبي؟",
+          "a_ar": "تقع مشاريع رويال ديفيلوبمنت القابضة في جزيرة الريم: راديسون ريزيدنسز المتاح عبر بازار بأسعار تبدأ من 950,000 درهم؛ وروتانا ريزيدنسز بقيمة 1 مليار درهم الذي بيع بالكامل قبل إطلاقه مع إنجاز مخطط في الربع الرابع من 2028؛ وسيمونت أوتوغراف كوليكشن ريزيدنسز، المشروع المشترك مع ساس العقارية بقيمة 1.6 مليار درهم."
+        },
+        {
+          "q": "How much is Radisson Residences on Al Reem Island?",
+          "a": "Radisson Residences starts from AED 950,000 on Bazar, with 488 homes and handover in Q4 2027. Studios measure 444–518 sq ft, one-bedrooms 803–1,084 sq ft and two-bedrooms 1,346–1,690 sq ft. It is billed as the first standalone Radisson Residences in the world, set on the Al Reem waterfront beside a mangrove shoreline.",
+          "q_ar": "كم سعر الوحدات في راديسون ريزيدنسز بجزيرة الريم؟",
+          "a_ar": "تبدأ الأسعار في راديسون ريزيدنسز من 950,000 درهم على بازار، ويضم 488 وحدة سكنية مع التسليم في الربع الرابع من 2027. وتتراوح مساحة الاستوديوهات بين 444 و518 قدمًا مربعة، وشقق الغرفة الواحدة بين 803 و1,084 أقدام مربعة، وشقق الغرفتين بين 1,346 و1,690 قدمًا مربعة. ويُقدَّم المشروع على أنه أول مشروع مستقل لراديسون ريزيدنسز في العالم، على واجهة الريم المائية بجوار شاطئ القرم."
+        },
+        {
+          "q": "What payment plan does Radisson Residences have?",
+          "a": "Radisson Residences is sold on a 40/60 plan: 5% on booking, 35% during construction and 60% on handover. On the AED 950,000 starting price that is AED 47,500 at booking, AED 332,500 during construction and AED 570,000 at handover. With completion due by the end of 2027, the handover payment falls about a year from now.",
+          "q_ar": "ما خطة الدفع في راديسون ريزيدنسز؟",
+          "a_ar": "يُباع مشروع راديسون ريزيدنسز بخطة 40/60: نسبة 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم. وعلى سعر البداية البالغ 950,000 درهم يعني ذلك 47,500 درهم عند الحجز، و332,500 درهم خلال الإنشاء، و570,000 درهم عند التسليم. ومع موعد الإنجاز بنهاية 2027، تستحق دفعة التسليم بعد نحو عام من الآن."
+        },
+        {
+          "q": "Did Radisson Residences Al Reem Island sell out?",
+          "a": "Phase 1 did. Royal Development Holding reported that every home in the AED 1.2 billion first phase sold within 24 hours of the December 2025 launch. Phase 2 added a third tower of 437 furnished branded residences, taking the project to AED 1.45 billion. Ask a Bazar advisor which homes remain, from the developer or on resale.",
+          "q_ar": "هل بيعت وحدات راديسون ريزيدنسز جزيرة الريم بالكامل؟",
+          "a_ar": "بيعت المرحلة الأولى بالكامل، إذ أعلنت رويال ديفيلوبمنت القابضة بيع جميع وحدات المرحلة الأولى البالغة قيمتها 1.2 مليار درهم خلال 24 ساعة من الإطلاق في ديسمبر 2025. وأضافت المرحلة الثانية برجًا ثالثًا يضم 437 وحدة سكنية مفروشة تحمل العلامة التجارية، لترتفع قيمة المشروع إلى 1.45 مليار درهم. واسأل مستشار بازار عن الوحدات المتبقية لدى المطوّر أو في إعادة البيع."
+        },
+        {
+          "q": "Can foreigners buy Royal Development property on Al Reem Island?",
+          "a": "Yes. Radisson Residences and Royal Development's other projects are on Al Reem Island, an Abu Dhabi investment zone where any nationality can own freehold. The sale is registered on DARI for a 2% fee, AED 19,000 on the AED 950,000 starting price. Townhouses and larger apartments in the project can approach the AED 2 million Golden Visa threshold.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات رويال ديفيلوبمنت في جزيرة الريم؟",
+          "a_ar": "نعم. يقع راديسون ريزيدنسز وسائر مشاريع رويال ديفيلوبمنت في جزيرة الريم، وهي منطقة استثمارية في أبوظبي يحق فيها لجميع الجنسيات التملك الحر. ويُسجَّل البيع على منصة DARI برسوم 2%، أي 19,000 درهم على سعر البداية البالغ 950,000 درهم. وقد تقترب منازل التاون هاوس والشقق الأكبر في المشروع من حد 2 مليون درهم المطلوب للإقامة الذهبية."
+        },
+        {
+          "q": "Is Radisson Residences escrow-protected?",
+          "a": "Radisson Residences is an off-plan project in Abu Dhabi, so it must be registered with ADREC and buyers' payments go into a project escrow account under Law No. 3 of 2015. Royal Development's parent, Emirates Stallions Group, is listed on ADX and publishes its accounts. Check the escrow account named in the sale contract before paying.",
+          "q_ar": "هل مشروع راديسون ريزيدنسز محمي بحساب ضمان؟",
+          "a_ar": "راديسون ريزيدنسز مشروع على المخطط في أبوظبي، لذا يجب تسجيله لدى ADREC، وتُودَع دفعات المشترين في حساب ضمان خاص بالمشروع وفق القانون رقم 3 لسنة 2015. كما أن الشركة الأم لرويال ديفيلوبمنت، مجموعة الإمارات ستاليونز، مدرجة في سوق أبوظبي للأوراق المالية وتنشر حساباتها. وتحقق من حساب الضمان المذكور في عقد البيع قبل الدفع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-saas-properties",
+      "name": "SAAS Properties",
+      "route": "/developers/saas-properties",
+      "pageSlug": "subpage/faq/developer-saas-properties",
+      "sources": [
+        "DB: developers row saas-properties (description); published development The Ritz-Carlton Residences (price, 165 units, handover Q1 2030, 10/30/60 plan) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/saas-properties-launches-the-ritz-carlton-residences-al-maryah-island-at-livex-2026-1480264 — 165 homes, Q2 2030, Killa Design, Tara Bernerd, CEO Ahmed Al Qassimi, licence note",
+        "https://www.adgm.com/media/announcements/saas-unveils-new-landmark-project-the-ritz-carlton-residences-al-maryah-island-during-abu-dhabi-finance-week-2025 — unveiled at Abu Dhabi Finance Week 2025",
+        "https://www.thenationalnews.com/advertorial/2025/05/07/saas-properties-unveils-the-st-regis-residences-on-al-maryah-island — St. Regis, 38 storeys, 161 residences",
+        "https://www.wam.ae/en/article/bk4tftx-royal-development-holding-saas-develop-aed16 — Seamont JV with Royal Development Holding, AED 1.6bn",
+        "https://www.zawya.com/en/press-release/royal-development-saas-award-aed-790mln-seamont-contract-to-fibrex-1500555 — Fibrex main contract AED 790m",
+        "https://www.khaleejtimes.com/business/royal-development-saas-properties-sell-out-phase-1-of-major-branded-residence-project — Seamont Phase 1 sold out, handover Q4 2028",
+        "adro.gov.ae — Golden Visa AED 2M (off-plan: AED 2M paid)",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who is SAAS Properties?",
+          "a": "SAAS Properties is a UAE-headquartered luxury developer led by chief executive Ahmed Al Qassimi, founded in 2019 according to its profile. In Abu Dhabi it builds Marriott-branded residences: The St. Regis Residences and The Ritz-Carlton Residences on Al Maryah Island, and Seamont Autograph Collection Residences on Al Reem Island with Royal Development Holding.",
+          "q_ar": "من هي شركة ساس العقارية؟",
+          "a_ar": "ساس العقارية مطوّر فاخر مقره الإمارات، يقوده الرئيس التنفيذي أحمد القاسمي، وتأسس عام 2019 بحسب ملفه. وفي أبوظبي يطوّر مساكن تحمل علامات ماريوت: سانت ريجيس ريزيدنسز وريتز كارلتون ريزيدنسز في جزيرة الماريه، وسيمونت أوتوغراف كوليكشن ريزيدنسز في جزيرة الريم بالشراكة مع رويال ديفيلوبمنت القابضة."
+        },
+        {
+          "q": "Has SAAS Properties delivered any projects?",
+          "a": "Not yet in Abu Dhabi, as far as the public record shows: its three announced projects are under construction. Seamont, whose first phase sold out, is due in Q4 2028 after an AED 790 million main contract went to Fibrex; The St. Regis Residences is listed for Q4 2028; and The Ritz-Carlton Residences is listed on Bazar for Q1 2030.",
+          "q_ar": "هل سلّمت ساس العقارية أي مشاريع؟",
+          "a_ar": "ليس بعد في أبوظبي بحسب السجلات المعلنة، إذ إن مشاريعها الثلاثة المعلنة قيد الإنشاء. فمشروع سيمونت، الذي بيعت مرحلته الأولى بالكامل، يُتوقع تسليمه في الربع الرابع من 2028 بعد ترسية عقد الأعمال الرئيسية على شركة فايبركس بقيمة 790 مليون درهم؛ ويُدرج سانت ريجيس ريزيدنسز للتسليم في الربع الرابع من 2028؛ بينما يُدرج ريتز كارلتون ريزيدنسز على بازار للتسليم في الربع الأول من 2030."
+        },
+        {
+          "q": "Where is SAAS Properties building in Abu Dhabi?",
+          "a": "SAAS builds on Abu Dhabi's two financial-district islands. On Al Maryah Island it has The St. Regis Residences, a 38-storey tower of 161 homes, and The Ritz-Carlton Residences, 165 homes on the waterfront canal. On Al Reem Island it is developing Seamont Autograph Collection Residences, an AED 1.6 billion joint venture with Royal Development Holding.",
+          "q_ar": "أين تبني ساس العقارية في أبوظبي؟",
+          "a_ar": "تبني ساس في جزيرتي المنطقة المالية في أبوظبي. ففي جزيرة الماريه لديها سانت ريجيس ريزيدنسز، وهو برج من 38 طابقًا يضم 161 وحدة سكنية، وريتز كارلتون ريزيدنسز الذي يضم 165 وحدة على القناة المائية. وفي جزيرة الريم تطوّر سيمونت أوتوغراف كوليكشن ريزيدنسز، المشروع المشترك مع رويال ديفيلوبمنت القابضة بقيمة 1.6 مليار درهم."
+        },
+        {
+          "q": "How much is The Ritz-Carlton Residences on Al Maryah Island?",
+          "a": "The Ritz-Carlton Residences starts from AED 3,950,000 on Bazar, with 165 homes and handover listed for Q1 2030; SAAS's launch release gives Q2 2030. One-bedrooms measure 926–1,109 sq ft, two-bedrooms 1,884–2,217 sq ft, three-bedrooms 2,961–4,672 sq ft and four-bedrooms about 5,802 sq ft, plus duplexes and one penthouse.",
+          "q_ar": "كم سعر الوحدات في ريتز كارلتون ريزيدنسز بجزيرة الماريه؟",
+          "a_ar": "تبدأ الأسعار في ريتز كارلتون ريزيدنسز من 3,950,000 درهم على بازار، ويضم 165 وحدة سكنية مع تسليم مدرج في الربع الأول من 2030، بينما يحدد بيان الإطلاق الصادر عن ساس الربع الثاني من 2030. وتتراوح مساحة شقق الغرفة الواحدة بين 926 و1,109 أقدام مربعة، وشقق الغرفتين بين 1,884 و2,217 قدمًا مربعة، وشقق الثلاث غرف بين 2,961 و4,672 قدمًا مربعة، وتبلغ شقق الأربع غرف نحو 5,802 قدم مربعة، إلى جانب وحدات دوبلكس وبنتهاوس واحد."
+        },
+        {
+          "q": "What payment plan does SAAS offer at The Ritz-Carlton Residences?",
+          "a": "The plan is 10% on booking, 30% during construction and 60% on handover. On the AED 3,950,000 starting price that is AED 395,000 at booking, AED 1,185,000 during construction and AED 2,370,000 at handover. For an off-plan Golden Visa, AED 2 million must be paid, which the 40% paid before handover reaches on homes of AED 5 million or more.",
+          "q_ar": "ما خطة الدفع التي تقدمها ساس في ريتز كارلتون ريزيدنسز؟",
+          "a_ar": "خطة الدفع هي 10% عند الحجز، و30% خلال الإنشاء، و60% عند التسليم. وعلى سعر البداية البالغ 3,950,000 درهم يعني ذلك 395,000 درهم عند الحجز، و1,185,000 درهم خلال الإنشاء، و2,370,000 درهم عند التسليم. وللإقامة الذهبية عبر عقار على المخطط يجب سداد 2 مليون درهم، وتبلغ نسبة 40% المدفوعة قبل التسليم هذا الحد في الوحدات التي يبلغ سعرها 5 ملايين درهم أو أكثر."
+        },
+        {
+          "q": "Who designed The Ritz-Carlton Residences Al Maryah Island?",
+          "a": "The tower is designed by Shaun Killa of Killa Design, with interiors by Tara Bernerd & Partners, and Marriott International is the brand partner. SAAS uses the Ritz-Carlton name under licence; the residences are not owned, developed or sold by Ritz-Carlton. Amenities include indoor and outdoor pools, a spa, a golf lounge, a cinema and a co-working lounge.",
+          "q_ar": "من صمّم ريتز كارلتون ريزيدنسز جزيرة الماريه؟",
+          "a_ar": "صمّم البرج المعماري شون كيلا من استوديو كيلا ديزاين، وتولت تارا برنرد وشركاؤها التصميم الداخلي، وماريوت الدولية هي الشريك صاحب العلامة. وتستخدم ساس اسم ريتز كارلتون بموجب ترخيص، فالمساكن ليست مملوكة لريتز كارلتون ولا تطوّرها أو تبيعها. وتشمل المرافق مسابح داخلية وخارجية، ومنتجعًا صحيًا، وصالة للغولف، وسينما، وصالة عمل مشتركة."
+        },
+        {
+          "q": "Can foreigners buy SAAS Properties homes in Abu Dhabi?",
+          "a": "Yes. Al Maryah Island and Al Reem Island are Abu Dhabi investment zones where buyers of any nationality can own freehold, so all three SAAS projects are open to foreign buyers. The sale is registered on DARI for a 2% fee, AED 79,000 on a Ritz-Carlton Residences home at the AED 3,950,000 starting price.",
+          "q_ar": "هل يمكن للأجانب شراء منازل ساس العقارية في أبوظبي؟",
+          "a_ar": "نعم. جزيرة الماريه وجزيرة الريم منطقتان استثماريتان في أبوظبي يحق فيهما للمشترين من جميع الجنسيات التملك الحر، لذا فإن مشاريع ساس الثلاثة مفتوحة للمشترين الأجانب. ويُسجَّل البيع على منصة DARI برسوم 2%، أي 79,000 درهم على وحدة في ريتز كارلتون ريزيدنسز بسعر البداية البالغ 3,950,000 درهم."
+        },
+        {
+          "q": "Are SAAS Properties projects escrow-protected?",
+          "a": "SAAS's projects are off-plan in Abu Dhabi, so each must be registered with ADREC and buyers' payments go into a project escrow account under Law No. 3 of 2015. At The Ritz-Carlton Residences 60% of the price is due only on handover. Check the escrow account named in the sale contract, and the licensed brand entity, before paying.",
+          "q_ar": "هل مشاريع ساس العقارية محمية بحسابات ضمان؟",
+          "a_ar": "مشاريع ساس على المخطط في أبوظبي، لذا يجب تسجيل كل منها لدى ADREC، وتُودَع دفعات المشترين في حساب ضمان خاص بالمشروع وفق القانون رقم 3 لسنة 2015. وفي ريتز كارلتون ريزيدنسز لا يُستحق 60% من السعر إلا عند التسليم. وتحقق قبل الدفع من حساب الضمان المذكور في عقد البيع ومن الجهة المرخص لها استخدام العلامة."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-sobha-realty",
+      "name": "Sobha Realty",
+      "route": "/developers/sobha-realty",
+      "pageSlug": "subpage/faq/developer-sobha-realty",
+      "sources": [
+        "DB: developers row sobha-realty (founded_year 1976, description); published development Sobha City Abu Dhabi (price, 6,500 units, handover Q4 2029, 20/40/40 plan) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/sobha-realty-concludes-fy-2025-with-aed-30bln-in-sales-marking-30-growth-over-2024-obx2y4xl — AED 30bn 2025 sales +30%, PNC Investments, sukuk, 14 UAE developments",
+        "https://thearabianpost.com/sobha-widens-uae-housing-pipeline/ — about 3,000 homes delivered and ~15,000 launched in 2025",
+        "https://www.khaleejtimes.com/business/property/sobha-realty-launches-dh40-billion-abu-dhabi-project — Sobha City, Al Bahia, AED 40bn, 4,000 apartments + 2,500 villas, 80 mansions, Q4 2029 first phase, 60% international buyers, villas from AED 4.69M",
+        "https://gulfnews.com/business/property/sobha-realty-enters-abu-dhabi-with-38m-sq-ft-waterfront-city-1.500505514 — 38m sq ft, 60% green, 50,000 trees, 18 km loop, 2 km promenade",
+        "https://gulfnews.com/uae-success-stories/from-750-to-a-billionaire-how-pnc-menon-built-sobhas-global-real-estate-empire-1.500366956 — 1976 Muscat founding by PNC Menon; Ravi Menon chairman",
+        "adro.gov.ae — Golden Visa AED 2M",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Sobha Realty?",
+          "a": "Sobha Realty is a privately owned, Dubai-headquartered developer whose parent is PNC Investments. The business was founded in 1976 in Muscat, Oman, by PNC Menon as an interiors company; his son Ravi Menon has chaired Sobha Group since November 2024. Sobha Realty's shares are not listed, but it borrows through sukuk, including a US$750 million green sukuk in 2025.",
+          "q_ar": "من يملك شوبا العقارية؟",
+          "a_ar": "شوبا العقارية مطوّر خاص مقره دبي، وشركته الأم هي بي إن سي للاستثمارات. وتأسس النشاط عام 1976 في مسقط بسلطنة عُمان على يد بي إن سي مينون شركةً للتصميم الداخلي، ويرأس ابنه رافي مينون مجموعة شوبا منذ نوفمبر 2024. وأسهم شوبا العقارية غير مدرجة، لكنها تقترض عبر الصكوك، ومنها صكوك خضراء بقيمة 750 مليون دولار أمريكي في 2025."
+        },
+        {
+          "q": "What has Sobha Realty delivered in the UAE?",
+          "a": "Sobha reported AED 30 billion of sales in 2025, up 30% on 2024, and says it delivered about 3,000 homes that year while launching about 15,000. Its UAE portfolio covers 14 developments, 12 in Dubai, such as Sobha Hartland, Sobha One and Sobha Central, and two in Umm Al Quwain, including Sobha Siniya Island. Sobha designs and builds in-house.",
+          "q_ar": "ما الذي سلّمته شوبا العقارية في الإمارات؟",
+          "a_ar": "أعلنت شوبا مبيعات بقيمة 30 مليار درهم في 2025 بزيادة 30% عن 2024، وتقول إنها سلّمت نحو 3,000 وحدة سكنية في ذلك العام وأطلقت نحو 15,000 وحدة. وتضم محفظتها في الإمارات 14 مشروعًا، منها 12 في دبي مثل شوبا هارتلاند وشوبا ون وشوبا سنترال، واثنان في أم القيوين منهما جزيرة شوبا سينيا. وتتولى شوبا التصميم والبناء داخليًا."
+        },
+        {
+          "q": "Does Sobha Realty build in Abu Dhabi?",
+          "a": "Yes. Sobha entered Abu Dhabi in April 2026 with Sobha City in Al Bahia, its first large-scale community in the capital, valued at AED 40 billion. The 38 million sq ft master plan holds 4,000 apartments and 2,500 villas, with 80 golf-course mansions to follow later. Sobha City is available through Bazar from AED 1,310,000.",
+          "q_ar": "هل تبني شوبا العقارية في أبوظبي؟",
+          "a_ar": "نعم. دخلت شوبا سوق أبوظبي في أبريل 2026 بمشروع شوبا سيتي في الباهية، وهو أول مجتمع واسع النطاق لها في العاصمة، بقيمة 40 مليار درهم. ويضم المخطط العام البالغة مساحته 38 مليون قدم مربعة 4,000 شقة و2,500 فيلا، على أن تُطرح لاحقًا 80 فيلا فاخرة على ملعب الغولف. ويتوفر شوبا سيتي عبر بازار بأسعار تبدأ من 1,310,000 درهم."
+        },
+        {
+          "q": "How much is Sobha City Abu Dhabi?",
+          "a": "Sobha City Abu Dhabi starts from AED 1,310,000 on Bazar, with the first phase due in Q4 2029. One-bedrooms measure 566–608 sq ft, two-bedrooms 1,012–1,212 sq ft, three-bedroom townhouses 2,577–3,453 sq ft, four-bedroom villas 4,506–5,849 sq ft, five-bedroom villas 5,489–6,556 sq ft and six-bedroom villas 6,383–6,491 sq ft.",
+          "q_ar": "كم سعر الوحدات في شوبا سيتي أبوظبي؟",
+          "a_ar": "تبدأ الأسعار في شوبا سيتي أبوظبي من 1,310,000 درهم على بازار، مع موعد تسليم المرحلة الأولى في الربع الرابع من 2029. وتتراوح مساحة شقق الغرفة الواحدة بين 566 و608 أقدام مربعة، وشقق الغرفتين بين 1,012 و1,212 قدمًا مربعة، ومنازل التاون هاوس بثلاث غرف بين 2,577 و3,453 قدمًا مربعة، والفلل بأربع غرف بين 4,506 و5,849 قدمًا مربعة، وبخمس غرف بين 5,489 و6,556 قدمًا مربعة، وبست غرف بين 6,383 و6,491 قدمًا مربعة."
+        },
+        {
+          "q": "What payment plan does Sobha offer at Sobha City Abu Dhabi?",
+          "a": "Sobha City is sold on a 60/40 plan: 20% on booking, 40% during construction and 40% on handover. On the AED 1,310,000 starting price that is AED 262,000 at booking, AED 524,000 during construction and AED 524,000 at handover. The 20% booking is higher than at many Abu Dhabi launches, so budget for it alongside the 2% DARI fee.",
+          "q_ar": "ما خطة الدفع التي تقدمها شوبا في شوبا سيتي أبوظبي؟",
+          "a_ar": "يُباع شوبا سيتي بخطة 60/40: نسبة 20% عند الحجز، و40% خلال الإنشاء، و40% عند التسليم. وعلى سعر البداية البالغ 1,310,000 درهم يعني ذلك 262,000 درهم عند الحجز، و524,000 درهم خلال الإنشاء، و524,000 درهم عند التسليم. ودفعة الحجز البالغة 20% أعلى منها في كثير من المشاريع في أبوظبي، لذا خصص لها ميزانية إلى جانب رسوم DARI البالغة 2%."
+        },
+        {
+          "q": "Where is Sobha City Abu Dhabi?",
+          "a": "Sobha City is in Al Bahia, on the E10 and E12 corridor near Zayed International Airport and Yas Island. About 60% of the master plan is green and landscaped, with more than 50,000 trees, an 18 km walking and cycling loop, a 2 km waterfront promenade, a marina and a golf course, plus planned schools, healthcare, mosques and retail.",
+          "q_ar": "أين يقع شوبا سيتي أبوظبي؟",
+          "a_ar": "يقع شوبا سيتي في الباهية، على محور E10 وE12 بالقرب من مطار زايد الدولي وجزيرة ياس. ونحو 60% من المخطط العام مساحات خضراء ومنسقة، مع أكثر من 50,000 شجرة، ومسار للمشي وركوب الدراجات بطول 18 كيلومترًا، وممشى على الواجهة المائية بطول 2 كيلومتر، ومرسى، وملعب غولف، إلى جانب مدارس ومرافق صحية ومساجد ومتاجر مخططة."
+        },
+        {
+          "q": "Can foreigners buy at Sobha City Abu Dhabi?",
+          "a": "Sobha says about 60% of Sobha City's launch buyers were international investors and 40% UAE residents. Al Bahia as a whole is not an investment zone, so confirm the unit's freehold status on DARI before booking. Villas starting at AED 4.69 million clear the AED 2 million Golden Visa threshold on price, though off-plan buyers must have paid AED 2 million.",
+          "q_ar": "هل يمكن للأجانب الشراء في شوبا سيتي أبوظبي؟",
+          "a_ar": "تقول شوبا إن نحو 60% من مشتري شوبا سيتي عند الإطلاق كانوا مستثمرين دوليين و40% من المقيمين في الإمارات. ولا تُعد منطقة الباهية بأكملها منطقة استثمارية، لذا تحقق من حالة التملك الحر للوحدة على منصة DARI قبل الحجز. وتتجاوز الفلل التي تبدأ من 4.69 مليون درهم حد 2 مليون درهم للإقامة الذهبية من حيث السعر، لكن يجب على مشتري الوحدات على المخطط أن يكونوا قد سددوا 2 مليون درهم."
+        },
+        {
+          "q": "Is Sobha City Abu Dhabi escrow-protected?",
+          "a": "Sobha City is off-plan in Abu Dhabi, so it must be registered with ADREC and buyers' payments go into a project escrow account under Law No. 3 of 2015; Sobha's Dubai projects follow Dubai's escrow rules. Sobha builds with its own design, engineering and construction teams. Check the escrow account named in your sale contract before paying.",
+          "q_ar": "هل مشروع شوبا سيتي أبوظبي محمي بحساب ضمان؟",
+          "a_ar": "شوبا سيتي مشروع على المخطط في أبوظبي، لذا يجب تسجيله لدى ADREC، وتُودَع دفعات المشترين في حساب ضمان خاص بالمشروع وفق القانون رقم 3 لسنة 2015، بينما تخضع مشاريع شوبا في دبي لقواعد الضمان في دبي. وتبني شوبا بفرقها الخاصة للتصميم والهندسة والإنشاء. وتحقق من حساب الضمان المذكور في عقد البيع قبل الدفع."
+        }
+      ]
+    },
+    {
+      "kind": "faqdoc",
+      "slug": "developer-taraf",
+      "name": "Taraf",
+      "route": "/developers/taraf",
+      "pageSlug": "subpage/faq/developer-taraf",
+      "sources": [
+        "DB: developers row taraf (description); published developments JW Marriott Residences, W Residences, Fay Hills (prices, units, handover, payment plans) + unit types",
+        "https://www.zawya.com/en/press-release/companies-news/taraf-and-masdar-city-form-strategic-joint-venture-to-deliver-new-sustainable-residential-community-tqkuo581 — Yas Holding real estate division, Masdar City JV, 1.4m sqm, >1,000 homes, freehold, Low Ping",
+        "https://gulfbusiness.com/en/2025/abu-dhabi/new-taraf-masdar-city-partnership-to-deliver-over-1000-homes-in-abu-dhabi/ — Fay Hills partnership",
+        "https://tradearabia.com/News/488132/Deal-signed-to-launch-JW-Marriott-Residences-Abu-Dhabi-Yas-Island — 16 Oct 2026, Steppe JV, beach + golf, W Residences sold out",
+        "https://www.zawya.com/en/press-release/companies-news/taraf-and-marriott-international-sign-agreement-to-bring-the-first-w-hotels-branded-residences-to-abu-dhabi-ot7sr6tg — first W Hotels branded residences in Abu Dhabi",
+        "https://www.mubadala.com/en/news/taraf-signs-mou-with-mubadala-to-explore-major-mixed-use-waterfront-development-on-al-reem-island — Mubadala MoU",
+        "adro.gov.ae — Golden Visa AED 2M (off-plan: AED 2M paid)",
+        "Abu Dhabi Law No. 3 of 2015 (real estate sector, off-plan escrow); ADREC / Madhmoun off-plan registration (zawya.com, Ohana launch release, 2026)"
+      ],
+      "faq": [
+        {
+          "q": "Who owns Taraf developer?",
+          "a": "Taraf is the real estate division of Yas Holding, a UAE-headquartered investment group led by group chief executive Low Ping. It is a boutique developer of design-led, limited-edition homes in Abu Dhabi and Dubai, and in Abu Dhabi it partners with Marriott International, Masdar City and Steppe, and has signed an MoU with Mubadala to explore an Al Reem Island waterfront scheme.",
+          "q_ar": "من يملك شركة ترف للتطوير العقاري؟",
+          "a_ar": "ترف هي الذراع العقارية لياس القابضة، وهي مجموعة استثمارية مقرها الإمارات يقودها الرئيس التنفيذي للمجموعة لو بينغ. وهي مطوّر متخصص في مساكن محدودة الإصدار يقودها التصميم في أبوظبي ودبي، وتتعاون في أبوظبي مع ماريوت الدولية ومدينة مصدر وستيب، ووقعت مذكرة تفاهم مع مبادلة لدراسة مشروع على الواجهة المائية في جزيرة الريم."
+        },
+        {
+          "q": "What projects does Taraf have in Abu Dhabi?",
+          "a": "Taraf has three Abu Dhabi projects, all available through Bazar. W Residences on Al Maryah Island is the first W Hotels branded residences in Abu Dhabi, priced from AED 2,200,000; JW Marriott Residences on Yas Island, launched in October 2026, starts from AED 3,300,000; and Fay Hills, its villa community with Masdar City, starts from AED 3,140,000.",
+          "q_ar": "ما مشاريع ترف في أبوظبي؟",
+          "a_ar": "لدى ترف ثلاثة مشاريع في أبوظبي، وجميعها متاحة عبر بازار: دبليو ريزيدنسز في جزيرة الماريه، أول مساكن تحمل علامة فنادق دبليو في أبوظبي، بأسعار تبدأ من 2,200,000 درهم؛ وجي دبليو ماريوت ريزيدنسز في جزيرة ياس، الذي أُطلق في أكتوبر 2026، بأسعار تبدأ من 3,300,000 درهم؛ وفاي هيلز، مجتمع الفلل الذي تطوّره مع مدينة مصدر، بأسعار تبدأ من 3,140,000 درهم."
+        },
+        {
+          "q": "How much is JW Marriott Residences on Yas Island by Taraf?",
+          "a": "JW Marriott Residences starts from AED 3,300,000 on Bazar, with 199 homes and handover listed for Q3 2030. One-bedrooms measure 1,097–1,225 sq ft, two-bedrooms 1,705–1,890 sq ft, three-bedrooms 2,459–3,225 sq ft and four-bedroom duplexes 4,364–5,102 sq ft. The project sits directly on the beach on Yas Island, with a golf course alongside.",
+          "q_ar": "كم سعر الوحدات في جي دبليو ماريوت ريزيدنسز بجزيرة ياس من ترف؟",
+          "a_ar": "تبدأ الأسعار في جي دبليو ماريوت ريزيدنسز من 3,300,000 درهم على بازار، ويضم 199 وحدة سكنية مع تسليم مدرج في الربع الثالث من 2030. وتتراوح مساحة شقق الغرفة الواحدة بين 1,097 و1,225 قدمًا مربعة، وشقق الغرفتين بين 1,705 و1,890 قدمًا مربعة، وشقق الثلاث غرف بين 2,459 و3,225 قدمًا مربعة، ووحدات الدوبلكس بأربع غرف بين 4,364 و5,102 قدم مربعة. ويقع المشروع على الشاطئ مباشرة في جزيرة ياس وبجواره ملعب غولف."
+        },
+        {
+          "q": "What payment plan does Taraf offer at JW Marriott Residences?",
+          "a": "The plan is 50/50: a 5% down payment in Q4 2026, nine 5% instalments over the following 36 months, and 50% on handover. On the AED 3,300,000 starting price each 5% step is AED 165,000 and the handover payment AED 1,650,000. For an off-plan Golden Visa, AED 2 million must be paid, which the 50% pre-handover share reaches on homes of AED 4 million or more.",
+          "q_ar": "ما خطة الدفع التي تقدمها ترف في جي دبليو ماريوت ريزيدنسز؟",
+          "a_ar": "خطة الدفع 50/50: دفعة أولى بنسبة 5% في الربع الرابع من 2026، ثم تسعة أقساط قيمة كل منها 5% خلال الأشهر 36 التالية، و50% عند التسليم. وعلى سعر البداية البالغ 3,300,000 درهم تبلغ كل دفعة بنسبة 5% مبلغ 165,000 درهم، ودفعة التسليم 1,650,000 درهم. وللإقامة الذهبية عبر عقار على المخطط يجب سداد 2 مليون درهم، وتبلغ حصة 50% المدفوعة قبل التسليم هذا الحد في الوحدات التي يبلغ سعرها 4 ملايين درهم أو أكثر."
+        },
+        {
+          "q": "How much is Fay Hills by Taraf?",
+          "a": "Fay Hills starts from AED 3,140,000 on Bazar, with 381 homes and handover in Q2 2030. Two-bedroom townhouses measure about 2,249 sq ft, three-bedroom townhouses about 2,490 sq ft, four-bedroom villas 3,063–3,641 sq ft, five-bedroom villas about 4,546 sq ft and six-bedroom villas about 5,514–5,520 sq ft. The plan is 5% on booking, 35% during construction and 60% on handover.",
+          "q_ar": "كم سعر الوحدات في فاي هيلز من ترف؟",
+          "a_ar": "تبدأ الأسعار في فاي هيلز من 3,140,000 درهم على بازار، ويضم 381 وحدة سكنية مع التسليم في الربع الثاني من 2030. وتبلغ مساحة منازل التاون هاوس بغرفتين نحو 2,249 قدمًا مربعة، وبثلاث غرف نحو 2,490 قدمًا مربعة، وتتراوح الفلل بأربع غرف بين 3,063 و3,641 قدمًا مربعة، وتبلغ الفلل بخمس غرف نحو 4,546 قدمًا مربعة، وبست غرف بين نحو 5,514 و5,520 قدمًا مربعة. وخطة الدفع 5% عند الحجز، و35% خلال الإنشاء، و60% عند التسليم."
+        },
+        {
+          "q": "Where is Fay Hills by Taraf?",
+          "a": "Fay Hills is in Masdar City, Abu Dhabi, developed by Taraf in a joint venture with Masdar City. The partnership covers a 1.4 million sq m master plan of more than 1,000 villas and townhouses with two to six bedrooms, with cycling routes linking the community directly to Al Masar Park, and offers freehold ownership.",
+          "q_ar": "أين يقع مشروع فاي هيلز من ترف؟",
+          "a_ar": "يقع فاي هيلز في مدينة مصدر بأبوظبي، وتطوّره ترف في مشروع مشترك مع مدينة مصدر. وتشمل الشراكة مخططًا عامًا بمساحة 1.4 مليون متر مربع يضم أكثر من 1,000 فيلا ومنزل تاون هاوس من غرفتين إلى ست غرف، مع مسارات للدراجات تربط المجتمع مباشرة بحديقة المسار، ويتيح التملك الحر."
+        },
+        {
+          "q": "What is W Residences Al Maryah Island by Taraf?",
+          "a": "W Residences is Taraf's first Abu Dhabi project with Marriott, the first W Hotels branded residences in the capital: 177 homes on Al Maryah Island from AED 2,200,000, with handover in Q4 2027. One-bedrooms measure 909–924 sq ft, two-bedrooms about 1,398–1,400 sq ft and three-bedrooms 2,073–2,176 sq ft. Taraf reports it sold out, so homes now come mainly on resale.",
+          "q_ar": "ما هو مشروع دبليو ريزيدنسز جزيرة الماريه من ترف؟",
+          "a_ar": "دبليو ريزيدنسز أول مشروع لترف في أبوظبي مع ماريوت، وأول مساكن تحمل علامة فنادق دبليو في العاصمة: 177 وحدة سكنية في جزيرة الماريه بأسعار تبدأ من 2,200,000 درهم، مع التسليم في الربع الرابع من 2027. وتتراوح مساحة شقق الغرفة الواحدة بين 909 و924 قدمًا مربعة، وشقق الغرفتين بين نحو 1,398 و1,400 قدم مربعة، وشقق الثلاث غرف بين 2,073 و2,176 قدمًا مربعة. وتفيد ترف ببيع المشروع بالكامل، لذا تُتاح الوحدات الآن غالبًا عبر إعادة البيع."
+        },
+        {
+          "q": "Can foreigners buy Taraf property in Abu Dhabi?",
+          "a": "Yes. Al Maryah Island, Yas Island and Masdar City are Abu Dhabi investment zones open to freehold for every nationality, and Taraf and Masdar City describe Fay Hills as freehold. Purchases are registered on DARI for a 2% fee, AED 44,000 on a W Residences home at AED 2,200,000. Payments on these off-plan projects go into ADREC-supervised escrow under Law No. 3 of 2015.",
+          "q_ar": "هل يمكن للأجانب شراء عقارات ترف في أبوظبي؟",
+          "a_ar": "نعم. جزيرة الماريه وجزيرة ياس ومدينة مصدر مناطق استثمارية في أبوظبي مفتوحة للتملك الحر لجميع الجنسيات، وتصف ترف ومدينة مصدر مشروع فاي هيلز بأنه تملك حر. ويُسجَّل الشراء على منصة DARI برسوم 2%، أي 44,000 درهم على وحدة في دبليو ريزيدنسز بسعر 2,200,000 درهم. وتُودَع دفعات هذه المشاريع على المخطط في حسابات ضمان يشرف عليها ADREC وفق القانون رقم 3 لسنة 2015."
+        }
+      ]
+    }
+  ]
+}

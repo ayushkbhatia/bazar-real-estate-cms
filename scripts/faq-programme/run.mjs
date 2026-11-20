@@ -110,7 +110,19 @@ for (const page of payload.pages) {
     // figures are traced through sourcedNumbers.
     if (!page.pageSlug?.startsWith("subpage/faq/")) { problems.push(`${page.slug}: faqdoc pageSlug must be subpage/faq/<key>`); continue; }
     [row] = await get(`pages?select=id,slug,blocks,updated_at&slug=eq.${encodeURIComponent(page.pageSlug)}`);
-    facts = factText({ blocks: row?.blocks ?? [] });
+    let extra = {};
+    const dev = /^developer-(.+)$/.exec(page.slug);
+    if (dev) {
+      // A developer profile: its record and its PUBLISHED projects are facts.
+      const [d] = await get(`developers?select=id,name,founded_year,description,stats&slug=eq.${dev[1]}`);
+      if (!d) { problems.push(`${page.slug}: no developers row ${dev[1]}`); continue; }
+      const projects = await get(`developments?select=id,name,starting_price,handover_date,total_units,payment_plan,bedrooms_text&developer_id=eq.${d.id}&published_at=not.is.null`);
+      const units = projects.length
+        ? await get(`development_unit_types?select=beds,size_from_ft2,size_to_ft2&development_id=in.(${projects.map((p) => p.id).join(",")})`)
+        : [];
+      extra = { d, projects, units };
+    }
+    facts = factText({ blocks: row?.blocks ?? [], ...extra });
   } else {
     problems.push(`${page.slug}: unknown kind ${page.kind}`);
     continue;
