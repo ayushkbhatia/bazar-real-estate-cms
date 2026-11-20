@@ -1,0 +1,1069 @@
+{
+ "wave": "3",
+ "batch": "batch-services",
+ "written": "2026-11-20",
+ "sourcedNumbers": [
+  "0",
+  "1",
+  "2",
+  "3",
+  "3.6725",
+  "4",
+  "5",
+  "7",
+  "8",
+  "8.2",
+  "9",
+  "10",
+  "13",
+  "15",
+  "20",
+  "24",
+  "25",
+  "26",
+  "30",
+  "40",
+  "44",
+  "49",
+  "50",
+  "54.13",
+  "60",
+  "70",
+  "72",
+  "80",
+  "99",
+  "100",
+  "142",
+  "165",
+  "2006",
+  "2015",
+  "2016",
+  "2019",
+  "2023",
+  "2024",
+  "2025",
+  "2026",
+  "10000",
+  "42814",
+  "50000",
+  "60000",
+  "375000",
+  "2500000",
+  "3000000"
+ ],
+ "sourcedNotes": {
+  "0": "ADREC 0% cap on renewal rent increases from 2 June 2026 (thenationalnews.com, khaleejtimes.com, aoshearman.com)",
+  "1": "Central Bank early settlement fee cap 1% of outstanding or AED 10,000 (khaleejtimes.com / CBUAE rulebook); DCT: unlicensed holiday homes off booking platforms from 1 January 2026 (gulfnews.com / khaleejtimes.com)",
+  "2": "2% DARI registration fee and ~2% agency commission (Waves 0-2); AED 2 million Golden Visa (adro.gov.ae); Law No. 2 of 2025; 2 June 2026 rent freeze; 2 August 2025 effective date; 2-year real estate owner visa (added.gov.ae); developer two-year disclosure liability (Decision 25/2025)",
+  "3": "Abu Dhabi Law No. 3 of 2015; 3 on-time projects for early escrow (Decision 24/2025, trowers.com); 3% municipality housing fee (thenationalnews.com, 2016); AED 3 million max loan on AED 5M Golden Visa example (adro.gov.ae)",
+  "3.6725": "AED pegged to USD at 3.6725 (Central Bank of the UAE)",
+  "4": "Decision 24/2025: developer registered in Abu Dhabi at least 4 years (trowers.com)",
+  "5": "Central Bank LTV threshold AED 5 million (rulebook.centralbank.ae); previous 5% annual rent cap (ADREC); 5% UAE VAT (tax.gov.ae); 5-8% yields (engelvoelkers.com); owners' committee 5-9 members (Decision 26/2025); AED 5M Golden Visa example (adro.gov.ae)",
+  "7": "Madhmoun permits mandatory from 7 July 2025 (thenationalnews.com / gulfnews.com)",
+  "8": "Abu Dhabi gross yields 5-8% (engelvoelkers.com)",
+  "8.2": "Foreign direct investment in Abu Dhabi real estate AED 8.2 billion in 2025 (thenationalnews.com, ADREC)",
+  "9": "UAE corporate tax 9% (Federal Decree-Law No. 47 of 2022, mof.gov.ae); owners' committee 5-9 members (Decision 26/2025)",
+  "10": "Golden Visa 10 years (adro.gov.ae); developer structural liability 10 years from completion certificate (tamimi.com, Law No. 3 of 2015); 10% early retention (Decision 165/2025)",
+  "13": "FDI in Abu Dhabi real estate up 13% in 2025 (thenationalnews.com)",
+  "15": "Refund within 15 working days (Decision 165/2025, trowers.com)",
+  "20": "Escrow drawdown after 20% of construction; 20% bank bond (Decision 24/2025, kslaw.com / trowers.com); 20% minimum deposit = 100% - 80% LTV (Central Bank); Article 20 of Law No. 20 of 2006 (dlapiperrealworld.com)",
+  "24": "DMT Decision No. 24 of 2025 (trowers.com)",
+  "25": "Central Bank max mortgage tenor 25 years (rulebook.centralbank.ae); DMT Decision No. 25 of 2025 (trowers.com); minor-works extensions up to 25 sq m (dmt.gov.ae)",
+  "26": "DMT Decision No. 26 of 2025 (trowers.com)",
+  "30": "Management company appointed within 30 days; owners' committee at 30% of units (Decisions 25 and 26 of 2025, trowers.com); 30% minimum deposit above AED 5M = 100% - 70% LTV",
+  "40": "Retention up to 40% (Decision 165/2025, trowers.com); 40% deposit = 100% - 60% LTV",
+  "44": "Abu Dhabi transactions up 44% in 2025 (mediaoffice.abudhabi / wam.ae)",
+  "49": "Cabinet Decision No. 49 of 2023 (pwc.com / mof.gov.ae)",
+  "50": "ADREC off-plan mortgage framework: 50% paid (gulfnews.com, Wave 2); Central Bank debt burden ratio 50% (rulebook.centralbank.ae); musataha up to 50 years (tamimi.com / chambers.com)",
+  "54.13": "Investment zones AED 54.13 billion in 2025 (zawya.com, ADREC release)",
+  "60": "Central Bank 60% LTV on second/investment property (rulebook.centralbank.ae); 60-100% completion band and 60% paid (Decision 165/2025)",
+  "70": "Central Bank 70% LTV above AED 5 million (rulebook.centralbank.ae)",
+  "72": "Investment zones 72% of real estate investment, 2025 (zawya.com, ADREC release)",
+  "80": "Central Bank 80% LTV, expatriate first home up to AED 5 million (rulebook.centralbank.ae)",
+  "99": "Usufruct up to 99 years (tamimi.com / chambers.com)",
+  "100": "60-100% completion band (Decision 165/2025, trowers.com)",
+  "142": "Abu Dhabi real estate transactions AED 142 billion in 2025 (mediaoffice.abudhabi / wam.ae)",
+  "165": "DMT Decision No. 165 of 2025, off-plan cancellation refunds (trowers.com)",
+  "2006": "Abu Dhabi Law No. 20 of 2006 on leasing (dlapiperrealworld.com / bsalaw.com)",
+  "2015": "Abu Dhabi Law No. 3 of 2015 regulating the real estate sector (Wave 2)",
+  "2016": "Abu Dhabi 3% municipality housing fee introduced 2016 (thenationalnews.com)",
+  "2019": "Law No. 13 of 2019 opening investment areas to foreigners (u.ae, Wave 1)",
+  "2023": "Cabinet Decision No. 49 of 2023 (pwc.com / mof.gov.ae)",
+  "2024": "2025 transactions compared with 2024 (mediaoffice.abudhabi); FTA real estate guide October 2024 (hadefpartners.com)",
+  "2025": "Law No. 2 of 2025 effective 2 August 2025 (horizlaw.ae); DMT Decisions 24/25/26/165 of 2025; Madhmoun 7 July 2025; DMT minor works August 2025; TAQA Distribution from January 2025; ADREC 2025 transactions",
+  "2026": "ADREC rent freeze 2 June 2026; first off-plan mortgage September 2026 (Wave 2); DCT platform rule 1 January 2026",
+  "10000": "Early settlement cap AED 10,000 (Central Bank); AED 10,000 monthly income for real estate owner visa (added.gov.ae)",
+  "42814": "42,814 Abu Dhabi real estate transactions in 2025 (thenationalnews.com / zawya.com)",
+  "50000": "worked example: 2% of AED 2,500,000",
+  "60000": "worked example: 2% of AED 3,000,000",
+  "375000": "UAE corporate tax 0% band up to AED 375,000 (mof.gov.ae)",
+  "2500000": "worked example price (assumed)",
+  "3000000": "worked example price (assumed)"
+ },
+ "pages": [
+  {
+   "kind": "faqdoc",
+   "slug": "service-buy",
+   "name": "Buy with Bazar",
+   "route": "/services/buy",
+   "pageSlug": "subpage/faq/service-buy",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "rulebook.centralbank.ae — Regulations Regarding Mortgage Loans (LTV, tenor, DBR); early settlement fee cap",
+    "gulfnews.com — ADREC off-plan mortgage framework (50%), first mortgage Sept 2026 (Wave 2)",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "adro.gov.ae — Abu Dhabi Golden Visa, real-estate investors",
+    "u.ae — Golden Visa; expatriates buying property in Abu Dhabi"
+   ],
+   "faq": [
+    {
+     "q": "What are the steps to buy a property in Abu Dhabi?",
+     "a": "Buying a resale home in Abu Dhabi runs in four stages: sign a sale and purchase agreement, clear any mortgage and obtain the developer's no-objection certificate, pay the registration fee, then transfer ownership through DARI. DARI is the Abu Dhabi Real Estate Centre's platform, and it issues the new title deed. An off-plan purchase is recorded on the off-plan register at booking and becomes a title deed at handover.",
+     "q_ar": "ما خطوات شراء عقار في أبوظبي؟",
+     "a_ar": "يمر شراء منزل إعادة بيع في أبوظبي بأربع مراحل: الاتفاق على السعر وتوقيع عقد البيع والشراء، ثم سداد أي رهن قائم على العقار والحصول على شهادة عدم ممانعة من المطوّر، ثم دفع رسوم التسجيل، وأخيرًا نقل الملكية عبر منصة «داري» التابعة لمركز أبوظبي العقاري، التي تصدر سند الملكية الجديد. أما الشراء على الخريطة فيُسجَّل في سجل البيع على الخريطة عند الحجز، ويتحوّل إلى سند ملكية عند التسليم."
+    },
+    {
+     "q": "How much are the fees to buy property in Abu Dhabi?",
+     "a": "The main fee is Abu Dhabi's 2% registration fee, paid through DARI: on a AED 3,000,000 apartment that is AED 60,000. A resale purchase through an agent usually adds a commission of around 2%, and the developer charges for its no-objection certificate. Mortgage buyers also pay the bank's arrangement and valuation fees and a mortgage registration fee, so ask the bank for its schedule before you sign.",
+     "q_ar": "كم تبلغ رسوم شراء عقار في أبوظبي؟",
+     "a_ar": "الرسم الرئيسي هو رسم التسجيل في أبوظبي وقدره 2% يُدفع عبر منصة «داري»، أي 60,000 درهم على شقة سعرها 3,000,000 درهم. ويضاف عادةً في الشراء من السوق الثانوية عبر وسيط عمولة تقارب 2%، كما يتقاضى المطوّر رسمًا مقابل شهادة عدم الممانعة. ويدفع المشترون بالتمويل أيضًا رسوم الترتيب والتقييم لدى البنك ورسم تسجيل الرهن، لذا اطلب جدول رسوم البنك قبل التوقيع."
+    },
+    {
+     "q": "Can foreigners buy property in Abu Dhabi?",
+     "a": "Yes, in Abu Dhabi's designated investment areas, where buyers of any nationality can own property freehold since the 2019 amendment to the emirate's real estate law. They include Saadiyat Island, Yas Island, Al Reem Island, Al Maryah Island, Al Raha Beach and Masdar City. Outside those areas outright ownership is generally reserved for UAE nationals, so confirm a property's status on DARI before paying a deposit.",
+     "q_ar": "هل يمكن للأجانب شراء عقار في أبوظبي؟",
+     "a_ar": "نعم، في مناطق الاستثمار المحددة في أبوظبي، حيث يحق للمشترين من أي جنسية التملك الحر منذ تعديل قانون التنظيم العقاري في الإمارة عام 2019. ومن هذه المناطق جزيرة السعديات وجزيرة ياس وجزيرة الريم وجزيرة الماريه وشاطئ الراحة ومدينة مصدر. أما خارجها فيقتصر التملك التام عمومًا على مواطني الدولة، لذا تحقق من وضع العقار على منصة «داري» قبل دفع أي عربون."
+    },
+    {
+     "q": "Can expats get a mortgage to buy in Abu Dhabi?",
+     "a": "Yes. Under Central Bank rules an expatriate buying a first home can borrow up to 80% of the value on a property up to AED 5 million and up to 70% above that, and up to 60% on a second or investment property. Home loans run for up to 25 years. An off-plan home can be financed only once 50% of the price has been paid, under ADREC's off-plan mortgage framework.",
+     "q_ar": "هل يمكن للمقيمين الأجانب الحصول على تمويل عقاري للشراء في أبوظبي؟",
+     "a_ar": "نعم. وفق قواعد المصرف المركزي يمكن للمقيم الأجنبي الذي يشتري منزله الأول اقتراض ما يصل إلى 80% من القيمة إذا كان سعر العقار حتى 5 ملايين درهم، و70% إذا تجاوزها، وما يصل إلى 60% للعقار الثاني أو الاستثماري. وتمتد القروض السكنية حتى 25 عامًا. ولا يمكن تمويل العقار على الخريطة إلا بعد سداد 50% من سعره، وفق إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة."
+    },
+    {
+     "q": "Do I need a UAE residence visa to buy property in Abu Dhabi?",
+     "a": "No. Non-residents can buy freehold property in Abu Dhabi's investment areas on their passport, and the transfer can be completed through DARI by an attorney if you cannot attend. Every buyer goes through identity and source-of-funds checks. Owning property worth AED 2 million or more can then make you eligible for the emirate's 10-year Golden Visa, which also covers your spouse and children.",
+     "q_ar": "هل أحتاج إلى تأشيرة إقامة إماراتية لشراء عقار في أبوظبي؟",
+     "a_ar": "لا. يمكن لغير المقيمين شراء عقار بنظام التملك الحر في مناطق الاستثمار في أبوظبي بجواز السفر، ويمكن إتمام نقل الملكية عبر منصة «داري» بواسطة وكيل إذا تعذّر حضورك. ويخضع كل مشترٍ للتحقق من الهوية ومصدر الأموال. وبعد ذلك قد يؤهلك تملّك عقار بقيمة 2 مليون درهم أو أكثر للإقامة الذهبية في الإمارة لمدة 10 سنوات، والتي تشمل الزوج والأبناء."
+    },
+    {
+     "q": "How do I check that a property listing in Abu Dhabi is genuine?",
+     "a": "Look for the listing's Madhmoun permit number. Since 7 July 2025 every property advert in Abu Dhabi must carry a permit issued by ADREC through DARI, granted only after the ownership, size and description are checked against the title deed, and the advert must show the broker's licence number. Properties under ADGM's jurisdiction, on Al Maryah and Al Reem islands, carry an ADGM advertising permit instead.",
+     "q_ar": "كيف أتحقق من أن إعلان العقار في أبوظبي حقيقي؟",
+     "a_ar": "ابحث عن رقم تصريح الإعلان الصادر عن مركز أبوظبي العقاري. فمنذ 7 يوليو 2025 يجب أن يحمل كل إعلان عقاري في أبوظبي تصريحًا يصدر عبر منصة «داري»، ولا يُمنح إلا بعد مطابقة الملكية والمساحة والوصف مع سند الملكية، كما يجب أن يظهر في الإعلان رقم ترخيص الوسيط. أما العقارات الخاضعة لاختصاص ADGM في جزيرتي الماريه والريم فتحمل تصريح إعلان صادرًا عن ADGM بدلًا من ذلك."
+    },
+    {
+     "q": "How long does it take to buy a property in Abu Dhabi?",
+     "a": "A cash resale purchase in Abu Dhabi usually takes a few weeks from agreed price to title deed. The slowest steps are clearing the seller's mortgage and getting the developer's no-objection certificate; the transfer itself is often completed on DARI within a few working days of submission. A mortgage adds the bank's approval and valuation, and an off-plan purchase completes only at handover.",
+     "q_ar": "كم يستغرق شراء عقار في أبوظبي؟",
+     "a_ar": "يستغرق شراء عقار إعادة بيع نقدًا في أبوظبي عادةً بضعة أسابيع من الاتفاق على السعر حتى صدور سند الملكية. وأبطأ الخطوات هي سداد رهن البائع والحصول على شهادة عدم الممانعة من المطوّر، أما نقل الملكية نفسه فيُنجز غالبًا عبر منصة «داري» خلال أيام عمل قليلة من تقديم الطلب. ويضيف التمويل العقاري مرحلتي موافقة البنك والتقييم، ولا يكتمل الشراء على الخريطة إلا عند التسليم."
+    },
+    {
+     "q": "Should I buy off-plan or ready property in Abu Dhabi?",
+     "a": "Buy ready if you need to live in the home or let it straight away; buy off-plan if you can wait for handover in exchange for paying in instalments during construction. Ready homes can be mortgaged at once, while off-plan payments go into the project's escrow account under Abu Dhabi Law No. 3 of 2015, as amended by Law No. 2 of 2025, and a bank can lend only after 50% is paid.",
+     "q_ar": "هل أشتري عقارًا على الخريطة أم عقارًا جاهزًا في أبوظبي؟",
+     "a_ar": "اشترِ عقارًا جاهزًا إذا كنت تحتاج إلى السكن فيه أو تأجيره فورًا، واشترِ على الخريطة إذا كان بإمكانك انتظار التسليم مقابل السداد على أقساط خلال الإنشاء. ويمكن تمويل المنزل الجاهز فورًا، أما دفعات العقار على الخريطة فتُودَع في حساب الضمان الخاص بالمشروع وفق قانون أبوظبي رقم 3 لسنة 2015 المعدّل بالقانون رقم 2 لسنة 2025، ولا يقرض البنك إلا بعد سداد 50%."
+    },
+    {
+     "q": "Can I get my money back if I cancel an off-plan purchase in Abu Dhabi?",
+     "a": "Partly, depending on how far construction has gone. Under DMT Decision No. 165 of 2025, a developer may keep a graduated share of the price when a buyer defaults, typically 10% in the early stages rising to 40% once the project is 60% to 100% complete, and must refund the rest within 15 working days. Where a buyer has paid 60% or more, ADREC decides each case.",
+     "q_ar": "هل يمكنني استرداد أموالي إذا ألغيت شراء عقار على الخريطة في أبوظبي؟",
+     "a_ar": "جزئيًا، وبحسب مرحلة الإنشاء. فوفق قرار دائرة البلديات والنقل رقم 165 لسنة 2025، يحق للمطوّر عند إخلال المشتري الاحتفاظ بنسبة متدرجة من السعر، تبلغ عادةً 10% في المراحل الأولى وترتفع إلى 40% عندما يبلغ الإنجاز من 60% إلى 100%، ويجب أن يردّ الباقي خلال 15 يوم عمل. أما إذا سدد المشتري 60% أو أكثر فيبتّ مركز أبوظبي العقاري في كل حالة على حدة."
+    },
+    {
+     "q": "What documents do I need to buy property in Abu Dhabi?",
+     "a": "A valid passport is the core document, plus an Emirates ID if you live in the UAE. Expect to show proof of funds or a bank's mortgage pre-approval, and to answer source-of-funds questions under anti-money-laundering rules. Buying through a company needs its trade licence, constitutional documents and a board resolution, and an attorney acting for you needs a registered power of attorney.",
+     "q_ar": "ما المستندات المطلوبة لشراء عقار في أبوظبي؟",
+     "a_ar": "المستند الأساسي هو جواز سفر ساري المفعول، إضافة إلى الهوية الإماراتية إذا كنت مقيمًا في الدولة. ويُتوقع أن تقدّم إثباتًا للأموال أو موافقة مبدئية من البنك على التمويل، وأن تجيب عن أسئلة مصدر الأموال وفق قواعد مكافحة غسل الأموال. ويتطلب الشراء باسم شركة رخصتها التجارية ووثائق تأسيسها وقرارًا من مجلس الإدارة، كما يحتاج الوكيل الذي ينوب عنك إلى وكالة مسجّلة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-consultation",
+   "name": "Property Consultation",
+   "route": "/services/consultation",
+   "pageSlug": "subpage/faq/service-consultation",
+   "sources": [
+    "page copy: pages master/consultation",
+    "rulebook.centralbank.ae — Regulations Regarding Mortgage Loans (LTV, tenor, DBR); early settlement fee cap",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "mediaoffice.abudhabi / wam.ae / thenationalnews.com — ADREC 2025 transactions",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025"
+   ],
+   "faq": [
+    {
+     "q": "Is a property consultation with Bazar free?",
+     "a": "Yes. Bazar's property consultation is free and carries no obligation to buy, sell or invest through us. You tell us what you are looking for in the form on this page, choosing buying, selling or investing, and a consultant contacts you to talk through locations, budget, projects, payment plans and the next step for your situation in Abu Dhabi.",
+     "q_ar": "هل الاستشارة العقارية مع بازار مجانية؟",
+     "a_ar": "نعم. الاستشارة العقارية لدى بازار مجانية ولا تُلزمك بالشراء أو البيع أو الاستثمار عبرنا. تخبرنا بما تبحث عنه من خلال النموذج في هذه الصفحة، مختارًا الشراء أو البيع أو الاستثمار، ثم يتواصل معك أحد المستشارين لمناقشة المواقع والميزانية والمشاريع وخطط الدفع والخطوة التالية المناسبة لوضعك في أبوظبي."
+    },
+    {
+     "q": "What should I prepare before a property consultation?",
+     "a": "Bring a budget range, how you plan to pay (cash or mortgage), your timeline, and whether the home is to live in or to let. Note the areas and property types you have in mind and whether you live in the UAE, because that shapes financing. If you are selling, have the title deed, any outstanding mortgage balance and the current tenancy details to hand.",
+     "q_ar": "ما الذي يجب أن أجهّزه قبل الاستشارة العقارية؟",
+     "a_ar": "جهّز نطاق ميزانيتك وطريقة الدفع (نقدًا أو بتمويل عقاري) وإطارك الزمني، وهل العقار للسكن أم للتأجير. ودوّن المناطق وأنواع العقارات التي تفكر فيها، وهل أنت مقيم في الدولة، لأن ذلك يؤثر في خيارات التمويل. وإذا كنت تبيع، فاحرص على أن يكون لديك سند الملكية ورصيد أي رهن قائم وتفاصيل عقد الإيجار الحالي."
+    },
+    {
+     "q": "How much deposit do I need to buy a home in Abu Dhabi?",
+     "a": "At least 20% of the price if you are an expatriate buying a first home worth up to AED 5 million with a mortgage, because the Central Bank caps such loans at 80% of value; above AED 5 million the minimum rises to 30%. On top of the deposit, budget 2% for the DARI registration fee and the bank's arrangement and valuation fees.",
+     "q_ar": "كم تبلغ الدفعة الأولى المطلوبة لشراء منزل في أبوظبي؟",
+     "a_ar": "لا تقل عن 20% من السعر إذا كنت مقيمًا أجنبيًا تشتري منزلك الأول بتمويل عقاري وقيمته حتى 5 ملايين درهم، لأن المصرف المركزي يحدد سقف هذه القروض عند 80% من القيمة، وفوق 5 ملايين درهم يرتفع الحد الأدنى إلى 30%. وإلى جانب الدفعة الأولى خصص 2% لرسم التسجيل عبر منصة «داري» ورسوم الترتيب والتقييم لدى البنك."
+    },
+    {
+     "q": "Should I buy or rent a home in Abu Dhabi in 2026?",
+     "a": "It depends mainly on how long you will stay. Buying costs about 2% in registration fees on top of the price, so it suits people planning to stay several years. Renting has become more predictable: since 2 June 2026 ADREC has held rent increases on renewal at 0% until further notice. A consultation compares the monthly cost of both for the homes you are considering.",
+     "q_ar": "هل أشتري منزلًا أم أستأجر في أبوظبي في عام 2026؟",
+     "a_ar": "يعتمد ذلك أساسًا على مدة بقائك. فالشراء يكلّف نحو 2% رسوم تسجيل فوق السعر، لذا يناسب من يخطط للبقاء عدة سنوات. أما الإيجار فأصبح أكثر استقرارًا: إذ ثبّت مركز أبوظبي العقاري منذ 2 يونيو 2026 نسبة الزيادة عند تجديد العقود عند 0% حتى إشعار آخر. وتقارن الاستشارة التكلفة الشهرية للخيارين في المنازل التي تفكر فيها."
+    },
+    {
+     "q": "Should I sell my Abu Dhabi property now or keep letting it?",
+     "a": "Compare what the property earns against what it would fetch. With ADREC holding renewal rent increases at 0% since 2 June 2026, rent from a sitting tenant will not rise for now, while sales demand has been strong: Abu Dhabi recorded AED 142 billion of property transactions in 2025, up 44%. A consultation sets your likely sale price against your net rental income.",
+     "q_ar": "هل أبيع عقاري في أبوظبي الآن أم أواصل تأجيره؟",
+     "a_ar": "قارن ما يدرّه العقار بما يمكن أن يحققه عند البيع. فمع تثبيت مركز أبوظبي العقاري زيادة الإيجار عند التجديد عند 0% منذ 2 يونيو 2026، لن يرتفع إيجار المستأجر الحالي في الوقت الراهن، بينما كان الطلب على الشراء قويًا: إذ سجّلت أبوظبي تصرفات عقارية بقيمة 142 مليار درهم في 2025 بارتفاع 44%. وتضع الاستشارة سعر البيع المتوقع مقابل صافي دخل الإيجار."
+    },
+    {
+     "q": "What is the difference between off-plan, ready and resale property?",
+     "a": "Off-plan property is bought from the developer before it is built and paid in instalments into an escrow account; ready property is completed and sold new by the developer; resale property is bought from an existing owner. A resale goes through DARI with the developer's no-objection certificate, and both ready and resale homes can be lived in or let as soon as they are transferred.",
+     "q_ar": "ما الفرق بين العقار على الخريطة والعقار الجاهز وعقار إعادة البيع؟",
+     "a_ar": "العقار على الخريطة يُشترى من المطوّر قبل بنائه ويُسدَّد على أقساط في حساب ضمان، والعقار الجاهز مكتمل ويبيعه المطوّر جديدًا، أما عقار إعادة البيع فيُشترى من مالك حالي. وتتم إعادة البيع عبر منصة «داري» مع شهادة عدم ممانعة من المطوّر، ويمكن السكن في العقار الجاهز وعقار إعادة البيع أو تأجيرهما فور نقل الملكية."
+    },
+    {
+     "q": "How much can I borrow for a home in Abu Dhabi?",
+     "a": "The bank works from two limits: the loan-to-value cap, up to 80% for an expatriate's first home worth up to AED 5 million, and the Central Bank rule that all monthly debt repayments together cannot exceed 50% of your income. The term can run up to 25 years. A consultation can model a budget, but the bank's own assessment decides the amount.",
+     "q_ar": "كم يمكنني اقتراضه لشراء منزل في أبوظبي؟",
+     "a_ar": "يعتمد البنك على حدّين: سقف نسبة القرض إلى القيمة، وهو حتى 80% للمنزل الأول للمقيم الأجنبي إذا كانت قيمته حتى 5 ملايين درهم، وقاعدة المصرف المركزي التي لا تسمح بأن تتجاوز أقساط جميع الديون الشهرية 50% من دخلك. ويمكن أن تمتد مدة القرض حتى 25 عامًا. وتساعدك الاستشارة على تقدير الميزانية، لكن تقييم البنك نفسه هو الذي يحدد المبلغ."
+    },
+    {
+     "q": "Is buying off-plan property in Abu Dhabi safe?",
+     "a": "Off-plan buyers in Abu Dhabi are protected by law, though no purchase is without risk. Payments must go into a project escrow account overseen by ADREC, and the developer normally cannot draw on it until at least 20% of construction is complete. Since Law No. 2 of 2025, developers also need a licence and an entry on ADREC's development register before selling.",
+     "q_ar": "هل شراء العقارات على الخريطة في أبوظبي آمن؟",
+     "a_ar": "يحمي القانون مشتري العقارات على الخريطة في أبوظبي، وإن لم يكن أي شراء خاليًا من المخاطر. إذ يجب إيداع الدفعات في حساب ضمان خاص بالمشروع يشرف عليه مركز أبوظبي العقاري، ولا يحق للمطوّر عادةً السحب منه قبل إنجاز 20% على الأقل من الإنشاء. ومنذ صدور القانون رقم 2 لسنة 2025 يحتاج المطوّرون أيضًا إلى ترخيص وقيد في سجل التطوير العقاري لدى المركز قبل البيع."
+    },
+    {
+     "q": "What questions should I ask before buying a property in Abu Dhabi?",
+     "a": "Ask whether the property is in an investment area open to your nationality, whether the advert carries a valid ADREC permit, what the annual service charge is and whether it has been approved, and when the developer will hand over. For off-plan, ask for the escrow account named in the agreement; for resale, ask whether there is a mortgage or a tenancy on the unit.",
+     "q_ar": "ما الأسئلة التي يجب طرحها قبل شراء عقار في أبوظبي؟",
+     "a_ar": "اسأل هل يقع العقار في منطقة استثمار مفتوحة لجنسيتك، وهل يحمل الإعلان تصريحًا ساريًا من مركز أبوظبي العقاري، وكم تبلغ رسوم الخدمات السنوية وهل اعتُمدت، ومتى سيسلّم المطوّر العقار. وفي العقار على الخريطة اطلب اسم حساب الضمان المذكور في العقد، وفي إعادة البيع اسأل هل يوجد رهن أو عقد إيجار قائم على الوحدة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-consulting",
+   "name": "Consulting",
+   "route": "/services/consulting",
+   "pageSlug": "subpage/faq/service-consulting",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "mediaoffice.abudhabi / wam.ae / thenationalnews.com — ADREC 2025 transactions",
+    "pwc.com / mof.gov.ae — Cabinet Decision No. 49 of 2023; FTA real estate guide (Oct 2024)",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "tamimi.com / chambers.com — musataha and usufruct terms",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)"
+   ],
+   "faq": [
+    {
+     "q": "Can I hire a property consultant in Abu Dhabi without buying or selling?",
+     "a": "Yes. Bazar's consulting is booked by the hour with a senior advisor and carries no commitment to a transaction. Owners, family offices, developers and institutions use it for questions such as how an area may perform over five years, whether a portfolio is exposed to handover risk, or how to approach an off-plan launch, and each session ends with a written memo of recommendations.",
+     "q_ar": "هل يمكنني الاستعانة بمستشار عقاري في أبوظبي دون شراء أو بيع؟",
+     "a_ar": "نعم. تُحجز استشارات بازار بالساعة مع مستشار أول، ولا تلزمك بأي صفقة. ويستخدمها الملّاك والمكاتب العائلية والمطوّرون والمؤسسات للإجابة عن أسئلة مثل أداء منطقة ما على مدى خمس سنوات، أو مدى تعرّض محفظة ما لمخاطر التسليم، أو كيفية التعامل مع إطلاق مشروع على الخريطة، وتنتهي كل جلسة بمذكرة مكتوبة بالتوصيات."
+    },
+    {
+     "q": "How big is the Abu Dhabi property market?",
+     "a": "Abu Dhabi recorded AED 142 billion of real estate transactions in 2025, up 44% on 2024, across 42,814 deals, according to the Abu Dhabi Real Estate Centre. Investment zones, where foreigners can own freehold, took AED 54.13 billion, or 72% of real estate investment, and foreign direct investment in property reached AED 8.2 billion, up 13%.",
+     "q_ar": "ما حجم سوق العقارات في أبوظبي؟",
+     "a_ar": "سجّلت أبوظبي تصرفات عقارية بقيمة 142 مليار درهم في 2025، بارتفاع 44% عن 2024، عبر 42,814 صفقة، بحسب مركز أبوظبي العقاري. واستحوذت مناطق الاستثمار، حيث يحق للأجانب التملك الحر، على 54.13 مليار درهم أي 72% من الاستثمار العقاري، وبلغ الاستثمار الأجنبي المباشر في العقارات 8.2 مليار درهم بارتفاع 13%."
+    },
+    {
+     "q": "Do companies pay corporate tax on Abu Dhabi rental income?",
+     "a": "Yes, a company does: UAE corporate tax is 9% on taxable income above AED 375,000, and rent earned by a company is part of that income. An individual who lets property in their own name, without a licence, is outside corporate tax under Cabinet Decision No. 49 of 2023. That difference is often the first question when a family office decides how to hold Abu Dhabi property.",
+     "q_ar": "هل تدفع الشركات ضريبة الشركات على دخل الإيجار في أبوظبي؟",
+     "a_ar": "نعم، تدفعها الشركة: فضريبة الشركات في الإمارات 9% على الدخل الخاضع للضريبة الذي يتجاوز 375,000 درهم، ويدخل الإيجار الذي تجنيه الشركة ضمن هذا الدخل. أما الفرد الذي يؤجر عقارًا باسمه دون ترخيص فلا يخضع لضريبة الشركات وفق قرار مجلس الوزراء رقم 49 لسنة 2023. وغالبًا ما يكون هذا الفرق أول سؤال حين يقرر مكتب عائلي طريقة تملّك العقارات في أبوظبي."
+    },
+    {
+     "q": "How does the 2026 rent freeze affect Abu Dhabi property investors?",
+     "a": "Rental income on existing tenancies is flat for now. On 2 June 2026 ADREC cut the permitted annual rent increase from 5% to 0% for residential, commercial and industrial renewals, until further notice and without retrospective effect. Properties under ADGM's own framework are outside the measure. Investors modelling Abu Dhabi yields should therefore assume no rental growth on sitting tenants while it lasts.",
+     "q_ar": "كيف يؤثر تجميد الإيجارات في 2026 على المستثمرين العقاريين في أبوظبي؟",
+     "a_ar": "يبقى دخل الإيجار من العقود القائمة ثابتًا في الوقت الحالي. ففي 2 يونيو 2026 خفّض مركز أبوظبي العقاري نسبة الزيادة السنوية المسموح بها في الإيجار من 5% إلى 0% عند تجديد العقود السكنية والتجارية والصناعية، حتى إشعار آخر ودون أثر رجعي. ولا يشمل القرار العقارات الخاضعة لإطار ADGM الخاص. لذا ينبغي للمستثمرين عند تقدير العوائد في أبوظبي افتراض عدم نمو الإيجار من المستأجرين الحاليين ما دام القرار ساريًا."
+    },
+    {
+     "q": "What changed for jointly owned buildings in Abu Dhabi in 2025?",
+     "a": "Three DMT decisions in 2025 tightened how shared buildings are run. Management companies must be ADREC-accredited and appointed within 30 days of the first unit's delivery; service charges need approval and are paid monthly or quarterly rather than in one sum; and an owners' committee of 5 to 9 owners forms once 30% of units are registered to different owners, with developers excluded.",
+     "q_ar": "ما الذي تغيّر بالنسبة للمباني المشتركة الملكية في أبوظبي في 2025؟",
+     "a_ar": "شدّدت ثلاثة قرارات صادرة عن دائرة البلديات والنقل في 2025 قواعد إدارة المباني المشتركة. إذ يجب أن تكون شركات الإدارة معتمدة من مركز أبوظبي العقاري وأن تُعيَّن خلال 30 يومًا من تسليم أول وحدة، وتحتاج رسوم الخدمات إلى اعتماد وتُدفع شهريًا أو كل ثلاثة أشهر لا دفعة واحدة، وتُشكَّل لجنة ملّاك من 5 إلى 9 أعضاء متى سُجّلت 30% من الوحدات لملّاك مختلفين، ولا يكون المطوّر عضوًا فيها."
+    },
+    {
+     "q": "What is the difference between freehold, musataha and usufruct in Abu Dhabi?",
+     "a": "Freehold is outright ownership with no time limit. Musataha is the right to build on and use someone else's land for up to 50 years, renewable, and usufruct is the right to use and earn from a property for up to 99 years. In Abu Dhabi's investment areas foreigners can hold all three; a holder of a right longer than ten years can usually mortgage it.",
+     "q_ar": "ما الفرق بين التملك الحر وحق المساطحة وحق الانتفاع في أبوظبي؟",
+     "a_ar": "التملك الحر ملكية تامة دون مدة محددة. أما المساطحة فهي حق البناء على أرض مملوكة للغير والانتفاع بها لمدة تصل إلى 50 عامًا قابلة للتجديد، وحق الانتفاع هو حق استعمال العقار واستغلاله لمدة تصل إلى 99 عامًا. وفي مناطق الاستثمار في أبوظبي يمكن للأجانب الحصول على الحقوق الثلاثة، ويحق عادةً لصاحب الحق الذي تتجاوز مدته عشر سنوات رهنه."
+    },
+    {
+     "q": "Where can I find official property data for Abu Dhabi?",
+     "a": "The Abu Dhabi Real Estate Centre is the primary source: it publishes transaction values and volumes, an annual market report and quarterly updates, and DARI holds the registered sales, mortgages and leases behind them. Verified listings carry an ADREC permit. Portal asking prices and broker reports are useful context but measure offers, not completed deals, which is why a consulting memo cites both.",
+     "q_ar": "أين أجد بيانات عقارية رسمية عن أبوظبي؟",
+     "a_ar": "مركز أبوظبي العقاري هو المصدر الأساسي، إذ ينشر قيم التصرفات وأعدادها وتقريرًا سنويًا عن السوق وتحديثات ربع سنوية، وتضم منصة «داري» عمليات البيع والرهن والإيجار المسجّلة التي تستند إليها هذه الأرقام. وتحمل الإعلانات الموثّقة تصريحًا من المركز. أما أسعار العرض في المواقع العقارية وتقارير الوسطاء فهي سياق مفيد لكنها تقيس العروض لا الصفقات المنجزة، ولذلك تستشهد مذكرة الاستشارة بكليهما."
+    },
+    {
+     "q": "Can a developer test pricing before an Abu Dhabi launch?",
+     "a": "Yes, within the rules on marketing. A developer must hold an ADREC licence and register the project before selling, and any off-plan advert needs an ADREC advertising permit, so price testing usually happens in private briefings rather than public adverts. A consulting session can stress-test the payment plan and price points against competing launches before the project goes to market.",
+     "q_ar": "هل يمكن للمطوّر اختبار الأسعار قبل إطلاق مشروع في أبوظبي؟",
+     "a_ar": "نعم، في حدود قواعد التسويق. إذ يجب أن يحمل المطوّر ترخيصًا من مركز أبوظبي العقاري وأن يسجّل المشروع قبل البيع، ويحتاج أي إعلان عن عقار على الخريطة إلى تصريح إعلان من المركز، لذا يُجرى اختبار الأسعار عادةً في لقاءات خاصة لا في إعلانات عامة. ويمكن لجلسة استشارية اختبار خطة الدفع ونقاط السعر مقابل المشاريع المنافسة قبل طرح المشروع في السوق."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-conveyancing",
+   "name": "Conveyancing",
+   "route": "/services/conveyancing",
+   "pageSlug": "subpage/faq/service-conveyancing",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "rulebook.centralbank.ae — Regulations Regarding Mortgage Loans (LTV, tenor, DBR); early settlement fee cap",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "propertyfinder.ae / khaleejtimes.com / bayut.com — Tawtheeq registration"
+   ],
+   "faq": [
+    {
+     "q": "What is conveyancing in Abu Dhabi?",
+     "a": "Conveyancing is the legal and administrative work of moving a property from seller to buyer. In Abu Dhabi it means checking the title deed and any mortgage on DARI, preparing the sale and purchase agreement, obtaining the developer's no-objection certificate and service-charge clearance, settling the seller's loan, and completing the transfer through DARI so the Abu Dhabi Real Estate Centre issues a title deed in the buyer's name.",
+     "q_ar": "ما المقصود بإجراءات نقل الملكية العقارية في أبوظبي؟",
+     "a_ar": "إجراءات نقل الملكية هي العمل القانوني والإداري لنقل العقار من البائع إلى المشتري. وفي أبوظبي تشمل التحقق من سند الملكية وأي رهن عليه عبر منصة «داري»، وإعداد عقد البيع والشراء، والحصول على شهادة عدم الممانعة من المطوّر وبراءة ذمة رسوم الخدمات، وسداد قرض البائع، ثم إتمام النقل عبر «داري» ليصدر مركز أبوظبي العقاري سند الملكية باسم المشتري."
+    },
+    {
+     "q": "Do I need a lawyer to transfer property in Abu Dhabi?",
+     "a": "No, the law does not require one: buyers and sellers can complete a transfer themselves through DARI. Most use a conveyancer or lawyer because the transfer depends on documents from several parties, including the developer's no-objection certificate, the seller's bank and, where there is one, the buyer's lender. Anyone who brokers the deal must hold an ADREC licence.",
+     "q_ar": "هل أحتاج إلى محامٍ لنقل ملكية عقار في أبوظبي؟",
+     "a_ar": "لا، فالقانون لا يشترط ذلك، ويمكن للبائع والمشتري إتمام النقل بأنفسهما عبر منصة «داري». لكن معظمهم يستعينون بمختص في نقل الملكية أو بمحامٍ، لأن النقل يعتمد على مستندات من عدة أطراف، منها شهادة عدم الممانعة من المطوّر وبنك البائع والجهة الممولة للمشتري إن وُجدت. ويجب أن يحمل كل من يتوسط في الصفقة ترخيصًا من مركز أبوظبي العقاري."
+    },
+    {
+     "q": "What are the property transfer fees in Abu Dhabi?",
+     "a": "The Abu Dhabi registration fee is 2% of the price, paid through DARI when ownership transfers; on a AED 2,500,000 villa that is AED 50,000. Who pays it is set in the sale agreement, and it is commonly the buyer. A mortgaged sale adds the seller's early settlement fee, capped by the Central Bank at 1% of the outstanding loan or AED 10,000, whichever is lower.",
+     "q_ar": "كم تبلغ رسوم نقل ملكية العقار في أبوظبي؟",
+     "a_ar": "رسم التسجيل في أبوظبي 2% من السعر، ويُدفع عبر منصة «داري» عند نقل الملكية، أي 50,000 درهم على فيلا سعرها 2,500,000 درهم. ويحدد عقد البيع من يدفعه، وغالبًا ما يدفعه المشتري. وفي بيع عقار مرهون تضاف رسوم السداد المبكر على البائع، التي حدد المصرف المركزي سقفها عند 1% من رصيد القرض أو 10,000 درهم، أيهما أقل."
+    },
+    {
+     "q": "How do you sell a mortgaged property in Abu Dhabi?",
+     "a": "The seller's bank issues a liability letter showing the amount needed to clear the loan; that sum is paid from the buyer's funds or new mortgage on transfer day, and the bank releases the mortgage on DARI so ownership can pass. The buyer's bank, if there is one, registers its own mortgage at the same time, and the seller pays the early settlement fee.",
+     "q_ar": "كيف يُباع عقار مرهون في أبوظبي؟",
+     "a_ar": "يصدر بنك البائع خطاب مديونية يحدد المبلغ اللازم لسداد القرض، ويُسدَّد هذا المبلغ من أموال المشتري أو من تمويله الجديد يوم النقل، ثم يفك البنك الرهن على منصة «داري» لتنتقل الملكية. وإذا كان للمشتري تمويل، يسجّل بنكه رهنه في الوقت نفسه، ويتحمّل البائع رسوم السداد المبكر."
+    },
+    {
+     "q": "What is a no-objection certificate when selling in Abu Dhabi?",
+     "a": "A no-objection certificate, or NOC, is the developer's or master community's confirmation that it has no objection to the sale, usually issued once service charges and any amounts owed on the unit are paid. DARI will not complete a transfer without it. For an off-plan unit sold before handover, the developer's NOC also confirms how much of the price has been paid.",
+     "q_ar": "ما شهادة عدم الممانعة عند البيع في أبوظبي؟",
+     "a_ar": "شهادة عدم الممانعة هي تأكيد من المطوّر أو من إدارة المجتمع الرئيسي بأنه لا يمانع في البيع، وتصدر عادةً بعد سداد رسوم الخدمات وأي مبالغ مستحقة على الوحدة. ولا تُتم منصة «داري» نقل الملكية من دونها. وفي الوحدة على الخريطة التي تُباع قبل التسليم، تؤكد شهادة المطوّر أيضًا المبلغ المسدَّد من السعر."
+    },
+    {
+     "q": "How long does a property transfer take in Abu Dhabi?",
+     "a": "Once every document is in place, a transfer is often completed on DARI within a few working days, and the title deed is issued electronically. Most of the time is spent before that: collecting the developer's no-objection certificate, the bank's liability letter and the buyer's mortgage approval. A conveyancer's job is to have those ready together so the transfer is not held up.",
+     "q_ar": "كم يستغرق نقل ملكية العقار في أبوظبي؟",
+     "a_ar": "بعد اكتمال جميع المستندات، يُنجز النقل غالبًا عبر منصة «داري» خلال أيام عمل قليلة، ويصدر سند الملكية إلكترونيًا. ويُستغرق معظم الوقت قبل ذلك في جمع شهادة عدم الممانعة من المطوّر وخطاب المديونية من البنك وموافقة البنك على تمويل المشتري. ومهمة مختص نقل الملكية تجهيز هذه المستندات معًا حتى لا يتأخر النقل."
+    },
+    {
+     "q": "Can I complete a property transfer in Abu Dhabi from abroad?",
+     "a": "Yes. A buyer or seller who cannot attend can appoint an attorney under a power of attorney, which must be notarised and, if signed outside the UAE, legalised and attested before DARI will accept it. Many DARI services also run online with UAE Pass for people who have one, so a non-resident can often complete the sale without travelling.",
+     "q_ar": "هل يمكنني إتمام نقل ملكية عقار في أبوظبي من الخارج؟",
+     "a_ar": "نعم. يمكن للمشتري أو البائع الذي يتعذّر حضوره تعيين وكيل بموجب وكالة، يجب توثيقها، وإذا وُقّعت خارج الدولة فيجب تصديقها واعتمادها قبل أن تقبلها منصة «داري». كما تُقدَّم كثير من خدمات «داري» إلكترونيًا عبر الهوية الرقمية لمن يملكها، لذا يمكن لغير المقيم غالبًا إتمام البيع دون السفر."
+    },
+    {
+     "q": "What checks should be done before signing a sale agreement in Abu Dhabi?",
+     "a": "Confirm on DARI that the seller is the registered owner and whether the property is mortgaged, check that the plot is in an investment area if the buyer is not a UAE national, and ask the developer for the service-charge position. If a tenant is in place, read the registered Tawtheeq lease, because the tenancy normally continues after the sale.",
+     "q_ar": "ما الفحوصات الواجبة قبل توقيع عقد البيع في أبوظبي؟",
+     "a_ar": "تأكد عبر منصة «داري» من أن البائع هو المالك المسجّل، ومما إذا كان العقار مرهونًا، وتحقق من وقوع الأرض في منطقة استثمار إذا لم يكن المشتري مواطنًا إماراتيًا، واطلب من المطوّر بيان وضع رسوم الخدمات. وإذا كان في العقار مستأجر فاقرأ عقد الإيجار المسجّل في نظام «توثيق»، لأن الإيجار يستمر عادةً بعد البيع."
+    },
+    {
+     "q": "Is a sale agreement deposit protected in Abu Dhabi?",
+     "a": "Only as far as the agreement protects it. Abu Dhabi law sets no fixed deposit for a resale, so the amount, who holds it and when it is forfeited are terms of the sale and purchase agreement. Buyers commonly pay a deposit on signing, held by the agent or a third party until transfer. For off-plan, every payment must go into the project's escrow account.",
+     "q_ar": "هل العربون في عقد البيع محمي في أبوظبي؟",
+     "a_ar": "بالقدر الذي ينص عليه العقد فقط. فقانون أبوظبي لا يحدد عربونًا ثابتًا في إعادة البيع، لذا فإن قيمته ومن يحتفظ به ومتى يُصادَر كلها من شروط عقد البيع والشراء. وعادةً ما يدفع المشتري عربونًا عند التوقيع يحتفظ به الوسيط أو طرف ثالث حتى النقل. أما في العقار على الخريطة فيجب إيداع كل دفعة في حساب الضمان الخاص بالمشروع."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-developer",
+   "name": "Developer services",
+   "route": "/services/developer",
+   "pageSlug": "subpage/faq/service-developer",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "tamimi.com — Abu Dhabi strata/real estate law: 10-year structural, one-year installations",
+    "gulfnews.com — ADREC off-plan mortgage framework (50%), first mortgage Sept 2026 (Wave 2)",
+    "mediaoffice.abudhabi / wam.ae / thenationalnews.com — ADREC 2025 transactions"
+   ],
+   "faq": [
+    {
+     "q": "What licence does a real estate developer need in Abu Dhabi?",
+     "a": "A developer must hold a licence from the competent department and be entered on the Real Estate Development Register before it operates, under Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025, in force since 2 August 2025. Each off-plan project is then registered with ADREC, with its own escrow account, before units can be sold.",
+     "q_ar": "ما الترخيص الذي يحتاجه المطوّر العقاري في أبوظبي؟",
+     "a_ar": "يجب أن يحمل المطوّر ترخيصًا من الجهة المختصة وأن يُقيَّد في سجل التطوير العقاري قبل مزاولة نشاطه، وفق قانون أبوظبي رقم 3 لسنة 2015 المعدّل بالقانون رقم 2 لسنة 2025، النافذ منذ 2 أغسطس 2025. ثم يُسجَّل كل مشروع على الخريطة لدى مركز أبوظبي العقاري مع حساب ضمان خاص به قبل بيع وحداته."
+    },
+    {
+     "q": "When can an Abu Dhabi developer draw on escrow funds?",
+     "a": "Normally only once at least 20% of construction is complete, and then against certified progress. Under DMT Decision No. 24 of 2025, ADREC can approve earlier drawdowns if the developer lodges an unconditional, irrevocable bank bond for at least 20% of construction cost and has been registered in Abu Dhabi for at least 4 years with at least 3 projects completed on time.",
+     "q_ar": "متى يحق للمطوّر في أبوظبي السحب من أموال حساب الضمان؟",
+     "a_ar": "عادةً بعد إنجاز 20% على الأقل من الإنشاء فقط، ثم وفق التقدّم المعتمد. وبموجب قرار دائرة البلديات والنقل رقم 24 لسنة 2025، يمكن لمركز أبوظبي العقاري الموافقة على سحوبات أبكر إذا قدّم المطوّر كفالة بنكية غير مشروطة وغير قابلة للإلغاء لا تقل عن 20% من تكلفة الإنشاء، وكان مسجّلًا في أبوظبي منذ 4 سنوات على الأقل وأنجز 3 مشاريع على الأقل في مواعيدها."
+    },
+    {
+     "q": "Can a developer advertise an off-plan project in Abu Dhabi before registering it?",
+     "a": "No. Every property advert in Abu Dhabi, off-plan included, needs a Madhmoun permit issued by ADREC through DARI, and the regulator has suspended developers for promoting unlicensed projects. That is why a private soft launch to a curated buyer group is run as briefings, with the project's licence and escrow details shared, rather than as public marketing ahead of registration.",
+     "q_ar": "هل يمكن للمطوّر الإعلان عن مشروع على الخريطة في أبوظبي قبل تسجيله؟",
+     "a_ar": "لا. يحتاج كل إعلان عقاري في أبوظبي، بما في ذلك مشاريع الخريطة، إلى تصريح يصدره مركز أبوظبي العقاري عبر منصة «داري»، وقد علّقت الجهة التنظيمية نشاط مطوّرين لترويجهم مشاريع غير مرخّصة. ولهذا يُدار الإطلاق التمهيدي الخاص لمجموعة مختارة من المشترين في صورة لقاءات تعريفية تُعرض فيها بيانات ترخيص المشروع وحساب الضمان، لا في صورة تسويق عام قبل التسجيل."
+    },
+    {
+     "q": "What happens when an off-plan buyer defaults in Abu Dhabi?",
+     "a": "DMT Decision No. 165 of 2025 sets the rules. A developer may keep a graduated share of the price depending on progress, typically 10% early on rising to 40% when the project is 60% to 100% complete, and must refund the balance within 15 working days. Where the buyer has paid 60% or more, ADREC decides the retention case by case.",
+     "q_ar": "ماذا يحدث عند إخلال مشتري العقار على الخريطة في أبوظبي؟",
+     "a_ar": "يحدد قرار دائرة البلديات والنقل رقم 165 لسنة 2025 القواعد. إذ يحق للمطوّر الاحتفاظ بنسبة متدرجة من السعر بحسب نسبة الإنجاز، تبلغ عادةً 10% في البداية وترتفع إلى 40% عندما يبلغ الإنجاز من 60% إلى 100%، ويجب أن يردّ الباقي خلال 15 يوم عمل. أما إذا سدد المشتري 60% أو أكثر فيبتّ مركز أبوظبي العقاري في نسبة الاحتفاظ لكل حالة على حدة."
+    },
+    {
+     "q": "How long is a developer liable for defects in Abu Dhabi?",
+     "a": "Under Abu Dhabi Law No. 3 of 2015, a developer remains liable for structural defects for 10 years from the completion certificate and must repair or replace defective building installations for one year. Since 2025, a developer is also liable for two years from transfer for materially inaccurate or incomplete off-plan disclosures, under DMT Decision No. 25 of 2025.",
+     "q_ar": "ما مدة مسؤولية المطوّر عن العيوب في أبوظبي؟",
+     "a_ar": "وفق قانون أبوظبي رقم 3 لسنة 2015، يبقى المطوّر مسؤولًا عن العيوب الإنشائية لمدة 10 سنوات من تاريخ شهادة الإنجاز، ويلتزم بإصلاح التركيبات المعيبة في المبنى أو استبدالها لمدة سنة واحدة. ومنذ 2025 أصبح المطوّر مسؤولًا أيضًا لمدة سنتين من تاريخ النقل عن أي إفصاحات جوهرية غير دقيقة أو ناقصة بشأن البيع على الخريطة، وفق قرار دائرة البلديات والنقل رقم 25 لسنة 2025."
+    },
+    {
+     "q": "Can buyers get a mortgage on an off-plan project in Abu Dhabi?",
+     "a": "Yes, once they have paid 50% of the price, under ADREC's off-plan mortgage framework; Abu Dhabi's first such mortgage was completed in September 2026. For a developer this matters to the payment plan: a plan that reaches 50% during construction lets buyers finance the balance due on handover, which widens the pool beyond cash buyers.",
+     "q_ar": "هل يمكن للمشترين الحصول على تمويل عقاري لمشروع على الخريطة في أبوظبي؟",
+     "a_ar": "نعم، بعد سداد 50% من السعر، وفق إطار مركز أبوظبي العقاري لتمويل العقارات على الخريطة، وقد أُتمّ أول رهن من هذا النوع في أبوظبي في سبتمبر 2026. ويهم ذلك المطوّر عند تصميم خطة الدفع: فالخطة التي تبلغ 50% خلال الإنشاء تتيح للمشترين تمويل الرصيد المستحق عند التسليم، ما يوسّع شريحة المشترين إلى ما هو أبعد من المشترين نقدًا."
+    },
+    {
+     "q": "Who manages a building after an Abu Dhabi developer hands over?",
+     "a": "An ADREC-accredited management company, which must be appointed within 30 days of the first unit's delivery under DMT Decision No. 25 of 2025 and report to ADREC every six months. Once 30% of units are registered to different owners, an owners' committee forms to oversee budgets and the management company; the developer cannot sit on it, even for unsold units.",
+     "q_ar": "من يدير المبنى بعد أن يسلّمه المطوّر في أبوظبي؟",
+     "a_ar": "تديره شركة إدارة معتمدة من مركز أبوظبي العقاري، يجب تعيينها خلال 30 يومًا من تسليم أول وحدة وفق قرار دائرة البلديات والنقل رقم 25 لسنة 2025، وترفع تقاريرها إلى المركز كل ستة أشهر. ومتى سُجّلت 30% من الوحدات لملّاك مختلفين تُشكَّل لجنة ملّاك تشرف على الموازنات وعلى شركة الإدارة، ولا يحق للمطوّر عضويتها حتى عن الوحدات غير المبيعة."
+    },
+    {
+     "q": "How much off-plan property sells in Abu Dhabi each year?",
+     "a": "Abu Dhabi's property market recorded AED 142 billion of transactions in 2025, up 44% on 2024, across 42,814 deals, according to ADREC. Investment zones, where most branded and waterfront launches sit and foreigners can own freehold, accounted for AED 54.13 billion, or 72% of real estate investment, which is the buyer pool a pre-launch channel draws on.",
+     "q_ar": "ما حجم مبيعات العقارات على الخريطة في أبوظبي سنويًا؟",
+     "a_ar": "سجّل سوق العقارات في أبوظبي تصرفات بقيمة 142 مليار درهم في 2025، بارتفاع 44% عن 2024، عبر 42,814 صفقة، بحسب مركز أبوظبي العقاري. واستحوذت مناطق الاستثمار، حيث تقع معظم المشاريع ذات العلامات التجارية والمشاريع الساحلية ويحق للأجانب التملك الحر، على 54.13 مليار درهم أي 72% من الاستثمار العقاري، وهي شريحة المشترين التي تستهدفها قناة ما قبل الإطلاق."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-handover",
+   "name": "Handover support",
+   "route": "/services/handover",
+   "pageSlug": "subpage/faq/service-handover",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "tamimi.com — Abu Dhabi strata/real estate law: 10-year structural, one-year installations",
+    "wam.ae / khaleejtimes.com — TAQA Distribution replaces ADDC/AADC (Jan 2025)",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "gulfnews.com — ADREC off-plan mortgage framework (50%), first mortgage Sept 2026 (Wave 2)",
+    "adro.gov.ae — Abu Dhabi Golden Visa, real-estate investors"
+   ],
+   "faq": [
+    {
+     "q": "What happens at property handover in Abu Dhabi?",
+     "a": "At handover the developer asks you to pay the final instalment due under the sale agreement, inspect the unit and sign the handover documents, then releases the keys and access cards. Ownership moves from the off-plan register to the real estate register on DARI and a title deed is issued in your name, after which you open utility accounts and register with the community.",
+     "q_ar": "ماذا يحدث عند استلام العقار في أبوظبي؟",
+     "a_ar": "عند الاستلام يطلب منك المطوّر سداد القسط الأخير المستحق بموجب عقد البيع، ومعاينة الوحدة، وتوقيع مستندات الاستلام، ثم يسلّمك المفاتيح وبطاقات الدخول. وتنتقل الملكية من سجل البيع على الخريطة إلى السجل العقاري على منصة «داري» ويصدر سند ملكية باسمك، وبعد ذلك تفتح حسابات المرافق وتسجّل لدى إدارة المجتمع."
+    },
+    {
+     "q": "How do I get a title deed for an off-plan property in Abu Dhabi?",
+     "a": "Once the project is complete and the price is paid, the developer applies on DARI to move your unit from the off-plan, or interim, register to the real estate register, and ADREC issues the title deed. If you financed the balance, your bank's mortgage is registered at the same step. Until then your proof of ownership is the off-plan registration of your purchase.",
+     "q_ar": "كيف أحصل على سند ملكية لعقار على الخريطة في أبوظبي؟",
+     "a_ar": "بعد اكتمال المشروع وسداد السعر، يتقدّم المطوّر بطلب عبر منصة «داري» لنقل وحدتك من سجل البيع على الخريطة، أو السجل المبدئي، إلى السجل العقاري، فيصدر مركز أبوظبي العقاري سند الملكية. وإذا موّلت الرصيد يُسجَّل رهن البنك في الخطوة نفسها. وإلى ذلك الحين يكون إثبات ملكيتك هو تسجيل الشراء في سجل البيع على الخريطة."
+    },
+    {
+     "q": "How do I connect electricity and water in a new Abu Dhabi home?",
+     "a": "Open an account with TAQA Distribution, the company that took over from ADDC and AADC in January 2025 and now supplies electricity and water across the emirate, using your title deed or tenancy contract and Emirates ID. Many towers and communities also have a separate district cooling provider, and internet is arranged with e& or du.",
+     "q_ar": "كيف أوصل الكهرباء والمياه في منزل جديد في أبوظبي؟",
+     "a_ar": "افتح حسابًا لدى «طاقة للتوزيع»، الشركة التي حلّت محل شركتي أبوظبي والعين للتوزيع في يناير 2025 وتزوّد الإمارة كلها بالكهرباء والمياه، مستخدمًا سند الملكية أو عقد الإيجار والهوية الإماراتية. ولدى كثير من الأبراج والمجتمعات مزوّد منفصل لخدمة التبريد المركزي، أما الإنترنت فيُرتَّب مع اتصالات أو دو."
+    },
+    {
+     "q": "Should I inspect the property before accepting handover in Abu Dhabi?",
+     "a": "Yes. Inspect before you sign, ideally with an independent snagging inspector, and list every defect in writing so the developer fixes it under the sale agreement. Signing does not end the developer's duty: under Abu Dhabi Law No. 3 of 2015, defective installations must be repaired or replaced for one year and structural defects remain its responsibility for 10 years from the completion certificate.",
+     "q_ar": "هل ينبغي فحص العقار قبل قبول الاستلام في أبوظبي؟",
+     "a_ar": "نعم. افحص العقار قبل التوقيع، ويُفضَّل أن يكون ذلك مع مفتش مستقل، ودوّن كل عيب كتابيًا ليصلحه المطوّر وفق عقد البيع. ولا ينهي التوقيع التزام المطوّر: فبموجب قانون أبوظبي رقم 3 لسنة 2015 يجب إصلاح التركيبات المعيبة أو استبدالها لمدة سنة واحدة، وتبقى العيوب الإنشائية من مسؤوليته لمدة 10 سنوات من تاريخ شهادة الإنجاز."
+    },
+    {
+     "q": "Do I pay service charges from handover in Abu Dhabi?",
+     "a": "Yes. Service charges usually start from the handover date, and the developer may ask for the first period before releasing the keys. Since DMT Decision No. 25 of 2025, charges must be approved, are paid in monthly or quarterly instalments rather than one annual sum, and the building's management company must be ADREC-accredited and appointed within 30 days of the first unit's delivery.",
+     "q_ar": "هل أدفع رسوم الخدمات من تاريخ الاستلام في أبوظبي؟",
+     "a_ar": "نعم. تبدأ رسوم الخدمات عادةً من تاريخ الاستلام، وقد يطلب المطوّر سداد الفترة الأولى قبل تسليم المفاتيح. ومنذ قرار دائرة البلديات والنقل رقم 25 لسنة 2025 يجب أن تكون الرسوم معتمدة، وتُدفع على أقساط شهرية أو ربع سنوية لا دفعة سنوية واحدة، ويجب أن تكون شركة إدارة المبنى معتمدة من مركز أبوظبي العقاري وأن تُعيَّن خلال 30 يومًا من تسليم أول وحدة."
+    },
+    {
+     "q": "Can I take handover of an Abu Dhabi property without being in the UAE?",
+     "a": "Yes. You can appoint someone under a power of attorney, notarised and, if signed abroad, legalised and attested, to pay the final instalment, inspect the unit, sign the handover documents and collect the keys. The title deed is issued electronically on DARI, and utility and community accounts can be opened by your representative, which is the service Bazar's handover desk provides.",
+     "q_ar": "هل يمكنني استلام عقار في أبوظبي دون التواجد في الإمارات؟",
+     "a_ar": "نعم. يمكنك تعيين وكيل بموجب وكالة موثّقة، وإذا وُقّعت في الخارج فيجب تصديقها واعتمادها، ليتولى سداد القسط الأخير ومعاينة الوحدة وتوقيع مستندات الاستلام واستلام المفاتيح. ويصدر سند الملكية إلكترونيًا عبر منصة «داري»، ويمكن لممثلك فتح حسابات المرافق والمجتمع، وهي الخدمة التي يقدمها مكتب الاستلام لدى بازار."
+    },
+    {
+     "q": "Can I get a mortgage to pay the handover instalment in Abu Dhabi?",
+     "a": "Yes, and it is the most common use of an off-plan mortgage. Under ADREC's framework a bank can lend once 50% of the price has been paid, so on a plan with half or more paid before completion the bank can finance the handover balance, subject to its own valuation and your eligibility. Apply a few months before the handover notice to avoid late-payment charges.",
+     "q_ar": "هل يمكنني الحصول على تمويل عقاري لسداد دفعة الاستلام في أبوظبي؟",
+     "a_ar": "نعم، وهذا أكثر استخدامات تمويل العقارات على الخريطة شيوعًا. فوفق إطار مركز أبوظبي العقاري يمكن للبنك الإقراض بعد سداد 50% من السعر، لذا ففي الخطط التي يُسدَّد فيها النصف أو أكثر قبل الإنجاز يستطيع البنك تمويل رصيد الاستلام، رهنًا بتقييمه وأهليتك. وتقدّم بالطلب قبل إشعار الاستلام ببضعة أشهر لتجنّب رسوم التأخير."
+    },
+    {
+     "q": "Can I apply for a Golden Visa after handover in Abu Dhabi?",
+     "a": "Yes, and often before it. Abu Dhabi's 10-year Golden Visa needs property worth at least AED 2 million: for an off-plan unit the developer must confirm at least AED 2 million has been paid, and once a mortgage is registered at handover your own equity, the value minus the loan, must still be at least AED 2 million.",
+     "q_ar": "هل يمكنني التقدّم للإقامة الذهبية بعد استلام العقار في أبوظبي؟",
+     "a_ar": "نعم، وغالبًا قبل الاستلام. إذ تتطلب الإقامة الذهبية في أبوظبي لمدة 10 سنوات عقارًا لا تقل قيمته عن 2 مليون درهم: ففي الوحدة على الخريطة يجب أن يؤكد المطوّر سداد 2 مليون درهم على الأقل، وبعد تسجيل الرهن عند الاستلام يجب أن تبقى حصتك، أي القيمة مطروحًا منها القرض، 2 مليون درهم على الأقل."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-interior-design",
+   "name": "Interior design & furnishing",
+   "route": "/services/interior-design",
+   "pageSlug": "subpage/faq/service-interior-design",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "dmt.gov.ae — regulatory decisions; minor works permits (29 Aug 2025)",
+    "tamimi.com — Abu Dhabi strata/real estate law: 10-year structural, one-year installations",
+    "tax.gov.ae — UAE VAT on real estate",
+    "gulfnews.com / khaleejtimes.com / dct.gov.ae — Abu Dhabi holiday home licensing",
+    "wam.ae / khaleejtimes.com — TAQA Distribution replaces ADDC/AADC (Jan 2025)"
+   ],
+   "faq": [
+    {
+     "q": "Do I need a permit to renovate a home in Abu Dhabi?",
+     "a": "For many works, yes, but the process is now simpler. Since August 2025 the Department of Municipalities and Transport lets contractors obtain approvals directly for minor works on homes, villas and holiday homes, including non-structural interior changes, interior finishes, extensions up to 25 sq m, pools and shade structures. Decorating and furnishing alone do not need a municipal permit.",
+     "q_ar": "هل أحتاج إلى تصريح لتجديد منزل في أبوظبي؟",
+     "a_ar": "في كثير من الأعمال نعم، لكن الإجراءات أصبحت أبسط. فمنذ أغسطس 2025 تتيح دائرة البلديات والنقل للمقاولين الحصول على الموافقات مباشرة للأعمال البسيطة في المنازل والفلل وبيوت العطلات، ومنها التعديلات الداخلية غير الإنشائية والتشطيبات الداخلية والتوسعات حتى 25 مترًا مربعًا وأحواض السباحة والمظلات. أما الديكور والتأثيث وحدهما فلا يحتاجان إلى تصريح بلدي."
+    },
+    {
+     "q": "Do I need the developer's approval for interior changes in an Abu Dhabi apartment?",
+     "a": "Usually yes, for anything beyond furniture and decoration. Work that touches walls, plumbing, electrics, air conditioning, fire systems or the façade normally needs written approval from the building's management company or master developer, and fire-system changes need Civil Defence sign-off. Check the community rules before the design is fixed, because they also set working hours and contractor access.",
+     "q_ar": "هل أحتاج إلى موافقة المطوّر لإجراء تعديلات داخلية في شقة بأبوظبي؟",
+     "a_ar": "في الغالب نعم، لكل ما يتجاوز الأثاث والديكور. فالأعمال التي تمس الجدران أو السباكة أو الكهرباء أو التكييف أو أنظمة الحريق أو الواجهة تحتاج عادةً إلى موافقة كتابية من شركة إدارة المبنى أو المطوّر الرئيسي، كما تحتاج تعديلات أنظمة الحريق إلى اعتماد الدفاع المدني. راجع لوائح المجتمع قبل اعتماد التصميم، لأنها تحدد أيضًا ساعات العمل ودخول المقاولين."
+    },
+    {
+     "q": "Will interior works affect my developer's defect liability in Abu Dhabi?",
+     "a": "They can. The developer must repair defective installations for one year after completion and structural defects for 10 years under Abu Dhabi Law No. 3 of 2015, but it may refuse to fix items your own contractor has altered. Snag the unit and have the developer close its defects before fit-out starts, and keep a photographic record of the condition you received.",
+     "q_ar": "هل تؤثر الأعمال الداخلية على مسؤولية المطوّر عن العيوب في أبوظبي؟",
+     "a_ar": "قد تؤثر. فالمطوّر ملزم بإصلاح التركيبات المعيبة لمدة سنة واحدة بعد الإنجاز، وبالعيوب الإنشائية لمدة 10 سنوات وفق قانون أبوظبي رقم 3 لسنة 2015، لكنه قد يرفض إصلاح عناصر عدّلها مقاولك الخاص. افحص الوحدة واطلب من المطوّر إغلاق عيوبه قبل بدء أعمال التجهيز، واحتفظ بسجل مصوّر للحالة التي استلمت بها العقار."
+    },
+    {
+     "q": "Is VAT charged on interior design and furniture in the UAE?",
+     "a": "Yes. Interior design services, fit-out work and furniture are standard-rated for UAE VAT at 5%, so quotes should state whether they include it. The first sale of a new home is zero-rated and residential rents are exempt, which means an owner who lets the home usually cannot recover the VAT paid on furnishing it.",
+     "q_ar": "هل تُفرض ضريبة القيمة المضافة على التصميم الداخلي والأثاث في الإمارات؟",
+     "a_ar": "نعم. تخضع خدمات التصميم الداخلي وأعمال التجهيز والأثاث لضريبة القيمة المضافة بالنسبة الأساسية البالغة 5%، لذا ينبغي أن توضح العروض هل تشملها أم لا. أما البيع الأول للمنزل الجديد فخاضع لنسبة الصفر، والإيجارات السكنية معفاة، ما يعني أن المالك الذي يؤجر المنزل لا يستطيع عادةً استرداد الضريبة المدفوعة على تأثيثه."
+    },
+    {
+     "q": "What is the difference between shell-and-core and fully fitted property?",
+     "a": "A shell-and-core unit is handed over with structure, services and façade complete but no internal finishes, so the owner fits out floors, ceilings, kitchens and bathrooms. A fully fitted unit comes finished by the developer, ready to furnish. Shell-and-core gives full design control but needs permits, contractors and more time before you can move in or let the property.",
+     "q_ar": "ما الفرق بين الوحدة على الهيكل والوحدة المجهزة بالكامل؟",
+     "a_ar": "تُسلَّم الوحدة على الهيكل مكتملة الإنشاء والخدمات والواجهة دون تشطيبات داخلية، فيتولى المالك تجهيز الأرضيات والأسقف والمطبخ والحمامات. أما الوحدة المجهزة بالكامل فيسلّمها المطوّر مشطّبة وجاهزة للتأثيث. وتمنحك الوحدة على الهيكل تحكّمًا كاملًا في التصميم، لكنها تحتاج إلى تصاريح ومقاولين ووقت أطول قبل السكن فيها أو تأجيرها."
+    },
+    {
+     "q": "When should I start interior design for an off-plan home in Abu Dhabi?",
+     "a": "Start the design a few months before handover, working from the developer's floor plans, so furniture with long lead times is ordered in time. Installation should wait until after handover and snagging, so that the developer's defects are recorded and closed first. A brief signed off before procurement keeps the budget fixed while the building is still under construction.",
+     "q_ar": "متى أبدأ التصميم الداخلي لمنزل على الخريطة في أبوظبي؟",
+     "a_ar": "ابدأ التصميم قبل التسليم ببضعة أشهر، اعتمادًا على مخططات المطوّر، حتى يُطلب الأثاث الذي يستغرق توريده وقتًا طويلًا في موعده. أما التركيب فينبغي أن ينتظر ما بعد الاستلام وفحص العيوب، حتى تُسجَّل عيوب المطوّر وتُغلق أولًا. ويحافظ اعتماد موجز التصميم قبل الشراء على ثبات الميزانية بينما لا يزال المبنى قيد الإنشاء."
+    },
+    {
+     "q": "Do I need a licence to let a furnished home short-term in Abu Dhabi?",
+     "a": "Yes. Letting a furnished home by the night or week in Abu Dhabi requires a holiday home permit from the Department of Culture and Tourism, and the building or community must allow it. Furnished homes let for a year or longer are ordinary tenancies registered on Tawtheeq. Decide which before the design brief, because a short-stay unit needs more durable finishes and fuller kit.",
+     "q_ar": "هل أحتاج إلى ترخيص لتأجير منزل مفروش لفترات قصيرة في أبوظبي؟",
+     "a_ar": "نعم. يتطلب تأجير منزل مفروش بالليلة أو بالأسبوع في أبوظبي تصريح بيت عطلات من دائرة الثقافة والسياحة، كما يجب أن يسمح المبنى أو المجتمع بذلك. أما المنازل المفروشة المؤجرة لسنة أو أكثر فهي عقود إيجار عادية تُسجَّل في نظام «توثيق». حدّد ذلك قبل موجز التصميم، لأن الوحدة المخصصة للإقامات القصيرة تحتاج إلى تشطيبات أكثر تحمّلًا وتجهيزات أكمل."
+    },
+    {
+     "q": "How do I furnish an Abu Dhabi home if I live abroad?",
+     "a": "Through a studio that manages procurement and installation for you, with the brief, moodboard and budget agreed remotely and progress reported in photos. You will need someone to give the team access, through the management company or a representative, and the unit should be snagged and its utilities connected with TAQA Distribution before installation starts.",
+     "q_ar": "كيف أؤثث منزلي في أبوظبي إذا كنت أقيم في الخارج؟",
+     "a_ar": "عبر استوديو يتولى الشراء والتركيب نيابة عنك، مع الاتفاق عن بُعد على موجز التصميم ولوحة الإلهام والميزانية، ومتابعة التقدّم بالصور. وستحتاج إلى من يتيح للفريق الدخول، عبر شركة الإدارة أو ممثل عنك، وينبغي فحص الوحدة من العيوب وتوصيل مرافقها لدى «طاقة للتوزيع» قبل بدء التركيب."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-invest",
+   "name": "Investment advisory",
+   "route": "/services/invest",
+   "pageSlug": "subpage/faq/service-invest",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "engelvoelkers.com — Abu Dhabi rental yields 5–8%",
+    "pwc.com / mof.gov.ae — Cabinet Decision No. 49 of 2023; FTA real estate guide (Oct 2024)",
+    "tax.gov.ae — UAE VAT on real estate",
+    "thenationalnews.com — 3% municipality housing fee (2016)",
+    "adro.gov.ae — Abu Dhabi Golden Visa, real-estate investors",
+    "rulebook.centralbank.ae — Regulations Regarding Mortgage Loans (LTV, tenor, DBR); early settlement fee cap",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "mediaoffice.abudhabi / wam.ae / thenationalnews.com — ADREC 2025 transactions",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026"
+   ],
+   "faq": [
+    {
+     "q": "What rental yield can I expect from property in Abu Dhabi?",
+     "a": "Gross rental yields in Abu Dhabi are commonly cited at about 5% to 8%, according to broker research, varying by community, unit type and purchase price. Net yield is lower once service charges, maintenance, management and empty months are deducted, and returns are not guaranteed. An investment model should use the specific building's service charge and achieved rents, not an area average.",
+     "q_ar": "ما العائد الإيجاري المتوقع من العقارات في أبوظبي؟",
+     "a_ar": "تُذكر العوائد الإيجارية الإجمالية في أبوظبي عادةً بنحو 5% إلى 8% بحسب أبحاث الوسطاء، وتختلف باختلاف المجتمع ونوع الوحدة وسعر الشراء. ويكون صافي العائد أقل بعد خصم رسوم الخدمات والصيانة والإدارة وأشهر الشغور، ولا توجد عوائد مضمونة. وينبغي أن يعتمد نموذج الاستثمار على رسوم الخدمات والإيجارات المحققة في المبنى المحدد، لا على متوسط المنطقة."
+    },
+    {
+     "q": "Is rental income taxed in the UAE?",
+     "a": "Not for an individual letting property in their own name. The UAE has no personal income tax, and Cabinet Decision No. 49 of 2023 keeps real estate investment income by individuals without a licence outside corporate tax, as the FTA's 2024 guide confirms. Residential rents are exempt from VAT. Your home country may still tax the income, so check with your own tax adviser.",
+     "q_ar": "هل يخضع دخل الإيجار للضريبة في الإمارات؟",
+     "a_ar": "لا يخضع إذا كان المؤجر فردًا يؤجر العقار باسمه. فلا توجد في الإمارات ضريبة على الدخل الشخصي، ويُبقي قرار مجلس الوزراء رقم 49 لسنة 2023 دخل الاستثمار العقاري للأفراد غير المرخّصين خارج نطاق ضريبة الشركات، كما يؤكد دليل الهيئة الاتحادية للضرائب لعام 2024. والإيجارات السكنية معفاة من ضريبة القيمة المضافة. لكن قد يفرض بلدك الضريبة على هذا الدخل، لذا راجع مستشارك الضريبي."
+    },
+    {
+     "q": "Is there an annual property tax in Abu Dhabi?",
+     "a": "No. Abu Dhabi charges no annual property or council tax on owners. Expatriate tenants pay a municipality housing fee of 3% of the annual rent, collected through their electricity and water bill since 2016, and owners living in their own home are exempt. The recurring costs an owner does pay are the building's service charges and, if mortgaged, the loan.",
+     "q_ar": "هل توجد ضريبة عقارية سنوية في أبوظبي؟",
+     "a_ar": "لا. لا تفرض أبوظبي ضريبة عقارية سنوية على الملّاك. ويدفع المستأجرون الوافدون رسم سكن بلديًا قدره 3% من الإيجار السنوي يُحصَّل عبر فاتورة الكهرباء والمياه منذ 2016، ويُعفى منه الملّاك الذين يسكنون منازلهم. أما التكاليف المتكررة التي يدفعها المالك فهي رسوم الخدمات في المبنى، وأقساط القرض إن كان العقار مرهونًا."
+    },
+    {
+     "q": "Can several investment properties count towards an Abu Dhabi Golden Visa?",
+     "a": "Yes. Abu Dhabi's 10-year Golden Visa for real estate investors requires property with a minimum total value of AED 2 million, so several units can be combined. Mortgages from national banks are allowed provided your own equity reaches AED 2 million: on a AED 5 million portfolio the outstanding loan cannot exceed AED 3 million. Off-plan units count by the amount already paid.",
+     "q_ar": "هل يمكن احتساب عدة عقارات استثمارية للحصول على الإقامة الذهبية في أبوظبي؟",
+     "a_ar": "نعم. تشترط الإقامة الذهبية في أبوظبي لمدة 10 سنوات للمستثمرين العقاريين ألا تقل القيمة الإجمالية للعقارات عن 2 مليون درهم، لذا يمكن جمع عدة وحدات. ويُسمح بالتمويل من البنوك الوطنية شرط أن تبلغ حصتك 2 مليون درهم: ففي محفظة قيمتها 5 ملايين درهم لا يجوز أن يتجاوز رصيد القرض 3 ملايين درهم. وتُحتسب الوحدات على الخريطة بالمبلغ المسدَّد منها."
+    },
+    {
+     "q": "Can I get a mortgage on a buy-to-let property in Abu Dhabi?",
+     "a": "Yes. The Central Bank caps loans on a second or investment property at 60% of its value, so a buy-to-let purchase needs at least 40% of the price in cash, plus fees. All your monthly debt repayments together cannot exceed 50% of income, and banks often apply stricter limits to non-residents. Off-plan units can be financed only once 50% of the price is paid.",
+     "q_ar": "هل يمكنني الحصول على تمويل عقاري لعقار بغرض التأجير في أبوظبي؟",
+     "a_ar": "نعم. يحدد المصرف المركزي سقف القروض للعقار الثاني أو الاستثماري عند 60% من قيمته، لذا يحتاج الشراء بغرض التأجير إلى 40% على الأقل من السعر نقدًا إضافة إلى الرسوم. ولا يجوز أن تتجاوز أقساط ديونك الشهرية مجتمعة 50% من الدخل، وكثيرًا ما تطبّق البنوك حدودًا أشد على غير المقيمين. ولا يمكن تمويل الوحدات على الخريطة إلا بعد سداد 50% من السعر."
+    },
+    {
+     "q": "Should I invest in off-plan or ready property in Abu Dhabi?",
+     "a": "Ready property earns rent from the day it is let; off-plan earns nothing until handover but spreads payments over construction. Off-plan money goes into an escrow account the developer can normally draw on only after 20% of construction, and cancelling as a buyer can cost a retention of 10% to 40% under DMT Decision No. 165 of 2025, so plan to hold to completion.",
+     "q_ar": "هل أستثمر في عقار على الخريطة أم عقار جاهز في أبوظبي؟",
+     "a_ar": "يدرّ العقار الجاهز إيجارًا من يوم تأجيره، أما العقار على الخريطة فلا يدرّ شيئًا حتى التسليم لكنه يوزّع الدفعات على فترة الإنشاء. وتُودَع أموال الشراء على الخريطة في حساب ضمان لا يسحب منه المطوّر عادةً إلا بعد إنجاز 20% من الإنشاء، وقد يكلّف الإلغاء من جانب المشتري نسبة احتفاظ من 10% إلى 40% وفق قرار دائرة البلديات والنقل رقم 165 لسنة 2025، لذا خطط للاحتفاظ بالعقار حتى الإنجاز."
+    },
+    {
+     "q": "What costs reduce the net return on an Abu Dhabi rental property?",
+     "a": "The largest are the building's service charges, then maintenance, letting and management fees, empty months between tenants and, with a mortgage, interest. Since DMT Decision No. 25 of 2025, service charges must be approved and are paid in instalments, and unpaid charges stay attached to the unit after a sale. Ask for the last service-charge statement before you buy.",
+     "q_ar": "ما التكاليف التي تخفض صافي عائد العقار المؤجر في أبوظبي؟",
+     "a_ar": "أكبرها رسوم الخدمات في المبنى، تليها الصيانة ورسوم التأجير والإدارة وأشهر الشغور بين مستأجر وآخر، وفوائد القرض إن كان العقار ممولًا. ومنذ قرار دائرة البلديات والنقل رقم 25 لسنة 2025 يجب أن تكون رسوم الخدمات معتمدة وتُدفع على أقساط، وتبقى الرسوم غير المسددة مرتبطة بالوحدة بعد بيعها. اطلب آخر كشف لرسوم الخدمات قبل الشراء."
+    },
+    {
+     "q": "Is Abu Dhabi property a good investment in 2026?",
+     "a": "Demand has been strong: Abu Dhabi recorded a record AED 142 billion of property transactions in 2025, up 44%, and foreign direct investment in real estate rose 13%. Against that, ADREC has held rent increases on renewal at 0% since 2 June 2026, so income growth on existing tenancies is paused. Returns are not guaranteed, and performance differs sharply by community and building.",
+     "q_ar": "هل العقار في أبوظبي استثمار جيد في عام 2026؟",
+     "a_ar": "كان الطلب قويًا: إذ سجّلت أبوظبي رقمًا قياسيًا بلغ 142 مليار درهم من التصرفات العقارية في 2025 بارتفاع 44%، وارتفع الاستثمار الأجنبي المباشر في العقارات 13%. وفي المقابل ثبّت مركز أبوظبي العقاري زيادة الإيجار عند التجديد عند 0% منذ 2 يونيو 2026، فتوقّف نمو الدخل من العقود القائمة مؤقتًا. ولا توجد عوائد مضمونة، ويختلف الأداء كثيرًا بين مجتمع وآخر ومبنى وآخر."
+    },
+    {
+     "q": "How easy is it to sell an investment property in Abu Dhabi?",
+     "a": "Liquidity is reasonable for mainstream stock: Abu Dhabi recorded 42,814 property transactions in 2025, and once documents are ready a transfer is often completed on DARI within a few working days. Off-plan units can usually be resold before handover only after the minimum payment in the sale agreement and with the developer's no-objection certificate, and large or unusual units take longer to sell.",
+     "q_ar": "ما مدى سهولة بيع عقار استثماري في أبوظبي؟",
+     "a_ar": "السيولة معقولة في العقارات الشائعة: إذ سجّلت أبوظبي 42,814 تصرفًا عقاريًا في 2025، وبعد اكتمال المستندات يُنجز النقل غالبًا عبر منصة «داري» خلال أيام عمل قليلة. أما الوحدات على الخريطة فلا يمكن عادةً إعادة بيعها قبل التسليم إلا بعد سداد الحد الأدنى المحدد في عقد البيع ومع شهادة عدم ممانعة من المطوّر، وتستغرق الوحدات الكبيرة أو غير المألوفة وقتًا أطول للبيع."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-manage",
+   "name": "Property Management",
+   "route": "/services/manage",
+   "pageSlug": "subpage/faq/service-manage",
+   "sources": [
+    "page copy: pages master/manage",
+    "propertyfinder.ae / khaleejtimes.com / bayut.com — Tawtheeq registration",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "dlapiperrealworld.com / bsalaw.com — Abu Dhabi Law No. 20 of 2006, Article 20 notice",
+    "thenationalnews.com — 3% municipality housing fee (2016)",
+    "wam.ae / khaleejtimes.com — TAQA Distribution replaces ADDC/AADC (Jan 2025)",
+    "khaleejtimes.com / thenationalnews.com — Rental Disputes Settlement Committee, Tawtheeq required",
+    "pwc.com / mof.gov.ae — Cabinet Decision No. 49 of 2023; FTA real estate guide (Oct 2024)",
+    "gulfnews.com / khaleejtimes.com / dct.gov.ae — Abu Dhabi holiday home licensing"
+   ],
+   "faq": [
+    {
+     "q": "What does a property management company do in Abu Dhabi?",
+     "a": "A property manager runs a let home on the owner's behalf: finding and screening tenants, preparing and registering the tenancy contract on Tawtheeq, collecting rent, coordinating maintenance and repairs, inspecting the property, and handling renewals, move-out inspections and the deposit. For an owner living abroad it is the single point of contact for tenants, the building's management company and utilities.",
+     "q_ar": "ماذا تقدّم شركة إدارة العقارات في أبوظبي؟",
+     "a_ar": "يدير مدير العقار المنزل المؤجر نيابة عن المالك: فيبحث عن المستأجرين ويتحقق منهم، ويُعدّ عقد الإيجار ويسجّله في نظام «توثيق»، ويحصّل الإيجار، وينسّق أعمال الصيانة والإصلاح، ويعاين العقار، ويتولى التجديد ومعاينة الإخلاء والتأمين. وبالنسبة للمالك المقيم في الخارج، يكون نقطة التواصل الوحيدة مع المستأجرين وشركة إدارة المبنى ومزوّدي المرافق."
+    },
+    {
+     "q": "Is Tawtheeq registration mandatory in Abu Dhabi?",
+     "a": "Yes. Every tenancy contract in Abu Dhabi must be registered on Tawtheeq, the emirate's lease registration system, now run through DARI and TAMM. The landlord or the landlord's property manager registers it, and the tenant needs the registered contract to connect utilities, sponsor family visas and rely on the protection of Abu Dhabi's tenancy law. Abu Dhabi does not use Dubai's Ejari.",
+     "q_ar": "هل تسجيل عقد الإيجار في نظام «توثيق» إلزامي في أبوظبي؟",
+     "a_ar": "نعم. يجب تسجيل كل عقد إيجار في أبوظبي في نظام «توثيق»، وهو نظام تسجيل عقود الإيجار في الإمارة، ويُدار حاليًا عبر منصتي «داري» و«تم». ويتولى المؤجر أو مدير العقار نيابة عنه التسجيل، ويحتاج المستأجر إلى العقد المسجّل لتوصيل المرافق وكفالة أفراد الأسرة والاستفادة من حماية قانون الإيجار في أبوظبي. ولا تستخدم أبوظبي نظام «إيجاري» المعمول به في دبي."
+    },
+    {
+     "q": "Can landlords raise the rent in Abu Dhabi in 2026?",
+     "a": "Not on renewal for now. On 2 June 2026 the Abu Dhabi Real Estate Centre cut the permitted annual rent increase from 5% to 0% for residential, commercial and industrial tenancies, until further notice and without retrospective effect. Before the freeze, landlords could raise rent by up to 5% with written notice. Properties under ADGM's own framework are outside the measure.",
+     "q_ar": "هل يمكن للمؤجرين رفع الإيجار في أبوظبي في عام 2026؟",
+     "a_ar": "ليس عند التجديد في الوقت الحالي. ففي 2 يونيو 2026 خفّض مركز أبوظبي العقاري نسبة الزيادة السنوية المسموح بها في الإيجار من 5% إلى 0% للعقود السكنية والتجارية والصناعية، حتى إشعار آخر ودون أثر رجعي. وقبل التجميد كان بإمكان المؤجر رفع الإيجار حتى 5% بإشعار كتابي. ولا يشمل القرار العقارات الخاضعة لإطار ADGM الخاص."
+    },
+    {
+     "q": "How much notice must a landlord give to end a tenancy in Abu Dhabi?",
+     "a": "Two months before expiry for a residential lease and three months for a commercial one, under Article 20 of Abu Dhabi Law No. 20 of 2006 on leasing. If neither side gives notice, the lease renews automatically on the same terms. Ending a lease before it expires needs a ground the law or the contract allows, and disputes go to the Rental Disputes Settlement Committee.",
+     "q_ar": "ما مدة الإشعار المطلوبة من المؤجر لإنهاء عقد الإيجار في أبوظبي؟",
+     "a_ar": "شهران قبل انتهاء العقد للإيجار السكني وثلاثة أشهر للإيجار التجاري، وفق المادة 20 من قانون أبوظبي رقم 20 لسنة 2006 بشأن الإيجار. وإذا لم يرسل أي من الطرفين إشعارًا يتجدد العقد تلقائيًا بالشروط نفسها. ويحتاج إنهاء العقد قبل انتهائه إلى سبب يجيزه القانون أو العقد، وتُرفع النزاعات إلى لجنة فض المنازعات الإيجارية."
+    },
+    {
+     "q": "Who pays for maintenance in a rented property in Abu Dhabi?",
+     "a": "As a rule the landlord pays for major repairs and keeps the property fit to live in, while the tenant covers minor day-to-day upkeep and damage they cause; the tenancy contract can set the split differently. The building's common areas are the management company's job, funded by the owner's service charges. A manager agrees a repair limit with the owner for routine jobs.",
+     "q_ar": "من يدفع تكاليف الصيانة في العقار المؤجر في أبوظبي؟",
+     "a_ar": "القاعدة أن يتحمّل المؤجر الإصلاحات الكبيرة ويحافظ على صلاحية العقار للسكن، بينما يتحمّل المستأجر الصيانة اليومية البسيطة والأضرار التي يتسبب فيها، ويمكن أن يحدد عقد الإيجار توزيعًا مختلفًا. أما المناطق المشتركة في المبنى فمسؤولية شركة الإدارة، وتموَّل من رسوم الخدمات التي يدفعها المالك. ويتفق مدير العقار مع المالك على حدّ مالي للإصلاحات الاعتيادية."
+    },
+    {
+     "q": "What is the 3% municipality fee on rent in Abu Dhabi?",
+     "a": "It is a housing fee of 3% of the annual rent that expatriate tenants pay to the Abu Dhabi municipality, introduced in 2016 and collected in monthly portions through the tenant's TAQA Distribution electricity and water bill. It is linked to the registered Tawtheeq contract, so the rent on Tawtheeq is the figure charged. UAE nationals and owners living in their own homes do not pay it.",
+     "q_ar": "ما رسم البلدية البالغ 3% على الإيجار في أبوظبي؟",
+     "a_ar": "هو رسم سكن قدره 3% من الإيجار السنوي يدفعه المستأجرون الوافدون لبلدية أبوظبي، فُرض في 2016 ويُحصَّل على دفعات شهرية عبر فاتورة الكهرباء والمياه الصادرة عن «طاقة للتوزيع». ويرتبط بعقد الإيجار المسجّل في نظام «توثيق»، لذا يُحتسب على قيمة الإيجار المسجّلة فيه. ولا يدفعه المواطنون ولا الملّاك الذين يسكنون منازلهم."
+    },
+    {
+     "q": "How are rental disputes resolved in Abu Dhabi?",
+     "a": "Disputes between landlords and tenants go to the Rental Disputes Settlement Committee at the Abu Dhabi Judicial Department, which can hear claims over unpaid rent, evictions, deposits and repairs. A registered Tawtheeq contract is needed to file. A property manager keeps the records a case depends on: the contract, notices, payment history and inspection reports.",
+     "q_ar": "كيف تُسوّى نزاعات الإيجار في أبوظبي؟",
+     "a_ar": "تُرفع النزاعات بين المؤجرين والمستأجرين إلى لجنة فض المنازعات الإيجارية في دائرة القضاء في أبوظبي، التي تنظر في المطالبات المتعلقة بالإيجارات غير المسددة والإخلاء والتأمين والإصلاحات. ويلزم وجود عقد مسجّل في نظام «توثيق» لرفع الدعوى. ويحتفظ مدير العقار بالسجلات التي تعتمد عليها القضية: العقد والإشعارات وسجل الدفعات وتقارير المعاينة."
+    },
+    {
+     "q": "Can I manage an Abu Dhabi rental property while living abroad?",
+     "a": "Yes, through a property manager authorised to act for you, which many non-resident landlords do. The manager registers the lease on Tawtheeq, collects rent and transfers it to your account, and handles repairs and renewals. As an individual letting in your own name you pay no UAE tax on the rent, though your country of residence may tax it.",
+     "q_ar": "هل يمكنني إدارة عقار مؤجر في أبوظبي وأنا أقيم في الخارج؟",
+     "a_ar": "نعم، عبر مدير عقار مفوَّض بالتصرف نيابة عنك، وهو ما يفعله كثير من الملّاك غير المقيمين. إذ يسجّل مدير العقار عقد الإيجار في نظام «توثيق»، ويحصّل الإيجار ويحوّله إلى حسابك، ويتولى الإصلاحات والتجديد. وبصفتك فردًا يؤجر باسمه لا تدفع ضريبة في الإمارات على الإيجار، وإن كان بلد إقامتك قد يفرض عليه ضريبة."
+    },
+    {
+     "q": "Can I let my Abu Dhabi property as a holiday home?",
+     "a": "Yes, with a holiday home licence from Abu Dhabi's Department of Culture and Tourism and the building's or community's agreement. Since 1 January 2026 unlicensed homes may not be listed on short-stay booking platforms, and the licence number must appear on every listing. Short stays can earn more per night than a year-long lease but bring cleaning, guest management and empty nights, so compare a year's net income from each.",
+     "q_ar": "هل يمكنني تأجير عقاري في أبوظبي كبيت عطلات؟",
+     "a_ar": "نعم، بترخيص بيت عطلات من دائرة الثقافة والسياحة في أبوظبي وبموافقة المبنى أو المجتمع. ومنذ 1 يناير 2026 لا يجوز إدراج المنازل غير المرخّصة على منصات حجز الإقامات القصيرة، ويجب أن يظهر رقم الترخيص في كل إعلان. وقد تحقق الإقامات القصيرة دخلًا أعلى لليلة الواحدة من الإيجار السنوي، لكنها تتطلب التنظيف وإدارة الضيوف وتشمل ليالي شاغرة، لذا قارن صافي دخل سنة من كل نموذج."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-rental-finance",
+   "name": "Rental finance management",
+   "route": "/services/rental-finance",
+   "pageSlug": "subpage/faq/service-rental-finance",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "rulebook.centralbank.ae — Regulations Regarding Mortgage Loans (LTV, tenor, DBR); early settlement fee cap",
+    "pwc.com / mof.gov.ae — Cabinet Decision No. 49 of 2023; FTA real estate guide (Oct 2024)",
+    "tax.gov.ae — UAE VAT on real estate",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "thenationalnews.com — 3% municipality housing fee (2016)",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "propertyfinder.ae / khaleejtimes.com / bayut.com — Tawtheeq registration"
+   ],
+   "faq": [
+    {
+     "q": "Can a non-resident get a mortgage in Abu Dhabi?",
+     "a": "Yes, several UAE banks lend to non-residents buying in Abu Dhabi's investment areas, within the Central Bank's caps: up to 60% of value on a second or investment property. In practice banks often lend non-residents less and ask for more documents, such as overseas bank statements, credit reports and proof of income. An off-plan unit can be financed only once 50% is paid.",
+     "q_ar": "هل يمكن لغير المقيم الحصول على تمويل عقاري في أبوظبي؟",
+     "a_ar": "نعم، تقرض عدة بنوك في الإمارات غير المقيمين الذين يشترون في مناطق الاستثمار في أبوظبي، ضمن سقوف المصرف المركزي: حتى 60% من القيمة للعقار الثاني أو الاستثماري. وفي الواقع كثيرًا ما تقرض البنوك غير المقيمين نسبة أقل وتطلب مستندات أكثر، مثل كشوف الحسابات في الخارج وتقارير الائتمان وإثبات الدخل. ولا يمكن تمويل الوحدة على الخريطة إلا بعد سداد 50%."
+    },
+    {
+     "q": "What is the early settlement fee on a UAE mortgage?",
+     "a": "Central Bank rules cap the fee for settling a mortgage early at 1% of the outstanding balance or AED 10,000, whichever is lower. That applies whether you sell the property, pay off the loan from savings or move it to another bank. Some loans also carry fees for partial prepayments above an annual limit, so read your offer letter before refinancing.",
+     "q_ar": "ما رسوم السداد المبكر للقرض العقاري في الإمارات؟",
+     "a_ar": "تحدد قواعد المصرف المركزي سقف رسوم السداد المبكر للقرض العقاري عند 1% من الرصيد المتبقي أو 10,000 درهم، أيهما أقل. وينطبق ذلك سواء بعت العقار أو سددت القرض من مدخراتك أو نقلته إلى بنك آخر. وقد تتضمن بعض القروض رسومًا على السداد الجزئي الذي يتجاوز حدًا سنويًا، لذا اقرأ خطاب العرض قبل إعادة التمويل."
+    },
+    {
+     "q": "When should I refinance a mortgage in Abu Dhabi?",
+     "a": "Usually when a fixed-rate period ends and the loan moves to a higher variable rate, or when another bank offers a lower rate for the remaining term. Set the saving against the costs: the early settlement fee, capped at 1% or AED 10,000, the new bank's arrangement and valuation fees, and registering the new mortgage on DARI. The total term still cannot exceed 25 years.",
+     "q_ar": "متى تكون إعادة تمويل القرض العقاري في أبوظبي مجدية؟",
+     "a_ar": "عادةً عند انتهاء فترة السعر الثابت وانتقال القرض إلى سعر متغير أعلى، أو عندما يعرض بنك آخر سعرًا أقل للمدة المتبقية. وقارن الوفر بالتكاليف: رسوم السداد المبكر التي لا تتجاوز 1% أو 10,000 درهم، ورسوم الترتيب والتقييم لدى البنك الجديد، وتسجيل الرهن الجديد عبر منصة «داري». ولا يجوز أن تتجاوز المدة الإجمالية للقرض 25 عامًا."
+    },
+    {
+     "q": "Is rent from Abu Dhabi property exposed to currency risk?",
+     "a": "Only against currencies other than the US dollar. The UAE dirham is pegged to the dollar at AED 3.6725 by the Central Bank, so for a landlord who reports in dollars the rent is effectively stable; for one reporting in sterling or euros it moves as the dollar moves. Converting rent in stages, rather than all at once, spreads that exposure.",
+     "q_ar": "هل يتأثر إيجار العقار في أبوظبي بمخاطر العملة؟",
+     "a_ar": "فقط أمام العملات غير الدولار الأمريكي. إذ يربط المصرف المركزي الدرهم الإماراتي بالدولار عند 3.6725 درهم، لذا يكون الإيجار مستقرًا فعليًا للمالك الذي يعدّ حساباته بالدولار، أما من يعدّها بالجنيه الإسترليني أو اليورو فيتغيّر الإيجار لديه مع تغيّر الدولار. ويوزّع تحويل الإيجار على مراحل، بدلًا من تحويله دفعة واحدة، هذا التعرّض."
+    },
+    {
+     "q": "What is the debt burden ratio for a UAE mortgage?",
+     "a": "It is the share of your monthly income that goes on debt repayments, and Central Bank rules cap it at 50%: the new mortgage instalment plus existing loans and card commitments cannot exceed half your income. Banks may count part of documented rental income, so a landlord with registered Tawtheeq leases can often borrow more than salary alone would allow.",
+     "q_ar": "ما نسبة عبء الدين في القرض العقاري في الإمارات؟",
+     "a_ar": "هي حصة دخلك الشهري التي تذهب إلى سداد الديون، وتحدد قواعد المصرف المركزي سقفها عند 50%: فلا يجوز أن يتجاوز قسط القرض العقاري الجديد مع القروض والتزامات البطاقات القائمة نصف دخلك. وقد تحتسب البنوك جزءًا من دخل الإيجار الموثّق، لذا يستطيع المالك الذي لديه عقود مسجّلة في نظام «توثيق» غالبًا اقتراض مبلغ أكبر مما يسمح به الراتب وحده."
+    },
+    {
+     "q": "Do I pay UAE tax on rent from an Abu Dhabi property?",
+     "a": "No, if you own the property as an individual and let it without a licence. Cabinet Decision No. 49 of 2023 keeps that income outside UAE corporate tax, the UAE has no personal income tax, and residential rents are exempt from VAT. Where you are tax resident abroad, your home country may tax the rent, so an annual statement in your reporting currency helps your adviser.",
+     "q_ar": "هل أدفع ضريبة في الإمارات على إيجار عقار في أبوظبي؟",
+     "a_ar": "لا، إذا كنت تملك العقار بصفتك فردًا وتؤجره دون ترخيص. إذ يُبقي قرار مجلس الوزراء رقم 49 لسنة 2023 هذا الدخل خارج ضريبة الشركات في الإمارات، ولا توجد ضريبة على الدخل الشخصي، والإيجارات السكنية معفاة من ضريبة القيمة المضافة. وإذا كنت مقيمًا ضريبيًا في الخارج فقد يفرض بلدك ضريبة على الإيجار، لذا يساعد كشف سنوي بعملة تقاريرك مستشارك الضريبي."
+    },
+    {
+     "q": "How does the Abu Dhabi rent freeze affect a mortgaged rental?",
+     "a": "It fixes the income side for now. Since 2 June 2026 ADREC has held rent increases on renewal at 0%, so the rent from a sitting tenant will not rise, while a variable-rate mortgage can still move with interest rates. Model the cash flow on flat rent, check when your fixed period ends, and consider refinancing if the margin narrows.",
+     "q_ar": "كيف يؤثر تجميد الإيجارات في أبوظبي على العقار المؤجر الممول بقرض؟",
+     "a_ar": "يثبّت جانب الدخل في الوقت الحالي. فمنذ 2 يونيو 2026 ثبّت مركز أبوظبي العقاري زيادة الإيجار عند التجديد عند 0%، فلن يرتفع إيجار المستأجر الحالي، بينما قد يتغير القرض ذو السعر المتغير مع أسعار الفائدة. احسب التدفق النقدي على أساس إيجار ثابت، وتحقق من موعد انتهاء فترة السعر الثابت، وفكّر في إعادة التمويل إذا ضاق الهامش."
+    },
+    {
+     "q": "What does a landlord pay for when renting out property in Abu Dhabi?",
+     "a": "The landlord pays the building's service charges, Tawtheeq registration of the lease, major repairs, insurance if taken, letting and management fees and any mortgage. The expatriate tenant pays the 3% municipality housing fee through the utility bill, along with electricity, water and cooling. Service charges have been paid in instalments rather than one annual sum since DMT Decision No. 25 of 2025.",
+     "q_ar": "ما التكاليف التي يتحمّلها المالك عند تأجير عقار في أبوظبي؟",
+     "a_ar": "يدفع المالك رسوم الخدمات في المبنى، وتسجيل عقد الإيجار في نظام «توثيق»، والإصلاحات الكبيرة، والتأمين إن وُجد، ورسوم التأجير والإدارة، وأقساط أي قرض. أما المستأجر الوافد فيدفع رسم السكن البلدي البالغ 3% عبر فاتورة المرافق، إلى جانب الكهرباء والمياه والتبريد. ومنذ قرار دائرة البلديات والنقل رقم 25 لسنة 2025 تُدفع رسوم الخدمات على أقساط لا دفعة سنوية واحدة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-residency-visas",
+   "name": "Residency visa support",
+   "route": "/services/residency-visas",
+   "pageSlug": "subpage/faq/service-residency-visas",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "adro.gov.ae — Abu Dhabi Golden Visa, real-estate investors",
+    "added.gov.ae — Abu Dhabi real estate owner visa (2 years)",
+    "u.ae — Golden Visa; expatriates buying property in Abu Dhabi"
+   ],
+   "faq": [
+    {
+     "q": "Does buying property in Abu Dhabi give you UAE residency?",
+     "a": "Not automatically, but the right purchase makes you eligible. Owning property worth at least AED 2 million qualifies for Abu Dhabi's 10-year Golden Visa, and owning a completed home outright can support the 2-year real estate owner visa. In both cases you still apply separately, with a medical test, biometrics and an Emirates ID, through the federal ICP.",
+     "q_ar": "هل يمنحك شراء عقار في أبوظبي الإقامة في الإمارات؟",
+     "a_ar": "ليس تلقائيًا، لكن الشراء المناسب يجعلك مؤهلًا. فتملّك عقار لا تقل قيمته عن 2 مليون درهم يؤهلك للإقامة الذهبية في أبوظبي لمدة 10 سنوات، وتملّك منزل مكتمل ملكية تامة قد يتيح لك إقامة مالك العقار لمدة سنتين. وفي الحالتين تتقدّم بطلب منفصل، مع فحص طبي وبصمات وهوية إماراتية، عبر الهيئة الاتحادية للهوية والجنسية والجمارك وأمن المنافذ."
+    },
+    {
+     "q": "How much property do I need to buy for a Golden Visa in Abu Dhabi?",
+     "a": "At least AED 2 million in total, from your own capital. Abu Dhabi's Golden Visa for real estate investors counts the combined value of the properties you own, so two or more units can reach the threshold together. The visa runs for 10 years, is renewable while you still qualify, and covers your spouse and children.",
+     "q_ar": "كم يجب أن تبلغ قيمة العقار للحصول على الإقامة الذهبية في أبوظبي؟",
+     "a_ar": "2 مليون درهم على الأقل إجمالًا، من رأس مالك الخاص. إذ تحتسب الإقامة الذهبية للمستثمرين العقاريين في أبوظبي القيمة المجمّعة للعقارات التي تملكها، فيمكن لوحدتين أو أكثر بلوغ الحد معًا. وتمتد الإقامة 10 سنوات، وتُجدَّد ما دمت مستوفيًا للشروط، وتشمل الزوج والأبناء."
+    },
+    {
+     "q": "Can I get a Golden Visa with a mortgaged property in Abu Dhabi?",
+     "a": "Yes, if the mortgage is from a national bank and your own equity is at least AED 2 million. The Abu Dhabi Residents Office gives the example of a AED 5 million property, on which the outstanding mortgage principal cannot exceed AED 3 million. As you repay the loan your equity rises, so a property that does not qualify today may qualify later.",
+     "q_ar": "هل يمكنني الحصول على الإقامة الذهبية بعقار مرهون في أبوظبي؟",
+     "a_ar": "نعم، إذا كان التمويل من بنك وطني وكانت حصتك الخاصة 2 مليون درهم على الأقل. ويضرب مكتب أبوظبي للمقيمين مثالًا بعقار قيمته 5 ملايين درهم، لا يجوز أن يتجاوز أصل القرض المتبقي عليه 3 ملايين درهم. ومع سداد القرض ترتفع حصتك، لذا قد يصبح العقار الذي لا يؤهّل اليوم مؤهِّلًا لاحقًا."
+    },
+    {
+     "q": "Does an off-plan property qualify for the Abu Dhabi Golden Visa?",
+     "a": "Yes, once enough has been paid. You need a purchase agreement with an approved developer and the developer's confirmation that at least AED 2 million has already been paid towards the property. On an off-plan plan that collects part of the price at handover, that point can arrive during construction or only at completion, so check the payment schedule.",
+     "q_ar": "هل يؤهّل العقار على الخريطة للإقامة الذهبية في أبوظبي؟",
+     "a_ar": "نعم، بعد سداد مبلغ كافٍ. إذ تحتاج إلى عقد شراء مع مطوّر معتمد، وإلى تأكيد من المطوّر بأنه تم سداد 2 مليون درهم على الأقل حتى تاريخه. وفي الخطط التي تُحصَّل جزءًا من السعر عند التسليم، قد تُبلغ هذه النقطة خلال الإنشاء أو عند الإنجاز فقط، لذا تحقق من جدول الدفعات."
+    },
+    {
+     "q": "What is the 2-year real estate owner visa in Abu Dhabi?",
+     "a": "It is a two-year, renewable residence visa for people who own a home in Abu Dhabi. According to the emirate's official guidance, the property must be completed and habitable, not vacant land, and owned entirely by you rather than jointly, and you need a monthly income of at least AED 10,000 or proof of financial solvency. You can sponsor your spouse, children and parents.",
+     "q_ar": "ما إقامة مالك العقار لمدة سنتين في أبوظبي؟",
+     "a_ar": "هي إقامة قابلة للتجديد لمدة سنتين لمن يملك منزلًا في أبوظبي. ووفق الإرشادات الرسمية للإمارة يجب أن يكون العقار مكتملًا وصالحًا للسكن، لا أرضًا فضاء، وأن تملكه بالكامل لا بالشراكة، وأن يكون لديك دخل شهري لا يقل عن 10,000 درهم أو إثبات للملاءة المالية. ويمكنك كفالة الزوج والأبناء والوالدين."
+    },
+    {
+     "q": "Do I have to live in the UAE to keep a Golden Visa?",
+     "a": "No. Golden Visa holders can stay outside the UAE for longer than the usual six-month limit without losing their residence, according to the UAE government portal. That suits owners who keep their main home abroad. The visa still depends on the qualifying property, so selling it or reducing your equity below AED 2 million can affect renewal.",
+     "q_ar": "هل يجب أن أعيش في الإمارات للحفاظ على الإقامة الذهبية؟",
+     "a_ar": "لا. يمكن لحاملي الإقامة الذهبية البقاء خارج الدولة مدة تتجاوز حد الأشهر الستة المعتاد دون أن تُلغى إقامتهم، بحسب البوابة الرسمية لحكومة الإمارات. وهذا يناسب الملّاك الذين يحتفظون بمسكنهم الرئيسي في الخارج. لكن الإقامة تظل مرتبطة بالعقار المؤهِّل، لذا قد يؤثر بيعه أو انخفاض حصتك عن 2 مليون درهم على التجديد."
+    },
+    {
+     "q": "Can I sponsor my family on a property Golden Visa in Abu Dhabi?",
+     "a": "Yes. Abu Dhabi's Golden Visa for real estate investors covers your spouse and children, who receive their own residence visas and Emirates IDs on your sponsorship. Each dependant needs a passport, photo and medical test, and marriage and birth certificates issued abroad must be legalised and attested before the application.",
+     "q_ar": "هل يمكنني كفالة عائلتي بالإقامة الذهبية العقارية في أبوظبي؟",
+     "a_ar": "نعم. تشمل الإقامة الذهبية للمستثمرين العقاريين في أبوظبي الزوج والأبناء، الذين يحصلون على إقامات وهويات إماراتية خاصة بهم على كفالتك. ويحتاج كل تابع إلى جواز سفر وصورة وفحص طبي، ويجب تصديق عقود الزواج وشهادات الميلاد الصادرة في الخارج واعتمادها قبل تقديم الطلب."
+    },
+    {
+     "q": "Who issues property-linked visas in Abu Dhabi?",
+     "a": "Residence visas are issued by the federal Authority for Identity, Citizenship, Customs and Port Security (ICP), which also issues the Emirates ID. The Abu Dhabi Residents Office supports Golden Visa applicants, and the property itself is verified through the title deed registered with the Abu Dhabi Real Estate Centre on DARI, or the off-plan registration and the developer's payment letter.",
+     "q_ar": "من يصدر التأشيرات المرتبطة بالعقار في أبوظبي؟",
+     "a_ar": "تصدر تأشيرات الإقامة عن الهيئة الاتحادية للهوية والجنسية والجمارك وأمن المنافذ، التي تصدر أيضًا الهوية الإماراتية. ويدعم مكتب أبوظبي للمقيمين المتقدّمين للإقامة الذهبية، ويُتحقق من العقار نفسه عبر سند الملكية المسجّل لدى مركز أبوظبي العقاري على منصة «داري»، أو عبر تسجيل البيع على الخريطة وخطاب الدفعات من المطوّر."
+    },
+    {
+     "q": "Does jointly owned property qualify for a residence visa in Abu Dhabi?",
+     "a": "Not for the 2-year real estate owner visa, which requires the property to be owned entirely by the applicant. For the Golden Visa what counts is your own investment of at least AED 2 million, so a jointly owned property works only where your share reaches that amount. Confirm how ICP will treat your title before you register the purchase.",
+     "q_ar": "هل يؤهّل العقار المملوك بالشراكة للإقامة في أبوظبي؟",
+     "a_ar": "لا يؤهّل لإقامة مالك العقار لمدة سنتين، التي تشترط أن يملك المتقدّم العقار بالكامل. أما في الإقامة الذهبية فالعبرة باستثمارك الخاص الذي لا يقل عن 2 مليون درهم، لذا لا يصلح العقار المشترك إلا إذا بلغت حصتك هذا المبلغ. تأكد من طريقة تعامل الهيئة الاتحادية للهوية والجنسية مع سند ملكيتك قبل تسجيل الشراء."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-sales-leasing",
+   "name": "Sales & leasing",
+   "route": "/services/sales-leasing",
+   "pageSlug": "subpage/faq/service-sales-leasing",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "propertyfinder.ae / khaleejtimes.com / bayut.com — Tawtheeq registration",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "tax.gov.ae — UAE VAT on real estate",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025",
+    "u.ae — Golden Visa; expatriates buying property in Abu Dhabi"
+   ],
+   "faq": [
+    {
+     "q": "How do you sell a portfolio of apartments in one Abu Dhabi building?",
+     "a": "Usually in phased releases rather than all at once, so the units do not compete with each other and depress the building's price. A single buyer can take several units, but each one is still transferred separately on DARI, with its own 2% registration fee and developer no-objection certificate. Tenanted units can be sold with the lease in place.",
+     "q_ar": "كيف تُباع محفظة شقق في مبنى واحد في أبوظبي؟",
+     "a_ar": "عادةً على دفعات متدرجة لا دفعة واحدة، حتى لا تتنافس الوحدات فيما بينها فتنخفض أسعار المبنى. ويمكن لمشترٍ واحد شراء عدة وحدات، لكن تُنقل كل وحدة على حدة عبر منصة «داري»، برسم تسجيل 2% وشهادة عدم ممانعة من المطوّر لكل منها. ويمكن بيع الوحدات المؤجرة مع بقاء عقد الإيجار."
+    },
+    {
+     "q": "How many brokers can list a property in Abu Dhabi?",
+     "a": "Up to three licensed brokers can market one listing in Abu Dhabi, or the owner can appoint a single broker exclusively, under ADREC's Madhmoun rules. Every advert needs a permit issued through DARI after the ownership and size are checked against the title deed. For a multi-unit owner, one exclusive mandate keeps pricing consistent across the portfolio.",
+     "q_ar": "كم عدد الوسطاء الذين يمكنهم إدراج عقار في أبوظبي؟",
+     "a_ar": "يمكن لثلاثة وسطاء مرخّصين كحد أقصى تسويق إعلان واحد في أبوظبي، أو يمكن للمالك تعيين وسيط واحد حصريًا، وفق قواعد مركز أبوظبي العقاري. ويحتاج كل إعلان إلى تصريح يصدر عبر منصة «داري» بعد مطابقة الملكية والمساحة مع سند الملكية. وبالنسبة لمالك عدة وحدات، يحافظ التفويض الحصري الواحد على اتساق الأسعار في المحفظة."
+    },
+    {
+     "q": "Can I sell a tenanted apartment in Abu Dhabi?",
+     "a": "Yes. A sale does not end a registered tenancy: the buyer takes the property subject to the lease on Tawtheeq and becomes the landlord for the rest of its term. Tell the tenant in writing and share the lease with the buyer before signing. Selling with a tenant in place often suits investors, because the unit earns rent from the day of transfer.",
+     "q_ar": "هل يمكنني بيع شقة مؤجرة في أبوظبي؟",
+     "a_ar": "نعم. فالبيع لا ينهي عقد الإيجار المسجّل: إذ يتملّك المشتري العقار مع بقاء العقد المسجّل في نظام «توثيق»، ويصبح المؤجر حتى نهاية مدته. أبلغ المستأجر كتابيًا وشارك العقد مع المشتري قبل التوقيع. وكثيرًا ما يناسب البيع مع وجود المستأجر المستثمرين، لأن الوحدة تدرّ إيجارًا من يوم النقل."
+    },
+    {
+     "q": "Can a landlord with many units raise rents in Abu Dhabi in 2026?",
+     "a": "No, not on renewals for now. ADREC's measure of 2 June 2026 cut the permitted annual increase from 5% to 0% for residential, commercial and industrial leases until further notice, and reported guidance says a new lease on a previously let unit follows the preceding rent. Lease-up planning for a portfolio should therefore assume today's rents, not growth.",
+     "q_ar": "هل يمكن لمالك عدة وحدات رفع الإيجارات في أبوظبي في عام 2026؟",
+     "a_ar": "لا، ليس عند التجديد في الوقت الحالي. إذ خفّض قرار مركز أبوظبي العقاري الصادر في 2 يونيو 2026 نسبة الزيادة السنوية المسموح بها من 5% إلى 0% للعقود السكنية والتجارية والصناعية حتى إشعار آخر، وتشير الإرشادات المنشورة إلى أن العقد الجديد لوحدة سبق تأجيرها يتبع الإيجار السابق. لذا ينبغي أن تفترض خطة تأجير المحفظة إيجارات اليوم لا نموها."
+    },
+    {
+     "q": "Is VAT charged on property sales and leases in Abu Dhabi?",
+     "a": "It depends on the use. Residential leases are exempt from UAE VAT, and the first sale of a new home is zero-rated, while later residential resales are exempt. Commercial property is standard-rated at 5% on both sales and leases, so a mixed portfolio of offices, shops and apartments needs each unit's VAT treatment set out before a bulk deal is priced.",
+     "q_ar": "هل تُفرض ضريبة القيمة المضافة على بيع العقارات وتأجيرها في أبوظبي؟",
+     "a_ar": "يعتمد ذلك على الاستخدام. فالإيجارات السكنية معفاة من ضريبة القيمة المضافة، والبيع الأول للمنزل الجديد خاضع لنسبة الصفر، وإعادة بيع العقار السكني لاحقًا معفاة. أما العقارات التجارية فتخضع للنسبة الأساسية البالغة 5% في البيع والإيجار، لذا تحتاج المحفظة المختلطة من مكاتب ومحال وشقق إلى تحديد المعاملة الضريبية لكل وحدة قبل تسعير صفقة جماعية."
+    },
+    {
+     "q": "Can a foreign investor buy a whole building in Abu Dhabi?",
+     "a": "Yes, inside the designated investment areas, where foreigners can own freehold, including whole buildings and plots, since the 2019 amendment to the real estate law. Outside those areas outright ownership is reserved for UAE nationals and companies they wholly own. Check each unit's title on DARI, because a building can include units already sold to others.",
+     "q_ar": "هل يمكن للمستثمر الأجنبي شراء مبنى كامل في أبوظبي؟",
+     "a_ar": "نعم، داخل مناطق الاستثمار المحددة، حيث يحق للأجانب التملك الحر، بما في ذلك المباني الكاملة والأراضي، منذ تعديل القانون العقاري عام 2019. أما خارج تلك المناطق فيقتصر التملك التام على مواطني الدولة والشركات المملوكة لهم بالكامل. تحقق من سند كل وحدة على منصة «داري»، لأن المبنى قد يضم وحدات بيعت لآخرين."
+    },
+    {
+     "q": "Do owners of several units have a say in how an Abu Dhabi building is run?",
+     "a": "Yes, through the owners' committee. Under DMT Decision No. 26 of 2025, a committee of 5 to 9 resident owners forms once 30% of a building's units are registered to different owners; it reviews budgets, monitors the management company and can ask DMT to replace it. Developers are excluded, even for unsold units, and each owner has one vote.",
+     "q_ar": "هل يملك مالكو عدة وحدات رأيًا في إدارة المبنى في أبوظبي؟",
+     "a_ar": "نعم، عبر لجنة الملّاك. فوفق قرار دائرة البلديات والنقل رقم 26 لسنة 2025 تُشكَّل لجنة من 5 إلى 9 ملّاك مقيمين متى سُجّلت 30% من وحدات المبنى لملّاك مختلفين، وتراجع الموازنات وتراقب شركة الإدارة ويمكنها أن تطلب من الدائرة استبدالها. ولا يكون المطوّر عضوًا فيها حتى عن الوحدات غير المبيعة، ولكل مالك صوت واحد."
+    },
+    {
+     "q": "How are lease contracts with corporate tenants handled in Abu Dhabi?",
+     "a": "A company can lease one or several units in its own name, with the contract signed by an authorised signatory and registered on Tawtheeq like any other lease, supported by the trade licence. Multi-unit corporate leases often agree a single rent schedule, staggered start dates and a fit-out or furnishing package. Commercial units are standard-rated for VAT; residential leases are exempt.",
+     "q_ar": "كيف تُدار عقود الإيجار مع المستأجرين من الشركات في أبوظبي؟",
+     "a_ar": "يمكن للشركة استئجار وحدة أو عدة وحدات باسمها، على أن يوقّع العقد مفوَّض بالتوقيع ويُسجَّل في نظام «توثيق» كأي عقد آخر، مع تقديم الرخصة التجارية. وكثيرًا ما تتفق عقود الشركات متعددة الوحدات على جدول إيجار واحد وتواريخ بدء متدرجة وحزمة تجهيز أو تأثيث. وتخضع الوحدات التجارية للنسبة الأساسية لضريبة القيمة المضافة، أما الإيجارات السكنية فمعفاة."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-snagging",
+   "name": "Snagging inspection",
+   "route": "/services/snagging",
+   "pageSlug": "subpage/faq/service-snagging",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "tamimi.com — Abu Dhabi strata/real estate law: 10-year structural, one-year installations",
+    "Abu Dhabi Law No. 3 of 2015 as amended by Law No. 2 of 2025 (horizlaw.ae, mondaq.com, tamimi.com)",
+    "trowers.com — DMT Decisions 24, 25, 26 and 165 of 2025"
+   ],
+   "faq": [
+    {
+     "q": "What is a snagging inspection?",
+     "a": "A snagging inspection is a detailed check of a new property for defects before you accept it from the developer: finishes, doors and windows, plumbing, electrics, air conditioning, drainage, waterproofing and fittings. The inspector records each defect, or snag, with photos in a report the developer uses to fix them, and checks again once the repairs are done.",
+     "q_ar": "ما فحص العيوب قبل الاستلام؟",
+     "a_ar": "فحص العيوب قبل الاستلام هو فحص دقيق للعقار الجديد بحثًا عن العيوب قبل أن تقبله من المطوّر، ويشمل التشطيبات والأبواب والنوافذ والسباكة والكهرباء والتكييف والصرف والعزل المائي والتركيبات. ويسجّل المفتش كل عيب بالصور في تقرير يعتمد عليه المطوّر لإصلاحها، ثم يعيد الفحص بعد انتهاء الإصلاحات."
+    },
+    {
+     "q": "When should a snagging inspection be done in Abu Dhabi?",
+     "a": "After the developer issues the handover notice and before you sign the handover documents, while the developer is still finishing the building. A second inspection after the repairs confirms each defect is closed. It is also worth inspecting again before the one-year defect period for installations ends, because faults in air conditioning, plumbing or waterproofing often appear only after use.",
+     "q_ar": "متى ينبغي إجراء فحص العيوب في أبوظبي؟",
+     "a_ar": "بعد أن يصدر المطوّر إشعار التسليم وقبل توقيع مستندات الاستلام، بينما لا يزال المطوّر يستكمل أعمال المبنى. ويؤكد فحص ثانٍ بعد الإصلاحات إغلاق كل عيب. ومن المفيد أيضًا إعادة الفحص قبل انتهاء فترة السنة الواحدة لمسؤولية المطوّر عن التركيبات، لأن أعطال التكييف أو السباكة أو العزل المائي كثيرًا ما لا تظهر إلا بعد الاستخدام."
+    },
+    {
+     "q": "Is a snagging inspection mandatory in Abu Dhabi?",
+     "a": "No, the law does not require one, but it is the buyer's main way to hold the developer to the agreed specification. The developer stays liable under Abu Dhabi Law No. 3 of 2015, for defective installations for one year and structural defects for 10 years from the completion certificate, and a dated, photographed defect list makes those claims far easier to pursue.",
+     "q_ar": "هل فحص العيوب قبل الاستلام إلزامي في أبوظبي؟",
+     "a_ar": "لا، فالقانون لا يشترطه، لكنه الوسيلة الرئيسية للمشتري لإلزام المطوّر بالمواصفات المتفق عليها. إذ يبقى المطوّر مسؤولًا بموجب قانون أبوظبي رقم 3 لسنة 2015 عن التركيبات المعيبة لمدة سنة واحدة وعن العيوب الإنشائية لمدة 10 سنوات من تاريخ شهادة الإنجاز، وتجعل قائمة العيوب المؤرخة والمصوّرة متابعة هذه المطالبات أسهل بكثير."
+    },
+    {
+     "q": "Can I refuse handover because of snags in Abu Dhabi?",
+     "a": "It depends on your sale agreement and how serious the defects are. Cosmetic snags are normally recorded and fixed after you accept the keys, and refusing over them can leave you liable for late-payment or holding charges. Defects that make the home unsafe or unusable, or a unit that departs from the agreed specification, are grounds to delay acceptance in writing until they are fixed.",
+     "q_ar": "هل يمكنني رفض الاستلام بسبب العيوب في أبوظبي؟",
+     "a_ar": "يعتمد ذلك على عقد البيع ومدى جسامة العيوب. فالعيوب الشكلية تُسجَّل عادةً وتُصلح بعد استلام المفاتيح، وقد يعرّضك الرفض بسببها لرسوم تأخير أو احتفاظ. أما العيوب التي تجعل المنزل غير آمن أو غير صالح للاستخدام، أو اختلاف الوحدة عن المواصفات المتفق عليها، فتبرر تأجيل القبول كتابيًا حتى إصلاحها."
+    },
+    {
+     "q": "What tools does a snagging inspector use?",
+     "a": "Beyond a visual check, a thorough inspection uses a moisture meter to find hidden leaks, a thermal camera to spot insulation gaps, air leaks and overheating electrics, a socket tester, levels to check floors and tiles, and water-flow and drainage tests on every outlet. These find faults behind finished walls that a buyer walking through the unit would not see.",
+     "q_ar": "ما الأدوات التي يستخدمها مفتش العيوب؟",
+     "a_ar": "إلى جانب الفحص البصري، يستخدم الفحص الشامل جهاز قياس الرطوبة لاكتشاف التسربات الخفية، وكاميرا حرارية لرصد ثغرات العزل وتسرب الهواء وسخونة التمديدات الكهربائية، وجهاز فحص المقابس، وموازين لفحص استواء الأرضيات والبلاط، واختبارات تدفق المياه والصرف في كل مخرج. وتكشف هذه الأدوات أعطالًا خلف الجدران المشطّبة لا يراها المشتري عند تجوّله في الوحدة."
+    },
+    {
+     "q": "Should I get a snagging inspection on a resale property in Abu Dhabi?",
+     "a": "Yes, as a pre-purchase inspection before you sign the sale agreement. A resale home has no handover stage, so defects you find become points to negotiate on price or repairs rather than items the developer must fix, unless the building is still within the developer's liability periods. Check the air conditioning, water heaters and wet areas in particular.",
+     "q_ar": "هل أحتاج إلى فحص العيوب عند شراء عقار إعادة بيع في أبوظبي؟",
+     "a_ar": "نعم، كفحص قبل الشراء وقبل توقيع عقد البيع. فعقار إعادة البيع لا يمر بمرحلة استلام من المطوّر، لذا تصبح العيوب التي تكتشفها نقاطًا للتفاوض على السعر أو الإصلاحات، لا بنودًا ملزمة للمطوّر، ما لم يكن المبنى لا يزال ضمن فترات مسؤولية المطوّر. وافحص بوجه خاص التكييف وسخانات المياه والمناطق الرطبة."
+    },
+    {
+     "q": "What happens to defects found after moving into an Abu Dhabi property?",
+     "a": "Report them to the developer in writing, with photos and dates, as soon as they appear. Faults in installations such as air conditioning and plumbing fall within the developer's one-year liability, and structural defects within the 10-year period. Problems in lifts, corridors or pools are for the building's management company, which must now be ADREC-accredited.",
+     "q_ar": "ماذا يحدث للعيوب التي تظهر بعد السكن في عقار بأبوظبي؟",
+     "a_ar": "أبلغ المطوّر بها كتابيًا مع الصور والتواريخ فور ظهورها. فأعطال التركيبات مثل التكييف والسباكة تقع ضمن مسؤولية المطوّر لمدة سنة واحدة، والعيوب الإنشائية ضمن فترة الـ10 سنوات. أما مشكلات المصاعد والممرات وأحواض السباحة فمن مسؤولية شركة إدارة المبنى، التي يجب أن تكون الآن معتمدة من مركز أبوظبي العقاري."
+    },
+    {
+     "q": "Who pays for a snagging inspection in Abu Dhabi?",
+     "a": "The buyer, because the inspector works for you rather than the developer. That independence is the point: the report is filed with the developer as a defect list it must remedy under the sale agreement, at its own cost. A re-inspection after the repairs confirms the work, and the report stays useful as evidence if a defect recurs later.",
+     "q_ar": "من يدفع تكلفة فحص العيوب في أبوظبي؟",
+     "a_ar": "يدفعها المشتري، لأن المفتش يعمل لصالحك لا لصالح المطوّر. وهذه الاستقلالية هي الغاية: إذ يُقدَّم التقرير إلى المطوّر قائمةً بالعيوب التي يجب أن يعالجها على نفقته وفق عقد البيع. ويؤكد الفحص الثاني بعد الإصلاحات إنجاز العمل، ويبقى التقرير دليلًا مفيدًا إذا تكرر أي عيب لاحقًا."
+    }
+   ]
+  },
+  {
+   "kind": "faqdoc",
+   "slug": "service-tenant-matchmaking",
+   "name": "Tenant matchmaking",
+   "route": "/services/tenant-matchmaking",
+   "pageSlug": "subpage/faq/service-tenant-matchmaking",
+   "sources": [
+    "page copy: lib/seeds/services.ts",
+    "propertyfinder.ae / khaleejtimes.com / bayut.com — Tawtheeq registration",
+    "thenationalnews.com / gulfnews.com / bayut.com — Madhmoun permits since 7 July 2025",
+    "thenationalnews.com — 3% municipality housing fee (2016)",
+    "wam.ae / khaleejtimes.com — TAQA Distribution replaces ADDC/AADC (Jan 2025)",
+    "thenationalnews.com / khaleejtimes.com / aoshearman.com — ADREC 0% rent cap, 2 June 2026",
+    "dlapiperrealworld.com / bsalaw.com — Abu Dhabi Law No. 20 of 2006, Article 20 notice"
+   ],
+   "faq": [
+    {
+     "q": "How is a tenancy registered in Abu Dhabi?",
+     "a": "Through Tawtheeq, Abu Dhabi's lease registration system, which the landlord or the landlord's agent completes on DARI or TAMM once the contract is signed, using the tenant's Emirates ID and passport and the title deed. Abu Dhabi does not use Ejari, which is Dubai's system. The registered contract is what the tenant needs to connect utilities and sponsor family visas.",
+     "q_ar": "كيف يُسجَّل عقد الإيجار في أبوظبي؟",
+     "a_ar": "عبر نظام «توثيق» لتسجيل عقود الإيجار في أبوظبي، الذي يتولاه المؤجر أو وكيله عبر منصة «داري» أو «تم» بعد توقيع العقد، باستخدام الهوية الإماراتية للمستأجر وجواز سفره وسند الملكية. ولا تستخدم أبوظبي نظام «إيجاري» الخاص بدبي. والعقد المسجّل هو ما يحتاجه المستأجر لتوصيل المرافق وكفالة أفراد أسرته."
+    },
+    {
+     "q": "Can I let a luxury villa in Abu Dhabi without listing it publicly?",
+     "a": "Yes. Nothing requires a public listing, and private matching with known families or companies keeps the address out of portal feeds. If the property is advertised anywhere, the advert needs an ADREC permit issued through DARI, so a confidential search works through direct introductions and private viewings instead. The tenancy is then registered on Tawtheeq like any other.",
+     "q_ar": "هل يمكنني تأجير فيلا فاخرة في أبوظبي دون إعلان عام؟",
+     "a_ar": "نعم. فلا يوجد ما يُلزم بالإعلان العام، والمطابقة الخاصة مع عائلات أو شركات معروفة تُبقي العنوان خارج المواقع العقارية. وإذا أُعلن عن العقار في أي مكان فيحتاج الإعلان إلى تصريح من مركز أبوظبي العقاري يصدر عبر منصة «داري»، لذا يعتمد البحث السري على التعارف المباشر والمعاينات الخاصة. ثم يُسجَّل عقد الإيجار في نظام «توثيق» كأي عقد آخر."
+    },
+    {
+     "q": "How is rent usually paid in Abu Dhabi?",
+     "a": "Annual rent is usually paid in advance by post-dated cheques, with the number of cheques agreed in the contract; fewer cheques can secure a lower rent, and bank transfers are increasingly accepted. A refundable security deposit is paid on signing and returned at move-out, less any damage beyond normal wear. Corporate tenants often pay annually in one payment.",
+     "q_ar": "كيف يُدفع الإيجار عادةً في أبوظبي؟",
+     "a_ar": "يُدفع الإيجار السنوي عادةً مقدمًا بشيكات مؤجلة، ويُتفق في العقد على عددها، وقد يتيح عدد أقل من الشيكات إيجارًا أقل، كما يزداد قبول التحويلات البنكية. ويُدفع تأمين مسترد عند التوقيع ويُعاد عند الإخلاء بعد خصم أي أضرار تتجاوز الاستهلاك العادي. وكثيرًا ما يدفع المستأجرون من الشركات الإيجار السنوي دفعة واحدة."
+    },
+    {
+     "q": "Who pays the municipality fee on a rented home in Abu Dhabi?",
+     "a": "The tenant, if an expatriate. Abu Dhabi's housing fee is 3% of the annual rent registered on Tawtheeq, collected in monthly portions through the tenant's TAQA Distribution electricity and water bill. UAE national tenants are exempt. On a high-value villa the fee is material, so tenants weighing a lease usually include it when comparing homes.",
+     "q_ar": "من يدفع رسم البلدية على المنزل المؤجر في أبوظبي؟",
+     "a_ar": "يدفعه المستأجر إذا كان وافدًا. فرسم السكن في أبوظبي 3% من الإيجار السنوي المسجّل في نظام «توثيق»، ويُحصَّل على دفعات شهرية عبر فاتورة الكهرباء والمياه الصادرة عن «طاقة للتوزيع». ويُعفى منه المستأجرون المواطنون. وفي الفلل مرتفعة القيمة يكون هذا الرسم كبيرًا، لذا يحتسبه المستأجرون عادةً عند المقارنة بين المنازل."
+    },
+    {
+     "q": "Can the rent be increased at renewal in Abu Dhabi?",
+     "a": "Not at present. Since 2 June 2026 the Abu Dhabi Real Estate Centre has held the permitted increase on renewal at 0%, down from 5%, until further notice, for residential, commercial and industrial leases. Properties under ADGM's own framework are excluded. Landlords setting the first rent for a high-end villa should price it carefully, because they cannot raise it on renewal while the measure lasts.",
+     "q_ar": "هل يمكن زيادة الإيجار عند التجديد في أبوظبي؟",
+     "a_ar": "ليس في الوقت الحالي. فمنذ 2 يونيو 2026 ثبّت مركز أبوظبي العقاري نسبة الزيادة المسموح بها عند التجديد عند 0% بعد أن كانت 5%، حتى إشعار آخر، للعقود السكنية والتجارية والصناعية. ولا يشمل ذلك العقارات الخاضعة لإطار ADGM الخاص. وينبغي للمؤجرين الذين يحددون الإيجار الأول لفيلا فاخرة تسعيرها بعناية، لأنهم لا يستطيعون رفعه عند التجديد ما دام القرار ساريًا."
+    },
+    {
+     "q": "What checks are done on a tenant in Abu Dhabi?",
+     "a": "For an individual, a passport, residence visa and Emirates ID, usually with an employment letter or salary certificate to show the rent is affordable. For a company, its trade licence, the signatory's authority and the occupier's details. These are the documents Tawtheeq registration needs anyway, and for a high-value lease references from a previous landlord are common.",
+     "q_ar": "ما الفحوصات التي تُجرى على المستأجر في أبوظبي؟",
+     "a_ar": "للفرد: جواز السفر وتأشيرة الإقامة والهوية الإماراتية، وعادةً خطاب من جهة العمل أو شهادة راتب تُثبت القدرة على دفع الإيجار. وللشركة: الرخصة التجارية وصلاحية المفوَّض بالتوقيع وبيانات الشاغل. وهي المستندات التي يحتاجها التسجيل في نظام «توثيق» أصلًا، وفي العقود مرتفعة القيمة يشيع طلب مراجع من مؤجر سابق."
+    },
+    {
+     "q": "How much notice is needed to end a lease in Abu Dhabi?",
+     "a": "Two months before expiry for a residential lease and three months for a commercial one, under Article 20 of Abu Dhabi Law No. 20 of 2006. Without notice from either side, the lease renews automatically on the same terms. Early termination before expiry follows the contract's own clause, so agree it at the start, especially with corporate tenants on assignment.",
+     "q_ar": "ما مدة الإشعار اللازمة لإنهاء عقد الإيجار في أبوظبي؟",
+     "a_ar": "شهران قبل انتهاء العقد للإيجار السكني وثلاثة أشهر للإيجار التجاري، وفق المادة 20 من قانون أبوظبي رقم 20 لسنة 2006. ومن دون إشعار من أي طرف يتجدد العقد تلقائيًا بالشروط نفسها. أما الإنهاء المبكر قبل انتهاء المدة فيخضع لبند العقد نفسه، لذا اتفق عليه منذ البداية، خاصة مع المستأجرين من الشركات الذين ينتدبون موظفيهم."
+    },
+    {
+     "q": "Can a company lease a villa in Abu Dhabi for an executive?",
+     "a": "Yes. A company can be the tenant, with the contract signed by an authorised signatory, registered on Tawtheeq and supported by its trade licence, while the executive and family live in the home. Corporate leases often run for the length of an assignment and include an early-termination clause for relocation. The 3% municipality fee is charged through the utility bill as usual.",
+     "q_ar": "هل يمكن لشركة استئجار فيلا في أبوظبي لأحد كبار موظفيها؟",
+     "a_ar": "نعم. يمكن أن تكون الشركة هي المستأجر، على أن يوقّع العقد مفوَّض بالتوقيع ويُسجَّل في نظام «توثيق» مع تقديم رخصتها التجارية، بينما يسكن الموظف وأسرته المنزل. وكثيرًا ما تمتد عقود الشركات طوال مدة الانتداب، وتتضمن بندًا للإنهاء المبكر عند النقل. ويُحصَّل رسم البلدية البالغ 3% عبر فاتورة المرافق كالمعتاد."
+    }
+   ]
+  }
+ ]
+}

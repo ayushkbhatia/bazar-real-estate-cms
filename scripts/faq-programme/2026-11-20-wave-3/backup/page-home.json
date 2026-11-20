@@ -1,0 +1,50 @@
+{
+  "key": "faqs",
+  "values": {
+    "body": "Expert answers to guide your real estate decisions.",
+    "items": [
+      {
+        "a": "Established in 2005, Bazar Real Estate is an award-winning real estate company in Abu Dhabi, providing professional property sales, leasing, investment consultancy, and property management services. With extensive market experience and strong relationships with leading UAE developers, we help buyers, sellers, and investors make informed real estate decisions.",
+        "q": "What makes Bazar Real Estate a trusted real estate company in Abu Dhabi?",
+        "a_ar": "تأسست بازار العقارية عام 2005، وهي شركة عقارية حائزة على جوائز في أبوظبي، تقدم خدمات بيع وتأجير العقارات والاستشارات الاستثمارية وإدارة العقارات. بفضل خبرتنا الواسعة في السوق وعلاقاتنا القوية مع أبرز المطورين العقاريين في الإمارات، نساعد المشترين والبائعين والمستثمرين على اتخاذ قرارات عقارية مدروسة.",
+        "q_ar": "ما الذي يجعل بازار العقارية شركة عقارية موثوقة في أبوظبي؟"
+      },
+      {
+        "a": "Bazar Real Estate offers a comprehensive range of real estate services, including residential and commercial property sales, leasing, property management, real estate investment consultancy, property valuation, and mortgage advisory. Our services support buyers, sellers, landlords, and investors across Abu Dhabi and the UAE.",
+        "q": "What real estate services does Bazar Real Estate offer in Abu Dhabi and the UAE?",
+        "a_ar": "تقدم بازار العقارية مجموعة متكاملة من الخدمات العقارية، تشمل بيع وتأجير العقارات السكنية والتجارية، وإدارة العقارات، والاستشارات الاستثمارية العقارية، وتقييم العقارات، والاستشارات التمويلية. وتهدف خدماتنا إلى تلبية احتياجات المشترين والبائعين والملاك والمستثمرين في أبوظبي ومختلف أنحاء الإمارات.",
+        "q_ar": "ما الخدمات العقارية التي تقدمها بازار العقارية في أبوظبي والإمارات؟"
+      },
+      {
+        "a": "Buying property in Abu Dhabi is easier with professional guidance from Bazar Real Estate. Our property consultants help you explore apartments, villas, townhouses, and investment properties in prime locations, compare available options, arrange viewings, and navigate the purchasing process from property selection to ownership transfer.",
+        "q": "How can I buy a property in Abu Dhabi through Bazar Real Estate?",
+        "a_ar": "يمكنك شراء عقار في أبوظبي بسهولة مع الدعم المتخصص من بازار العقارية. يساعدك مستشارونا العقاريون في استكشاف الشقق والفلل والتاون هاوس والعقارات الاستثمارية في أبرز المناطق، ومقارنة الخيارات المتاحة، وترتيب المعاينات، وإتمام إجراءات الشراء بدءا من اختيار العقار وحتى نقل الملكية.",
+        "q_ar": "كيف يمكنني شراء عقار في أبوظبي من خلال بازار العقارية؟"
+      },
+      {
+        "a": "Yes. Bazar Real Estate provides professional property selling and leasing services in Abu Dhabi. Our team assists property owners with market valuations, competitive pricing strategies, property listings, marketing, viewings, and negotiations to connect their properties with qualified buyers and tenants.",
+        "q": "Can Bazar Real Estate help me sell or rent out my property in Abu Dhabi?",
+        "a_ar": "نعم، تقدم بازار العقارية خدمات متخصصة لبيع وتأجير العقارات في أبوظبي. يساعد فريقنا الملاك في تقييم العقارات، وتحديد الأسعار التنافسية، وإدراج العقارات وتسويقها، وتنظيم المعاينات، وإدارة المفاوضات للوصول إلى المشترين والمستأجرين المناسبين.",
+        "q_ar": "هل يمكن لبازار العقارية مساعدتي في بيع أو تأجير عقاري في أبوظبي؟"
+      },
+      {
+        "a": "Yes. Bazar Real Estate offers access to off-plan properties and new residential developments from leading real estate developers across the UAE, including Aldar, Modon, Bloom, and other established developers. Our consultants help buyers and investors compare project locations, property prices, payment plans, and investment opportunities.",
+        "q": "Does Bazar Real Estate offer off-plan properties and new real estate projects in the UAE?",
+        "a_ar": "نعم، توفر بازار العقارية مجموعة من العقارات تحت الإنشاء والمشاريع السكنية الجديدة من أبرز المطورين العقاريين في الإمارات، بما في ذلك الدار ومدن وبلووم وغيرهم. يساعد مستشارونا المشترين والمستثمرين في مقارنة مواقع المشاريع وأسعار العقارات وخطط الدفع والفرص الاستثمارية المتاحة.",
+        "q_ar": "هل توفر بازار العقارية عقارات تحت الإنشاء ومشاريع عقارية جديدة في الإمارات؟"
+      },
+      {
+        "a": "Yes. Bazar Real Estate provides mortgage consultation and application assistance in the UAE through its banking partners. Whether you are buying your first home or an investment property, our mortgage advisors can guide you through financing options, eligibility requirements, mortgage pre-approval, and the application process.",
+        "q": "Can Bazar Real Estate help me apply for a mortgage in the UAE?",
+        "a_ar": "نعم، تقدم بازار العقارية خدمات الاستشارات التمويلية والمساعدة في تقديم طلبات التمويل العقاري في الإمارات بالتعاون مع شركائها من البنوك. سواء كنت ترغب في شراء منزلك الأول أو عقار استثماري، يساعدك مستشارونا في التعرف على خيارات التمويل وشروط الأهلية والحصول على الموافقة المبدئية وإتمام إجراءات طلب التمويل العقاري.",
+        "q_ar": "هل يمكن لبازار العقارية مساعدتي في التقدم بطلب تمويل عقاري في الإمارات؟"
+      }
+    ],
+    "body_ar": "إجابات من خبراء تساعدك على اتخاذ قراراتك العقارية.",
+    "eyebrow": "FAQs",
+    "heading": "Frequently Asked Questions",
+    "eyebrow_ar": "الأسئلة الشائعة",
+    "heading_ar": "الأسئلة الشائعة"
+  },
+  "enabled": true
+}

@@ -1,0 +1,60 @@
+{
+  "key": "faq",
+  "values": {
+    "intro": null,
+    "items": [
+      {
+        "a": "Generally no: Al Shahama is not a designated investment area, so foreign freehold is not available and its villas and apartments are owned by UAE nationals. Expatriates can rent, and long-term rights such as usufruct of up to 99 years are possible only by agreement with an owner. Check a property's status on DARI before committing.",
+        "q": "Can foreigners buy property in Al Shahama?",
+        "a_ar": "في الغالب لا: فالشهامة ليست من مناطق الاستثمار المحددة، لذا لا يتاح فيها التملك الحر للأجانب، ويملك فللها وشققها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار، أما الحقوق طويلة الأجل مثل حق الانتفاع لمدة تصل إلى 99 عامًا فلا تكون إلا باتفاق مع المالك. ويجب التحقق من وضع العقار عبر منصة «داري» قبل الالتزام.",
+        "q_ar": "هل يمكن للأجانب شراء العقارات في الشهامة؟"
+      },
+      {
+        "a": "Al Shahama's apartment rental index was about AED 56 per sq ft a year, up 61.78% over 12 months, and New Shahama was slightly higher at about AED 60. On that basis a 1,000 sq ft apartment would rent for roughly AED 56,000 a year, still well below rents on Yas Island or Al Raha.",
+        "q": "How much is apartment rent in Al Shahama?",
+        "a_ar": "بلغ مؤشر إيجارات الشقق في الشهامة نحو 56 درهمًا للقدم المربع سنويًا، بارتفاع 61.78% خلال 12 شهرًا، وكان أعلى قليلًا في الشهامة الجديدة عند نحو 60 درهمًا. وعلى هذا الأساس يبلغ إيجار شقة مساحتها 1,000 قدم مربع نحو 56,000 درهم سنويًا تقريبًا، وهو أقل بكثير من الإيجارات في جزيرة ياس أو منطقة الراحة.",
+        "q_ar": "كم يبلغ إيجار الشقق في الشهامة؟"
+      },
+      {
+        "a": "Old Shahama is the original village, with older standalone villas on larger plots near Deerfields Mall and Emirates Park Zoo. New Shahama is the newer planned section, with a higher share of apartment buildings, where the apartment rental index was about AED 60 per sq ft a year. Both sit within the wider Al Shahama locality.",
+        "q": "What is the difference between Old Shahama and New Shahama?",
+        "a_ar": "الشهامة القديمة هي القرية الأصلية، وتضم فللًا مستقلة أقدم على قطع أكبر قرب ديرفيلدز مول وحديقة الإمارات للحيوانات. أما الشهامة الجديدة فهي الجزء المخطط الأحدث، وفيها نسبة أعلى من المباني السكنية، وبلغ مؤشر إيجار الشقق فيها نحو 60 درهمًا للقدم المربع سنويًا. وكلتاهما ضمن منطقة الشهامة الأوسع.",
+        "q_ar": "ما الفرق بين الشهامة القديمة والشهامة الجديدة؟"
+      },
+      {
+        "a": "Al Shahama is in north-eastern Abu Dhabi, next to Al Bahia and Al Rahba, on the main roads linking Abu Dhabi and Dubai. Yas Island is about 15–25 minutes away by car, Zayed International Airport 20–30 minutes, and Al Bahia 5–15 minutes. Times depend on traffic and where you start.",
+        "q": "Where is Al Shahama and how far is it from Yas Island?",
+        "a_ar": "تقع الشهامة في شمال شرق أبوظبي بجوار الباهية والرحبة، على الطرق الرئيسية التي تربط أبوظبي بدبي. وتبعد جزيرة ياس نحو 15 إلى 25 دقيقة بالسيارة، ومطار زايد الدولي من 20 إلى 30 دقيقة، والباهية من 5 إلى 15 دقيقة. وتختلف المدة بحسب حركة المرور ونقطة الانطلاق.",
+        "q_ar": "أين تقع الشهامة وكم تبعد عن جزيرة ياس؟"
+      },
+      {
+        "a": "Al Shahama offers standalone villas, many of them large family homes in Old Shahama, and apartments, concentrated in New Shahama's newer buildings. There are no master-developed off-plan projects selling in Al Shahama, so the market is ready homes for rent and sales between UAE nationals.",
+        "q": "What types of property are available in Al Shahama?",
+        "a_ar": "توفر الشهامة فللًا مستقلة، كثير منها منازل عائلية كبيرة في الشهامة القديمة، وشققًا تتركز في المباني الأحدث بالشهامة الجديدة. ولا توجد مشاريع على الخريطة من مطوّرين رئيسيين معروضة للبيع في الشهامة، لذا يقتصر السوق على منازل جاهزة للإيجار وصفقات بيع بين المواطنين.",
+        "q_ar": "ما أنواع العقارات المتوفرة في الشهامة؟"
+      },
+      {
+        "a": "Al Shahama suits residents who want lower rents and a suburban setting with easy road access towards both Abu Dhabi and Dubai. It has neighbourhood parks, local shops and services, and the Al Shahama bus station for public transport, with Deerfields Mall and Emirates Park Zoo close by.",
+        "q": "Is Al Shahama a good place to live?",
+        "a_ar": "تناسب الشهامة السكان الباحثين عن إيجارات أقل وبيئة في الضواحي مع سهولة الوصول بالطرق إلى أبوظبي ودبي. وتضم حدائق للأحياء ومتاجر وخدمات محلية ومحطة حافلات الشهامة للنقل العام، ويقع ديرفيلدز مول وحديقة الإمارات للحيوانات على مقربة منها.",
+        "q_ar": "هل الشهامة مكان مناسب للسكن؟"
+      },
+      {
+        "a": "Yes, relative to the islands: Al Shahama's apartment rental index rose 61.78% over 12 months but only to about AED 56 per sq ft a year, because rents started from a low base. That keeps Al Shahama one of the cheaper apartment areas within 15–25 minutes of Yas Island, though tenants renewing should budget for a larger increase than in recent years.",
+        "q": "Are rents still affordable in Al Shahama after the recent rise?",
+        "a_ar": "نعم مقارنة بالجزر: فقد ارتفع مؤشر إيجارات الشقق في الشهامة بنسبة 61.78% خلال 12 شهرًا، لكنه لم يتجاوز نحو 56 درهمًا للقدم المربع سنويًا لأن الإيجارات بدأت من مستوى منخفض. ويُبقي ذلك الشهامة من أرخص مناطق الشقق على بعد 15 إلى 25 دقيقة من جزيرة ياس، وإن كان على المستأجرين عند التجديد توقّع زيادة أكبر مما اعتادوه في السنوات الأخيرة.",
+        "q_ar": "هل ما زالت الإيجارات في الشهامة في المتناول بعد ارتفاعها الأخير؟"
+      },
+      {
+        "a": "Al Shahama is closer to Yas Island, at 15–25 minutes against Al Rahba's 25–35, and has more apartments and public transport. Al Rahba is the quieter villa and compound area, with a villa rental index of about AED 38 per sq ft a year and Al Rahba Hospital on hand. The two are 10–15 minutes apart.",
+        "q": "Is Al Shahama or Al Rahba better for renting a family home?",
+        "a_ar": "الشهامة أقرب إلى جزيرة ياس، من 15 إلى 25 دقيقة مقابل 25 إلى 35 دقيقة من الرحبة، وفيها عدد أكبر من الشقق ووسائل النقل العام. أما الرحبة فهي منطقة الفلل والمجمعات الأهدأ، بمؤشر إيجار للفلل يبلغ نحو 38 درهمًا للقدم المربع سنويًا، ويقع فيها مستشفى الرحبة. وتفصل بينهما مسافة 10 إلى 15 دقيقة.",
+        "q_ar": "أيهما أنسب لاستئجار منزل عائلي: الشهامة أم الرحبة؟"
+      }
+    ],
+    "heading": "Frequently Asked Questions About Al Shahama",
+    "intro_ar": null,
+    "heading_ar": "الأسئلة الشائعة حول الشهامة"
+  },
+  "enabled": true
+}

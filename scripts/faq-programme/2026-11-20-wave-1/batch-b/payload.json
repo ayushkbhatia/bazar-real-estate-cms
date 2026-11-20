@@ -46,19 +46,19 @@
     3
   ],
   "sourcedNotes": {
-    "2019": "u.ae — Abu Dhabi real estate law amended by Law No. 13 of 2019 (investment areas open to foreigners)",
-    "2000000 / 2": "adro.gov.ae — Golden Visa property threshold AED 2 million; 2% Abu Dhabi registration fee (DARI / broker guides)",
-    "10": "adro.gov.ae — 10-year Golden Visa",
+    "3": "Yasmina British Academy ages 3–18 (aldar.com)",
     "9": "u.ae — nine Abu Dhabi investment areas where foreigners may own",
+    "10": "adro.gov.ae — 10-year Golden Visa",
+    "2019": "u.ae — Abu Dhabi real estate law amended by Law No. 13 of 2019 (investment areas open to foreigners)",
+    "2200": "Raha International School — Gardens Campus, over 2,200 students (ris.ae / Wikipedia)",
+    "2000000 / 2": "adro.gov.ae — Golden Visa property threshold AED 2 million; 2% Abu Dhabi registration fee (DARI / broker guides)",
     "99 / 50": "u.ae — expatriate usufruct / ownership deeds up to 99 years; musataha 50 years renewable",
     "56000 / 62800 / 30000 / 37000": "2% of DB starting prices: Brabus Island 2,800,000; Fay Hills 3,140,000; Bab Al Qasr Garden Residence 66 1,500,000; Al Ghadeer Gardens 1,850,000",
     "1000 / 105000 / 53000 / 129000": "worked example: 1,000 sq ft × DB rental index (Al Raha 105, Khalifa City 53, Masdar City 129)",
     "64 / 2026 / 15 / 18 / 21": "Aldar / WAM, May 2026 — Al Ghadeer Gardens announced 15 May, sales opened 18 May, sold out 21 May, 64% of sales to expatriate and overseas buyers",
-    "2200": "Raha International School — Gardens Campus, over 2,200 students (ris.ae / Wikipedia)",
     "4400000 / 7710000 / 1150000 / 1550000 / 4300000 / 2300000 / 3100000 / 2670": "DB: published listings on these pages (properties.price_aed, built_up_ft2) — Fay Hills, Royal Park, The Gate Masdar, Bab Al Qasr Garden Residence 65, Al Ghadeer Gardens",
     "1 / 19": "DB: listing building names (Oasis 1, Bab Al Qasr Resort Residence 19)",
-    "952 / 1687 / 30.64 / 1962 / 12.91 / 105 / 53 / 38 / 35": "DB: neighbouring area's stats / nearby band cited for comparison (khalifa-city, masdar-city, al-raha, al-rahba)",
-    "3": "Yasmina British Academy ages 3–18 (aldar.com)"
+    "952 / 1687 / 30.64 / 1962 / 12.91 / 105 / 53 / 38 / 35": "DB: neighbouring area's stats / nearby band cited for comparison (khalifa-city, masdar-city, al-raha, al-rahba)"
   },
   "pages": [
     {
@@ -154,9 +154,9 @@
       "faq": [
         {
           "q": "Can foreigners buy property in Khalifa City?",
-          "a": "Only in designated projects: Khalifa City is not among the nine investment areas listed on u.ae, and most of its villa plots are owned by UAE nationals. Master-developed communities marketed to all nationalities, such as Taraf's Fay Hills, are the exception. Outside those, non-nationals can usually rent or take long-term rights, so confirm any plot's status on DARI before paying a deposit.",
+          "a": "Only in designated projects: Khalifa City is not among the nine investment areas listed on u.ae, and most of its villa plots are owned by UAE nationals. Master-developed communities marketed to all nationalities, such as Taraf's Fay Hills, are the exception. Outside those, non-nationals usually rent, so confirm any plot's status on DARI before paying a deposit.",
           "q_ar": "هل يمكن للأجانب شراء العقارات في مدينة خليفة؟",
-          "a_ar": "في المشاريع المحددة فقط: فمدينة خليفة ليست من مناطق الاستثمار التسع المدرجة على البوابة الرسمية لحكومة الإمارات، ومعظم قطع الفلل فيها مملوكة لمواطنين إماراتيين. وتُستثنى المجتمعات التي يطوّرها مطوّرون رئيسيون وتُسوَّق لجميع الجنسيات، مثل فاي هيلز من طرف. وخارج هذه المشاريع يقتصر حق غير المواطنين عادةً على الإيجار أو الحقوق طويلة الأجل، لذا يجب التحقق من وضع أي قطعة عبر منصة «داري» قبل دفع أي عربون."
+          "a_ar": "في المشاريع المحددة فقط: فمدينة خليفة ليست من مناطق الاستثمار التسع المدرجة على البوابة الرسمية لحكومة الإمارات، ومعظم قطع الفلل فيها مملوكة لمواطنين إماراتيين. وتُستثنى المجتمعات التي يطوّرها مطوّرون رئيسيون وتُسوَّق لجميع الجنسيات، مثل فاي هيلز من طرف. وخارج هذه المشاريع يقتصر حق غير المواطنين عادةً على الإيجار، لذا يجب التحقق من وضع أي قطعة عبر منصة «داري» قبل دفع أي عربون."
         },
         {
           "q": "How much do villas cost in Khalifa City in 2026?",
@@ -370,9 +370,9 @@
       "faq": [
         {
           "q": "Can foreigners buy property in Al Bahia?",
-          "a": "Generally no: Al Bahia is not one of the nine investment areas where Abu Dhabi allows foreign freehold, so ownership of its villas and plots is held by UAE nationals. Non-nationals can rent, and in some cases take long-term rights such as usufruct of up to 99 years. Check any specific property's status on DARI before agreeing terms.",
+          "a": "Generally no: Al Bahia is not one of the nine investment areas where Abu Dhabi allows foreign freehold, so ownership of its villas and plots is held by UAE nationals. Non-nationals can rent there. Check any specific property's status on DARI before agreeing terms.",
           "q_ar": "هل يمكن للأجانب شراء العقارات في الباهية؟",
-          "a_ar": "في الغالب لا: فالباهية ليست من مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ولذلك يملك فللها وأراضيها مواطنون إماراتيون. ويمكن لغير المواطنين الاستئجار، وفي بعض الحالات الحصول على حقوق طويلة الأجل مثل حق الانتفاع لمدة تصل إلى 99 عامًا. ويجب التحقق من وضع أي عقار بعينه عبر منصة «داري» قبل الاتفاق على الشروط."
+          "a_ar": "في الغالب لا: فالباهية ليست من مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ولذلك يملك فللها وأراضيها مواطنون إماراتيون. ويمكن لغير المواطنين الاستئجار فيها. ويجب التحقق من وضع أي عقار بعينه عبر منصة «داري» قبل الاتفاق على الشروط."
         },
         {
           "q": "How much does property cost in Al Bahia?",
@@ -431,9 +431,9 @@
       "faq": [
         {
           "q": "Can foreigners buy property in Al Rahba?",
-          "a": "Generally no: Al Rahba is outside the nine investment areas where Abu Dhabi permits foreign freehold, and its villas and compounds are owned by UAE nationals. Expatriates can rent there, and long-term rights such as usufruct of up to 99 years are possible only by agreement with the owner. Confirm any property's status on DARI first.",
+          "a": "Generally no: Al Rahba is outside the nine investment areas where Abu Dhabi permits foreign freehold, and its villas and compounds are owned by UAE nationals. Expatriates can rent there. Confirm any property's status on DARI first.",
           "q_ar": "هل يمكن للأجانب شراء العقارات في الرحبة؟",
-          "a_ar": "في الغالب لا: فالرحبة تقع خارج مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ويملك فللها ومجمعاتها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار فيها، أما الحقوق طويلة الأجل مثل حق الانتفاع لمدة تصل إلى 99 عامًا فلا تكون إلا باتفاق مع المالك. ويجب التحقق من وضع أي عقار عبر منصة «داري» أولًا."
+          "a_ar": "في الغالب لا: فالرحبة تقع خارج مناطق الاستثمار التسع التي تسمح فيها أبوظبي بالتملك الحر للأجانب، ويملك فللها ومجمعاتها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار فيها. ويجب التحقق من وضع أي عقار عبر منصة «داري» أولًا."
         },
         {
           "q": "How much is villa rent in Al Rahba?",
@@ -493,9 +493,9 @@
       "faq": [
         {
           "q": "Can foreigners buy property in Al Shahama?",
-          "a": "Generally no: Al Shahama is not a designated investment area, so foreign freehold is not available and its villas and apartments are owned by UAE nationals. Expatriates can rent, and long-term rights such as usufruct of up to 99 years are possible only by agreement with an owner. Check a property's status on DARI before committing.",
+          "a": "Generally no: Al Shahama is not a designated investment area, so foreign freehold is not available and its villas and apartments are owned by UAE nationals. Expatriates can rent there. Check a property's status on DARI before committing.",
           "q_ar": "هل يمكن للأجانب شراء العقارات في الشهامة؟",
-          "a_ar": "في الغالب لا: فالشهامة ليست من مناطق الاستثمار المحددة، لذا لا يتاح فيها التملك الحر للأجانب، ويملك فللها وشققها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار، أما الحقوق طويلة الأجل مثل حق الانتفاع لمدة تصل إلى 99 عامًا فلا تكون إلا باتفاق مع المالك. ويجب التحقق من وضع العقار عبر منصة «داري» قبل الالتزام."
+          "a_ar": "في الغالب لا: فالشهامة ليست من مناطق الاستثمار المحددة، لذا لا يتاح فيها التملك الحر للأجانب، ويملك فللها وشققها مواطنون إماراتيون. ويمكن للمقيمين الاستئجار فيها. ويجب التحقق من وضع العقار عبر منصة «داري» قبل الالتزام."
         },
         {
           "q": "How much is apartment rent in Al Shahama?",

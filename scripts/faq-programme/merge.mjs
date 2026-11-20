@@ -39,8 +39,11 @@ if (batches.length) {
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = payload.pages.reduce((t, p) => t + p.faq.length, 0);
-const route = (p) => (p.kind === "area" ? `/areas/${p.slug}` : `/developments/${p.slug}`);
-const label = (p) => (p.kind === "area" ? "area guide" : "project");
+const route = (p) =>
+  p.route ?? (p.kind === "area" ? `/areas/${p.slug}` : p.kind === "development" ? `/developments/${p.slug}` : p.pageSlug);
+const label = (p) =>
+  ({ area: "area guide", development: "project", page: "landing" })[p.kind] ??
+  (p.slug.startsWith("guide-") ? "guide" : p.slug.startsWith("service-") ? "service page" : p.slug.startsWith("tool-") ? "tool" : "page");
 
 const css = `
 @page { size: A4; margin: 12mm 14mm 11mm; }
