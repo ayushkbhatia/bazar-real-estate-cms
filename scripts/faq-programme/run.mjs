@@ -97,6 +97,20 @@ for (const page of payload.pages) {
     const units = await get(`development_unit_types?select=label,beds,size_from_ft2,size_to_ft2&development_id=eq.${row.id}`);
     const [areaPage] = await get(`pages?select=blocks&slug=eq.subpage/area/${row.area?.slug}`);
     facts = factText({ row, units, area: areaPage?.blocks });
+  } else if (page.kind === "page") {
+    // A master page (landing) whose FAQ is a section in its own document.
+    const key = page.sectionKey ?? "faq";
+    [row] = await get(`pages?select=id,slug,blocks,updated_at&slug=eq.${encodeURIComponent(page.pageSlug)}`);
+    if (!row) { problems.push(`${page.slug}: no pages row ${page.pageSlug}`); continue; }
+    if (!row.blocks.some((s) => s.key === key)) problems.push(`${page.slug}: no "${key}" section`);
+    facts = factText({ blocks: row.blocks });
+  } else if (page.kind === "faqdoc") {
+    // A page-FAQ document (subpage/faq/<key>, lib/master-pages/page-faqs.ts):
+    // one "faq" section, created on first write. Its page body is code copy, so
+    // figures are traced through sourcedNumbers.
+    if (!page.pageSlug?.startsWith("subpage/faq/")) { problems.push(`${page.slug}: faqdoc pageSlug must be subpage/faq/<key>`); continue; }
+    [row] = await get(`pages?select=id,slug,blocks,updated_at&slug=eq.${encodeURIComponent(page.pageSlug)}`);
+    facts = factText({ blocks: row?.blocks ?? [] });
   } else {
     problems.push(`${page.slug}: unknown kind ${page.kind}`);
     continue;
@@ -186,10 +200,26 @@ const clean = (f) => f.map(({ q, a, q_ar, a_ar }) => ({ q, a, q_ar, a_ar }));
 
 for (const { page, row } of plan) {
   const file = path.join(backupDir, `${page.kind}-${page.slug}.json`);
-  if (page.kind === "area") {
-    fs.writeFileSync(file, JSON.stringify(row.blocks.find((s) => s.key === "faq"), null, 2));
+  if (page.kind === "faqdoc" && !row) {
+    // First write: create the document. Eyebrow and heading are left to the
+    // registry defaults, so only the items are stored.
+    fs.writeFileSync(file, "null\n");
+    const r = await fetch(`${URL_}/rest/v1/pages`, {
+      method: "POST",
+      headers: { ...H, Prefer: "return=representation" },
+      body: JSON.stringify({
+        slug: page.pageSlug,
+        title: `${page.name ?? page.slug} (FAQ)`,
+        status: "published",
+        blocks: [{ key: "faq", enabled: true, values: { items: clean(page.faq) } }],
+      }),
+    });
+    console.log(r.ok ? `created ${page.pageSlug} (${page.faq.length})` : `FAILED ${page.pageSlug}: ${r.status} ${await r.text()}`);
+  } else if (page.kind === "area" || page.kind === "page" || page.kind === "faqdoc") {
+    const key = page.kind === "page" ? (page.sectionKey ?? "faq") : "faq";
+    fs.writeFileSync(file, JSON.stringify(row.blocks.find((s) => s.key === key), null, 2));
     const blocks = row.blocks.map((s) =>
-      s.key === "faq" ? { ...s, enabled: true, values: { ...s.values, items: clean(page.faq) } } : s,
+      s.key === key ? { ...s, enabled: true, values: { ...s.values, items: clean(page.faq) } } : s,
     );
     const out = await patch(
       `pages?id=eq.${row.id}&updated_at=eq.${encodeURIComponent(row.updated_at)}`,

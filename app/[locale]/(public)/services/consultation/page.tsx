@@ -19,6 +19,7 @@ import { mediaCards, valueCards } from "../_components/service-content";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import { localeAlternates } from "@/lib/i18n/metadata";
+import { PageFaq } from "../../_components/marketing/page-faq";
 
 export async function generateMetadata({
   params,
@@ -184,6 +185,8 @@ export default async function PropertyConsultationPage({
       {content.order.map((key) => (
         <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
       ))}
+      {/* Locale ambient: set by setRequestLocale above. */}
+      <PageFaq faqKey="service-consultation" />
     </div>
   );
 }

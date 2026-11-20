@@ -9,6 +9,7 @@ import { asLocale } from "@/lib/i18n/locales";
 import { localeAlternates } from "@/lib/i18n/metadata";
 import { ValuationWizard } from "./valuation-wizard";
 import { ValuationLeadGate } from "./_components/lead-gate";
+import { PageFaq } from "../../_components/marketing/page-faq";
 
 const METADATA: Metadata = {
   title: "Get a valuation",
@@ -110,6 +111,7 @@ export default async function ValuationPage({
       </section>
 
       <ValuationWizard areas={areas} />
+      <PageFaq faqKey="tool-valuation" locale={locale} />
     </div>
   );
 }

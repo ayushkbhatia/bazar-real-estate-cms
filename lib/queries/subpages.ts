@@ -20,6 +20,7 @@ import {
 } from "@/lib/master-pages/subpages";
 import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
+import { PAGE_FAQS } from "@/lib/master-pages/page-faqs";
 
 export type SubPageContent = {
   sections: ResolvedSection[];
@@ -311,7 +312,8 @@ export async function countSubPagesByKind(): Promise<
   // database.
   const sections = LIBRARY_SECTIONS.length;
   const search = SEARCH_HEADERS.length;
-  if (!isSupabaseConfigured) return { section: sections, search };
+  const faq = PAGE_FAQS.length;
+  if (!isSupabaseConfigured) return { section: sections, search, faq };
   // Staff session, so the development count includes drafts — the list it
   // links to shows them. Admin-only callers.
   const supabase = await createSupabaseServerClient();
@@ -342,6 +344,7 @@ export async function countSubPagesByKind(): Promise<
     agent: advisors.count ?? 0,
     section: sections,
     search,
+    faq,
   };
 }
 

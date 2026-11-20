@@ -8,6 +8,7 @@ import {
 } from "./subpages";
 import { LIBRARY_SECTIONS } from "./library";
 import { SEARCH_HEADERS } from "./search-headers";
+import { PAGE_FAQ_SECTION } from "./page-faqs";
 import { DEVELOPER_PAGE_SECTION } from "./developer-page";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "./development-page";
 import { PROPERTY_PAGE_COPY_SECTIONS } from "./property-page";
@@ -63,6 +64,9 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   for (const entry of SEARCH_HEADERS) {
     out.push({ origin: `search-header:${entry.key}`, def: entry.section });
   }
+  // Page FAQs (guides, service pages, tools): one section shape, hand-declared
+  // Arabic for its eyebrow and heading.
+  out.push({ origin: "page-faq", def: PAGE_FAQ_SECTION });
   // The shared copy behind every /developers/<slug> page. One document for all
   // 32 profiles, hand-declared Arabic in `defaults` like the search headers.
   out.push({ origin: "developer-page:copy", def: DEVELOPER_PAGE_SECTION });

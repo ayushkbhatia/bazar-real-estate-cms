@@ -8,6 +8,14 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../../_components/marketing/fluid";
 import { localeAlternates } from "@/lib/i18n/metadata";
+import { PageFaq } from "../../_components/marketing/page-faq";
+
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
 
 const METADATA: Metadata = {
   title: "Guides for Landlords · Renting Out in Abu Dhabi",
@@ -100,6 +108,7 @@ export default async function LandlordsHub({
           ))}
         </div>
       </section>
+      <PageFaq faqKey="guide-for-landlords" locale={locale} />
     </div>
   );
 }

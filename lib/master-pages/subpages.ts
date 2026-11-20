@@ -31,7 +31,8 @@ export type SubPageKind =
   | "property"
   | "section"
   | "search"
-  | "agent";
+  | "agent"
+  | "faq";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -142,6 +143,21 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     description:
       "One profile per advisor, built from a shared template — the wording every profile carries, and what each advisor's own page shows.",
     itemLabel: "advisor page",
+  },
+  {
+    /*
+     * The FAQ at the foot of each guide, service page and tool: pages whose
+     * body is copy in code, so the questions have a document of their own
+     * (`lib/master-pages/page-faqs.ts`).
+     */
+    kind: "faq",
+    label: "Page FAQs",
+    publicPath: "/",
+    pathLabel: "Guides, service pages and tools",
+    adminPath: "/admin/pages/sub/faq",
+    description:
+      "The questions at the foot of each guide, service page and tool, published to search engines as an FAQ.",
+    itemLabel: "page FAQ",
   },
 ];
 

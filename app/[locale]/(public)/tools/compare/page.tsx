@@ -36,6 +36,7 @@ import { CompareToolbar } from "./compare-toolbar";
 import { PickerDrawer } from "./_components/picker-drawer";
 import { InvestmentMetrics } from "./_components/investment-metrics";
 import { VerdictBand } from "./_components/verdict-band";
+import { PageFaq } from "../../_components/marketing/page-faq";
 
 /**
  * A static `metadata` export cannot see the locale, so `/ar/tools/compare`
@@ -123,7 +124,14 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
   const properties = await getComparableProperties(requestedIds);
 
   if (requestedIds.length === 0) {
-    return <EmptyState copy={copy} />;
+    // The bare URL is the one search engines index, so the questions render
+    // here; a comparison of picked listings is the visitor's own, not a page.
+    return (
+      <>
+        <EmptyState copy={copy} />
+        <PageFaq faqKey="tool-compare" locale={locale} />
+      </>
+    );
   }
 
   // Some ids may not resolve (unpublished, deleted, bad uuid). Keep the

@@ -6,6 +6,13 @@ import type { Metadata } from "next";
 import { getSeedServiceBySlug } from "@/lib/seeds/services";
 import { ServicePage } from "../_components/service-page";
 
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
+
 const service = getSeedServiceBySlug("invest");
 
 export async function generateMetadata({

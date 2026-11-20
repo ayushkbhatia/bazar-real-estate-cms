@@ -6,6 +6,13 @@ import { GuideShell } from "../_components/guide-shell";
 import { GoldenVisaChecker } from "./_checker";
 import { localeAlternates } from "@/lib/i18n/metadata";
 
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
+
 const METADATA: Metadata = {
   title: "UAE Golden Visa via property — 2026 guide",
   description:
@@ -53,6 +60,7 @@ export default async function GoldenVisaPage({
   const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
+      faqKey="guide-golden-visa"
       locale={locale}
       eyebrow={t("goldenVisa.eyebrow")}
       title={t("goldenVisa.title")}

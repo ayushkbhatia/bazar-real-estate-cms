@@ -12,6 +12,7 @@ import {
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
+import { PAGE_FAQ_SECTION } from "@/lib/master-pages/page-faqs";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "@/lib/master-pages/development-page";
 import { DEVELOPER_PAGE_SECTION } from "@/lib/master-pages/developer-page";
 import { PROPERTY_PAGE_COPY_SECTIONS } from "@/lib/master-pages/property-page";
@@ -92,6 +93,9 @@ function everySlot(): Slot[] {
       ...collect(`search-header/${entry.key}·${s.key}`, s.fields, s.defaults),
     );
   }
+  out.push(
+    ...collect(`page-faq·${PAGE_FAQ_SECTION.key}`, PAGE_FAQ_SECTION.fields, PAGE_FAQ_SECTION.defaults),
+  );
   {
     const s = DEVELOPER_PAGE_SECTION;
     out.push(...collect(`developer-page·${s.key}`, s.fields, s.defaults));

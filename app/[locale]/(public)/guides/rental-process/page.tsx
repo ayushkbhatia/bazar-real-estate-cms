@@ -5,6 +5,13 @@ import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { localeAlternates } from "@/lib/i18n/metadata";
 
+/**
+ * Hourly, because the page-FAQ at the foot is a database document
+ * (/admin/pages/sub/faq). A save revalidates on demand; this catches writes
+ * that bypass the editor.
+ */
+export const revalidate = 3600;
+
 const METADATA: Metadata = {
   title: "The Abu Dhabi Rental Process, Step by Step",
   description:
@@ -64,6 +71,7 @@ export default async function RentalProcessPage({
   const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
+      faqKey="guide-rental-process"
       locale={locale}
       eyebrow={t("rentalProcess.eyebrow")}
       title={t("rentalProcess.title")}

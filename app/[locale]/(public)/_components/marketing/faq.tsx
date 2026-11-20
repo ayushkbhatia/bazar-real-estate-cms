@@ -1,17 +1,24 @@
 import { Plus } from "lucide-react";
+import { FaqJsonLd } from "./faq-json-ld";
 
 type Props = {
   /** [question, answer][] */
   items: [string, string][];
+  /**
+   * Publish the questions as `FAQPage` structured data (default). Off only
+   * where the page already emits its own for the same questions.
+   */
+  schema?: boolean;
 };
 
 /**
  * Numbered Q/A list. Uses native <details>/<summary> so it stays keyboard- and
  * screen-reader-accessible with no client JS (the handoff's `FAQ`).
  */
-export function Faq({ items }: Props) {
+export function Faq({ items, schema = true }: Props) {
   return (
     <div className="border-t border-bz-border">
+      {schema ? <FaqJsonLd items={items} /> : null}
       {items.map(([q, a], i) => (
         <details
           key={q}

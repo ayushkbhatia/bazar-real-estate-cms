@@ -18,6 +18,7 @@ import { mediaCards, stepPairs, valueCards } from "../_components/service-conten
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 import { localeAlternates } from "@/lib/i18n/metadata";
+import { PageFaq } from "../../_components/marketing/page-faq";
 
 export async function generateMetadata({
   params,
@@ -169,6 +170,7 @@ export default async function PropertyManagementPage({
       {content.order.map((key) => (
         <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
       ))}
+      <PageFaq faqKey="service-manage" locale={locale} />
     </div>
   );
 }
