@@ -15,7 +15,7 @@ export const revalidate = 3600;
 const METADATA: Metadata = {
   title: "KYC for non-resident property buyers in the UAE",
   description:
-    "The KYC and AML documentation non-resident buyers should expect when acquiring UAE property — source of funds, banking, and the DLD transfer process.",
+    "The KYC and AML documentation non-resident buyers should expect when buying property in Abu Dhabi — source of funds, banking, and the DARI transfer.",
 };
 
 /** English as written above; Arabic from the site's store on /ar. */

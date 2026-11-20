@@ -114,12 +114,13 @@ export function MortgageScenarioPdf({
             Pre-approval typically takes 3-5 working days.
           </Text>
           <Text style={{ color: palette.ink2, fontSize: 10, marginBottom: 6 }}>
-            Non-resident buyers face a 50% LTV cap; resident buyers benefit
-            from up to 75% for first homes (Central Bank Regulation 31).
+            Non-resident buyers can usually borrow up to 50%; UAE residents up
+            to 80% on a first home under AED 5 million (UAE Central Bank).
           </Text>
           <Text style={{ color: palette.ink2, fontSize: 10 }}>
-            DLD transfer fee (4%) and trustee fee are payable separately at
-            transfer. Bazar advisory fee 1.5% applies on engagement close.
+            The 2% DARI registration fee and 0.1% mortgage registration are
+            payable separately at transfer. Bazar advisory fee 1.5% applies on
+            engagement close.
           </Text>
         </View>
 

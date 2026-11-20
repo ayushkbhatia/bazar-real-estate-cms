@@ -43,7 +43,7 @@ const route = (p) =>
   p.route ?? (p.kind === "area" ? `/areas/${p.slug}` : p.kind === "development" ? `/developments/${p.slug}` : p.pageSlug);
 const label = (p) =>
   ({ area: "area guide", development: "project", page: "landing" })[p.kind] ??
-  (p.slug.startsWith("guide-") ? "guide" : p.slug.startsWith("service-") ? "service page" : p.slug.startsWith("tool-") ? "tool" : "page");
+  (p.slug.startsWith("guide-") ? "guide" : p.slug.startsWith("service-") ? "service page" : p.slug.startsWith("tool-") ? "tool" : p.slug.startsWith("developer-") ? "developer profile" : "page");
 
 const css = `
 @page { size: A4; margin: 12mm 14mm 11mm; }

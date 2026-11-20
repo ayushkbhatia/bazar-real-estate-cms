@@ -136,11 +136,12 @@ describe("cashToClose", () => {
   };
   const result = cashToClose(inputs);
 
-  it("emits every expected line in the design's table", () => {
+  it("emits every expected line, without Dubai's trustee office", () => {
+    // Abu Dhabi has no trustee offices: the fee defaults to 0 and a 0 flat fee
+    // is not a line.
     expect(result.lines.map((l) => l.key)).toEqual([
       "down_payment",
       "dld_transfer",
-      "trustee_office",
       "mortgage_registration",
       "bank_arrangement",
       "property_valuation",
@@ -149,13 +150,14 @@ describe("cashToClose", () => {
     ]);
   });
 
-  it("hits the design's headline numbers", () => {
-    // Spot-check the values shown in screens/mortgage.jsx.
+  it("charges Abu Dhabi's fees, not Dubai's", () => {
+    // 2% DARI registration on the price and 0.1% mortgage registration on the
+    // loan (ADREC). The design's mockup showed Dubai's 4% / 0.25% / trustee.
     const byKey = Object.fromEntries(result.lines.map((l) => [l.key, l.amountAed]));
     expect(byKey.down_payment).toBe(1_050_000); // 25% of 4.2M
-    expect(byKey.dld_transfer).toBe(168_000); // 4% of 4.2M
-    expect(byKey.trustee_office).toBe(4_200);
-    expect(byKey.mortgage_registration).toBe(7_875); // 0.25% × 3.15M
+    expect(byKey.dld_transfer).toBe(84_000); // 2% of 4.2M
+    expect(byKey.trustee_office).toBeUndefined();
+    expect(byKey.mortgage_registration).toBe(3_150); // 0.1% × 3.15M
     expect(byKey.bank_arrangement).toBe(31_500); // 1% × 3.15M
     expect(byKey.bazar_advisory).toBe(63_000); // 1.5% × 4.2M
     expect(byKey.property_valuation).toBe(3_150);
@@ -180,12 +182,11 @@ describe("cashToClose", () => {
     // unit test rather than only by a browser.
     const byKey = Object.fromEntries(result.lines.map((l) => [l.key, l.pct]));
     expect(byKey.down_payment).toBe("25%");
-    expect(byKey.dld_transfer).toBe("4%");
-    expect(byKey.mortgage_registration).toBe("0.25%");
+    expect(byKey.dld_transfer).toBe("2%");
+    expect(byKey.mortgage_registration).toBe("0.1%");
     expect(byKey.bank_arrangement).toBe("1%");
     expect(byKey.bazar_advisory).toBe("1.5%");
     // Flat statutory fees have no rate to show.
-    expect(byKey.trustee_office).toBeNull();
     expect(byKey.property_valuation).toBeNull();
     expect(byKey.noc_misc).toBeNull();
   });
@@ -262,18 +263,18 @@ describe("editable assumptions", () => {
     termYears: 25,
   };
 
-  it("re-rates the DLD line and re-totals the table", () => {
+  it("re-rates the registration line and re-totals the table", () => {
     const base = cashToClose(inputs);
     const raised = cashToClose(inputs, {
       assumptions: bump({ dldTransferPct: 0.05 }),
     });
     const line = (c: typeof base) =>
       c.lines.find((l) => l.key === "dld_transfer")!;
-    expect(line(base).amountAed).toBe(160_000);
+    expect(line(base).amountAed).toBe(80_000); // 2% (Abu Dhabi default)
     expect(line(raised).amountAed).toBe(200_000);
     expect(line(raised).pct).toBe("5%");
     // The total is derived, not stored — a fee change must move it.
-    expect(raised.totalAed - base.totalAed).toBe(40_000);
+    expect(raised.totalAed - base.totalAed).toBe(120_000);
   });
 
   it("re-rates the flat fees, which take no percentage", () => {

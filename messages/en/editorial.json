@@ -9,7 +9,7 @@
     "developments": "Developments",
     "talkToAuthor": "Talk to the author",
     "trend": "Trend",
-    "whatsSelling": "What's selling · DLD recorded"
+    "whatsSelling": "What's selling · registered sales"
   },
   "article": {
     "share": "Share",
@@ -33,7 +33,7 @@
     "viewAllCategories": "View all categories"
   },
   "report": {
-    "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",
+    "closedTransactions": "{count, plural, one {# registered {type} transaction in {quarter}.} other {# registered {type} transactions in {quarter}.}}",
     "noTransactions": "No closed {type} transactions surfaced for {area} in this quarter yet."
   },
   "internalLink": {

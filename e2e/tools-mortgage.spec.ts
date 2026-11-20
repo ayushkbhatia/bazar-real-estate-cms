@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
  * That used to be safe: the headline, the opening scenario (AED 4,200,000 ·
  * 25% · 4.25% · 25y) and the fee percentages were literals in the code, so
  * asserting them asserted the build. They are now Pages & blocks copy and
- * Settings → Mortgage figures, and an editor moving the DLD rate the morning
+ * Settings → Mortgage figures, and an editor moving the registration rate the morning
  * of a release would redden `main` with no commit behind it.
  *
  * So the assertions are on SHAPE and RELATIONSHIP — that a percentage renders
@@ -64,7 +64,7 @@ test("cash to close breaks out the statutory lines, when it is switched on", asy
   // beside it. The rate itself is an admin's to set.
   const table = page.getByTestId("cash-to-close-table");
   await expect(table).toContainText(/Down payment · [0-9.]+%/);
-  await expect(table).toContainText(/DLD transfer fee · [0-9.]+%/);
+  await expect(table).toContainText(/Registration fee \(DARI\) · [0-9.]+%/);
   await expect(table).toContainText(/Bazar advisory · [0-9.]+%/);
 });
 

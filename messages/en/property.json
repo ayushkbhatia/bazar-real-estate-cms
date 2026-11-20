@@ -25,7 +25,7 @@
     "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",
     "nonResidentQ": "Can a non-resident buy {title}?",
     "verifyQ": "Where can I verify this listing?",
-    "verifyA": "Permit number {permit} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.",
+    "verifyA": "Permit number {permit} is the listing's ADREC advertising permit. You can check the listing, and that Bazar is the broker on it, through ADREC's Madhmoun verification service.",
     "includesQ": "What does a {bedrooms} {type} in {place} typically include?",
     "includesA": "A {bedrooms} {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {title} on request.",
     "bedroomCount": "{count, plural, =0 {studio} one {#-bed} other {#-bed}}",
@@ -82,7 +82,7 @@
     "parkingBays": "{count, plural, one {# bay} other {# bays}}",
     "permit": "Listing permit",
     "validTo": "valid to {date}",
-    "dldPlot": "DLD plot"
+    "dldPlot": "Plot number"
   },
   "stat": {
     "bedrooms": "Bedrooms",

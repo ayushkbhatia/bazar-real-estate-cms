@@ -34,8 +34,6 @@ import { mediaPublicUrl } from "@/lib/media";
 import { SnapRail } from "@/components/brand/mobile";
 import { CompareToolbar } from "./compare-toolbar";
 import { PickerDrawer } from "./_components/picker-drawer";
-import { InvestmentMetrics } from "./_components/investment-metrics";
-import { VerdictBand } from "./_components/verdict-band";
 import { PageFaq } from "../../_components/marketing/page-faq";
 
 /**
@@ -343,26 +341,13 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
         ))}
       </section>
 
-      {/* Sprint 5b: investment metrics + verdict band */}
-      {present.length >= 2 ? (
-        <section className="px-4 md:px-12 pb-12 space-y-6">
-          <InvestmentMetrics
-            rows={present.map((p, i) => ({
-              ref: p.reference,
-              // Sprint 12: real yield from DLD comparables; placeholder
-              // here uses a deterministic spread by index for visual demo.
-              yieldPct: 5.2 + i * 0.4,
-              yoyGrowthPct: 6.1 + i * 0.8,
-              foreignEligible: true,
-              mortgageableNow: i !== 1,
-            }))}
-          />
-          <VerdictBand
-            references={present.map((p) => p.reference)}
-            locale={locale}
-          />
-        </section>
-      ) : null}
+      {/*
+        Removed 2026-11-20: an "investment metrics" table and an "advisor's
+        verdict" band. The metrics were invented (yield 5.2% + 0.4 per column,
+        growth, "mortgageable" by column index) and the verdict was a fixed
+        quote attributed by name to a real advisor. Bring them back only with
+        real data: a sourced yield per listing and a verdict the advisor wrote.
+      */}
     </div>
   );
 }

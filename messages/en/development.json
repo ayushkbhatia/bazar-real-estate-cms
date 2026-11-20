@@ -16,7 +16,7 @@
     "total_area_ft2": "Total area",
     "lagoon_area_ft2": "Lagoon area",
     "density": "Density",
-    "rera_escrow": "RERA escrow",
+    "rera_escrow": "Escrow account",
     "service_charge_estimate": "Service charge",
     "tenure": "Tenure"
   },
@@ -81,7 +81,7 @@
     "foreignQ": "Can foreigners buy at {name}?",
     "foreignA": "Yes — {name} is in a designated freehold area of Abu Dhabi, which means non-resident buyers can take title in their own name and apply for the property-linked residency visa. Bazar handles the entire process end-to-end.",
     "escrowQ": "Is the payment plan escrow-backed?",
-    "escrowA": "Yes. {name} payments are held in a RERA-registered escrow account ({escrow}). Funds release to the developer only against verified construction milestones — your capital is protected until handover."
+    "escrowA": "Yes. {name} payments go into the project's escrow account ({escrow}), overseen by the Abu Dhabi Real Estate Centre (ADREC). Funds are released to the developer against construction progress."
   },
   "nav": {
     "overview": "Overview",

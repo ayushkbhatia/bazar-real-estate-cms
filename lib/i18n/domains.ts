@@ -237,7 +237,7 @@ export const DOMAINS: Domain[] = [
         column: "escrow_account",
         strategy: "never",
         evidence: "_components/development-faq.tsx:134",
-        note: "Regulatory-financial identifier inside the RERA escrow answer.",
+        note: "Regulatory-financial identifier inside the escrow answer.",
       },
       {
         column: "facts",

@@ -26,7 +26,7 @@
       "kyc-non-residents": {
         "eyebrow": "Compliance · KYC",
         "title": "KYC for non-resident buyers",
-        "intro": "The KYC and source-of-funds paperwork to expect at the trustee desk. Compile this before MoU and the transfer day runs smoothly."
+        "intro": "The KYC and source-of-funds paperwork to expect before you sign. Compile it before the MoU and the DARI transfer runs smoothly."
       },
       "for-tenants": {
         "eyebrow": "Renting · For Tenants",
@@ -90,11 +90,11 @@
       },
       "qualifyingProperty": {
         "heading": "Qualifying property",
-        "copy": "Ready, titled property at AED 2M+ qualifies straight away. Off-plan property qualifies once the developer has issued the 50%-paid certificate. Multiple properties can be combined towards the threshold provided each is in your personal name and the cumulative AED value clears AED 2M. Company-held property doesn't qualify directly — ICP grants the visa to the beneficial owner of record, so you'd need to restructure to personal title."
+        "copy": "Ready, titled property at AED 2M+ qualifies straight away. Off-plan property qualifies once you have paid at least AED 2M to the developer (Abu Dhabi Residents Office). Multiple properties can be combined towards the threshold provided each is in your personal name and the cumulative AED value clears AED 2M. Company-held property doesn't qualify directly — ICP grants the visa to the beneficial owner of record, so you'd need to restructure to personal title."
       },
       "dependants": {
         "heading": "Dependants",
-        "copy": "Spouse and dependent children (typically up to 21, or 25 for unmarried daughters in full-time education) are covered under your sponsorship. The visa is renewable as long as the property is held. If you sell below the threshold, the residency lapses on the next renewal cycle."
+        "copy": "Your spouse and children are covered under your sponsorship: under the UAE's Golden Visa rules, sons up to 25 and unmarried daughters of any age. The visa is renewable as long as the property is held. If you sell below the threshold, the residency lapses on the next renewal cycle."
       },
       "timeline": {
         "heading": "Timeline",
@@ -188,7 +188,7 @@
     "block": {
       "identity": {
         "heading": "Identity",
-        "copy": "Passport biographical page + entry stamp / residency visa (if any). Where the passport is recent, a second photo ID — driver's licence or national ID — closes the loop with the trustee desk faster."
+        "copy": "Passport biographical page + entry stamp / residency visa (if any). Where the passport is recent, a second photo ID — driver's licence or national ID — speeds up the checks before transfer."
       },
       "address": {
         "heading": "Address",
@@ -196,15 +196,15 @@
       },
       "sourceFunds": {
         "heading": "Source of funds",
-        "copy": "This is the part buyers underestimate. For purchases above AED 2M, the DLD-side trustee will request documentary evidence of the funds — bank statements showing accumulation, the sale contract if you've recently sold another asset, employment / dividend statements, or a clean note from your accountant. Compile this before you reach the MoU stage; it's the most common cause of trustee-day delays."
+        "copy": "This is the part buyers underestimate. Under the UAE's anti-money-laundering rules, the broker, the bank and the developer will ask for documentary evidence of the funds — bank statements showing accumulation, the sale contract if you've recently sold another asset, employment / dividend statements, or a clean note from your accountant. Compile this before you reach the MoU stage; it's the most common cause of delays at transfer."
       },
       "banking": {
         "heading": "Banking",
-        "copy": "You don't need a UAE bank account to buy. The 10% MoU deposit can be wire-transferred to the DLD-approved trustee from any clean source; the balance can be wired straight to the trustee on transfer day. Where a UAE account would help is post-purchase — service-charge direct debits, rental income collection, mortgage payments. Bazar can introduce you to the bank that fits your residency status."
+        "copy": "You don't need a UAE bank account to buy. The deposit agreed in the MoU and the balance can be wired from any clean source, in the way the sale agreement sets out; for off-plan property, payments go to the project's escrow account. The sale is registered on DARI. Where a UAE account would help is post-purchase — service-charge direct debits, rental income collection, mortgage payments. Bazar can introduce you to the bank that fits your residency status."
       },
       "ifYoullLetProperty": {
         "heading": "If you'll let the property out",
-        "copy": "Non-resident landlords need a tax representative inside the UAE, which is a one-line appointment your property management partner handles. ADJD (Abu Dhabi Judicial Department) registers the tenancy contract; service charges are billed by the master community. Bazar's lettings desk handles the entire cycle if you'd rather not manage from abroad."
+        "copy": "Every lease must be registered in Tawtheeq, through DARI; rental disputes go to the Abu Dhabi Judicial Department's rental committees. Service charges are billed by the master community. Bazar's lettings desk handles the entire cycle if you'd rather not manage from abroad."
       }
     }
   },
@@ -219,7 +219,7 @@
       },
       "doesntCover": {
         "heading": "What it doesn't cover",
-        "copy": "It's a residency, not a citizenship pathway. You can't sponsor extended family beyond spouse and minors. You'll still need to maintain UAE-side tax residency rules (typically 90+ days in country) if you want the Tax Residency Certificate."
+        "copy": "It's a residency, not a citizenship pathway. Which relatives you can sponsor is set by ICP, so check its current list before you apply. You'll still need to maintain UAE-side tax residency rules (typically 90+ days in country) if you want the Tax Residency Certificate."
       },
       "mortgageRules": {
         "heading": "Mortgage rules",
@@ -320,7 +320,7 @@
       },
       "understandRenewalEndTenancy": {
         "title": "Understand renewal & end-of-tenancy",
-        "copy": "Renewals are submitted through DARI; the tenant can accept or reject. The lessor cannot raise rent by more than 5% at renewal. To close a tenancy after expiry, DARI provides a close-tenancy service the tenant reviews and approves."
+        "copy": "Renewals are submitted through DARI; the tenant can accept or reject. Since June 2026 Abu Dhabi has frozen rent increases, so the rent cannot rise at renewal while the freeze is in force. To close a tenancy after expiry, DARI provides a close-tenancy service the tenant reviews and approves."
       }
     },
     "block": {
@@ -572,10 +572,10 @@
               "label": "Ready and titled"
             },
             "off_plan_50pct": {
-              "label": "Off-plan, 50%+ paid"
+              "label": "Off-plan, AED 2M+ already paid"
             },
             "off_plan_below50": {
-              "label": "Off-plan, less than 50% paid"
+              "label": "Off-plan, less than AED 2M paid"
             }
           }
         }
@@ -609,16 +609,16 @@
           }
         },
         "offPlanUnder50": {
-          "title": "Eligible — once you cross the 50% paid threshold",
-          "copy": "ICP applies the Golden Visa to off-plan property only after the developer has issued the 50%-paid certificate. Stay the course, hit the milestone, and you're in. Bazar's visa desk can pre-stage your paperwork so the day-1 submission is smooth.",
+          "title": "Eligible — once you have paid AED 2M",
+          "copy": "For off-plan property, the Abu Dhabi Residents Office counts what you have paid the developer: the Golden Visa applies once that reaches AED 2M. Stay the course, hit the milestone, and you're in. Bazar's visa desk can pre-stage your paperwork so the day-1 submission is smooth.",
           "next": {
-            "1": "Track the 50% paid milestone with the developer",
+            "1": "Track your payments to the developer towards AED 2M",
             "2": "Pre-compile passport, valuation, NOC, dependants"
           }
         },
         "eligible": {
           "title": "You should qualify for the 10-year Golden Visa",
-          "copy": "AED 2M+ in personal name on a ready or majority-paid off-plan property is the canonical Golden Visa profile. ICP processing typically lands in 4–6 weeks once paperwork is complete. Bazar's visa desk handles the entire flow — eligibility check, documentation, medical, Emirates ID, dependants.",
+          "copy": "AED 2M+ in personal name on a ready property, or AED 2M+ already paid on an off-plan one, is the canonical Golden Visa profile. ICP processing typically lands in 4–6 weeks once paperwork is complete. Bazar's visa desk handles the entire flow — eligibility check, documentation, medical, Emirates ID, dependants.",
           "cta": "Engage the visa desk",
           "next": {
             "1": "Compile passport, title deed, valuation, dependants paperwork",
@@ -690,7 +690,7 @@
         },
         "via183": {
           "title": "Eligible via the 183-day route",
-          "copy": "Physical presence of 183+ days in the UAE during the tax year qualifies you directly — no further conditions. Application turnaround is typically 4–6 weeks once your travel records are compiled.",
+          "copy": "Physical presence of 183+ days in the UAE during the tax year qualifies you directly — no further conditions. The Federal Tax Authority aims to issue the certificate within 10 business days of a complete application.",
           "cta": "Get help compiling the application",
           "next": {
             "1": "Compile passport stamps + UAE entry/exit records",

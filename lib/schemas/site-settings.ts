@@ -249,11 +249,15 @@ export const MORTGAGE_SETTINGS_DEFAULTS: MortgageSettings = {
   default_term_years: 25,
   default_annual_income_aed: 950_000,
 
-  dld_transfer_pct: 4,
-  mortgage_registration_pct: 0.25,
+  // Abu Dhabi (ADREC, through DARI): 2% registration on the price and 0.1% on
+  // the loan. These were Dubai's figures (4% DLD, 0.25%, a trustee office)
+  // until 2026-11-20. Abu Dhabi has no trustee offices, so that fee is 0 and
+  // the calculator drops a line whose amount is 0.
+  dld_transfer_pct: 2,
+  mortgage_registration_pct: 0.1,
   bank_arrangement_pct: 1,
   advisory_pct: 1.5,
-  trustee_office_fee_aed: 4_200,
+  trustee_office_fee_aed: 0,
   property_valuation_fee_aed: 3_150,
   noc_misc_fee_aed: 5_800,
 

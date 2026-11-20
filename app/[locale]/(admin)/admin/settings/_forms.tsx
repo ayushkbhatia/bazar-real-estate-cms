@@ -363,7 +363,13 @@ const MORTGAGE_GROUPS: {
     blurb:
       "The closing table under the monthly payment. Percentages of the property price unless noted; the flat fees are charged whatever the price.",
     fields: [
-      { key: "dld_transfer_pct", label: "DLD transfer fee", suffix: "%", step: "0.05" },
+      {
+        key: "dld_transfer_pct",
+        label: "Registration fee (DARI)",
+        suffix: "%",
+        step: "0.05",
+        help: "Abu Dhabi: 2% of the price.",
+      },
       {
         key: "mortgage_registration_pct",
         label: "Mortgage registration",
@@ -379,7 +385,12 @@ const MORTGAGE_GROUPS: {
         help: "Charged on the loan amount, not the price.",
       },
       { key: "advisory_pct", label: "Bazar advisory", suffix: "%", step: "0.05" },
-      { key: "trustee_office_fee_aed", label: "Trustee office fee", suffix: "AED" },
+      {
+        key: "trustee_office_fee_aed",
+        label: "Trustee office fee",
+        suffix: "AED",
+        help: "A Dubai fee. Leave at 0 for Abu Dhabi; a 0 fee is left off the table.",
+      },
       { key: "property_valuation_fee_aed", label: "Property valuation", suffix: "AED" },
       { key: "noc_misc_fee_aed", label: "NOC & disbursements", suffix: "AED" },
     ],

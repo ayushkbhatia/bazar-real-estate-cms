@@ -181,15 +181,15 @@ export function amortizationByYear(inputs: MortgageInputs): AmortYear[] {
  * charge four hundred percent.
  */
 export type MortgageAssumptions = {
-  /** Trustee office fee — flat in AED. */
+  /** Trustee office fee, flat in AED (Dubai only; 0 in Abu Dhabi). */
   trusteeOfficeFeeAed: number;
   /** NOC and misc disbursements, rough flat estimate. */
   nocMiscAed: number;
   /** Property valuation fee, bank-selected. */
   propertyValuationAed: number;
-  /** DLD transfer fee as a fraction of price. */
+  /** Registration fee (DARI in Abu Dhabi) as a fraction of price. */
   dldTransferPct: number;
-  /** DLD mortgage registration as a fraction of loan principal. */
+  /** Mortgage registration as a fraction of loan principal. */
   mortgageRegistrationPct: number;
   /** Bank arrangement fee as a fraction of loan principal. */
   bankArrangementPct: number;
@@ -220,13 +220,16 @@ export type MortgageAssumptions = {
  * un-edited install computes exactly what it always did.
  */
 export const DEFAULT_MORTGAGE_ASSUMPTIONS: MortgageAssumptions = {
-  // Sometimes 4,000 in Dubai, but 4,200 matches what Abu Dhabi DARI/DMT
-  // charges in practice.
-  trusteeOfficeFeeAed: 4_200,
+  // Abu Dhabi, not Dubai. Registration through DARI (ADREC) is 2% of the price
+  // and mortgage registration 0.1% of the loan; Abu Dhabi has no trustee
+  // offices, so that fee is 0 and `cashToClose` drops its line. Until
+  // 2026-11-20 these were Dubai's 4% DLD fee, 0.25% and a AED 4,200 trustee
+  // fee. Key names keep "dld" because the stored settings use them.
+  trusteeOfficeFeeAed: 0,
   nocMiscAed: 5_800,
   propertyValuationAed: 3_150,
-  dldTransferPct: 0.04,
-  mortgageRegistrationPct: 0.0025,
+  dldTransferPct: 0.02,
+  mortgageRegistrationPct: 0.001,
   // Negotiable; show the headline 1%.
   bankArrangementPct: 0.01,
   // Bazar advisory — capped 1.5%.
@@ -284,7 +287,7 @@ export function cashToClose(
   const principal = round(inputs.pricePropertyAed - downPayment);
   const advisoryPct = opts?.advisoryPct ?? a.bazarAdvisoryPct;
 
-  const lines: CashToCloseLine[] = [
+  const all: CashToCloseLine[] = [
     {
       key: "down_payment",
       pct: pct(downPct),
@@ -326,6 +329,12 @@ export function cashToClose(
       amountAed: a.nocMiscAed,
     },
   ];
+
+  // A flat fee set to 0 (the trustee office, which Abu Dhabi doesn't have) is
+  // not a cost, so it is not a line. The down payment always shows.
+  const lines = all.filter(
+    (l) => l.key === "down_payment" || l.amountAed !== 0 || l.pct !== null,
+  );
 
   const totalAed = lines.reduce((sum, l) => sum + l.amountAed, 0);
   const pctOfPrice =
