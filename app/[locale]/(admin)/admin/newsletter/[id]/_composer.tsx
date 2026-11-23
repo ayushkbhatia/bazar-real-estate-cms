@@ -26,6 +26,7 @@ import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import {
   AUDIENCE_LABELS,
   NEWSLETTER_TOKENS,
+  editionLocale,
   hasArabicEdition,
   isBlankBody,
   toArabicLinks,
@@ -33,6 +34,7 @@ import {
   type CampaignDraft,
   type CampaignStatus,
 } from "@/lib/newsletter/campaign";
+import { campaignFromName, fromAddressOf, fromNameOf, withFromName } from "@/lib/newsletter/sender";
 import type { BlogMediaOption } from "../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../../content-assets/emails/_body-editor";
 import type { FeatureTarget } from "../../content-assets/emails/_feature-types";
@@ -86,6 +88,7 @@ export function Composer({
   records,
   canTranslate,
   lists = [],
+  recentFromNames = [],
 }: {
   id: string;
   status: CampaignStatus;
@@ -96,8 +99,11 @@ export function Composer({
   media: BlogMediaOption[];
   canWrite: boolean;
   canSend: boolean;
+  /** The settings sender (/admin/newsletter/settings): the address always, the name unless this newsletter has its own. */
   from: string;
   replyTo: string;
+  /** Sender names earlier newsletters went out under, newest first — offered as suggestions. */
+  recentFromNames?: string[];
   /** Published records the Feature button and the link search offer. */
   records: FeatureTarget[];
   /** A model key is configured, so "Translate from English" can run. */
@@ -158,6 +164,10 @@ export function Composer({
     .filter(Boolean)
     .join(" + ") || "Nobody chosen";
   const allProblems = { ...problems, ...errors };
+  // Who the inbox says it's from: this newsletter's own name for the edition
+  // shown, on the settings address — exactly what the sender uses.
+  const defaultFromName = fromNameOf(from) || fromAddressOf(from);
+  const fromFor = (want: "en" | "ar") => withFromName({ from, replyTo }, campaignFromName(draft, editionLocale(draft, want))).from;
   const blocking = Object.values(allProblems).filter(Boolean);
 
   // The preview follows the fields, a beat behind the typing.
@@ -333,6 +343,7 @@ export function Composer({
     });
   }
 
+  const fromNameKey = lang === "ar" ? "from_name_ar" : "from_name";
   const subjectKey = lang === "ar" ? "subject_ar" : "subject";
   const preheaderKey = lang === "ar" ? "preheader_ar" : "preheader";
   const bodyKey = lang === "ar" ? "body_ar" : "body";
@@ -465,6 +476,37 @@ export function Composer({
                 ) : null}
               </div>
             ) : null}
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[12px] font-medium text-bz-ink-2">From name</span>
+              <input
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                lang={lang}
+                value={draft[fromNameKey]}
+                onChange={(e) => set(fromNameKey, e.target.value)}
+                disabled={locked}
+                maxLength={80}
+                list={recentFromNames.length ? "newsletter-from-names" : undefined}
+                placeholder={lang === "ar" ? draft.from_name.trim() || defaultFromName : defaultFromName}
+                className={cn(INPUT, allProblems[fromNameKey] ? "border-[oklch(0.6_0.15_28)]" : "border-bz-border")}
+              />
+              {allProblems[fromNameKey] ? (
+                <span className={FIELD_ERROR}>{allProblems[fromNameKey]}</span>
+              ) : (
+                <span className="text-[11px] text-bz-muted">
+                  {lang === "ar"
+                    ? `The name Arabic subscribers see. Leave it empty to use the English name${draft.from_name.trim() ? ` (“${draft.from_name.trim()}”)` : ""}.`
+                    : `The name inboxes show beside the subject. Name the project to market it — “Saadiyat Lagoons by Bazar” — or leave it empty for “${defaultFromName}”. It always sends from ${fromAddressOf(from)}.`}
+                </span>
+              )}
+              {recentFromNames.length ? (
+                <datalist id="newsletter-from-names">
+                  {recentFromNames.map((n) => (
+                    <option key={n} value={n} />
+                  ))}
+                </datalist>
+              ) : null}
+            </label>
 
             <label className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-bz-ink-2">Subject</span>
@@ -680,7 +722,14 @@ export function Composer({
                 {audienceSummary} · <span className="mono">{recipients}</span>
               </dd>
               <dt className="text-bz-muted">From</dt>
-              <dd className="break-all">{from}</dd>
+              <dd className="break-all">
+                {fromFor("en")}
+                {arabicReady && fromFor("ar") !== fromFor("en") ? (
+                  <span className="block text-bz-muted" dir="auto">
+                    Arabic edition: {fromFor("ar")}
+                  </span>
+                ) : null}
+              </dd>
             </dl>
 
             {blocking.length > 0 ? (
@@ -821,7 +870,7 @@ export function Composer({
               No Arabic edition yet, so Arabic subscribers get the English below.
             </p>
           ) : null}
-          <InboxHeader from={from} replyTo={replyTo} to="subscriber@example.com" subject={preview?.subject ?? draft.subject} />
+          <InboxHeader from={fromFor(previewLang)} replyTo={replyTo} to="subscriber@example.com" subject={preview?.subject ?? draft.subject} />
           {showText ? (
             <pre className="m-0 p-4 bg-white text-[12.5px] leading-relaxed text-bz-ink whitespace-pre-wrap break-words font-mono min-h-[320px]">
               {preview?.text ?? ""}

@@ -21,11 +21,14 @@ export function ReportPreview({
   english,
   arabic,
   from,
+  fromAr,
   replyTo,
 }: {
   english: RenderedEmail;
   arabic: RenderedEmail | null;
   from: string;
+  /** The Arabic edition's From, when it went under a name of its own. */
+  fromAr?: string;
   replyTo: string;
 }) {
   const [lang, setLang] = useState<"en" | "ar">("en");
@@ -59,7 +62,7 @@ export function ReportPreview({
           <ViewportToggle value={viewport} onChange={setViewport} />
         </div>
       </div>
-      <InboxHeader from={from} replyTo={replyTo} to="subscriber@example.com" subject={shown.subject} />
+      <InboxHeader from={lang === "ar" && arabic ? (fromAr ?? from) : from} replyTo={replyTo} to="subscriber@example.com" subject={shown.subject} />
       <EmailFrame html={shown.html} viewport={viewport} title="Newsletter as sent" className="py-4" />
     </section>
   );

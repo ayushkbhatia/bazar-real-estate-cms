@@ -33,6 +33,7 @@ import { isStarter, starterDraft, STARTER_NEEDS, type StarterPicks } from "@/lib
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { drainNewsletterQueue, finishCampaigns, startCampaign } from "@/lib/newsletter/send";
 import { readNewsletterSender } from "@/lib/newsletter/sender-read";
+import { campaignFromName, withFromName } from "@/lib/newsletter/sender";
 import { designFeatureHtml, normaliseDesign } from "@/lib/newsletter/blocks/document";
 import { isBuiltInTemplate } from "@/lib/newsletter/blocks/templates";
 import { builtInTemplateDraft } from "@/lib/newsletter/blocks/template-data";
@@ -116,6 +117,8 @@ function toRow(draft: CampaignDraft) {
     body_ar: draft.body_ar || null,
     audience: draft.audience,
     list_ids: draft.list_ids,
+    from_name: draft.from_name,
+    from_name_ar: draft.from_name_ar,
   };
 }
 
@@ -275,7 +278,8 @@ export async function sendCampaignTest(raw: unknown, locale: "en" | "ar"): Promi
     unsubscribeUrl: `${emailSiteUrl()}${locale === "ar" ? "/ar" : ""}/newsletter/unsubscribe/test`,
     features: features.draw,
   });
-  const sender = await readNewsletterSender();
+  // The name this edition goes out under, exactly as the sender would use it.
+  const sender = withFromName(await readNewsletterSender(), campaignFromName(parsed.draft, email.locale));
   const result = await sendEmail({
     to: user.email,
     subject: `[Test] ${email.subject}`,
@@ -426,7 +430,7 @@ export async function duplicateCampaign(id: string): Promise<void> {
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
   const { data: source, error } = await supabase
     .from("newsletter_campaigns")
-    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience, list_ids, format, design")
+    .select("subject, preheader, body, subject_ar, preheader_ar, body_ar, audience, list_ids, format, design, from_name, from_name_ar")
     .eq("id", id)
     .single();
   if (error || !source) throw new Error(error?.message ?? "Newsletter not found.");
@@ -453,7 +457,15 @@ export async function duplicateCampaign(id: string): Promise<void> {
  */
 async function createFromTemplate(template: string, project: string | null): Promise<void> {
   const { supabase, user } = await requireRole(NEWSLETTER_WRITE_ROLES);
-  let fields: { subject: string; preheader: string; subject_ar: string; preheader_ar: string; design: unknown };
+  let fields: {
+    subject: string;
+    preheader: string;
+    subject_ar: string;
+    preheader_ar: string;
+    design: unknown;
+    from_name?: string;
+    from_name_ar?: string;
+  };
   if (isBuiltInTemplate(template)) {
     const draft = await builtInTemplateDraft(template, project);
     if (!draft) throw new Error("That project isn't published, so there's nothing to launch.");
@@ -461,7 +473,7 @@ async function createFromTemplate(template: string, project: string | null): Pro
   } else if (/^[0-9a-f-]{36}$/i.test(template)) {
     const { data, error } = await supabase
       .from("newsletter_templates")
-      .select("subject, preheader, subject_ar, preheader_ar, design")
+      .select("subject, preheader, subject_ar, preheader_ar, design, from_name, from_name_ar")
       .eq("id", template)
       .single();
     if (error || !data) throw new Error(error?.message ?? "Template not found.");
@@ -478,6 +490,8 @@ async function createFromTemplate(template: string, project: string | null): Pro
       preheader: fields.preheader,
       subject_ar: fields.subject_ar || null,
       preheader_ar: fields.preheader_ar || null,
+      from_name: fields.from_name ?? "",
+      from_name_ar: fields.from_name_ar ?? "",
       created_by: user.id,
       updated_by: user.id,
     })
@@ -523,6 +537,8 @@ export async function saveAsTemplate(
     preheader: parsed.draft.preheader,
     subject_ar: parsed.draft.subject_ar,
     preheader_ar: parsed.draft.preheader_ar,
+    from_name: parsed.draft.from_name,
+    from_name_ar: parsed.draft.from_name_ar,
     design: parsed.draft.design as unknown as Json,
     updated_by: user.id,
   };

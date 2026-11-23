@@ -17,7 +17,7 @@ import { unresolvedFeatures } from "./feature-render";
 import { featureBlocksIn } from "@/lib/content-assets/email-feature";
 import { designFeatureHtml, normaliseDesign } from "./blocks/document";
 import { readNewsletterSender } from "./sender-read";
-import type { NewsletterSender } from "./sender";
+import { campaignFromName, withFromName, type NewsletterSender } from "./sender";
 
 /**
  * The newsletter sender: start a campaign, drain its deliveries in Resend
@@ -118,7 +118,7 @@ export async function sendClaimed(
   const [{ data: campaigns, error: cErr }, { data: subscribers, error: sErr }, { data: contacts, error: lErr }] = await Promise.all([
     client
       .from("newsletter_campaigns")
-      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar, format, design")
+      .select("id, subject, preheader, body, subject_ar, preheader_ar, body_ar, format, design, from_name, from_name_ar")
       .in("id", campaignIds),
     client
       .from("newsletter_subscribers")
@@ -130,7 +130,10 @@ export async function sendClaimed(
   ]);
   if (cErr || sErr || lErr) throw new Error(`load batch: ${(cErr ?? sErr ?? lErr)!.message}`);
 
-  type Loaded = Pick<CampaignRow, "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar" | "format" | "design">;
+  type Loaded = Pick<
+    CampaignRow,
+    "id" | "subject" | "preheader" | "body" | "subject_ar" | "preheader_ar" | "body_ar" | "format" | "design" | "from_name" | "from_name_ar"
+  >;
   // A block design is normalised once per batch, and its featured blocks read
   // as the same tags a rich-text body carries — one lookup path for both.
   const campaignById = new Map(
@@ -225,6 +228,8 @@ export async function sendClaimed(
       features: (l) => featureDrawer(found, brand, l),
       recipient: recipient.kind,
     });
+    // This newsletter's own name for this edition (0177), on the settings address.
+    const named = sender ? withFromName(sender, campaignFromName(campaign, edition)) : null;
     toSend.push({
       delivery,
       input: {
@@ -233,7 +238,7 @@ export async function sendClaimed(
         text: email.text,
         html: email.html,
         headers: unsubscribeHeaders(recipient.token, locale),
-        ...(sender ? { from: sender.from, replyTo: sender.replyTo } : {}),
+        ...(named ? { from: named.from, replyTo: named.replyTo } : {}),
       },
     });
   }

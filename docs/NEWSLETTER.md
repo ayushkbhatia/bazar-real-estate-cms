@@ -18,7 +18,7 @@ The site's own newsletter: a subscriber list, a composer, and a sender, all in
      listings**, **Project launches**, **From Insights**.
 
    A draft opens in the composer.
-2. **Write** — subject, preview line and body in the same rich-text editor the
+2. **Write** — the **From name** (below, "Sender"), subject, preview line and body in the same rich-text editor the
    Content assets emails use (headings, lists, links, buttons, images, fields),
    plus **Feature** for the site's own listings, projects, articles and area
    guides (below). Links, buttons and images can point at any published page
@@ -281,6 +281,31 @@ other email the site sends keeps the env's `RESEND_FROM_ADDRESS` /
 - The Reply-To can be any address; replies need no verification.
 - The sender, "Send me a test" and the preview's inbox header all read
   `readNewsletterSender()` (`lib/newsletter/sender-read.ts`).
+
+### A sender name per newsletter
+
+Each newsletter can go out under a name of its own — **From name**, the
+first field of the composer's Write step (`newsletter_campaigns.from_name`,
+migration 0177). A launch mailer can come from the project it markets
+("Saadiyat Lagoons by Bazar") instead of "Marketing at Bazar Real Estate".
+Blank uses the name set at Newsletter → Sender.
+
+- **Only the name changes.** The address and Reply-To are always the Sender
+  settings': Resend sends only from verified domains, and the delivery
+  webhook tells Bazar's events from other sites' by the From's domain.
+- **Arabic.** The Arabic tab has its own From name (`from_name_ar`) for the
+  Arabic edition's readers; blank falls back to the English name, then to the
+  settings name. A reader who gets the English (no Arabic edition) sees the
+  English name.
+- Every template — rich text, blocks, built-in or saved — has the field. A
+  saved template keeps its name (`newsletter_templates.from_name`), so a
+  project's template starts its next newsletter under it; **Duplicate**
+  copies it too. Names earlier newsletters used are offered as suggestions.
+- The preview's inbox header, the Review step, "Send me a test" and the
+  campaign report all show the name the edition goes out under
+  (`withFromName` / `campaignFromName`, `lib/newsletter/sender.ts`).
+- Same rule as the settings name: up to 80 characters, no quotes, angle
+  brackets or line breaks (checked by the form and by a database constraint).
 
 ## Who may do what
 

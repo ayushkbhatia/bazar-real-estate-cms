@@ -91,7 +91,7 @@ export function SenderForm({
         </p>
       </div>
 
-      {field("from_name", "From name", "The name inboxes show beside the subject.", "Marketing at Bazar")}
+      {field("from_name", "From name", "The name inboxes show beside the subject, unless a newsletter sets its own in the composer.", "Marketing at Bazar")}
       {field(
         "from_address",
         "From address",

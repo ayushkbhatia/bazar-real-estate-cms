@@ -23,12 +23,19 @@ export type NewsletterSender = { from: string; replyTo: string };
 
 const address = z.string().trim().toLowerCase().email("Enter an email address, like marketing@bazarrealestate.com.");
 
+/**
+ * A display name for a From header: what the settings page and each
+ * newsletter's own sender name (0177) both accept. No quotes, angle brackets
+ * or line breaks — they would break the header or smuggle in another one.
+ */
+export const fromNameSchema = z
+  .string()
+  .trim()
+  .max(80, "Keep the name under 80 characters.")
+  .refine((v) => !/[<>"\r\n]/.test(v), "The name can't contain quotes, angle brackets or line breaks.");
+
 export const senderSettingsSchema = z.object({
-  from_name: z
-    .string()
-    .trim()
-    .max(80, "Keep the name under 80 characters.")
-    .refine((v) => !/[<>"\r\n]/.test(v), "The name can't contain quotes, angle brackets or line breaks."),
+  from_name: fromNameSchema,
   from_address: address,
   reply_to: address,
 });
@@ -139,4 +146,40 @@ export function resolveNewsletterSender(
   const fromAddress = row?.from_address?.trim();
   const from = fromAddress ? formatFrom(row?.from_name ?? "", fromAddress) : fallback.from;
   return { from, replyTo: row?.reply_to?.trim() || fallback.replyTo };
+}
+
+/** The address in a From header: `Name <a@x.com>` or `"N" <a@x.com>` → `a@x.com`. */
+export function fromAddressOf(from: string): string {
+  const bracketed = from.match(/<([^>]*)>\s*$/);
+  return (bracketed ? bracketed[1] : from).trim();
+}
+
+/** The name in a From header, unquoted; "" for a bare address. */
+export function fromNameOf(from: string): string {
+  const bracketed = from.match(/^(.*?)\s*<[^>]*>\s*$/);
+  return bracketed ? bracketed[1].trim().replace(/^"(.*)"$/, "$1") : "";
+}
+
+/**
+ * The name one newsletter goes out under (0177), for one edition: the Arabic
+ * name for the Arabic edition when it has one, else the English, else ""
+ * (the settings name).
+ */
+export function campaignFromName(
+  c: { from_name?: string | null; from_name_ar?: string | null },
+  edition: "en" | "ar",
+): string {
+  const ar = edition === "ar" ? c.from_name_ar?.trim() : "";
+  return ar || c.from_name?.trim() || "";
+}
+
+/**
+ * The sender with this newsletter's own name, if it has one. Only the name
+ * changes: the address (and so the domain Resend verified and the webhook
+ * filters on) is always the settings one.
+ */
+export function withFromName(sender: NewsletterSender, name: string | null | undefined): NewsletterSender {
+  const n = name?.trim();
+  if (!n) return sender;
+  return { ...sender, from: formatFrom(n, fromAddressOf(sender.from)) };
 }
