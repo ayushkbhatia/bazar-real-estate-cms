@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  campaignFromName,
   domainOf,
+  fromAddressOf,
+  fromNameOf,
   formatFrom,
   ownVerifiedDomains,
   resolveNewsletterSender,
   senderSettingsSchema,
+  withFromName,
 } from "./sender";
 
 const env = { from: "hello@bazarrealestate.com", replyTo: "someone@example.com" };
@@ -66,5 +70,40 @@ describe("ownVerifiedDomains", () => {
       "bazarrealestate.com",
       "bazar.ae",
     ]);
+  });
+});
+
+describe("a newsletter's own sender name (0177)", () => {
+  const sender = { from: "Marketing at Bazar Real Estate <marketing@bazarrealestate.ae>", replyTo: "m@bazarrealestate.ae" };
+
+  it("swaps only the name, keeping the address and Reply-To", () => {
+    expect(withFromName(sender, "Saadiyat Lagoons by Bazar")).toEqual({
+      from: "Saadiyat Lagoons by Bazar <marketing@bazarrealestate.ae>",
+      replyTo: sender.replyTo,
+    });
+    expect(withFromName(sender, "Bazar, Saadiyat").from).toBe('"Bazar, Saadiyat" <marketing@bazarrealestate.ae>');
+    expect(withFromName(sender, "  ")).toBe(sender);
+    expect(withFromName(sender, null)).toBe(sender);
+    // An env sender with no name at all still gets one.
+    expect(withFromName({ from: "hello@bazarrealestate.ae", replyTo: "x@y.z" }, "Bazar").from).toBe(
+      "Bazar <hello@bazarrealestate.ae>",
+    );
+  });
+
+  it("picks the Arabic name for the Arabic edition, then the English, then none", () => {
+    const c = { from_name: "Saadiyat Lagoons", from_name_ar: "سعديات لاجونز" };
+    expect(campaignFromName(c, "en")).toBe("Saadiyat Lagoons");
+    expect(campaignFromName(c, "ar")).toBe("سعديات لاجونز");
+    expect(campaignFromName({ from_name: "Saadiyat Lagoons", from_name_ar: " " }, "ar")).toBe("Saadiyat Lagoons");
+    expect(campaignFromName({ from_name: "", from_name_ar: "سعديات" }, "en")).toBe("");
+    expect(campaignFromName({}, "ar")).toBe("");
+  });
+
+  it("reads a From header back into its name and address", () => {
+    expect(fromAddressOf('"Bazar, Marketing" <m@x.com>')).toBe("m@x.com");
+    expect(fromAddressOf("m@x.com")).toBe("m@x.com");
+    expect(fromNameOf('"Bazar, Marketing" <m@x.com>')).toBe("Bazar, Marketing");
+    expect(fromNameOf("Marketing at Bazar <m@x.com>")).toBe("Marketing at Bazar");
+    expect(fromNameOf("m@x.com")).toBe("");
   });
 });

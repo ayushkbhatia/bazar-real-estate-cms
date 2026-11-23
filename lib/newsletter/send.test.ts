@@ -115,6 +115,29 @@ describe("sendClaimed", () => {
     expect(mocks.sendEmailBatch.mock.calls[0]![0][0]).not.toHaveProperty("from");
   });
 
+  it("sends under the newsletter's own name per edition, always on the settings address", async () => {
+    mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r1", "r2"] });
+    const sender = { from: "Marketing at Bazar Real Estate <marketing@bazarrealestate.ae>", replyTo: "marketing@bazarrealestate.ae" };
+    const named = { ...campaign, from_name: "Saadiyat Lagoons by Bazar", from_name_ar: "سعديات لاجونز من بازار" };
+    await sendClaimed(fakeDb({ campaigns: [named], subscribers }).client, claimed(), DEFAULT_EMAIL_BRAND, sender);
+    const [en, ar] = mocks.sendEmailBatch.mock.calls[0]![0];
+    expect(en.from).toBe("Saadiyat Lagoons by Bazar <marketing@bazarrealestate.ae>");
+    expect(ar.from).toBe("سعديات لاجونز من بازار <marketing@bazarrealestate.ae>");
+    expect(en.replyTo).toBe(sender.replyTo);
+
+    // No Arabic name: the Arabic edition goes under the English one. No name at all: the settings name.
+    mocks.sendEmailBatch.mockClear();
+    const englishOnly = { ...campaign, from_name: "Saadiyat Lagoons", from_name_ar: "" };
+    await sendClaimed(fakeDb({ campaigns: [englishOnly], subscribers }).client, claimed(), DEFAULT_EMAIL_BRAND, sender);
+    expect(mocks.sendEmailBatch.mock.calls[0]![0].map((i: { from: string }) => i.from)).toEqual([
+      "Saadiyat Lagoons <marketing@bazarrealestate.ae>",
+      "Saadiyat Lagoons <marketing@bazarrealestate.ae>",
+    ]);
+    mocks.sendEmailBatch.mockClear();
+    await sendClaimed(fakeDb({ campaigns: [{ ...campaign, from_name: " ", from_name_ar: "" }], subscribers }).client, claimed(), DEFAULT_EMAIL_BRAND, sender);
+    expect(mocks.sendEmailBatch.mock.calls[0]![0][0].from).toBe(sender.from);
+  });
+
   it("sends one batch, each in the recipient's language with their own unsubscribe link, and skips anyone who left", async () => {
     mocks.sendEmailBatch.mockResolvedValue({ status: "ok", ids: ["r1", "r2"] });
     const { client, updates } = fakeDb({ campaigns: [campaign], subscribers });

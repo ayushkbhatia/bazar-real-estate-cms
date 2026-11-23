@@ -21,6 +21,7 @@ import { hasPlaceholder } from "./starters";
 import { isUsableLink, linkSlots, normaliseDesign, placeholderIn, textSlots } from "./blocks/document";
 import { renderDesign } from "./blocks/render";
 import type { Design } from "./blocks/types";
+import { fromNameSchema } from "./sender";
 
 export type CampaignStatus = Database["public"]["Enums"]["newsletter_campaign_status"];
 export type CampaignRow = Database["public"]["Tables"]["newsletter_campaigns"]["Row"];
@@ -77,6 +78,13 @@ export const campaignDraftSchema = z.object({
   preheader_ar: z.string().max(200, "Keep the preview line under 200 characters."),
   body_ar: z.string().max(200_000),
   audience: z.enum(AUDIENCES),
+  /**
+   * The name inboxes show beside the subject, for this newsletter only (0177);
+   * blank = the one set at /admin/newsletter/settings. The Arabic edition's
+   * readers see `from_name_ar` when it is written.
+   */
+  from_name: fromNameSchema.default(""),
+  from_name_ar: fromNameSchema.default(""),
   /** Custom lists it also goes to (newsletter_lists ids). */
   list_ids: z.array(z.string().uuid()).max(MAX_CAMPAIGN_LISTS, `At most ${MAX_CAMPAIGN_LISTS} lists.`).default([]),
 });

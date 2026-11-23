@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_EMAIL_BRAND } from "@/lib/content-assets/email-brand";
 import {
+  campaignDraftSchema,
   campaignProblems,
   hasArabicEdition,
   isBlankBody,
@@ -21,6 +22,8 @@ const draft = (over: Partial<CampaignDraft> = {}): CampaignDraft => ({
   body_ar: "",
   audience: "all",
   list_ids: [],
+  from_name: "",
+  from_name_ar: "",
   ...over,
 });
 
@@ -118,3 +121,19 @@ describe("helpers", () => {
     expect(unsubscribeLinks("abc123", "en").page).not.toContain("/ar/");
   });
 });
+
+describe("a newsletter's own sender name", () => {
+  const base = { ...draft(), design: null };
+  it("is optional, trimmed, and refuses anything that could break the From header", () => {
+    const ok = campaignDraftSchema.safeParse({ ...base, from_name: "  Saadiyat Lagoons by Bazar ", from_name_ar: "سعديات لاجونز" });
+    expect(ok.success && ok.data.from_name).toBe("Saadiyat Lagoons by Bazar");
+    const { from_name: _a, from_name_ar: _b, ...without } = base;
+    const missing = campaignDraftSchema.safeParse(without);
+    expect(missing.success && [missing.data.from_name, missing.data.from_name_ar]).toEqual(["", ""]);
+    for (const bad of ["Bazar <evil@x.com>", 'Say "hi"', "Bazar\r\nBcc: a@b.com", "x".repeat(81)]) {
+      expect(campaignDraftSchema.safeParse({ ...base, from_name: bad }).success).toBe(false);
+      expect(campaignDraftSchema.safeParse({ ...base, from_name_ar: bad }).success).toBe(false);
+    }
+  });
+});
+

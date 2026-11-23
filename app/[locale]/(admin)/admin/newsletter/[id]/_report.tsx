@@ -15,6 +15,7 @@ export function CampaignReport({
   english,
   arabic,
   from,
+  fromAr,
   replyTo,
   canWrite,
   listNames = [],
@@ -24,6 +25,7 @@ export function CampaignReport({
   english: RenderedEmail;
   arabic: RenderedEmail | null;
   from: string;
+  fromAr?: string;
   replyTo: string;
   canWrite: boolean;
   /** The custom lists it also went to (0176). */
@@ -114,7 +116,7 @@ export function CampaignReport({
           </form>
         ) : null}
       </div>
-      <ReportPreview english={english} arabic={arabic} from={from} replyTo={replyTo} />
+      <ReportPreview english={english} arabic={arabic} from={from} fromAr={fromAr} replyTo={replyTo} />
     </div>
   );
 }

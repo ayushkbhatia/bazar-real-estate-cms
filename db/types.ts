@@ -3589,6 +3589,8 @@ export type Database = {
           created_by: string | null
           design: Json | null
           format: string
+          from_name: string
+          from_name_ar: string
           id: string
           list_ids: string[]
           preheader: string
@@ -3612,6 +3614,8 @@ export type Database = {
           created_by?: string | null
           design?: Json | null
           format?: string
+          from_name?: string
+          from_name_ar?: string
           id?: string
           list_ids?: string[]
           preheader?: string
@@ -3635,6 +3639,8 @@ export type Database = {
           created_by?: string | null
           design?: Json | null
           format?: string
+          from_name?: string
+          from_name_ar?: string
           id?: string
           list_ids?: string[]
           preheader?: string
@@ -3921,6 +3927,8 @@ export type Database = {
           created_by: string | null
           description: string
           design: Json
+          from_name: string
+          from_name_ar: string
           id: string
           name: string
           preheader: string
@@ -3935,6 +3943,8 @@ export type Database = {
           created_by?: string | null
           description?: string
           design: Json
+          from_name?: string
+          from_name_ar?: string
           id?: string
           name: string
           preheader?: string
@@ -3949,6 +3959,8 @@ export type Database = {
           created_by?: string | null
           description?: string
           design?: Json
+          from_name?: string
+          from_name_ar?: string
           id?: string
           name?: string
           preheader?: string

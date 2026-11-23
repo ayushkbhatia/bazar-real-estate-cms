@@ -7,6 +7,7 @@ import { STAFF_ROLES } from "@/lib/schemas/staff";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
 import { readNewsletterSender } from "@/lib/newsletter/sender-read";
+import { campaignFromName, withFromName } from "@/lib/newsletter/sender";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { emailSiteUrl } from "@/lib/email-templates";
@@ -48,6 +49,19 @@ async function fetchImages(supabase: Awaited<ReturnType<typeof requireRole>>["su
     mime: m.mime_type,
     storage_key: m.storage_key,
   }));
+}
+
+/** Sender names earlier newsletters used, newest first, each once — the composer's suggestions. */
+async function fetchRecentFromNames(supabase: Awaited<ReturnType<typeof requireRole>>["supabase"]): Promise<string[]> {
+  if (!isSupabaseConfigured) return [];
+  const { data } = await supabase
+    .from("newsletter_campaigns")
+    .select("from_name, from_name_ar")
+    .or("from_name.neq.,from_name_ar.neq.")
+    .order("updated_at", { ascending: false })
+    .limit(100);
+  const names = (data ?? []).flatMap((r) => [r.from_name, r.from_name_ar]).map((n) => n.trim()).filter(Boolean);
+  return [...new Set(names)].slice(0, 20);
 }
 
 export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
@@ -124,7 +138,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
                 })
               : null
           }
-          from={sender.from}
+          from={withFromName(sender, campaignFromName(campaign, "en")).from}
+          fromAr={withFromName(sender, campaignFromName(campaign, "ar")).from}
           replyTo={sender.replyTo}
           canWrite={canWrite}
           listNames={listNames}
@@ -133,7 +148,12 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  const [media, records, lists] = await Promise.all([fetchImages(supabase), listFeatureTargets(), listOptions()]);
+  const [media, records, lists, recentFromNames] = await Promise.all([
+    fetchImages(supabase),
+    listFeatureTargets(),
+    listOptions(),
+    fetchRecentFromNames(supabase),
+  ]);
   return (
     <CmsShell title={title} breadcrumbs={crumbs} secondary={<CampaignStatusPill status={campaign.status} />}>
       <Composer
@@ -152,6 +172,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
           body_ar: campaign.body_ar ?? "",
           audience: (["all", "en", "ar", "none"].includes(campaign.audience) ? campaign.audience : "all") as Audience,
           list_ids: campaign.list_ids ?? [],
+          from_name: campaign.from_name ?? "",
+          from_name_ar: campaign.from_name_ar ?? "",
         }}
         audienceCounts={{ all: counts.confirmed, en: counts.confirmedEn, ar: counts.confirmedAr, none: 0 }}
         lists={lists}
@@ -162,6 +184,7 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
         canSend={canSend}
         from={sender.from}
         replyTo={sender.replyTo}
+        recentFromNames={recentFromNames}
       />
     </CmsShell>
   );
