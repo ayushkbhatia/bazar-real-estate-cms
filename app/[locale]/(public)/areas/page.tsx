@@ -9,6 +9,8 @@ import { WhyBand } from "../_components/marketing/why-band";
 import { AreaMapSection } from "../_components/area-map-section";
 import { ListYourProperty } from "../_components/home/list-your-property";
 import { AreaCards } from "./_components/area-cards";
+import { ExpertiseAreas } from "../_components/home/expertise-areas";
+import { expertiseCardsFrom } from "../_components/home/expertise-cards";
 import { AreaSpotlights } from "./_components/area-spotlights";
 import { CommunityTypes } from "./_components/community-types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
@@ -79,6 +81,7 @@ export default async function AreasPage({
 
   const heroV = v("hero");
   const cardsV = v("area_cards");
+  const expertiseV = v("expertise_areas");
   const areaMapV = v("area_map");
   const spotlightsV = v("area_spotlights");
   const listV = v("list_your_property");
@@ -130,6 +133,18 @@ export default async function AreasPage({
           slug: s(c.slug),
           ...imageProps(c.image),
         }))}
+      />
+    ),
+
+    expertise_areas: (
+      <ExpertiseAreas
+        key="expertise_areas"
+        eyebrow={str(expertiseV, "eyebrow")}
+        heading={str(expertiseV, "heading")}
+        body={str(expertiseV, "body")}
+        ctaLabel={str(expertiseV, "cta_label")}
+        ctaHref={str(expertiseV, "cta_href")}
+        cards={expertiseCardsFrom(expertiseV.cards)}
       />
     ),
 

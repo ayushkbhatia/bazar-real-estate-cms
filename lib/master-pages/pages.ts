@@ -38,6 +38,7 @@ import { ABOUT_PAGE } from "./sections/about";
 import { AGENTS_PAGE } from "./sections/agents";
 import { LAUNCHES_PAGE } from "./sections/launches";
 import { PARTNER_BAND_DEFAULTS } from "./sections/partner-band";
+import { expertiseAreasSection } from "./sections/expertise";
 import { CONTACT_PAGE } from "./sections/contact";
 import { SELL_PAGE } from "./sections/sell";
 import { PROPERTY_MANAGEMENT_PAGE } from "./sections/property-management";
@@ -281,6 +282,10 @@ const HOME: MasterPageDef = {
         cards: [],
       },
     },
+    expertiseAreasSection({
+      placeAfter: "location_browsing",
+      cta: { label: "All locations", labelAr: "جميع المواقع", href: "/areas" },
+    }),
     {
       key: "off_plan_projects",
       label: "Off-plan projects",
@@ -1584,6 +1589,7 @@ const AREAS: MasterPageDef = {
       ],
       defaults: { cards: [] },
     },
+    expertiseAreasSection({ placeAfter: "area_cards", cta: null }),
     {
       key: "area_map",
       label: "Area map",
