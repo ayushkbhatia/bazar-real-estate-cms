@@ -184,7 +184,8 @@ export async function LocationBrowsing({
   );
 }
 
-function Tile({
+/** One photo tile: image, navy scrim, serif name, a line and an arrow. Also drawn by `ExpertiseAreas`. */
+export function Tile({
   href,
   name,
   countLabel,

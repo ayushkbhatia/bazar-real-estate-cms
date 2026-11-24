@@ -12,6 +12,8 @@ import { AreaMapSection } from "./_components/area-map-section";
 import { ListingCardPriced } from "./_components/listing-card-priced";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { LocationBrowsing } from "./_components/home/location-browsing";
+import { ExpertiseAreas } from "./_components/home/expertise-areas";
+import { expertiseCardsFrom } from "./_components/home/expertise-cards";
 import { OffPlanProjects } from "./_components/home/off-plan-projects";
 import { ListYourProperty } from "./_components/home/list-your-property";
 import { MortgageCalculatorSection } from "./_components/home/mortgage-calculator-section";
@@ -140,6 +142,7 @@ export default async function HomePage({
   const heroV = v("hero");
   const areaMapV = v("area_map");
   const locationV = v("location_browsing");
+  const expertiseV = v("expertise_areas");
   const offPlanV = v("off_plan_projects");
   const featuredV = v("featured_properties");
   const listV = v("list_your_property");
@@ -234,6 +237,18 @@ export default async function HomePage({
             imageLabel: image?.label ?? null,
           };
         })}
+      />
+    ),
+
+    expertise_areas: (
+      <ExpertiseAreas
+        key="expertise_areas"
+        eyebrow={str(expertiseV, "eyebrow")}
+        heading={str(expertiseV, "heading")}
+        body={str(expertiseV, "body")}
+        ctaLabel={str(expertiseV, "cta_label")}
+        ctaHref={str(expertiseV, "cta_href")}
+        cards={expertiseCardsFrom(expertiseV.cards)}
       />
     ),
 
