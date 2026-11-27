@@ -1,5 +1,5 @@
 /**
- * The pure half of the "Our Expertise" band: which cards draw, with what, and
+ * The pure half of the "Local Expertise" band: which cards draw, with what, and
  * how the desktop grid is cut. Kept apart from the component so it can be
  * tested without a request.
  */

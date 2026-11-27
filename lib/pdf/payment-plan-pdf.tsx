@@ -9,12 +9,24 @@
  * numbered schedule under a dark header, and the totals.
  *
  * The other PDFs keep the plain `Shell` from ./_shared.
+ *
+ * It is the one PDF drawn in Arabic too (client, 27 Nov 2026): a visitor on
+ * /ar downloads it in Arabic, right to left. @react-pdf shapes Arabic and
+ * runs bidi inside a line, but Yoga lays rows out left to right whatever the
+ * direction (lib/pdf/language-note.ts), so the mirroring is done here by
+ * hand: every row is `row-reverse`, every side rule swaps sides and text
+ * aligns right. The face is IBM Plex Sans Arabic, embedded from
+ * lib/pdf/fonts (OFL), the same face /ar ships with; it carries Latin and
+ * digits as well, so figures and English names print in the same face.
+ * The other PDFs stay English (`pdfLanguageSuffix`).
  */
 
 import React from "react";
+import path from "node:path";
 import {
   renderToBuffer,
   Document,
+  Font,
   Image,
   Page,
   Text,
@@ -27,6 +39,60 @@ import {
   splitPaymentPlan,
   type PaymentPlan,
 } from "@/lib/schemas/development";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { paymentPlanWords, type PaymentPlanWords } from "./payment-plan-words";
+
+/** The embedded Arabic face. Registered once per server instance. */
+const ARABIC_FONT = "IBM Plex Sans Arabic";
+const FONT_DIR = path.join(process.cwd(), "lib/pdf/fonts");
+Font.register({
+  family: ARABIC_FONT,
+  fonts: [
+    { src: path.join(FONT_DIR, "IBMPlexSansArabic-Regular.ttf"), fontWeight: 400 },
+    { src: path.join(FONT_DIR, "IBMPlexSansArabic-SemiBold.ttf"), fontWeight: 600 },
+  ],
+});
+
+type CachedGlyph = { codePoints: number[] };
+type GlyphSource = {
+  getGlyph: (id: number, characters?: number[]) => CachedGlyph | null;
+};
+const mended = new WeakSet<object>();
+
+/**
+ * Load the Arabic face and mend fontkit's glyph cache before a render.
+ *
+ * fontkit keeps one glyph object per id, made by whichever call asked first.
+ * Subsetting the font into a PDF asks for glyphs by id alone, with no code
+ * points, so after the FIRST Arabic PDF an instance's "2" and "0" are cached
+ * as glyphs that stand for no character. textkit maps glyphs back to the
+ * string by those code points, so the next PDF with a figure beside Arabic
+ * ("120 درهم") lost a character and threw inside the bidi pass
+ * ("Cannot read properties of undefined (reading 'id')"). Every request after
+ * the first on a warm server would have failed.
+ *
+ * The mend: when a cached glyph has no code points and the caller knows
+ * them, take the caller's. Done on the loaded font instance only, so no other
+ * font, and no other PDF, is touched.
+ */
+async function prepareArabicFont(): Promise<void> {
+  for (const fontWeight of [400, 600] as const) {
+    const descriptor = { fontFamily: ARABIC_FONT, fontWeight };
+    await Font.load(descriptor);
+    const font = (Font.getFont(descriptor) as unknown as { data?: GlyphSource } | null)?.data;
+    if (!font || mended.has(font)) continue;
+    const getGlyph = font.getGlyph.bind(font);
+    font.getGlyph = (id, characters = []) => {
+      const glyph = getGlyph(id, characters);
+      if (glyph && glyph.codePoints.length === 0 && characters.length > 0) {
+        glyph.codePoints = characters;
+      }
+      return glyph;
+    };
+    mended.add(font);
+  }
+}
 
 const A4 = { width: 595.28, height: 841.89 } as const;
 
@@ -41,12 +107,28 @@ const c = {
   white: "#FFFFFF",
 } as const;
 
-const s = StyleSheet.create({
+function makeStyles(rtl: boolean) {
+  // Bold, a row, and a rule on the side a row's next cell starts from: the
+  // three things that differ when the page is drawn right to left.
+  const bold = rtl
+    ? { fontFamily: ARABIC_FONT, fontWeight: 600 as const }
+    : { fontFamily: "Helvetica-Bold" };
+  const row = rtl ? ("row-reverse" as const) : ("row" as const);
+  const ruleSide = (color: string) =>
+    rtl
+      ? { borderRightWidth: 1, borderRightColor: color }
+      : { borderLeftWidth: 1, borderLeftColor: color };
+  // Arabic joins its letters; tracking pulls them apart.
+  const track = (n: number) => (rtl ? 0 : n);
+  return StyleSheet.create({
   page: {
     paddingTop: LETTERHEAD_SAFE.top,
     paddingBottom: LETTERHEAD_SAFE.bottom,
     paddingHorizontal: LETTERHEAD_SAFE.side,
-    fontFamily: "Helvetica",
+    fontFamily: rtl ? ARABIC_FONT : "Helvetica",
+    // The bidi pass's paragraph direction, inherited by every line: without
+    // it a line is laid out as English and "التاريخ: 27 نوفمبر" reads backwards.
+    ...(rtl ? { direction: "rtl" as const } : {}),
     fontSize: 9,
     color: c.ink,
     lineHeight: 1.35,
@@ -66,10 +148,10 @@ const s = StyleSheet.create({
     alignItems: "flex-end",
   },
   titleText: {
-    fontFamily: "Helvetica-Bold",
+    ...bold,
     fontSize: 24,
     lineHeight: 1,
-    letterSpacing: 1.2,
+    letterSpacing: track(1.2),
     color: c.navy,
   },
   titleSub: {
@@ -77,12 +159,12 @@ const s = StyleSheet.create({
     lineHeight: 1.2,
     color: c.muted,
     marginTop: 8,
-    letterSpacing: 0.4,
+    letterSpacing: track(0.4),
     textAlign: "right",
   },
 
   metaRow: {
-    flexDirection: "row",
+    flexDirection: row,
     justifyContent: "space-between",
     paddingTop: 8,
     paddingBottom: 8,
@@ -91,17 +173,17 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: c.rule,
   },
-  metaLabel: { fontFamily: "Helvetica-Bold" },
+  metaLabel: { ...bold },
 
   greeting: { marginTop: 12, marginBottom: 12 },
-  greetingHead: { fontFamily: "Helvetica-Bold", marginBottom: 3 },
+  greetingHead: { ...bold, marginBottom: 3 },
   greetingBody: { color: c.ink2 },
 
-  band: { flexDirection: "row", backgroundColor: c.sand, paddingVertical: 9 },
+  band: { flexDirection: row, backgroundColor: c.sand, paddingVertical: 9 },
   bandCell: { flex: 1, paddingHorizontal: 8, alignItems: "center" },
-  bandDivider: { borderLeftWidth: 1, borderLeftColor: "#C9BFAE" },
+  bandDivider: ruleSide("#C9BFAE"),
   bandLabel: {
-    fontFamily: "Helvetica-Bold",
+    ...bold,
     fontSize: 8.5,
     marginBottom: 3,
     color: c.ink,
@@ -109,16 +191,18 @@ const s = StyleSheet.create({
   bandValue: { fontSize: 8.5, color: c.ink2, textAlign: "center" },
 
   grid: { marginTop: 8, borderWidth: 1, borderColor: c.rule },
-  gridRow: { flexDirection: "row" },
+  gridRow: { flexDirection: row },
   gridRowRule: { borderTopWidth: 1, borderTopColor: c.rule },
   gridCell: {
     flex: 1,
     paddingVertical: 6,
     paddingHorizontal: 8,
-    flexDirection: "row",
+    flexDirection: row,
   },
-  gridCellRule: { borderLeftWidth: 1, borderLeftColor: c.rule },
-  gridLabel: { fontFamily: "Helvetica-Bold", fontSize: 8 },
+  gridCellRule: ruleSide(c.rule),
+  // The gap before the value: a trailing space would be trimmed at the
+  // run's edge on the right-to-left page.
+  gridLabel: { ...bold, fontSize: 8, ...(rtl ? { marginLeft: 3 } : {}) },
   gridValue: { fontSize: 8, color: c.ink2, flexShrink: 1 },
 
   sectionHead: {
@@ -126,16 +210,16 @@ const s = StyleSheet.create({
     paddingBottom: 4,
     borderBottomWidth: 1,
     borderBottomColor: c.rule,
-    fontFamily: "Helvetica-Bold",
+    ...bold,
     fontSize: 12.5,
-    letterSpacing: 0.6,
+    letterSpacing: track(0.6),
     color: c.ink,
   },
   sectionSub: { fontSize: 8, color: c.muted, marginTop: 5, marginBottom: 6 },
 
-  thead: { flexDirection: "row", backgroundColor: c.navy },
+  thead: { flexDirection: row, backgroundColor: c.navy },
   th: {
-    fontFamily: "Helvetica-Bold",
+    ...bold,
     fontSize: 8,
     color: c.white,
     paddingVertical: 5,
@@ -143,7 +227,7 @@ const s = StyleSheet.create({
     textAlign: "center",
   },
   tr: {
-    flexDirection: "row",
+    flexDirection: row,
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderBottomWidth: 1,
@@ -156,9 +240,9 @@ const s = StyleSheet.create({
     textAlign: "center",
     color: c.ink,
   },
-  tdRule: { borderLeftWidth: 1, borderLeftColor: c.rule },
+  tdRule: ruleSide(c.rule),
   totalRow: { backgroundColor: c.sand },
-  bold: { fontFamily: "Helvetica-Bold" },
+  bold: { ...bold },
 
   summary: { marginTop: 14 },
   sumHead: {
@@ -166,18 +250,18 @@ const s = StyleSheet.create({
     paddingVertical: 4.5,
     alignItems: "center",
   },
-  sumHeadText: { fontFamily: "Helvetica-Bold", fontSize: 8.5, color: c.white },
+  sumHeadText: { ...bold, fontSize: 8.5, color: c.white },
   sumValue: {
     backgroundColor: c.sand,
     paddingVertical: 6,
     alignItems: "center",
     flexGrow: 1,
   },
-  sumValueText: { fontFamily: "Helvetica-Bold", fontSize: 9.5, color: c.ink },
+  sumValueText: { ...bold, fontSize: 9.5, color: c.ink },
   sumNote: { fontSize: 7.5, color: c.muted, marginTop: 2 },
-  sumRow: { flexDirection: "row" },
+  sumRow: { flexDirection: row },
   sumCol: { flex: 1 },
-  sumColGap: { marginLeft: 1 },
+  sumColGap: rtl ? { marginRight: 1 } : { marginLeft: 1 },
 
   // Denser drawings for a plan that would not fit one page (see `density`).
   tdTight: { paddingVertical: 1.5 },
@@ -185,7 +269,12 @@ const s = StyleSheet.create({
   gapTight: { marginTop: 10 },
   bandTight: { paddingVertical: 6 },
   note: { fontSize: 7, color: c.muted, marginTop: 10, lineHeight: 1.45 },
-});
+  /** Where a line of running text starts. */
+  start: { textAlign: rtl ? "right" : "left" },
+  });
+}
+
+const STYLES = { ltr: makeStyles(false), rtl: makeStyles(true) } as const;
 
 /** The table's columns: number, milestone, share, when, amount. */
 const COLS = [
@@ -200,15 +289,24 @@ function aed(n: number): string {
   return Math.round(n).toLocaleString("en-AE");
 }
 
-function issued(d: Date): string {
-  return d
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      timeZone: "Asia/Dubai",
-    })
-    .replace(/ /g, "-");
+/**
+ * A milestone's words in the PDF's language: the editor's typed twin, then
+ * the site's Arabic store, then the English.
+ *
+ * Folded at the point of printing and never on the plan itself, for the
+ * reason `useMilestoneText` gives on the project page: `splitPaymentPlan`
+ * finds the handover row by matching the ENGLISH label, so a plan folded
+ * upstream would split its totals wrongly.
+ */
+export function inLanguage(
+  locale: Locale,
+  english: string | null | undefined,
+  typed?: string | null,
+): string {
+  if (!english) return english ?? "";
+  if (locale === DEFAULT_LOCALE) return english;
+  if (typed?.trim()) return typed.trim();
+  return arabicFor(english) ?? english;
 }
 
 export type PaymentPlanPdfProps = {
@@ -233,6 +331,13 @@ export type PaymentPlanPdfProps = {
   /** The letterhead image; null draws the page without it (tests). */
   letterhead: Buffer | null;
   issuedAt?: Date;
+  /** The page's language. Arabic draws the whole document right to left. */
+  locale?: Locale;
+  /**
+   * The currency and area words, from the site's unit dictionary
+   * (`getPublicUnitLabels`). Unset, the shipped words for the locale.
+   */
+  labels?: { currency: string; area: string };
   /**
    * How tightly to draw: 0 as designed, 1 tighter rows and gaps, 2 smaller
    * rows still and no greeting, 3 (only extreme text: every field at its
@@ -242,21 +347,31 @@ export type PaymentPlanPdfProps = {
   density?: 0 | 1 | 2 | 3;
 };
 
+type Styles = (typeof STYLES)["ltr"];
+
 function Cell({
+  s,
   label,
   value,
   rule,
 }: {
+  s: Styles;
   label: string;
   value: string;
   rule?: boolean;
 }) {
   return (
     <View style={rule ? [s.gridCell, s.gridCellRule] : s.gridCell}>
-      <Text style={s.gridLabel}>{label}: </Text>
+      <Text style={s.gridLabel}>{label}:{s === STYLES.rtl ? "" : " "}</Text>
       <Text style={s.gridValue}>{value}</Text>
     </View>
   );
+}
+
+/** "Q4 2029" → its parts, so Arabic can write the quarter in words. */
+function parseQuarter(v: string): { q: number; year: number } | null {
+  const m = /^Q([1-4])\s+(\d{4})$/.exec(v.trim());
+  return m ? { q: Number(m[1]), year: Number(m[2]) } : null;
 }
 
 export function PaymentPlanPdf({
@@ -267,8 +382,18 @@ export function PaymentPlanPdf({
   unit,
   letterhead,
   issuedAt = new Date(),
+  locale = DEFAULT_LOCALE,
+  labels,
   density,
 }: PaymentPlanPdfProps): React.ReactElement {
+  const rtl = locale === "ar";
+  const s = rtl ? STYLES.rtl : STYLES.ltr;
+  const w: PaymentPlanWords = paymentPlanWords(locale);
+  const cur = labels?.currency ?? (rtl ? "درهم" : "AED");
+  const areaUnit = labels?.area ?? (rtl ? "قدم²" : "ft²");
+  const say = (english: string | null | undefined, typed?: string | null) =>
+    inLanguage(locale, english, typed);
+
   const split = splitPaymentPlan(plan);
   const breakdown = computePaymentBreakdown(plan, priceAed);
   const hasPrice = priceAed > 0;
@@ -279,71 +404,76 @@ export function PaymentPlanPdf({
   const td =
     level >= 2 ? [s.td, s.tdCompact] : tight ? [s.td, s.tdTight] : [s.td];
   const totalPct = plan.milestones.reduce((sum, m) => sum + m.percent, 0);
+  const name = say(developmentName);
+  const unitType = unit?.type ? say(unit.type) : null;
 
-  const what = starting
-    ? "at its starting price"
-    : unit?.kind === "unitType" && unit.type
-      ? `for the ${unit.type} unit type`
-      : unit?.kind === "unit"
-        ? "for the unit you selected"
-        : "";
-  const intro = `Thank you for your interest in ${developmentName}. Below is the developer's payment plan${what ? ` ${what}` : ""}, set out milestone by milestone with ${hasPrice ? "the amount due at each" : "the share of the price due at each"}.`;
+  const intro = w.intro({
+    name,
+    what: starting ? "starting" : (unit?.kind ?? null),
+    type: unitType,
+    hasPrice,
+  });
+
+  // The handover row's timing, in the words that row prints.
+  const handoverTiming = split.handoverTiming
+    ? say(
+        split.handoverTiming,
+        plan.milestones.find((m) => m.timing === split.handoverTiming)?.timing_ar,
+      )
+    : null;
 
   const buckets: { label: string; value: number; note: string }[] = [
     {
-      label: "During construction",
+      label: w.duringConstruction,
       value: breakdown.construction,
       note: [
         `${split.constructionPct}%`,
-        split.constructionCount > 0
-          ? `${split.constructionCount} instalment${split.constructionCount === 1 ? "" : "s"}`
-          : null,
+        split.constructionCount > 0 ? w.instalments(split.constructionCount) : null,
       ]
         .filter(Boolean)
         .join(" · "),
     },
     {
-      label: "At handover",
+      label: w.atHandover,
       value: breakdown.handover,
-      note: [`${split.handoverPct}%`, split.handoverTiming]
-        .filter(Boolean)
-        .join(" · "),
+      note: [`${split.handoverPct}%`, handoverTiming].filter(Boolean).join(" · "),
     },
   ];
   if (split.postHandoverPct > 0) {
     buckets.push({
-      label: "Post-handover",
+      label: w.postHandover,
       value: breakdown.postHandover,
       note: plan.post_handover_months
-        ? `${split.postHandoverPct}% over ${plan.post_handover_months} months`
+        ? w.overMonths(split.postHandoverPct, plan.post_handover_months)
         : `${split.postHandoverPct}%`,
     });
   }
 
+  const handover =
+    project?.handover && project.handover !== dash ? project.handover : null;
+  const quarter = handover ? parseQuarter(handover) : null;
+
   const band = [
-    { label: "Project", value: developmentName },
+    { label: w.project, value: name },
+    { label: w.location, value: w.place(project?.area ? say(project.area) : null) },
     {
-      label: "Location",
-      value: project?.area ? `${project.area}, Abu Dhabi` : "Abu Dhabi",
+      label: w.handover,
+      value: quarter ? w.quarter(quarter.q, quarter.year) : (handover ?? dash),
     },
     {
-      label: "Estimated Handover",
-      value:
-        project?.handover && project.handover !== dash
-          ? project.handover
-          : dash,
-    },
-    {
-      label: starting ? "Starting Price (AED)" : "Price (AED)",
+      label: starting ? w.startingPrice(cur) : w.price(cur),
       value: hasPrice ? aed(priceAed) : dash,
     },
   ];
 
+  const heads = w.heads.map((h, i) => (i === 4 ? `${h} (${cur})` : h));
+
   return (
     <Document
-      title={`Payment plan · ${developmentName}`}
-      author="Bazar Real Estate"
-      creator="Bazar Real Estate"
+      title={w.docTitle(name)}
+      author={w.company}
+      creator={w.company}
+      language={rtl ? "ar" : "en"}
     >
       {/*
         One page, always (client, Nov 2026): the plan is one sheet an
@@ -363,26 +493,27 @@ export function PaymentPlanPdf({
           />
         ) : null}
 
+        {/* Beside the logo, which is top left in both languages. */}
         <View style={s.title}>
-          <Text style={s.titleText}>PAYMENT PLAN</Text>
-          <Text style={s.titleSub}>{developmentName}</Text>
+          <Text style={s.titleText}>{w.title}</Text>
+          <Text style={s.titleSub}>{name}</Text>
         </View>
 
         <View style={s.metaRow}>
           <Text>
-            <Text style={s.metaLabel}>Prepared by: </Text>
-            Bazar Real Estate
+            <Text style={s.metaLabel}>{w.preparedBy}</Text>
+            {w.company}
           </Text>
           <Text>
-            <Text style={s.metaLabel}>Date: </Text>
-            {issued(issuedAt)}
+            <Text style={s.metaLabel}>{w.date}</Text>
+            {w.issued(issuedAt)}
           </Text>
         </View>
 
         {level < 2 ? (
           <View style={s.greeting}>
-            <Text style={s.greetingHead}>Dear Customer,</Text>
-            <Text style={s.greetingBody}>{intro}</Text>
+            <Text style={[s.greetingHead, s.start]}>{w.dear}</Text>
+            <Text style={[s.greetingBody, s.start]}>{intro}</Text>
           </View>
         ) : (
           <View style={s.gapTight} />
@@ -404,18 +535,21 @@ export function PaymentPlanPdf({
           <View style={s.grid} wrap={false}>
             <View style={s.gridRow}>
               <Cell
-                label="Unit Type"
-                value={starting ? "Starting price" : unit?.type || dash}
+                s={s}
+                label={w.unitType}
+                value={starting ? w.startingPriceValue : unitType || dash}
               />
               <Cell
+                s={s}
                 rule
-                label="Bedrooms"
+                label={w.bedrooms}
                 value={unit?.beds ? String(unit.beds) : dash}
               />
               <Cell
+                s={s}
                 rule
                 label={
-                  unit?.kind === "unitType" ? "Size from (ft²)" : "Size (ft²)"
+                  unit?.kind === "unitType" ? w.sizeFrom(areaUnit) : w.size(areaUnit)
                 }
                 value={
                   unit?.areaFt2
@@ -425,43 +559,49 @@ export function PaymentPlanPdf({
               />
             </View>
             <View style={[s.gridRow, s.gridRowRule]}>
-              <Cell label="Developer" value={project?.developer || dash} />
               <Cell
+                s={s}
+                label={w.developer}
+                value={project?.developer ? say(project.developer) : dash}
+              />
+              <Cell
+                s={s}
                 rule
-                label="Instalments"
+                label={w.instalmentsLabel}
                 value={String(plan.milestones.length)}
               />
             </View>
           </View>
         ) : null}
 
-        <Text style={tight ? [s.sectionHead, s.gapTight] : s.sectionHead}>
-          PAYMENT PLAN
+        <Text
+          style={
+            tight ? [s.sectionHead, s.start, s.gapTight] : [s.sectionHead, s.start]
+          }
+        >
+          {w.title}
         </Text>
-        <Text style={s.sectionSub}>{plan.name}</Text>
+        <Text style={[s.sectionSub, s.start]}>{say(plan.name, plan.name_ar)}</Text>
 
         <View style={s.thead} fixed={false}>
-          {["Inst.", "Milestone", "Percentage", "Due", "Amount (AED)"].map(
-            (h, i) => (
-              <Text
-                key={h}
-                style={[s.th, COLS[i]!, i === 1 ? { textAlign: "left" } : {}]}
-              >
-                {h}
-              </Text>
-            ),
-          )}
+          {heads.map((h, i) => (
+            <Text key={h} style={[s.th, COLS[i]!, i === 1 ? s.start : {}]}>
+              {h}
+            </Text>
+          ))}
         </View>
         {plan.milestones.map((m, i) => (
           <View key={`${m.label}-${i}`} style={s.tr} wrap={false}>
             <Text style={[...td, COLS[0]]}>{i + 1}</Text>
-            <Text style={[...td, s.tdRule, COLS[1], { textAlign: "left" }]}>
-              {m.label}
+            <Text style={[...td, s.tdRule, COLS[1], s.start]}>
+              {say(m.label, m.label_ar)}
             </Text>
             <Text style={[...td, s.tdRule, COLS[2]]}>
-              {m.percent.toFixed(2)} %
+              {w.percent(m.percent.toFixed(2))}
             </Text>
-            <Text style={[...td, s.tdRule, COLS[3]]}>{m.timing || dash}</Text>
+            <Text style={[...td, s.tdRule, COLS[3]]}>
+              {m.timing ? say(m.timing, m.timing_ar) : dash}
+            </Text>
             <Text style={[...td, s.tdRule, COLS[4]]}>
               {hasPrice ? aed(priceAed * (m.percent / 100)) : dash}
             </Text>
@@ -469,10 +609,10 @@ export function PaymentPlanPdf({
         ))}
         <View style={[s.tr, s.totalRow]} wrap={false}>
           <Text style={[...td, COLS[0]]}> </Text>
-          <Text style={[...td, s.bold, COLS[1], { textAlign: "left" }]}>
-            Total
+          <Text style={[...td, s.bold, COLS[1], s.start]}>{w.total}</Text>
+          <Text style={[...td, s.bold, COLS[2]]}>
+            {w.percent(totalPct.toFixed(2))}
           </Text>
-          <Text style={[...td, s.bold, COLS[2]]}>{totalPct.toFixed(2)} %</Text>
           <Text style={[...td, COLS[3]]}> </Text>
           <Text style={[...td, s.bold, COLS[4]]}>
             {hasPrice ? aed(priceAed * (totalPct / 100)) : dash}
@@ -492,7 +632,7 @@ export function PaymentPlanPdf({
                 </View>
                 <View style={s.sumValue}>
                   <Text style={s.sumValueText}>
-                    {hasPrice ? `AED ${aed(b.value)}` : dash}
+                    {hasPrice ? w.money(aed(b.value), cur) : dash}
                   </Text>
                   <Text style={s.sumNote}>{b.note}</Text>
                 </View>
@@ -500,13 +640,7 @@ export function PaymentPlanPdf({
             ))}
           </View>
 
-          <Text style={s.note}>
-            Indicative only. Milestone dates follow the developer&apos;s
-            construction programme and may move; amounts exclude ADM
-            registration fees, service charges and any mortgage costs. This
-            document is not an offer or a reservation. Speak to your Bazar
-            advisor before committing to a schedule.
-          </Text>
+          <Text style={[s.note, s.start]}>{w.note}</Text>
         </View>
       </Page>
     </Document>
@@ -526,6 +660,7 @@ export function pdfPageCount(pdf: Buffer): number {
 export async function renderPaymentPlanPdf(
   props: Omit<PaymentPlanPdfProps, "density">,
 ): Promise<Buffer> {
+  if (props.locale === "ar") await prepareArabicFont();
   const first = props.plan.milestones.length > 8 ? 1 : 0;
   let pdf: Buffer = Buffer.alloc(0);
   for (const density of ([0, 1, 2, 3] as const).filter((d) => d >= first)) {

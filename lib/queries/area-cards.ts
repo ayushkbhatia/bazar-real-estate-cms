@@ -1,5 +1,5 @@
 /**
- * The handful of areas a card band names, by slug — the "Our Expertise" band
+ * The handful of areas a card band names, by slug — the "Local Expertise" band
  * on the home page and /areas.
  *
  * One read for the rows (name folded into the visitor's language, and the hero

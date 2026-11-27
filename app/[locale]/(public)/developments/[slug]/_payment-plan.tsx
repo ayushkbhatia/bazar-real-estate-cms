@@ -52,7 +52,7 @@ type OptionWords = {
   beds: (beds: number) => string;
 };
 
-/** The PDF is English whatever the page's locale. */
+/** `unitLabel` in the PDF request: a log line, always English. The PDF prints `unit`. */
 const ENGLISH_WORDS: OptionWords = {
   startingPrice: (price) => `Starting price · ${price}`,
   fromPrice: (price) => `from ${price}`,
@@ -145,7 +145,7 @@ export function PaymentPlanSection({
   /** Sub-page override. Blank leaves the section without a standfirst. */
   intro?: string | null;
   developmentName: string;
-  /** Printed in the PDF's summary band and unit details, in English. */
+  /** Printed in the PDF's summary band and unit details, in the page's language. */
   projectFacts?: { area: string | null; developer: string | null; handover: string | null };
   units: CalculatorUnit[];
 }) {
@@ -196,6 +196,8 @@ export function PaymentPlanSection({
           priceAed: price,
           plan,
           project: projectFacts ?? null,
+          // The page's language: /ar downloads the plan in Arabic.
+          locale,
           unit: selected
             ? {
                 kind: selected.kind,

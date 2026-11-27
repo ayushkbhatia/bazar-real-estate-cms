@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/queries/articles";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
+import { ogPhoto } from "@/lib/og/photo";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { withLocales } from "@/lib/i18n/static-params";
@@ -57,9 +58,12 @@ export default async function ArticleOpenGraph({
   const title = article?.title ?? "The Bazar Brief";
   const category = article?.category_label ?? "Insights";
   const authorName = article?.author?.display_name ?? "Bazar";
-  const heroSrc = article?.hero
-    ? mediaPublicUrl(article.hero.storage_key)
-    : null;
+  // Shrunk to its slot: an original inlined whole can break the build
+  // (lib/og/photo.ts).
+  const heroSrc = await ogPhoto(
+    article?.hero ? mediaPublicUrl(article.hero.storage_key) : null,
+    { width: 420, height: 630 },
+  );
 
   return new ImageResponse(
     <div

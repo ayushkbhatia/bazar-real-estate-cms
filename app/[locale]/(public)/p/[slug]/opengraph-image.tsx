@@ -7,6 +7,7 @@ import {
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { ogPhoto } from "@/lib/og/photo";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { listingFacts } from "@/lib/properties/type-rules";
@@ -83,9 +84,12 @@ export default async function PropertyOpenGraph({
   const beds = facts?.beds ?? null;
   const baths = facts?.baths ?? null;
   const ft2 = facts?.areaFt2 ?? null;
-  const heroSrc = property?.hero
-    ? mediaPublicUrl(property.hero.storage_key)
-    : null;
+  // Shrunk to its slot: an original inlined whole can break the build
+  // (lib/og/photo.ts).
+  const heroSrc = await ogPhoto(
+    property?.hero ? mediaPublicUrl(property.hero.storage_key) : null,
+    { width: 540, height: 630 },
+  );
 
   return new ImageResponse(
     <div

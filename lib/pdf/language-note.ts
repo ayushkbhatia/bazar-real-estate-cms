@@ -25,7 +25,13 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
  * subsettable TTF is a separate licence grant with its own procurement lead
  * time — the same question that is open for the web font.
  *
- * So it is one word in the button rather than a half-measure.
+ * One exception since 27 Nov 2026: the project page's payment-plan PDF is
+ * drawn in Arabic on /ar (client request). lib/pdf/payment-plan-pdf.tsx did
+ * both pieces of work above for that one document: it mirrors its own rows by
+ * hand and embeds IBM Plex Sans Arabic (OFL) from lib/pdf/fonts. Its button
+ * carries no suffix. Read it before extending Arabic to another PDF.
+ *
+ * So for the rest it is one word in the button rather than a half-measure.
  * Arabic strings in an LTR layout with Helvetica renders blank boxes in a
  * mirrored-looking frame, which reads to a client as a broken feature rather
  * than an unfinished one — worse than an English PDF clearly labelled English.

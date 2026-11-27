@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { pdfPageCount, renderPaymentPlanPdf } from "./payment-plan-pdf";
+import { inLanguage, pdfPageCount, renderPaymentPlanPdf } from "./payment-plan-pdf";
 import { letterheadImage } from "./letterhead";
 
 const short = {
@@ -91,8 +91,8 @@ describe("payment-plan PDF", () => {
         plan: worst,
       },
     ];
-    for (const c of cases) {
-      const pdf = await renderPaymentPlanPdf({ ...base, ...c });
+    for (const [c, locale] of cases.flatMap((c) => [[c, "en"], [c, "ar"]] as const)) {
+      const pdf = await renderPaymentPlanPdf({ ...base, ...c, locale });
       const raw = pdf.toString("latin1");
       expect(raw.startsWith("%PDF")).toBe(true);
       expect(pdfPageCount(pdf)).toBe(1);
@@ -100,5 +100,47 @@ describe("payment-plan PDF", () => {
       expect(raw).toMatch(/\/MediaBox \[0 0 595\.2\d* 841\.8\d*\]/);
       expect(raw).toContain("/Subtype /Image");
     }
+  }, 60_000);
+
+  it("draws in Arabic on /ar, in the embedded Arabic face, and in Helvetica otherwise", async () => {
+    const input = { ...base, developmentName: "JW Marriott Residences", priceAed: 3_200_000, plan: short };
+    const ar = (await renderPaymentPlanPdf({ ...input, locale: "ar" })).toString("latin1");
+    const en = (await renderPaymentPlanPdf(input)).toString("latin1");
+    expect(ar).toMatch(/IBMPlexSansArabic/);
+    expect(ar).not.toMatch(/\/BaseFont \/Helvetica/);
+    expect(en).toMatch(/\/BaseFont \/Helvetica/);
+    expect(en).not.toMatch(/IBMPlexSansArabic/);
   }, 30_000);
+});
+
+// fontkit caches one glyph per id; subsetting the first PDF cached the digits
+// without their code points, and the SECOND Arabic PDF with a figure beside an
+// Arabic word ("120 درهم") then threw in the bidi pass. One render proves
+// nothing; it takes a warm font.
+it("renders Arabic again and again on a warm font", async () => {
+  for (let i = 0; i < 6; i++) {
+    const pdf = await renderPaymentPlanPdf({
+      ...base,
+      developmentName: "مساكن جيه دبليو ماريوت",
+      priceAed: 1000 + i * 120_123,
+      plan: i % 2 ? longest : short,
+      locale: "ar",
+    });
+    expect(pdfPageCount(pdf)).toBe(1);
+  }
+}, 60_000);
+
+describe("inLanguage", () => {
+  it("prints English as given on the English site", () => {
+    expect(inLanguage("en", "On Handover", "عند التسليم")).toBe("On Handover");
+  });
+  it("prefers the editor's typed Arabic, then the store, then the English", () => {
+    expect(inLanguage("ar", "On Handover", " عند الاستلام ")).toBe("عند الاستلام");
+    expect(inLanguage("ar", "A milestone nobody has translated", null)).toBe(
+      "A milestone nobody has translated",
+    );
+  });
+  it("leaves text that is already Arabic alone", () => {
+    expect(inLanguage("ar", "مدينة خليفة")).toBe("مدينة خليفة");
+  });
 });

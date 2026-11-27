@@ -46,7 +46,11 @@ const nextConfig: NextConfig = {
   // request time (lib/pdf/letterhead.ts); a read the tracer can't see would
   // leave the file out of the function on Vercel.
   outputFileTracingIncludes: {
-    "/api/pdf/payment-plan": ["./lib/pdf/assets/letterhead-a4.jpg"],
+    // …and so are the Arabic PDF's fonts (lib/pdf/payment-plan-pdf.tsx).
+    "/api/pdf/payment-plan": [
+      "./lib/pdf/assets/letterhead-a4.jpg",
+      "./lib/pdf/fonts/*.ttf",
+    ],
   },
   images: {
     remotePatterns: supabaseHost
