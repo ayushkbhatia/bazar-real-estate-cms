@@ -13,7 +13,7 @@ import {
 } from "./expertise-cards";
 
 /**
- * "Our Expertise" — the communities Bazar knows best, on the home page and on
+ * "Local Expertise" — the communities Bazar knows best, on the home page and on
  * /areas (`lib/master-pages/sections/expertise.ts`).
  *
  * The same tile and header as "Location-based browsing" just above it on the

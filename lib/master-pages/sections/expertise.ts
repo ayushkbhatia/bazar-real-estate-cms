@@ -1,6 +1,6 @@
 /**
- * "Our Expertise" — the communities Bazar advises on most, as a band of area
- * cards. Placed on the home page (after "Location-based browsing") and on
+ * "Local Expertise" — the communities Bazar advises on most, as a band of area
+ * cards. Placed on the home page (above the List-your-property form) and on
  * /areas (after the area cards), each page with its own copy of the section,
  * the way the partner band is shared (`partner-band.ts`): a section is a piece
  * of a page, so the two pages share a starting point, not a row.
@@ -12,22 +12,30 @@
  * renamed area or a new hero photo shows here without anyone touching the
  * section.
  *
- * The seven are the client's list (24 Nov 2026), in their order. Every one
- * already existed as an area; none was created for this. "Nureel Island" in
- * the request is Nareel Island, the villa island off Al Bateen.
+ * The seven are the client's list, in their order: first asked for on 24 Nov
+ * 2026, rearranged on 27 Nov (Zayed City and Al Shamkha out, Al Bahia and
+ * Al Falah in). Every one already existed as an area; none was created for
+ * this. "Nureel Island" in the request is Nareel Island, the villa island off
+ * Al Bateen.
  */
 import type { SectionDef, SectionValues } from "../types";
 import { text, link, image, toggle, eyebrow, heading, body, ctaPair } from "../fields";
 
-/** The client's seven, in their order. The first is the large tile. */
+/**
+ * The client's seven, in their order. The first is the large tile; the grid
+ * beside it fills row by row, so the next three are its top row and the last
+ * three its bottom row.
+ */
 export const EXPERTISE_AREA_SLUGS = [
   "nareel-island",
-  "khalifa-city",
+  // Top row
+  "mohammed-bin-zayed-city",
   "shakhbout-city",
   "al-bateen",
-  "zayed-city",
-  "mohammed-bin-zayed-city",
-  "al-shamkha",
+  // Bottom row
+  "al-bahia",
+  "al-falah",
+  "khalifa-city",
 ] as const;
 
 const cards = (): SectionValues["cards"] =>
@@ -48,8 +56,8 @@ const cards = (): SectionValues["cards"] =>
 const COPY: SectionValues = {
   eyebrow: "Abu Dhabi communities",
   eyebrow_ar: "مجتمعات أبوظبي",
-  heading: "Our Expertise",
-  heading_ar: "خبرتنا",
+  heading: "Local Expertise",
+  heading_ar: "خبرتنا المحلية",
   body: "The communities our advisors know best — from the island launches to the capital's established family districts.",
   body_ar:
     "المجتمعات التي يعرفها مستشارونا عن قرب، من مشاريع الجزر الجديدة إلى أحياء العاصمة العائلية الراسخة.",
@@ -62,7 +70,7 @@ export function expertiseAreasSection(opts: {
 }): SectionDef {
   return {
     key: "expertise_areas",
-    label: "Our Expertise",
+    label: "Local Expertise",
     description:
       "A large tile and a grid of area cards for the communities Bazar knows best.",
     dataNote:

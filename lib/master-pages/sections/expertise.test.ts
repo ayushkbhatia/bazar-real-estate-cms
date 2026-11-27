@@ -5,12 +5,16 @@ import { EXPERTISE_AREA_SLUGS } from "./expertise";
 // The documents production holds today, in their saved order — neither has
 // the section, so this is where it lands until an editor saves the page.
 const STORED = {
-  home: ["hero", "location_browsing", "area_map", "off_plan_projects", "featured_properties"],
+  home: [
+    "hero", "location_browsing", "area_map", "off_plan_projects", "featured_properties",
+    "list_your_property", "mortgage_calculator", "who_we_are", "developers", "partners",
+    "faqs", "testimonials",
+  ],
   areas: ["hero", "area_cards", "area_map", "area_spotlights"],
 } as const;
 
-describe("Our Expertise", () => {
-  for (const [key, after] of [["home", "location_browsing"], ["areas", "area_cards"]] as const) {
+describe("Local Expertise", () => {
+  for (const [key, after] of [["home", "featured_properties"], ["areas", "area_cards"]] as const) {
     describe(`on ${key}`, () => {
       const def = getMasterPage(key)!;
 
@@ -20,10 +24,19 @@ describe("Our Expertise", () => {
         expect(order[order.indexOf(after) + 1]).toBe("expertise_areas");
       });
 
-      it("ships on, titled Our Expertise, with the client's seven areas in order", () => {
+      if (key === "home") {
+        it("sits directly above the List-your-property form, saved or not", () => {
+          for (const stored of [STORED.home.map((k) => ({ key: k, enabled: true, values: {} })), null]) {
+            const order = resolveSections(def, stored).map((s) => s.key);
+            expect(order[order.indexOf("expertise_areas") + 1]).toBe("list_your_property");
+          }
+        });
+      }
+
+      it("ships on, titled Local Expertise, with the client's seven areas in order", () => {
         const section = resolveSections(def, null).find((s) => s.key === "expertise_areas")!;
         expect(section.enabled).toBe(true);
-        expect(section.values.heading).toBe("Our Expertise");
+        expect(section.values.heading).toBe("Local Expertise");
         const cards = section.values.cards as Record<string, unknown>[];
         expect(cards.map((c) => c.slug)).toEqual([...EXPERTISE_AREA_SLUGS]);
         expect(cards.every((c) => c.enabled === true)).toBe(true);
@@ -31,7 +44,7 @@ describe("Our Expertise", () => {
 
       it("reads Arabic on /ar before anyone edits it", () => {
         const section = resolveSections(def, null, "ar").find((s) => s.key === "expertise_areas")!;
-        expect(section.values.heading).toBe("خبرتنا");
+        expect(section.values.heading).toBe("خبرتنا المحلية");
         expect(section.values.eyebrow).toBe("مجتمعات أبوظبي");
         // The slug is a lookup key; folding it would lose the area.
         const cards = section.values.cards as Record<string, unknown>[];

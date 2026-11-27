@@ -282,10 +282,6 @@ const HOME: MasterPageDef = {
         cards: [],
       },
     },
-    expertiseAreasSection({
-      placeAfter: "location_browsing",
-      cta: { label: "All locations", labelAr: "جميع المواقع", href: "/areas" },
-    }),
     {
       key: "off_plan_projects",
       label: "Off-plan projects",
@@ -366,6 +362,11 @@ const HOME: MasterPageDef = {
         listings: [],
       },
     },
+    // Directly above the List-your-property form (client, 27 Nov 2026).
+    expertiseAreasSection({
+      placeAfter: "featured_properties",
+      cta: { label: "All locations", labelAr: "جميع المواقع", href: "/areas" },
+    }),
     {
       key: "list_your_property",
       label: "List your property",
